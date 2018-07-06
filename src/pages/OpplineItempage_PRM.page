@@ -1,0 +1,1273 @@
+<apex:page id="opplipage" standardcontroller="OpportunityLineItem" extensions="OppLineItemcontroller_PRM,OppLineItemRemoteActions_PRM" sidebar="false"> 
+ 
+     <LINK href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"/>
+     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css"/>
+   
+    
+     <style>
+             .customPopup1      {
+                                background-color: #dbeefd;opacity: .95; -moz-opacity: .95; filter:alpha(opacity=95);  position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;
+                                }
+     
+         .customPopup            {
+                                background-color: rgba(255,255,255,1);
+                                left: 55%;
+                                padding:10px;
+                                position: absolute;
+                                z-index: 9999;
+                                width: 280px;
+                                Height: 130px;
+                                margin-left: -250px;
+                                top:210px;
+                                }
+
+                                
+            .displayNone { 
+                display:none; 
+            }
+            .displayBlock {
+                display:block;
+            }
+            .ui-autocomplete-loading { 
+                <!--background: white url(/img/loading32.gif) right center no-repeat; -->            
+                background-size:15px 15px; 
+            }
+            .placeHolder {
+                font-style: italic;
+                overflow-y: scroll;
+                /* prevent horizontal scrollbar */
+                overflow-x: hidden;
+                /* add padding to account for vertical scrollbar */
+                padding-right: 20px;
+            }
+            .ui-autocomplete {
+                max-height: 200px;
+                overflow-y: scroll;
+                /* prevent horizontal scrollbar */
+                overflow-x: hidden;
+                /* add padding to account for vertical scrollbar */
+                padding-right: 20px;
+            }            
+            .ui-widget-content {
+                border:none
+            }
+            .deldisable{
+                
+                pointer-events: none;
+                cursor: default;
+                opacity: 0.6;
+    
+            }
+     </style> 
+  
+    <script type="text/javascript">
+    
+   
+    
+    function disableEnterKey(evt) { 
+         var evt = (evt) ? evt : ((event) ? event : null); 
+         var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+         if ((evt.keyCode == 13) && (node.type=="text"))  {return false;} 
+    } 
+    function calculateUFLicenseFee_JS(position,override){
+    console.log('position override'+override+' position '+position); 
+        if(override == 'false'){
+           console.log('position override'+override); 
+           return false;
+            }
+        else {
+            console.log('position override in else '+override); 
+            calculateUFLicenseFee_Fn(position);
+            console.log('After position '+position+' override in else '+override); 
+        }
+        }
+document.onkeypress = disableEnterKey;
+            
+    
+        function setFocusOnLoad() {}
+
+        function selectAllCheckboxes(obj,receivedInputID){
+            var inputCheckBox = document.getElementsByTagName("input");
+            for(var i=0; i<inputCheckBox.length; i++){
+                if(inputCheckBox[i].id.indexOf(receivedInputID)!=-1){
+                    inputCheckBox[i].checked = obj.checked;
+                }
+            }
+        }
+        
+        function jsAdd(){
+        
+        console.debug("JS Script invoked");
+            AddProductFunction();
+            console.debug("Apex Method invoked");
+        
+        }
+         function calculatemonthsbtwn(pos){
+                
+                
+                calculatemonthsbtwn_action(pos);
+            }
+    //Added by SAMTU01 US406520
+    function CalcStretch(pos){
+                
+                
+                CalcStretch_Fn(pos);
+            }
+        //Added by SAMTU01 US406520 -- END
+        function selectAllProducts(selectAllCheckbox,checkboxID){
+            var inputCheckBox = document.getElementsByTagName("input");                  
+            for(var i=0; i<inputCheckBox.length; i++){          
+                if(inputCheckBox[i].id.indexOf(checkboxID)!=-1){                                     
+                    inputCheckBox[i].checked = selectAllCheckbox.checked;
+                }
+            }
+        }
+        
+       //MANAR08 - popup logic starts
+       // disabling buttons logic
+      function checkBeforeReturn(){
+          console.log("Hello return to opp clicked ");
+        var tempid = document.getElementById("opplipage:form1:selectedProducts:j_id216:j_id217"); 
+        $(tempid).prop('disabled', true);
+        var tempid2 = document.getElementById("opplipage:form1:j_id95:BU");
+        $(tempid2).prop('disabled', true);
+         var tempid3 = document.getElementById("opplipage:form1:j_id95:spg");
+        $(tempid3).prop('disabled', true);
+         var tempid4 = document.getElementById("opplipage:form1:cancelbtn");
+
+         //sunji03, enable it for now. 
+        //$(tempid4).prop('disabled', true);
+
+
+        $("tbody > tr > td> a").addClass("deldisable");
+       
+         $(".ui-dialog-titlebar").hide(); 
+
+         CheckandReturn();
+       }       
+           
+       function HideErrorForm()
+       {
+          //$("[id = 'opplipage:form1:ReturnErrors']").attr('style', 'display:none');
+           $("[id = 'opplipage:form1:ReturnErrors']").empty();
+       }
+
+       function openPopUp(){ 
+      
+            $(".ui-dialog-titlebar").hide();           
+            OppLineItemRemoteActions_PRM.noPgmExists('{!$CurrentPage.parameters.oppid}',
+                function(result,event){
+                        if(result){
+                            //sunji - no program, also go through approval, so don't open this dialog
+                            //$("#noPgmPopup").dialog("open");
+                           
+                            document.getElementById("Spinner").style.display = '';
+                          
+                            //sunji03 - record type can be changed behind the scene, '{!$CurrentPage.parameters.recType}' can't get refreshed without re-loadnig the page, so get it real time.
+                            OppLineItemRemoteActions_PRM.GetRecordType('{!$CurrentPage.parameters.oppid}',function(result,event){
+                                if(result != 'New Opportunity'){
+                                      OppLineItemRemoteActions_PRM.updateRecordTypetoNewOpp('{!$CurrentPage.parameters.oppid}',function(result,event){});
+                                  }
+
+                                   //Jianwen: if there is no program, still need to submit for approval, set the approvers by custom label values
+                                  OppLineItemRemoteActions_PRM.SetNoProgramDealregApproverAndFlag('{!$CurrentPage.parameters.oppid}',function(result,event){
+                                     console.debug('SetNoProgramDealregApprover event status:'+event.status+'event message:'+event.message);
+                                      if(result == 'true'){
+                                          //Jianwen - changed the flow, submit directly. 
+                                          //goToDetailPage();
+                                          document.getElementById("Spinner").style.display = 'None';
+                                          $("#NoProgramAndSubmitApprovalPopup").dialog("open");
+                                      }
+                                      else{
+                                          console.debug('result in sepPgmPopup 1 :'+result);
+                                          var errorDiv = '<div class=\'message errorM3\' role=\'alert\'> <table border=\'0\' cellpadding=\'0\' cellspacing=\'0\' class=\'messageTable\' style=\'padding:0px;margin:0px;\'>' + 
+                                                        '<tbody> <tr valign=\'top\'> <td> <img alt=\'ERROR\' class=\'msgIcon\' src=\'/s.gif\' title=\'ERROR\'> </td> <td class=\'messageCell\'> <div class=\'messageText\'>' +
+                                                        '<span style=\'color:#cc0000\'><h4>Errors</h4></span><br></div></td> </tr><tr><td></td> <td><span><ul style=\'padding-left:10px;padding-top:0px;margin:0px\'>' + 
+                                                        '<li style=\'padding-top:5px\'>' + result +'</li> </ul> </span> </td> </tr> </tbody> </table> </div>';
+                                         $("[id = 'opplipage:form1:ReturnErrors']").append(errorDiv);  
+                                        document.getElementById("Spinner").style.display = 'None';
+                                      }
+                                }); 
+                            });
+                        }
+                        else{
+                            OppLineItemRemoteActions_PRM.fetchSepPgmProdList('{!$CurrentPage.parameters.oppid}',
+                                function(result,event){
+                                    console.debug('fetchSepPgmProdList event:'+event.status+'event message:'+event.message);
+                                    $("#sepPgmList").empty(); 
+                                    if(result.length > 0)   {
+                                        $("#sepPgmPopup").dialog("open");                         
+                                        $.each(result,function(index,value){
+                                                $("#sepPgmList").append(value+"<br/>");             
+                                            }                       
+                                        );                      
+                                    }
+                                    else{
+                                        document.getElementById("Spinner").style.display = '';
+                                      
+                                         //sunji03 - record type can be changed behind the scene, '{!$CurrentPage.parameters.recType}' can't get refreshed without re-loadnig the page, so get it real time.
+                                        OppLineItemRemoteActions_PRM.GetRecordType('{!$CurrentPage.parameters.oppid}',function(result,event){
+                                           if(result == 'New Opportunity'){
+                                            //$("#popupContent2").dialog("open");
+                                                OppLineItemRemoteActions_PRM.updateRecordTypetoDealReg('{!$CurrentPage.parameters.oppid}',function(result,event){
+                                                   
+                                                    console.debug('updateRecordTypetoDealReg event status:'+event.status+'event message:'+event.message);
+                                                    if(result == 'true'){
+                                                        //Jianwen - changed the flow, submit directly. 
+                                                        //goToDetailPage();
+                                                        document.getElementById("Spinner").style.display = 'None';
+                                                         $("#SubmitApprovalPopup").dialog("open");
+                                                    }
+                                                    else{
+                                                        console.debug('result in sepPgmPopup 1 :'+result);
+                                                        var errorDiv = '<div class=\'message errorM3\' role=\'alert\'> <table border=\'0\' cellpadding=\'0\' cellspacing=\'0\' class=\'messageTable\' style=\'padding:0px;margin:0px;\'>' + 
+                                                                      '<tbody> <tr valign=\'top\'> <td> <img alt=\'ERROR\' class=\'msgIcon\' src=\'/s.gif\' title=\'ERROR\'> </td> <td class=\'messageCell\'> <div class=\'messageText\'>' +
+                                                                      '<span style=\'color:#cc0000\'><h4>Errors</h4></span><br></div></td> </tr><tr><td></td> <td><span><ul style=\'padding-left:10px;padding-top:0px;margin:0px\'>' + 
+                                                                      '<li style=\'padding-top:5px\'>' + result +'</li> </ul> </span> </td> </tr> </tbody> </table> </div>';
+                                                       $("[id = 'opplipage:form1:ReturnErrors']").append(errorDiv);  
+                                                         document.getElementById("Spinner").style.display = 'None';
+                                                    }
+                                                });
+                                            }
+                                            else  if(result == 'Deal Registration'){
+                                            //sunji03 - add this branch for opp already converted to "Deal Registration", after fixing some errors such as max/min/close date. Need re-submit.
+                                              OppLineItemRemoteActions_PRM.sendEmailForMultiplePrograms('{!$CurrentPage.parameters.oppid}',function(result,event){});
+                                               document.getElementById("Spinner").style.display = 'None';
+                                               $("#SubmitApprovalPopup").dialog("open");
+                                            }
+                                        }); 
+                                        /*else{ //sunji03, this logic is moved to backend, after submitting for approval, send this email 
+                                            OppLineItemRemoteActions_PRM.sendEmailForMultiplePrograms('{!$CurrentPage.parameters.oppid}',function(result,event){});
+                                            goToDetailPage();
+                                        }
+                                        */
+                                    }
+                                }
+                            );                      
+                        } //end of else     
+                }//end of function(result,event)
+            );
+       }
+       
+       $(function() {  
+ 
+            $("#errorPopup").dialog({
+                autoOpen: false,
+                modal: true,
+                buttons : {
+                    'Ok': function(){
+                        $("#errorPopup").dialog('close');
+                         //jianwen, stay on this page. don't redirect
+                        //goToDetailPage();
+                    }
+                }               
+            });         
+      
+            $("#noPgmPopup").dialog({
+                autoOpen: false,
+                modal: true,
+                buttons : {
+                    'Ok': function(){
+                        $("#noPgmPopup").dialog('close');
+                        //jianwen, stay on this page. don't redirect
+                        //goToDetailPage();
+                    }
+                }               
+            });
+                   
+            $("#MaxMinPopup").dialog({
+                autoOpen: false,
+                modal: true,
+                buttons : {
+                    'Ok': function(){
+                        $("#MaxMinPopup").dialog('close');
+                        //jianwen, stay on this page. don't redirect
+                        //goToDetailPage();
+                    }
+                }               
+            });
+
+            $("#sepPgmPopup").dialog({        
+                autoOpen: false,
+                modal: true,
+                buttons : {
+                    'OK': function(){
+                        OppLineItemRemoteActions_PRM.executeOptoutFunc('{!$CurrentPage.parameters.oppid}',
+                            function(result,event){
+                                    $("#sepPgmPopup").dialog('close');
+                                    //$("#popupContent2").dialog('open');
+                                     //sunji03 - record type can be changed behind the scene, '{!$CurrentPage.parameters.recType}' can't get refreshed without re-loadnig the page, so get it real time.
+                                    OppLineItemRemoteActions_PRM.GetRecordType('{!$CurrentPage.parameters.oppid}',function(result,event){
+
+                                       if(result == 'New Opportunity'){
+                                        document.getElementById("Spinner").style.display = '';
+                                          //$("#popupContent2").dialog("open");
+                                          OppLineItemRemoteActions_PRM.updateRecordTypetoDealReg('{!$CurrentPage.parameters.oppid}',function(result,event){
+                                              if(result == 'true'){
+                                                   //Jianwen - changed the flow, submit directly. 
+                                                      //goToDetailPage();
+                                                      document.getElementById("Spinner").style.display = 'None';  
+                                                       $("#SubmitApprovalPopup").dialog("open");
+                                              }
+                                              else{
+                                                     console.debug('result in sepPgmPopup 2 :'+result);
+                                                     var errorDiv = '<div class=\'message errorM3\' role=\'alert\'> <table border=\'0\' cellpadding=\'0\' cellspacing=\'0\' class=\'messageTable\' style=\'padding:0px;margin:0px;\'>' + 
+                                                                    '<tbody> <tr valign=\'top\'> <td> <img alt=\'ERROR\' class=\'msgIcon\' src=\'/s.gif\' title=\'ERROR\'> </td> <td class=\'messageCell\'> <div class=\'messageText\'>' +
+                                                                    '<span style=\'color:#cc0000\'><h4>Errors</h4></span><br></div></td> </tr><tr><td></td> <td><span><ul style=\'padding-left:10px;padding-top:0px;margin:0px\'>' + 
+                                                                    '<li style=\'padding-top:5px\'>' + result +'</li> </ul> </span> </td> </tr> </tbody> </table> </div>';
+                                                     $("[id = 'opplipage:form1:ReturnErrors']").append(errorDiv);
+                                                  document.getElementById("Spinner").style.display = 'None';  
+                                              }                            
+                                          });
+                                     }
+                                    else  if(result == 'Deal Registration'){
+                                            //sunji03 - add this branch for opp already converted to "Deal Registration", after fixing some errors such as max/min/close date. Need re-submit.
+                                           document.getElementById("Spinner").style.display = 'None';  
+                                            $("#SubmitApprovalPopup").dialog("open");
+                                    }
+                                  });
+                                  /*else{ //sunji03, this logic is moved to backend, after submitting for approval, send this email 
+                                      OppLineItemRemoteActions_PRM.sendEmailForMultiplePrograms('{!$CurrentPage.parameters.oppid}',function(result,event){});
+                                      goToDetailPage();
+                                  }
+                                  */                                                               
+                            }                       
+                        );
+                    }, 
+                    'Cancel': function(){
+                        $("#sepPgmPopup").dialog('close');
+                        //jianwen, stay on this page. don't redirect
+                        //goToDetailPage();
+                    }
+                }              
+
+                           
+            });     
+
+        
+         $("#SubmitApprovalPopup").dialog({        
+                autoOpen: false,
+                modal: true,
+                buttons : {
+                    'OK': function(){
+                        document.getElementById("Spinner").style.display = '';
+                        OppLineItemRemoteActions_PRM.CheckMaxMinRuleAndSubmitForApproval('{!$CurrentPage.parameters.oppid}',
+                            function(result,event){
+                                    $("#SubmitApprovalPopup").dialog('close');
+                                     document.getElementById("Spinner").style.display = 'None';
+                                    //$("#popupContent2").dialog('open');
+                                    if(result.length == 0){
+                                        goToDetailPage();
+                                    }
+                                    else{
+                                           console.debug('result in SubmitApprovalPopup :'+result);
+                                          var errorDiv = '<div class=\'message errorM3\' role=\'alert\'> <table border=\'0\' cellpadding=\'0\' cellspacing=\'0\' class=\'messageTable\' style=\'padding:0px;margin:0px;\'>' + 
+                                                          '<tbody> <tr valign=\'top\'> <td> <img alt=\'ERROR\' class=\'msgIcon\' src=\'/s.gif\' title=\'ERROR\'> </td> <td class=\'messageCell\'> <div class=\'messageText\'>' +
+                                                          '<span style=\'color:#cc0000\'><h4>Errors</h4></span><br></div></td> </tr><tr><td></td> <td><span><ul style=\'padding-left:10px;padding-top:0px;margin:0px\'>' + 
+                                                          '<li style=\'padding-top:5px\'>' + result +'</li> </ul> </span> </td> </tr> </tbody> </table> </div>';
+                                           $("[id = 'opplipage:form1:ReturnErrors']").append(errorDiv);   
+                                    }                                                              
+                            }                       
+                        );
+                    }, 
+                    'Cancel': function(){
+                       $("#SubmitApprovalPopup").dialog('close');
+                    }
+                }              
+
+                           
+            });     
+
+            $("#NoProgramAndSubmitApprovalPopup").dialog({        
+                autoOpen: false,
+                modal: true,
+                buttons : {
+                    'OK': function(){
+                       document.getElementById("Spinner").style.display = '';
+                        OppLineItemRemoteActions_PRM.SubmitForApproval('{!$CurrentPage.parameters.oppid}',
+                            function(result,event){
+                                    $("#NoProgramAndSubmitApprovalPopup").dialog('close');
+                                    document.getElementById("Spinner").style.display = 'None';
+                                    //$("#popupContent2").dialog('open');
+                                    if(result.length == 0){
+                                        goToDetailPage();
+                                    }
+                                    else{
+                                           console.debug('result in SubmitApprovalPopup :'+result);
+                                          var errorDiv = '<div class=\'message errorM3\' role=\'alert\'> <table border=\'0\' cellpadding=\'0\' cellspacing=\'0\' class=\'messageTable\' style=\'padding:0px;margin:0px;\'>' + 
+                                                          '<tbody> <tr valign=\'top\'> <td> <img alt=\'ERROR\' class=\'msgIcon\' src=\'/s.gif\' title=\'ERROR\'> </td> <td class=\'messageCell\'> <div class=\'messageText\'>' +
+                                                          '<span style=\'color:#cc0000\'><h4>Errors</h4></span><br></div></td> </tr><tr><td></td> <td><span><ul style=\'padding-left:10px;padding-top:0px;margin:0px\'>' + 
+                                                          '<li style=\'padding-top:5px\'>' + result +'</li> </ul> </span> </td> </tr> </tbody> </table> </div>';
+                                           $("[id = 'opplipage:form1:ReturnErrors']").append(errorDiv); 
+                                    }                                                              
+                            }                       
+                        );
+                    }, 
+                    'Cancel': function(){
+                       $("#NoProgramAndSubmitApprovalPopup").dialog('close');
+                    }
+                }              
+
+                           
+            });     
+
+            /*
+             $("#popupContent2").dialog({       
+                autoOpen: false,
+                modal: true,
+                buttons : {
+                    'Yes': function(){  
+                        OppLineItemRemoteActions_PRM.updateRecordTypetoDealReg('{!$CurrentPage.parameters.oppid}',
+                            function(result,event){
+                                console.debug('res:'+result);
+                                    console.debug('event status:'+event.status); 
+                                    $("#popupContent2").dialog('close');
+                                    $("#popupContent3").dialog('open');    
+                            }
+                        );
+                    }, 
+                    'No': function(){
+                        $("#popupContent2").dialog('close');
+                        goToDetailPage();
+                    }
+                }
+            });
+            
+            $("#popupContent3").dialog({        
+                autoOpen: false,
+                modal: true,
+                buttons : {
+                    'Ok': function(){
+                        $("#popupContent3").dialog('close');
+                        goToDetailPage();
+                    }
+                }
+            }); */
+
+            $("#ResubmissionAlertPopup").dialog({        
+                autoOpen: false,
+                modal: true,
+                buttons : {
+                    'OK': function(){
+                      $("#ResubmissionAlertPopup").dialog('close');
+                    }, 
+                    'Cancel': function(){
+                       document.getElementById("Spinner").style.display = '';
+                        OppLineItemRemoteActions_PRM.NotChangeProductAndResubmitForApproval('{!$CurrentPage.parameters.oppid}',
+                            function(result,event){
+                                $("#ResubmissionAlertPopup").dialog('close');
+                                document.getElementById("Spinner").style.display = 'None';
+                                //$("#popupContent2").dialog('open');
+                                if(result == 'true'){
+                                    //Refresh the screen.
+                                    location.reload();
+                                }
+                                else{
+                                       console.debug('result in NotChangeProductAndResubmitForApproval :'+result);
+                                      var errorDiv = '<div class=\'message errorM3\' role=\'alert\'> <table border=\'0\' cellpadding=\'0\' cellspacing=\'0\' class=\'messageTable\' style=\'padding:0px;margin:0px;\'>' + 
+                                                      '<tbody> <tr valign=\'top\'> <td> <img alt=\'ERROR\' class=\'msgIcon\' src=\'/s.gif\' title=\'ERROR\'> </td> <td class=\'messageCell\'> <div class=\'messageText\'>' +
+                                                      '<span style=\'color:#cc0000\'><h4>Errors</h4></span><br></div></td> </tr><tr><td></td> <td><span><ul style=\'padding-left:10px;padding-top:0px;margin:0px\'>' + 
+                                                      '<li style=\'padding-top:5px\'>' + result +'</li> </ul> </span> </td> </tr> </tbody> </table> </div>';
+                                       $("[id = 'opplipage:form1:ReturnErrors']").append(errorDiv); 
+                                }                                                              
+                            }                       
+                        );
+                    }
+                }                         
+            });     
+
+
+           $("#CheckforUnsavedData").dialog({        
+                autoOpen: false,
+                modal: true,
+                buttons : {
+                    'Ok': function(){
+                        $("#CheckforUnsavedData").dialog('close');
+                    }
+                }
+            });            
+            
+        }); 
+        
+        //MANAR08 - popup logic ends
+
+    </script>
+
+    <apex:form id="form1" >
+     
+    <apex:sectionHeader subtitle="{!oppName}" title="Add/Edit Products" rendered="{!isRenewal}"/>
+    <apex:outputpanel rendered="{!isRenewal}">
+    <apex:outputLink value="/{!oppId}" >Return to Opportunity </apex:outputLink>
+  
+   
+        <apex:pageBlock id="pb1">
+        
+            <apex:pageMessages id="errorBlock"/> 
+           
+                        
+           <apex:pageBlockSection id="pbs1" title="Renewal Details">
+                <apex:inputField value="{!OpportunityLineItem.Term_Month__c }" id="newdealterm" required="true" />
+                <apex:inputField value="{!OpportunityLineItem.Original_CV__c}" id="origcv" />
+                <apex:inputField value="{!OpportunityLineItem.Original_Deal_Term_Months__c}" id="origdealterm" />
+                <!-- <apex:inputField value="{!OpportunityLineItem.Comfort_Term__c}" id="comfortterm" /> -->
+                <apex:inputField value="{!OpportunityLineItem.Original_Contract_IDs__c}" id="origcontractids"/>
+                <!-- <apex:inputField value="{!OpportunityLineItem.Renewal_Gap_Reason_Codes__c}" id="renewalgap"/> -->
+                <apex:inputField value="{!OpportunityLineItem.Renewal_Quota_CV__c}" id="renquota" />
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel for="renbustype" value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" />
+                    <apex:outputPanel StyleClass="requiredInput" layout="block">
+                    <div class="requiredBlock"></div>
+                    <apex:selectList value="{!bustypeval}" id="renbustype" size="1" required="true">   
+                        <apex:selectOptions value="{!selbustype}"/>
+                    </apex:selectList>
+                    </apex:outputPanel>
+                </apex:pageblocksectionitem>
+                <apex:inputField value="{!OpportunityLineItem.Quote_Number__c}" id="quoteno"/>
+                <apex:inputField value="{!OpportunityLineItem.Business_Partner_ID__c}" id="busspartner"/>
+                <apex:inputField value="{!OpportunityLineItem.Contract_Number__c}" id="contractno" />
+            </apex:pageBlockSection>
+            
+                <apex:pageBlockSection id="pbs3" title="Details" rendered="{!isRenewal}">
+                
+                <apex:pageBlockTable id="pbt2" value="{!lst_ren}" var="ren" rendered="{!isRenewal}">
+                    <apex:column headervalue="Product Family">
+                        <apex:selectList disabled="{!ren.isFamilyDisabled}" value="{!ren.strfamily}" id="ren_fam" size="1" onchange="getbu(this.value,'{!ren.position}');">   
+                            <apex:selectOptions value="{!selfamily}"/>
+                        </apex:selectList>
+                        <apex:actionFunction name="getbu" action="{!fetchrenewalbu}" rerender="pbt2">
+                            <apex:param name="familyvalue" value="" assignTo="{!renfamily}" />
+                            <apex:param name="positionvalue" value="" assignTo="{!renpos}" />
+                        </apex:actionFunction>
+                    </apex:column>
+                    <apex:column headervalue="Business Unit">
+                        <apex:selectList disabled="{!ren.isBUDisabled}" value="{!ren.strbu}" id="ren_bu" size="1" onchange="getprds(this.value,'{!ren.position}','{!ren.strfamily}');">   
+                            <apex:selectOptions value="{!ren.selrenbu}"/>
+                        </apex:selectList>
+                        <apex:actionFunction name="getprds" action="{!fetchproducts}" rerender="pbt2">
+                            <apex:param name="buvalue" value="" assignTo="{!bu_value}" />
+                            <apex:param name="positionvalue" value="" assignTo="{!pos}" />
+                            <apex:param name="familyvalue" value="" assignTo="{!prdfamily}" />
+                        </apex:actionFunction>
+                    </apex:column>
+                    <apex:column headervalue="Product">
+                        <apex:selectList disabled="{!ren.isPrdDisabled}" value="{!ren.strproduct}" id="ren_prd" size="1" >   
+                            <apex:selectOptions value="{!ren.selproduct}"/>
+                        </apex:selectList>
+                    </apex:column>
+                    
+                    <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}
+                        </apex:facet>
+                        <apex:inputField value="{!ren.oppli.UnitPrice}" id="ren_salesprice" />
+                    </apex:column>
+                    
+                    <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.Stretch__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!ren.oppli.Stretch__c}" id="ren_stretch" />
+                    </apex:column> 
+                    
+                    <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.Original_Expiration_Date__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!ren.oppli.Original_Expiration_Date__c}" id="ren_exp" />   
+                    </apex:column>
+                   <!-- <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.Original_Expiration_Quarter__c.label}
+                        </apex:facet>
+                        <apex:outputField value="{!ren.oppli.Original_Expiration_Quarter__c}" id="ren_exp_qtr" />
+                    </apex:column>
+                     <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.Original_Expiration_Year__c.label}
+                        </apex:facet>
+                        <apex:outputField value="{!ren.oppli.Original_Expiration_Year__c}" id="ren_exp_yr" />  
+                    </apex:column>-->
+                </apex:pageBlockTable><br/>
+                <apex:commandbutton value="Add More" action="{!addmore_ren}" rerender="pbt2" rendered="{!isRenewal}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="top" >
+             <apex:actionStatus id="myStatus">
+                          <apex:facet name="start">
+                               <apex:outputPanel >
+                                                                          
+                                     <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 20px; position: absolute; left:50%;top:50%;"/></div>
+                                 </apex:outputPanel>
+                             </apex:facet>
+                            <apex:facet name="stop"> 
+                            <apex:outputPanel >
+                            <apex:commandButton value="Save" action="{!saveproducts}" />
+                            <apex:commandButton value="Cancel" action="{!cancel}" />
+                            </apex:outputPanel>
+                </apex:facet>
+             
+            </apex:actionStatus>   
+            </apex:pageBlockButtons>
+            
+        </apex:pageBlock>
+  </apex:outputpanel>
+
+  <apex:outputPanel rendered="{!isProduct}" >
+   <apex:pageMessages id="ReturnErrors"/>
+     
+<table style="height=200%;width=100%;" >
+<tr>
+<td  width="90%"><font size="4"><b>Find Products</b></font></td>
+<td  width="5%"><apex:commandbutton value="Save & Submit for Approval"  rendered="{!ShowSubmitForApprovalButton == true}" Style="align:right;width:200px;height:25px;font-size:13px;" status="msg_refresh1" onComplete="checkBeforeReturn();return false;" /></td>
+<td  width="5%"><apex:commandbutton id="cancelbtn" value="Back" title="{!BackButtonHelpText}" Style="align:right;width:60px;height:25px;font-size:13px;" action="{!cancel}" /></td>
+</tr>
+</table>
+ <apex:pageBlock >
+  
+      <apex:actionStatus id="msg_refresh1" stopText="">
+                 <apex:facet name="start">
+                      <apex:outputPanel >
+                            <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 4;"><apex:image value="/img/loading32.gif" style="height: 40px; position: relative; left:750px;top:250px; z-index: 4;"/></div>
+                        </apex:outputPanel>
+                    </apex:facet>
+       </apex:actionStatus>
+          
+       <apex:outputPanel >
+    
+            <table title="Find Products">
+                    
+            <tr>
+                <div>
+                     <td colspan="3"></td>
+                    <td><div style="position:relative;left:30px;"><apex:outputLabel id="productName" value="Enter Product detail"/></div></td>
+                    <td><div style="position:relative;left:40px;"> 
+    
+                     <apex:outputPanel >
+                         <apex:inputText id="ProductStr" value="{!searchString}" disabled="{!disableTypeAhead}" >
+                            <apex:actionsupport event="onmouseout" action="{!SetBU}" rerender="BU,spg" status="msg_refresh1"/>                         
+                         </apex:inputText>
+                         <apex:inputHidden id="productId" value="{!selectedproduct}" />
+                     </apex:outputPanel>
+           
+                     <apex:actionFunction name="refreshSelectedProducts" action="{!checkBeforeRefreshProductTable}" rerender="jsAlert,popup,script,SearchResultsSection,AddButton,BU" >
+            
+                     </apex:actionFunction> </div>
+                    </td>
+                </div>
+        <td>
+                 <input type="hidden" value="{!productid}" Name="productId" id="productId" />     
+                    <input type="hidden" value="{!productName}" Name="productName" id="productName" />    </td> 
+               
+                    <td><div style="position:relative;left:90px;"><apex:outputLabel value="Business Unit"/></div></td>
+                    
+                    <td><apex:actionregion ><div style="position:relative;left:100px;"><apex:outputpanel id="BUpanel">
+                    <apex:selectList id="BU" Style="width : 200px" value="{!selectedBU}" size="1" disabled="{!disableBU}" >
+                            <apex:selectOptions value="{!BUs}"/>
+                            <apex:actionsupport event="onchange" action="{!getproductgroup}" rerender="script,spg,ProductStr,searchButton" status="msg_refresh1">  
+                            </apex:actionsupport>
+                        </apex:selectList></apex:outputpanel></div></apex:actionregion></td>
+                    
+                    <td><div style="position:relative;left:150px;"><apex:outputLabel value="Product" /></div></td>
+                    <td><div style="position:relative;left:165px;">
+                    <apex:selectList Style="width :200px" size="1" value="{!selectedPG}" id="spg" disabled="{!PGs.size<=0}">
+                            <apex:selectOptions value="{!PGs}"/>
+                            <apex:actionSupport event="onchange" action="{!checkBeforeSearchByProductGroup}" rerender="jsAlert,popup,script,spg,BU,ProductStr,SearchResultsSection,AddButton,SearchErrors,searchButton" status="msg_refresh1" />
+                    </apex:selectList>
+                        </div></td>
+              
+              </tr>
+              
+              </table>
+     
+            <apex:outputPanel id="script">
+            <script type="text/javascript">
+                
+                           
+                var PLACEHOLDER = 'Enter Product detail'; 
+                var productList;
+                var queryTerm;
+        
+                
+                $('[id$=ProductStr]').autocomplete({
+                    
+                    minLength: 2,
+                    
+                    source: function(request, response) {
+                                queryTerm = request.term;
+                                OppLineItemcontroller_PRM.findSearchResult(request.term,'{!$CurrentPage.parameters.oppid}', function(result, event){
+                                    if(event.type == 'exception') {
+                                          alert(event.message);
+                                    } else {
+                                         productList = result;
+                                         response(productList);
+                                    }
+                                });
+                           },
+                    focus: function( event, ui ) {
+                            $('[id$=ProductStr]').val( ui.item.Name );
+                            return false;
+                            },
+                    select: function( event, ui ) {
+        
+        
+                                $('[id$=ProductStr]').val( ui.item.Name );
+                                $('[id$=productId]').val( ui.item.Id );
+        
+                                refreshSelectedProducts();
+                                
+                                return false;
+                            },
+                 })
+                 .data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                    var entry = "<a>" + item.Name;
+                   
+                    entry = entry + "</a>";
+                    entry = entry.replace(queryTerm, "<b>" + queryTerm + "</b>");
+                    return $( "<li></li>" )
+                        .data( "item.autocomplete", item )
+                        .append( entry )
+                        .appendTo( ul );
+                };
+                    
+                // Add or remove placeholder values
+                $('[id$=ProductStr]').val(PLACEHOLDER);
+                $('[id$=ProductStr]').on("focus",  function(event){
+                    $tgt = $(event.target);
+                    if($tgt.val() === PLACEHOLDER ){
+                        $tgt.val('');
+                        $tgt.removeClass('placeHolder');
+                    }
+                });
+                $('[id$=ProductStr]').on( "blur",  function(event){
+                    $tgt = $(event.target);
+                    if($tgt.val() === '' ){
+                        $tgt.val(PLACEHOLDER);
+                        $tgt.addClass('placeHolder');
+                    }
+                }); 
+                
+                
+                
+                                    
+        </script>    
+        </apex:outputPanel>         
+       </apex:outputpanel>  
+    
+    <apex:pageMessages id="SearchErrors"/>  
+    
+         <apex:pageBlockButtons location="bottom">
+        
+          <apex:outputPanel id="SearchButtons">
+             <apex:commandbutton value="Search"  Style="width:45px;" action="{!checkBeforeSearch}" id="searchButton"  status="msg_refresh1" reRender="jsAlert,popup,SearchResultsSection,AddButton,SearchResults" disabled="{!disableSearch}" onClick="HideErrorForm();" />
+
+             <apex:commandbutton value="Clear" Style="width:45px;" action="{!checkBeforeClear}" status="msg_refresh1" rerender="selectAll,script,SearchResultsSection,AddButton,AddErrors,UpdateErrors,popup,searchButton,ProductStr,BU,spg,results" onClick="HideErrorForm();"/>
+               <apex:actionFunction name="ProdSearch" action="{!Searchproducts}" rerender="results"/> 
+          </apex:outputPanel>   
+             
+         </apex:pageBlockButtons> 
+       
+    </apex:pageBlock>
+    
+        <apex:pageMessages id="AddErrors"/>
+        
+        <apex:outputPanel id="SearchResultsSection">
+        
+        <apex:pageBlock id="SearchResults" title="Search Results" rendered="{!searchResults.size > 0}">
+        
+         <apex:pageBlockButtons location="top">
+            <apex:outputPanel >
+            <apex:commandButton value="Add Product"  id="AddButton" Style="width:90px;" onclick="jsAdd();"  status="msg_refresh1" reRender="jsAlert, selectedProductSection,SearchResultsSection,AddButton,selectedProducts,SearchResults,AddErrors,selectAll" rendered="{!IF($Label.AddProductButton == 'First',true,false)}" />
+            <apex:commandButton value="Add Product2"  id="AddButton2" Style="width:90px;" action="{!addProduct2}"  status="msg_refresh1" reRender="AddErrors,selectedProductSection"  oncomplete="AddEligibleStatus();" rendered="{!IF($Label.AddProductButton == 'Second',true,false)}"/>  
+             </apex:outputPanel>
+        </apex:pageBlockButtons>
+        
+        
+     
+        
+        
+        
+            <apex:pageblocktable value="{!searchResults}" var="Product" id="results">
+            
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:inputCheckbox value="{!mainSelect}" onclick="selectAllProducts(this,'chk1')" id="selectAll" />
+                     </apex:facet>
+                        <apex:inputCheckbox value="{!Product.Selected}" id="chk1" />
+                     </apex:column>
+                        
+                <apex:column headerValue="Product Name"  value="{!Product.productName}">
+                    
+                </apex:column>
+                
+                <apex:column headerValue="Business Unit" value="{!Product.businessUnit}">
+                </apex:column>
+            
+                <apex:column headerValue="Business Type" >
+                 <apex:outputPanel styleClass="requiredInput" layout="block" rendered="{!Product.businessUnit!='Mainframe Capacity'}">
+                 <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                    <apex:selectList value="{!Product.businessType}" id="bustype1" size="1" required="true">   
+                        <apex:selectOptions value="{!selbustype}"/>
+                    </apex:selectList>
+                </apex:outputPanel>
+                <apex:outputText value="{!Product.businessType}" rendered="{!Product.businessUnit=='Mainframe Capacity'}"/>
+                </apex:column>
+            
+                <apex:column headerValue="Sales Price">
+                 <apex:outputPanel styleClass="requiredInput" layout="block" >
+                 <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputfield value="{!Product.oppline.UnitPrice}"   />
+                 </apex:outputPanel>
+                                 
+                </apex:column>
+               
+                 <apex:column headerValue="Term (Month)">
+                  <apex:outputPanel styleClass="requiredInput" layout="block" >
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                
+                        <apex:inputfield value="{!Product.oppline.Term_Month__c }"  />
+                  </apex:outputPanel>
+                 
+                </apex:column>
+                
+            </apex:pageblocktable>
+          </apex:pageBlock>
+          </apex:outputPanel>
+          <apex:actionFunction name="overideCall" action="{!resetIsOverrideChecked}" status="myStatus" rerender="selectedProducts">
+                <apex:param name="positionvalue" value="" assignTo="{!pos}" />
+            </apex:actionFunction>
+ <apex:pageMessages id="UpdateErrors"/>
+    
+   <apex:outputPanel id="selectedProductSection">
+    
+        <apex:pageBlock title="Selected Products" id="selectedProducts" rendered="{!selectedProducts.size>0}">
+             <!-- SAMTU01 US406520-->
+            <apex:outputPanel id="error">
+                <apex:pageMessages /> 
+            </apex:outputPanel>
+          <!-- SAMTU01 US406520 END-->
+        
+          <apex:pageBlockButtons location="top" id="upid">
+              
+        
+            <apex:commandButton value="Update Product" Style="width:90px;" action="{!saveDeal}"  status="msg_refresh1" reRender="selectedProducts,SearchResults,UpdateErrors" onClick="HideErrorForm();"/>
+            
+        </apex:pageBlockButtons>
+         
+        <div style="overflow: scroll;  height: 210px;"> 
+             <apex:pageblocktable value="{!selectedProducts}" var="Product" id="pbt1" ><!-- Modified by SAMTU01 US406520 (Added id to rerender the pageblock)-->
+                 
+           
+                <apex:column >
+                   <apex:commandLink value="Del" action="{!checkBeforeDelete}" reRender="delpopup" status="msg_refresh1">
+                    <apex:param name="deletedProduct" value="{!Product.productName}" />
+                    
+                   </apex:commandLink>
+                </apex:column>
+                        
+                <apex:column headerValue="Product Name"  value="{!Product.productName}">
+                </apex:column>
+                
+                <apex:column headerValue="Business Unit" value="{!Product.businessUnit}">
+                </apex:column>
+                <apex:column headervalue="License Type" rendered="{!theUserType!='PowerPartner'}">
+                        <apex:inputField value="{!Product.oppline.License__c}" rendered="{!Product.oppline.Override_Fees__c}" id="prd_LicenseFee"/>
+                        <apex:inputField onchange="calculatemonthsbtwn('{!Product.position}')" value="{!Product.oppline.License__c}" rendered="{!!Product.oppline.Override_Fees__c}" id="prd_LicenseFee1"/>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_LicenseFee}');
+                        inputElem.disabled=true;
+                        </script> 
+                    </apex:column>
+            
+                <apex:column headerValue="Business Type" >
+                  <apex:outputPanel styleClass="requiredInput" layout="block" rendered="{!Product.businessUnit!='Mainframe Capacity'}">
+                  <apex:outputPanel styleClass="requiredBlock" layout="block"/>                
+                  <apex:selectList value="{!Product.BusinessType}" id="bustype2" size="1" required="true">   
+                        <apex:selectOptions value="{!selbustype}"/>
+                        <apex:actionSupport event="onchange" action="{!refreshonc}" rerender="selectedProducts" status="msg_refresh1">
+                
+                      </apex:actionSupport>
+                  </apex:selectList>
+                  </apex:outputPanel> 
+                  <apex:outputText value="{!Product.businessType}" rendered="{!Product.businessUnit=='Mainframe Capacity'}"/> 
+                </apex:column>
+                 <!-- SAMTU01 - US417414 -->
+                 <apex:column headervalue="License Classification" rendered="{! If((((Product.oppline.License__c !='Ratable') && Product.businessUnit == 'Mainframe') || Product.businessUnit != 'Mainframe') && theUserType!='PowerPartner',true,false)}">
+                    <apex:selectList value="{!Product.strlicenseclassification}" id="prd_License_Classification__c" size="1"  >   
+                            <apex:selectOptions value="{!LicenseClassification}"/>
+                        </apex:selectList>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_License_Classification__c}');
+                        inputElem.disabled=true;
+                        </script>  
+            
+                 </apex:column>
+                 <apex:column headervalue="License Classification" rendered="{! If(Product.oppline.License__c =='Ratable' && Product.businessUnit == 'Mainframe' && theUserType!='PowerPartner',true,false)}">
+                    <apex:selectList value="{!Product.strlicenseclassification}" id="prd_License_Classificationoverride" size="1"  >   
+                            <apex:selectOptions value="{!LicenseClassificationOverride}"/>
+                        </apex:selectList>
+                       
+                 </apex:column>
+                 <!-- SAMTU01 - US417414 END-->
+            
+                <apex:column headerValue="Sales Price">
+                <apex:outputPanel styleClass="requiredInput" layout="block">
+                 <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputField value="{!Product.oppline.UnitPrice}" rendered="{!Product.oppline.Override_Fees__c}" id="prd_unitprice"/>
+                        <apex:inputfield value="{!Product.oppline.UnitPrice}"   onchange="calculateUFLicenseFee_JS('{!Product.position}','{!Product.oppline.Override_Fees__c}')" rendered="{!!Product.oppline.Override_Fees__c}"> <!--Added onChange for AR 3798 -->
+                        <apex:actionSupport event="onmouseout" action="{!refreshonc}" rerender="upid" status="msg_refresh1">
+                
+                        </apex:actionSupport></apex:inputfield>
+                 </apex:outputPanel>
+                <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_unitprice}');
+                        inputElem.disabled=true;
+                        </script>
+                </apex:column>
+                
+                <apex:column rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Stretch__c.label}
+                        </apex:facet>
+                    <!-- SAMTU01 US406520-->
+                        <apex:inputField value="{!Product.oppline.Stretch__c}" id="prd_stretch" rendered="{!Product.oppline.Override_Fees__c}"/>
+                    
+                   <apex:inputfield value="{!Product.oppline.Stretch__c}"   onchange="calculateUFLicenseFee_JS('{!Product.position}','{!Product.oppline.Override_Fees__c}')" rendered="{!!Product.oppline.Override_Fees__c}" />
+                     <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_stretch}');
+                        inputElem.disabled=true;
+                        </script>
+                    <!-- SAMTU01 US406520 END-->
+                 </apex:column>
+                    <apex:column rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Start_Date__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!Product.oppline.Start_Date__c}" onchange="calculatemonthsbtwn('{!Product.position}')" id="prd_startdate" />
+                        
+                    </apex:column>
+                    
+                    <apex:column rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.End_Date__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!Product.oppline.End_Date__c}" onchange="calculatemonthsbtwn('{!Product.position}')" id="prd_enddate" />
+                       
+                    </apex:column>
+            
+                <apex:column headerValue="Term (Month)">
+                <apex:outputPanel styleClass="requiredInput" layout="block" rendered="{!theUserType=='PowerPartner'}">
+                 <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputfield value="{!Product.oppline.Term_Month__c }"  onchange="calculateUFLicenseFee_JS('{!Product.position}','{!Product.oppline.Override_Fees__c}')"><!--Added onChange for AR 3798 -->
+                         <!--<apex:actionSupport event="onmouseout" action="{!refreshonc}" rerender="selectedProducts" status="msg_refresh1">
+                
+                        </apex:actionSupport>--></apex:inputfield>
+                        
+                 </apex:outputPanel>
+                 <apex:outputField value="{!Product.oppline.Term_Month__c }" rendered="{!theUserType!='PowerPartner'}"/>
+                </apex:column> 
+                 
+                 <!--SAMTU01 US406520-->
+                 
+                 <apex:column rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Stretch_Duration__c.label}
+                        </apex:facet>
+                     <apex:inputField value="{!Product.oppline.Stretch_Duration__c}" onchange="calculatemonthsbtwn('{!Product.position}')" id="prd_stretchduration" />
+                    
+                    </apex:column>
+                
+                <!--SAMTU01 US406520 end-->
+                <apex:column rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.UF_License_Fee__c.label}
+                        </apex:facet> 
+                        <apex:inputField value="{!Product.oppline.UF_License_Fee__c}" id="prd_uflic1" rendered="{!Product.oppline.Override_Fees__c}" onchange="CalcSalesPrice('{!Product.position}');"/>
+                        <apex:inputField value="{!Product.oppline.UF_License_Fee__c}" id="prd_uflic" rendered="{!!Product.oppline.Override_Fees__c}"/>  
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_uflic}');
+                        inputElem.disabled=true;
+                        </script>                                                
+                    </apex:column>
+                <apex:column rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Total_Maintenance__c.label}
+                        </apex:facet> 
+                        <apex:inputField value="{!Product.oppline.Total_Maintenance__c}" id="skg_totmain1" rendered="{!Product.oppline.Override_Fees__c}" onchange="CalcSalesPrice('{!Product.position}');"/>
+                        <apex:inputField value="{!Product.oppline.Total_Maintenance__c}" id="skg_totmain" rendered="{!!Product.oppline.Override_Fees__c}"/>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.skg_totmain}');
+                        inputElem.disabled=true;
+                        </script>                                               
+                    </apex:column>
+                 <!-- SAMTU01 US406520 -->
+                
+                  <apex:column rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Stretch_License_Fee__c.label}
+                        </apex:facet> 
+                        <apex:inputField value="{!Product.oppline.Stretch_License_Fee__c}" id="prd_stretchlic1" rendered="{!Product.oppline.Override_Fees__c}" onchange="CalcStretch('{!Product.position}');"/>
+                        <apex:inputField value="{!Product.oppline.Stretch_License_Fee__c}" id="prd_stretchlic" rendered="{!!Product.oppline.Override_Fees__c}"/>  
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_stretchlic}');
+                        inputElem.disabled=true;
+                        </script>                                                
+                    </apex:column>
+                <apex:column rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Stretch_Total_Maintenance__c.label}
+                        </apex:facet> 
+                        <apex:inputField value="{!Product.oppline.Stretch_Total_Maintenance__c}" id="skg_stretchtotmain1" rendered="{!Product.oppline.Override_Fees__c}" onchange="CalcStretch('{!Product.position}');"/>
+                        <apex:inputField value="{!Product.oppline.Stretch_Total_Maintenance__c}" id="skg_stretchtotmain" rendered="{!!Product.oppline.Override_Fees__c}"/>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.skg_stretchtotmain}');
+                        inputElem.disabled=true;
+                        </script>                                               
+                    </apex:column>
+                 <!-- SAMTU01 US406520 end -->
+                   
+                 <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                 <apex:column style="text-align:right;" rendered="{!theUserType!='PowerPartner'}">
+                     <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Corporate_ARR__c.label}
+                        </apex:facet>
+                        <apex:outputtext value="{0, number, ###,###,###,##0.00}" rendered="{! NOT(isRenewal)}">
+                            <apex:param value="{!Product.oppline.Corporate_ARR__c}" />
+                        </apex:outputtext>  
+                    </apex:column>
+                    <apex:column style="text-align:right;" rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Stretch_Corporate_ARR__c.label}
+                        </apex:facet>
+                        <apex:outputtext value="{0, number, ###,###,###,##0.00}" rendered="{! NOT(isRenewal)}" >
+                            <apex:param value="{!Product.oppline.Stretch_Corporate_ARR__c}" />
+                        </apex:outputtext>
+                    </apex:column>
+                    <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                 
+                    <apex:column rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Override_Fees__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!Product.oppline.Override_Fees__c}" id="prd_overrideFee" rendered="{! If(Product.oppline.id != null && (Product.oppline.License__c =='Subscription'||Product.oppline.License__c =='SAAS' ) ,true,false) }" />
+                        <apex:inputField value="{!Product.oppline.Override_Fees__c}"  rendered="{! If(Product.oppline.id != null && (Product.oppline.License__c =='Upfront'||Product.oppline.License__c =='Ratable')  ,true,false) }" onchange="overideCall('{!Product.position}');"/>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_overrideFee}');
+                        inputElem.disabled=true;
+                        </script>                   
+                    </apex:column>
+                    <!-- added by danva01 for Release4  -->
+                    <apex:column rendered="{!theUserType!='PowerPartner'}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Partner_Added__c.label}
+                        </apex:facet>                         
+                        <apex:OutputField value="{!Product.oppline.Partner_Added__c}" id="part_partner_Added" />
+                    </apex:column>
+                <!-- <apex:column headerValue="Deal Program Status">
+                <apex:outputfield value="{!Product.oppline.Deal_Program_Eligibility_Status__c}"  />
+               </apex:column> 
+                 <apex:column headerValue="Deal Program ID">
+                <apex:outputfield value="{!Product.oppline.Deal_Program_ID__c}"  />
+               </apex:column>
+               
+               <apex:column headerValue="{!$Label.DRDeal_ProgramName}">
+                <apex:outputfield value="{!Product.oppline.Deal_Program_Name__c}"  />
+               </apex:column>-->
+                
+                <!--US480649  - Deal Registration portion should not run any approval when source is Lead-->
+                <apex:column rendered="{!theUserType=='PowerPartner' && !SourceLead}">
+                 <!--US480649-->
+                    <apex:facet name="header">
+                    <apex:outputPanel >
+                        <apex:outputText value="Deal Registration? "/>
+                        <img src="/s.gif" class="helpOrb" title="{!$ObjectType.OpportunityLineItem.Fields.Deal_Registration__c.inlineHelpText}" />
+                    </apex:outputPanel>
+                    </apex:facet>
+ 
+                <apex:inputfield value="{!Product.oppline.Deal_Registration__c}"   rendered="{!OR(Product.oppline.Deal_Program_Eligibility_Status__c=='Eligible',AND(Product.oppline.Deal_Program_Eligibility_Status__c=='Opt Out',Product.oppline.Deal_Program_Name__c==dealprogramName))}">
+                <apex:actionSupport event="onchange" action="{!dealEligibleStatusChange}" rerender="selectedProducts" status="msg_refresh1">
+                
+                </apex:actionSupport></apex:inputfield>
+                <apex:outputfield value="{!Product.oppline.Deal_Registration__c}"  rendered="{!AND(Product.oppline.Deal_Program_Eligibility_Status__c!='Eligible',OR(Product.oppline.Deal_Program_Name__c!=dealprogramName,Product.oppline.Deal_Program_Name__c==null))}"/>
+             
+               </apex:column>
+               <!-- US480649  - Deal Registration portion should not run any approval when source is Lead-->
+               <apex:column rendered="{!theUserType!='PowerPartner' && !SourceLead}">
+               <!-- US480649  - Deal Registration portion should not run any approval when source is Lead -->
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Deal_Registration__c.label}
+                        </apex:facet>
+                        <apex:outputField value="{!Product.oppline.Deal_Registration__c}"  />
+                    </apex:column>
+                    
+                    <apex:column rendered="{!rejectedbyca}">
+                <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.Fields.RejectedByCA__c.Label}
+                        </apex:facet>
+                <apex:outputfield value="{!Product.oppline.RejectedByCA__c}"  />
+               </apex:column>
+                
+            </apex:pageblocktable>
+        </div>    
+        </apex:pageBlock>
+        </apex:outputPanel>
+        
+         
+</apex:outputPanel>
+       
+       <apex:outputPanel id="popup" >
+        <apex:outputPanel styleClass="customPopup1" rendered="{!notsaved}">
+            <apex:outputPanel styleClass="customPopup" layout="block" rendered="{!notsaved}" >
+            <br/><br/>
+            <center> 
+            <b><h1>{!$Label.DRProductSelection}</h1></b><br/><br/><br/><br/>
+                    <apex:commandButton value="Yes" action="{!continueClear}" rerender="popup,selectAll,script,SearchResultsSection,AddButton,AddErrors,UpdateErrors,searchButton,ProductStr,BU,spg,results" rendered="{!clearFlag}"/>
+                    <apex:commandButton value="Yes" action="{!Searchproducts}"  rerender="popup,SearchResultsSection,AddButton,SearchResults,selectAll" rendered="{!SearchBUFlag}"/>
+                    <apex:commandButton value="Yes" action="{!refreshProductTable}"  rerender="popup,script,BU,SearchResultsSection,AddButton,SearchResults,selectAll" rendered="{!SearchTypeAheadFlag}"/>
+                    <apex:commandButton value="Yes" action="{!searchByProductGroup}"  rerender="popup,script,spg,BU,ProductStr,SearchErrors,searchButtonpopup,SearchResultsSection,AddButton,SearchResults,selectAll" rendered="{!SearchPGFlag}"/>&nbsp;&nbsp;&nbsp;
+                    <apex:commandButton value="Cancel" action="{!closePopup}"  rerender="popup"/>
+                    </center> 
+            </apex:outputPanel> 
+        </apex:outputPanel> 
+   </apex:outputPanel> 
+   <apex:outputPanel id="jsAlert">
+       <script>
+        var UnsaveResults='{!searchResults}';
+        console.debug('Hi'); 
+        console.debug(UnsaveResults);
+        window.onbeforeunload = function(){
+            var countofUnsave='{!searchResults.size}';
+            var countofunsaveInt = parseInt(countofUnsave);
+            console.debug('saikumar');
+            console.debug(countofunsaveInt);
+            //console.debug(contactEmail );
+            if(countofunsaveInt > 0){
+            return 'Are you sure you want to leave?';
+            }
+          
+        };
+       </script>
+   </apex:outputPanel>
+   <apex:outputPanel id="ConfirmResubmissionSection">
+        <script type="text/javascript">
+        function ConfirmResubmission(){
+            $(".ui-dialog-titlebar").hide(); 
+             console.debug('in ConfirmResubmissionSection'); 
+             OppLineItemRemoteActions_PRM.IsResubmissionPreWarningNeeded('{!$CurrentPage.parameters.oppid}',function(result,event){
+               console.debug('result is ' + result); 
+                  if(result == 'true'){
+                      $("#ResubmissionAlertPopup").dialog("open");
+                  }
+            }); 
+        }
+    </script>  
+   
+   </apex:outputPanel>
+
+     <apex:outputPanel id="delpopup" >
+        <apex:outputPanel styleClass="customPopup1" rendered="{!deleteFlag}">
+            <apex:outputPanel styleClass="customPopup" layout="block"  rendered="{!deleteFlag}">
+            <br/><br/>
+            <center> 
+            <b><h1>{!$Label.DRDeleteproduct}                  
+             </h1></b><br/><br/><br/><br/>
+                    <apex:commandButton value="Delete" action="{!deleteProducts}"  rerender="delpopup,selectedProductSection,selectedProducts,UpdateErrors" status="msg_refresh1"/>
+                    <apex:commandButton value="Cancel" action="{!closePopup}"  rerender="delpopup"/>
+                    </center> 
+            
+            </apex:outputPanel> 
+        </apex:outputPanel> 
+    </apex:outputPanel>  
+    
+        <!-- All pop up contents -->
+        <apex:actionFunction name="AddProductFunction" onComplete="ConfirmResubmission();" action="{!addAndStay}" status="msg_refresh1"  reRender="jsAlert,selectedProductSection,SearchResultsSection,AddButton,selectedProducts,SearchResults,AddErrors,selectAll" />
+       <!-- <apex:actionFunction action="{!redirectToDetailPage}" name="goToDetailPage" /> -->
+<apex:actionFunction action="{!redirectToDetailPage}" name="goToDetailPage" >
+    <apex:param name="OppID" value="'{!$CurrentPage.parameters.oppid}'" />
+     
+ </apex:actionFunction>
+        
+        <apex:actionFunction name="AddEligibleStatus" action="{!progForEachProdCall}" rerender="selectedProductSection,SearchResultsSection,AddButton,selectedProducts,SearchResults,selectAll" status="msg_refresh1"/>
+        <apex:actionFunction action="{!checkBeforeReturn}" name="CheckandReturn" onComplete="checkTest();" rerender="updateCheck">
+            <apex:param name="unSavedData" assignTo="{!unSavedData}" value="" />
+        </apex:actionFunction>
+        <apex:actionFunction name="calculateUFLicenseFee_Fn" action="{!calculateUFLicenseFeeN}" status="msg_refresh1" rerender="pbt1,error">
+                            <apex:param name="position" value="" assignTo="{!pos}" />
+        </apex:actionFunction>
+        <!-- SAMTU01 US406520  -->
+        <apex:actionFunction name="CalcStretch_Fn" action="{!calculateStretch}" status="msg_refresh1" rerender="pbt1,error">
+                            <apex:param name="position" value="" assignTo="{!pos}" />
+        </apex:actionFunction>
+        <!-- SAMTU01 US406520 end-->
+        <apex:actionFunction name="calculatemonthsbtwn_action" action="{!getMonthsBetween}" status="msg_refresh1" rerender="pbt1,error">
+                <apex:param name="position" value="" assignTo="{!pos}" />
+            </apex:actionFunction>
+        <apex:outputPanel id="updateCheck">
+            <script type="text/javascript">
+               function checkTest(){
+                   // alert('HI');
+                  if('{!unSavedData}' == 'true'){
+                     
+                     $("#CheckforUnsavedData").dialog("open");
+                  }
+                  else{
+                      // alert('isPerOpp:'+'{!isPerOpp}' + 'approvalStatus:'+'{!approvalStatus}'+ '  EnableReSubmit  '+'{!EnableReSubmit}'+'  DealApprovedOnce '+'{!DealApprovedOnce}');
+                     if( (!('{!isPerOpp}' == 'true' || '{!approvalStatus}' == 'true')) || ('{!EnableReSubmit}' == 'true' && '{!DealApprovedOnce}' == 'true' && !('{!isPerOpp}' == 'true')
+                      ) ){
+                         // alert('HI 2');
+                       openPopUp();
+                    }else{
+                        // alert('HI 3');
+                        goToDetailPage();
+                    }
+                  }               
+               }            
+            </script>
+        </apex:outputPanel>
+        
+        
+        <div id="noPgmPopup" style="display: none">
+            <p> {!$Label.DRNodealregprograms1} </p>
+            <p> {!$Label.DRNodealregprograms2} </p>
+            <p> {!$Label.DRNodealregprograms3} </p>
+        </div>    
+        <div id="sepPgmPopup" style="display: none">
+            <p> {!$Label.DRDifferentdealregprogram} </p>
+            <div id="sepPgmList"></div>
+        </div>
+          <div id="SubmitApprovalPopup" style="display: none">
+            <p> You are about to submit for Approval. Once you submit this record for approval, you might not be able to edit it or recall it from the approval process depending on your settings. Continue?</p>
+            
+        </div>
+
+         <div id="ResubmissionAlertPopup" style="display: none">
+            <p>{!$Label.DealRegResubmitWarning} </p>
+            
+        </div>
+
+         <div id="NoProgramAndSubmitApprovalPopup" style="display: none">
+            <p> {!$Label.DRNodealregprograms1} </p>
+            <p> {!$Label.DRNodealregprograms2} </p>
+            <p> {!$Label.DRNodealregprograms3} </p>  
+        </div>
+         <div id="MaxMinPopup" style="display: none">
+            <p> {!$Label.MinMaxErrorNotification} </p>
+
+        </div>  
+        <!-- 
+        <div id="popupContent2">
+            <p> {!$Label.DRRegisterThisAsDeal} </p>
+        </div>
+        <div id="popupContent3">
+            <p> {!$Label.DRdealsubmitforapproval}</p>
+        </div> -->
+         <div id="CheckforUnsavedData" style="display: none">
+            <p> {!$Label.DRSaveAlert}</p>
+            <p> {!$Label.DRSaveAlert2}</p>
+        </div>        
+       <div id = "Spinner" style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 4;Display:none"><apex:image value="/img/loading32.gif" style="height: 40px; position: relative; left:750px;top:250px; z-index: 4;"/></div>
+
+    </apex:form>
+    
+
+</apex:page>

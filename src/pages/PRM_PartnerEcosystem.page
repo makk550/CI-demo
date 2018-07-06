@@ -1,0 +1,101 @@
+<apex:page standardController="Product_Alignment__c" extensions="PRM_PartnerEcosystem" cache="true" contentType="application/vnd.ms-excel#PatnersEcosystemReport.xls" showHeader="false">
+
+<table>
+<tr>
+<td><B>Patners Ecosystem Report</B></td>
+</tr>
+<tr>
+<td></td>
+</tr>
+<tr>
+    <td><B>Partner Name</B></td>
+    <td align="center"><B>CA Products</B></td>
+    <td align="center"><B>Mainframe</B></td>
+    <td align="center"><B>Security</B></td>
+    <td align="center"><B>Virtualization &amp; Automation</B></td>
+    <td align="center"><B>Cloud</B></td>
+    <td align="center"><B>Service Assurance</B></td>
+    <td align="center"><B>Service Portfolio Management</B></td>
+    <td align="center"><B>Nimsoft</B></td>
+    <td align="center"><B>SaaS</B></td>
+    <td align="center"><B>Storage</B></td>
+    <td align="center"><B>DLA</B></td>
+    <td align="center"><B>Inbound OEM</B></td>
+    <td align="center"><B>Outbound OEM</B></td>
+    <td align="center"><B>Inbound Resale</B></td>
+    <td align="center"><B>Outbound Resale</B></td>
+    <td align="center"><B>CA Tech Partner Program</B></td>
+
+    <td align="center"><B>Partner's Tech Partner Program</B></td>
+    <td align="center"><B>Alliance Agreement</B></td>
+    <td align="center"><B>Marketing Agreement</B></td>
+    <td align="center"><B>NDA</B></td>
+  <!--  <td align="center"><B>Integration Products</B></td> -->
+    <td align="center"><B>Partner Level</B></td>
+    <td align="center"><B>Partner Manager</B></td>
+    <td align="center"><B>Agreement Date</B></td>
+    <td align="center"><B>Renewal Fee</B></td>
+</tr>
+</table>
+
+ <apex:repeat value="{!wrapperacccon}" var="accon">
+ <table>
+<tr>
+    <td >{!accon.AccountName}</td>
+    <td align="center">{!accon.CAProducts}</td>
+    <td align="center">{!accon.MAINFRAME}</td>
+    <td align="center">{!accon.SEC}</td>
+    <td align="center">{!accon.VSA}</td>
+    <td align="center">{!accon.Cloud}</td>
+    <td align="center">{!accon.ServiceAssurance}</td>
+    <td align="center">{!accon.ServicePortfolioManagement}</td>
+    <td align="center">{!accon.Nimsoft}</td>
+    <td align="center">{!accon.SaaS}</td>
+    <td align="center">{!accon.Storage}</td>
+    <td align="center">{!accon.DLA}</td>
+    <td align="center">{!accon.InboundOEM}</td>
+    <td align="center">{!accon.OutboundOEM}</td>
+    <td align="center">{!accon.InboundResale}</td>
+    <td align="center">{!accon.OutboundResale}</td>
+    <td align="center">{!accon.CATechPartnerProgram}</td>
+
+    <td align="center">{!accon.PartnerTechPartnerProgram}</td>
+    <td align="center">{!accon.AllianceAgreement}</td>
+    <td align="center">{!accon.MarketingAgreement}</td>
+    <td align="center">{!accon.NDA}</td>
+  <!--  <td align="center">{!accon.ProductName}</td> -->
+    <td align="center">{!accon.PartnerLevel}</td>
+    <td align="center">{!accon.PartnerManager}</td>
+    <td align="center">{!accon.AgreementDate}</td>
+    <td align="center">{!accon.RenewalFee}</td>
+</tr>
+</table>
+   
+ </apex:repeat>
+ <table>
+<tr>
+    <td align="center"><B>Grand Total</B></td>
+    <td align="center">{!TotalCAProducts}</td>
+    <td align="center">{!TotalMAINFRAME}</td>
+    <td align="center">{!TotalSEC}</td>
+    <td align="center">{!TotalVSA}</td>
+    <td align="center">{!TotalCloud}</td>
+    <td align="center">{!TotalServiceAssurance}</td>
+    <td align="center">{!TotalServicePortfolioManagement}</td>
+    <td align="center">{!TotalNimsoft}</td>
+    <td align="center">{!TotalSaaS}</td>
+    <td align="center">{!TotalStorage}</td>
+    <td align="center">{!TotalDLA}</td>
+    <td align="center">{!TotalInboundOEM}</td>
+    <td align="center">{!TotalOutboundOEM}</td>
+    <td align="center">{!TotalInboundResale}</td>
+    <td align="center">{!TotalOutboundResale}</td>
+    <td align="center">{!TotalCATechPartnerProgram}</td>
+
+    <td align="center">{!TotalPartnerTechPartnerProgram}</td>
+    <td align="center">{!TotalAllianceAgreement}</td>
+    <td align="center">{!TotalMarketingAgreement}</td>
+    
+</tr>
+</table>
+</apex:page>

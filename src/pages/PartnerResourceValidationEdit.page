@@ -1,0 +1,447 @@
+<apex:page standardController="Partner_Resource_Validation__c" extensions="PartnerResourceValidationController">
+    
+    <apex:includeScript value="{!URLFOR($Resource.JQueryUiLibrary, '/js/jquery-1.4.2.min.js')}"/> 
+    <script type="text/javascript"> 
+        window.onload = function() { 
+            $("[title='Search scope'] option[value='PartnerUserLookup']").remove();
+            $("[title='Search scope'] option[value='CustomerSuccessUserLookup']").remove();
+        };
+    </script>
+            
+    <apex:pageMessages > </apex:pageMessages>
+    <apex:sectionHeader title="Partner Resource Validation" subtitle="{!Partner_Resource_Validation__c.Name}"/>    
+    
+    <apex:form >
+        <apex:pageBlock title="Partner Resource Validation Edit" mode="edit" >
+            
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save"/>
+                <apex:commandButton action="{!Cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlockSection title="CA Technologies Validator" columns="1"> 
+                <apex:inputField value="{!Partner_Resource_Validation__c.Validator__c}"/>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="CA Partner" columns="1"> 
+                <apex:inputField value="{!Partner_Resource_Validation__c.Partner__c}"/>
+                <apex:inputField value="{!Partner_Resource_Validation__c.Partner_Resource__c}"/>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Validation" columns="1" id="validation_section" showHeader="true">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:actionRegion >
+                            <tr>                                
+                                <th class="labelCol vfLabelColTextWrap  first">                                    
+                                    <span class="helpButton" id="vtype_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/>
+                                        <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Validation_Type__c.label}" /> <!-- style="font:bold" -->
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('vtype_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Validation_Type__c.inlineHelpText}');
+                                        </script>                                        
+                                    </span>                                    
+                                </th>                                
+                                <td class="data2Col">
+                                    <div class="requiredInput" layout="block">
+                                        <div class="requiredBlock" layout="block"/>
+                                        <apex:selectList value="{!Partner_Resource_Validation__c.Validation_Type__c}" size="1">
+                                            <apex:selectOptions value="{!ValidationTypes}"/>
+                                            <apex:actionSupport event="onchange" action="{!resetPG}" rerender="vtypedesc_id,id_pg,id_validation_code1" status="msg_refresh1"/>
+                                        </apex:selectList>
+                                        <span> &nbsp;&nbsp;
+                                            <apex:outputPanel id="vtypedesc_id">
+                                                <apex:outputText rendered="{!showVtypeDesc}" value="{!vtypeDesc}" style="font-weight:bold"> </apex:outputText>
+                                            </apex:outputPanel>
+                                        </span>
+                                    </div> 
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="labelCol vfLabelColTextWrap  first">
+                                    <span class="helpButton" id="pg_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/>                                    
+                                        <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Product_Group__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('pg_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Product_Group__c.inlineHelpText}');
+                                        </script>                                        
+                                    </span>                                          
+                                </th>
+                                <td class="data2Col">
+                                    <apex:outputPanel id="id_pg">
+                                        <div class="requiredInput" layout="block">
+                                            <div class="requiredBlock" layout="block"/>     
+                                            <apex:selectList value="{!Partner_Resource_Validation__c.Product_Group__c}" size="1">                                
+                                                <apex:selectOptions value="{!ProductGroups}" />
+                                                 <apex:actionSupport event="onchange" action="{!populateValidationCode}"
+                                                                     rerender="id_validation_code1"  status="msg_refresh1">
+                                                 </apex:actionSupport>                                    
+                                            </apex:selectList>             
+                                        </div>
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                        <apex:actionStatus id="msg_refresh1" stopText="">
+                         <apex:facet name="start">
+                              <apex:outputPanel >
+                                    <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 40px; position: relative; left:700px;top:300px;"/></div>
+                                </apex:outputPanel>
+                            </apex:facet>
+                        </apex:actionStatus>
+                    </apex:actionRegion>                    
+                </apex:pageBlockSectionItem>     
+                <br/>                               
+                <apex:outputPanel id="id_validation_code1">
+                     <table class="detailList">
+                        <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="vcode_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/>                                
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Validation_Code__c.label}" />
+                                    <script type="text/javascript">
+                                        sfdcPage.setHelp('vcode_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Validation_Code__c.inlineHelpText}');
+                                    </script>                                        
+                                </span>                                     
+                            </th>
+                            <td class="data2Col" style="padding-left:0px;">
+                                 <div class="requiredInput" layout="block">
+                                    <div class="requiredBlock" layout="block"/>                               
+                                    <apex:inputText value="{!ValidationCode}"  disabled="true"/>  
+                                     <span> &nbsp;&nbsp;
+                                            <apex:outputPanel >
+                                                <apex:outputText rendered="{!vcodeexists}" value="{!novcodemsg}" styleClass="errorMsg"> </apex:outputText>
+                                            </apex:outputPanel>
+                                     </span>                                     
+                                 </div>
+                            </td>
+                        </tr>
+                   </table>
+                    <apex:outputPanel id="id_vTypeSpecific1" rendered="{!isTechVal1}">                 
+                        <table class="detailList">
+                            <tr>
+                                <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                    <span class="helpButton" id="indusKnowledge1_span-_help">
+                                        <img src="/s.gif" class="helpOrb"/> 
+                                        <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Industry_Knowledge__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('indusKnowledge1_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Industry_Knowledge__c.inlineHelpText}');
+                                        </script>                                        
+                                    </span>                                         
+                                </th>                                
+                                <td class="data2Col" style="padding-left:0px;">
+                                    <apex:inputField value="{!Partner_Resource_Validation__c.Industry_Knowledge__c}"/>
+                                </td>
+                            </tr>                            
+                            <tr>
+                                <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                    <span class="helpButton" id="solknowledge1_span-_help">
+                                        <img src="/s.gif" class="helpOrb"/>  
+                                        <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Solution_Knowledge__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('solknowledge1_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Solution_Knowledge__c.inlineHelpText}');
+                                        </script>                                          
+                                    </span>
+                                </th>
+                                <td class="data2Col" style="padding-left:0px;">
+                                    <apex:inputField value="{!Partner_Resource_Validation__c.Solution_Knowledge__c}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                    <span class="helpButton" id="delivery1_span-_help">
+                                        <img src="/s.gif" class="helpOrb"/> 
+                                        <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Delivery__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('delivery1_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Delivery__c.inlineHelpText}');
+                                        </script>                                          
+                                    </span>
+                                </th>
+                                <td class="data2Col" style="padding-left:0px;">
+                                    <apex:inputField value="{!Partner_Resource_Validation__c.Delivery__c}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                    <span class="helpButton" id="org1_span-_help">
+                                        <img src="/s.gif" class="helpOrb"/> 
+                                        <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Organization__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('org1_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Organization__c.inlineHelpText}');
+                                        </script>                                          
+                                    </span>
+                                </th>
+                                <td class="data2Col" style="padding-left:0px;">
+                                    <apex:inputField value="{!Partner_Resource_Validation__c.Organization__c}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                    <span class="helpButton" id="vaids1_span-_help">
+                                        <img src="/s.gif" class="helpOrb"/> 
+                                        <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Visual_Aids__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('vaids1_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Visual_Aids__c.inlineHelpText}');
+                                        </script>                                          
+                                    </span>
+                                </th>
+                                <td class="data2Col" style="padding-left:0px;">
+                                    <apex:inputField value="{!Partner_Resource_Validation__c.Visual_Aids__c}"/>
+                                </td>
+                            </tr>   
+                            <!-- <tr><th><apex:outputLabel value="" /></th><td> <apex:outputText value=""/> <br/></td></tr> -->
+                            <tr>
+                                <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                    <span class="helpButton" id="presence1_span-_help">
+                                        <img src="/s.gif" class="helpOrb"/> 
+                                        <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Presence__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('presence1_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Presence__c.inlineHelpText}');
+                                        </script>                                          
+                                    </span>
+                                </th>
+                                <td class="data2Col" style="padding-left:0px;">
+                                    <apex:inputField value="{!Partner_Resource_Validation__c.Presence__c}"/>
+                                </td>
+                            </tr> 
+                            <tr>
+                                <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                    <span class="helpButton" id="summary1_span-_help">
+                                        <img src="/s.gif" class="helpOrb"/> 
+                                        <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Summary__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('summary1_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Summary__c.inlineHelpText}');
+                                        </script>                                          
+                                    </span>
+                                </th>
+                                <td class="data2Col" style="padding-left:0px;">
+                                    <apex:inputField value="{!Partner_Resource_Validation__c.Summary__c}"/>
+                                </td>
+                            </tr> 
+                        </table>                   
+                </apex:outputPanel>
+                    
+                    <apex:outputPanel id="id_vTypeSpecific2" rendered="{!isTechVal2}">
+                    <table width="100%">
+                        <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="bstrategy2_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Business_Strategy__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('bstrategy2_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Business_Strategy__c.inlineHelpText}');
+                                        </script>                                      
+                                </span>
+                            </th>
+                            <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Business_Strategy__c}"/>    
+                            </td>
+                        </tr>                            
+                        <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="psolknowledge2_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Product_Solution_Knowledge__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('psolknowledge2_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Product_Solution_Knowledge__c.inlineHelpText}');
+                                        </script>                                      
+                                </span>
+                            </th>
+                            <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Product_Solution_Knowledge__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="delivery2_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Delivery__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('delivery2_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Delivery__c.inlineHelpText}');
+                                        </script>                                      
+                                </span>
+                            </th>
+                            <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Delivery__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="org2_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Organization__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('org2_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Organization__c.inlineHelpText}');
+                                        </script>                                      
+                                </span>
+                            </th>
+                            <td class="data2Col" style="padding-left:0px;">                                
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Organization__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="impact2_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Impact__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('impact2_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Impact__c.inlineHelpText}');
+                                        </script>                                      
+                                </span>
+                            </th>
+                            <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Impact__c}"/>
+                            </td>
+                        </tr>
+                        <!-- <tr><th><apex:outputLabel value="" /></th><td> <apex:outputText value=""/> <br/></td></tr> -->
+                        <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="presence2_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Presence__c.label}" />
+                                        <script type="text/javascript">
+                                            sfdcPage.setHelp('presence2_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Presence__c.inlineHelpText}');
+                                        </script>                                      
+                                </span>
+                            </th>
+                            <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Presence__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="summary2_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Summary__c.label}" />
+                                    <script type="text/javascript">
+                                        sfdcPage.setHelp('summary2_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Summary__c.inlineHelpText}');
+                                    </script>                                      
+                                </span>
+                            </th>
+                            <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Summary__c}"/>
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+                    
+                    <apex:outputPanel id="id_vTypeSpecific3" rendered="{!isTechVal3}">
+                     <table width="100%">
+                         <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="bstrategy3_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Business_Strategy__c.label}" />
+                                    <script type="text/javascript">
+                                        sfdcPage.setHelp('bstrategy3_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Business_Strategy__c.inlineHelpText}');
+                                    </script>                                    
+                                </span>
+                             </th>
+                             <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Business_Strategy__c}"/>
+                             </td>
+                         </tr>
+                         <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="solknowledge3_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Solution_Knowledge__c.label}" />
+                                    <script type="text/javascript">
+                                        sfdcPage.setHelp('solknowledge3_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Solution_Knowledge__c.inlineHelpText}');
+                                    </script>                                     
+                                </span>
+                             </th>
+                             <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Solution_Knowledge__c}"/>
+                             </td>
+                         </tr>
+                         <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="delivery3_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Delivery__c.label}" />
+                                    <script type="text/javascript">
+                                        sfdcPage.setHelp('delivery3_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Delivery__c.inlineHelpText}');
+                                    </script>                                     
+                                </span>
+                             </th>
+                             <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Delivery__c}"/>
+                             </td>
+                         </tr>
+                         <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="org3_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Organization__c.label}" />
+                                    <script type="text/javascript">
+                                        sfdcPage.setHelp('org3_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Organization__c.inlineHelpText}');
+                                    </script>                                     
+                                </span>
+                             </th>
+                             <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Organization__c}"/>
+                             </td>
+                         </tr>
+                         <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="impact3_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Impact__c.label}" />
+                                    <script type="text/javascript">
+                                        sfdcPage.setHelp('impact3_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Impact__c.inlineHelpText}');
+                                    </script>                                     
+                                </span>
+                             </th>
+                             <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Impact__c}"/>
+                             </td>
+                         </tr>
+                         <!-- <tr><th><apex:outputLabel value="" /></th><td> <apex:outputText value=""/> <br/></td></tr> -->
+                         <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="presence3_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Presence__c.label}" />
+                                    <script type="text/javascript">
+                                        sfdcPage.setHelp('presence3_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Presence__c.inlineHelpText}');
+                                    </script>                                     
+                                </span>
+                             </th>
+                             <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Presence__c}"/>
+                             </td>
+                         </tr>
+                         <tr>
+                            <th class="labelCol vfLabelColTextWrap  first" style="padding-right:18px;">
+                                <span class="helpButton" id="summary3_span-_help">
+                                    <img src="/s.gif" class="helpOrb"/> 
+                                    <apex:outputLabel value="{!$ObjectType.Partner_Resource_Validation__c.Fields.Summary__c.label}" />
+                                    <script type="text/javascript">
+                                        sfdcPage.setHelp('summary3_span', '{!$ObjectType.Partner_Resource_Validation__c.Fields.Summary__c.inlineHelpText}');
+                                    </script>                                     
+                                </span>
+                             </th>
+                             <td class="data2Col" style="padding-left:0px;">
+                                <apex:inputField value="{!Partner_Resource_Validation__c.Summary__c}"/>
+                             </td>
+                         </tr>
+                     </table>
+                </apex:outputPanel>
+                    
+                </apex:outputPanel>
+                <br/>
+                <apex:inputField value="{!Partner_Resource_Validation__c.Validate_This_Resource__c}"/> <br/>
+                <apex:inputField value="{!Partner_Resource_Validation__c.Validation_Date__c}"/> <br/>
+                <apex:inputField value="{!Partner_Resource_Validation__c.Validator_Notes__c}"/>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Owner" />
+                    <apex:outputText value="{!ownerName}"/>  
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+    </apex:form>
+    
+</apex:page>

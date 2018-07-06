@@ -1,0 +1,14 @@
+<apex:page standardController="scpq__SciQuote__c" extensions="VisualforceSCIQuoteDelete_Pilot" action="{!urlRedirect}">
+<SPAN style="FONT-FAMILY: 'Verdana','sans-serif'; COLOR: #333333; FONT-SIZE: 8.5pt; mso-fareast-font-family: SimSun; mso-fareast-theme-font: minor-fareast; mso-bidi-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: ZH-TW; mso-bidi-language: AR-SA"><STRONG>New CPQ system makes getting a Quote to your customer a whole lot faster!</STRONG></SPAN><SPAN style="FONT-FAMILY: 'Verdana','sans-serif'; COLOR: #333333; FONT-SIZE: 8.5pt; mso-fareast-font-family: SimSun; mso-fareast-theme-font: minor-fareast; mso-bidi-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: ZH-TW; mso-bidi-language: AR-SA"> </SPAN>
+<BR> </BR>
+<TABLE>
+<TBODY>
+<TR>
+<TD><apex:image value="/servlet/servlet.FileDownload?file=01530000001fLrM" height="94px" width="183px" style="valign:middle"/></TD>
+<TD><SPAN style="FONT-FAMILY: 'Verdana','sans-serif'; COLOR: #333333; FONT-SIZE: 8.5pt; mso-fareast-font-family: SimSun; mso-fareast-theme-font: minor-fareast; mso-bidi-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: ZH-TW; mso-bidi-language: AR-SA">CA is implementing a Configuration Pricing Quote (CPQ) solution in Salesforce.com to cut through complexity of the opportunity to quote process. Current manual processes will be replaced by CPQ.
+<br> </br>
+In <B>January 2011</B>, the NA South region will pilot CPQ with their associated Deal Desk partners. Stay tuned for more information regarding when you can start using this exciting new tool in your area!</SPAN>
+</TD></TR>
+</TBODY></TABLE>
+
+</apex:page>

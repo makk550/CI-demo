@@ -1,0 +1,65 @@
+<apex:page controller="RemoveResorceRequestController" >
+
+   <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"/>
+
+        <script>
+
+       function ondisable(){
+            $(document).ready(function() {
+                $("input[id*='pickid']").attr("disabled","disabled");
+                 
+
+               
+               
+            });}
+
+        </script>
+    
+    <apex:form >
+        <apex:sectionHeader title="Cancel Presales Request Form"/>
+        <apex:commandLink value="Return to Presales Request" action="{!redirectRecord}"/>
+     <apex:pageBlock >
+         <apex:pageMessages ></apex:pageMessages>
+         <apex:pageBlockButtons >
+           <apex:commandButton value="Submit for Cancellation" action="{!cancellationRequest}"  disabled="{!disableCancelltion}"  onclick="ondisable()" />
+         </apex:pageBlockButtons>
+        
+           <table width="100%" style="border-spacing: 10px;">
+				
+				<tbody>
+					<tr>
+                        <td style="font-weight:bold;text-align:right;border-bottom:1px solid #E8E8E8">
+                
+                               <p style="color:Black; font-weight: bold"> Start Date:</p>
+                                
+                           </td>
+						<td style="text-align:left;border-bottom:1px solid #E8E8E8">
+                             <p ><apex:outputField value="{!presale.Start_Date__c}"/></p>
+                        </td>
+                        <td style="font-weight:bold;text-align:right;border-bottom:1px solid #E8E8E8">
+                
+                               <p style="color:Black; font-weight: bold"> Activity:</p>
+                                
+                           </td>
+						<td style="text-align:left;border-bottom:1px solid #E8E8E8">
+                            <p>
+                               <apex:outputField value="{!presale.Activity__c}"/> 
+                            </p>
+                        </td>
+                       <td style="font-weight:bold;text-align:right;border-bottom:1px solid #E8E8E8">
+                
+                               <p style="color:Black; font-weight: bold"> Cancellation Reason:</p>
+                                
+                           </td>
+						<td align="left"> <apex:inputTextarea value="{!cancellationReason}"  label="Cancellation Reason" disabled="{!disableCancelltion}" /></td>
+					</tr>
+					
+				</tbody>
+			</table>
+         
+          
+        
+        </apex:pageBlock>
+    
+    </apex:form>
+</apex:page>

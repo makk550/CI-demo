@@ -1,0 +1,36 @@
+<apex:page Controller="AddResourceController"  action="{!addResource}"  showHeader="true" >
+  
+
+     
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"/>
+
+        <script>
+
+            $vfjq = jQuery.noConflict();
+
+            $vfjq(document).ready(function() {
+                $vfjq("input[value='Delete']").hide();
+                 $vfjq("input[value='Add Consultant']").hide();
+                  $vfjq("input[value='Cancel Request']").hide();
+                $vfjq("input[value='Remove Consultant']").hide();  
+                $vfjq("input[value='Approve Request']").hide();
+               
+            });
+
+        </script>
+    <apex:form >
+        <apex:sectionHeader title="Add Presales Request Form"/>
+          <apex:commandLink value="Return to Presales Request" action="{!redirectRequest}"/>
+       <apex:pageBlock >
+         <apex:pageMessages ></apex:pageMessages>
+       
+            <apex:detail subject="{!presale.id}" relatedList="false" title="false"  />
+        
+          </apex:pageBlock>
+    
+    
+    
+    </apex:form>
+    
+    
+</apex:page>

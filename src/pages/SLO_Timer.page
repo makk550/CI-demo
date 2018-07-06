@@ -1,0 +1,63 @@
+<apex:page standardController="Task" extensions="SLO_Timer_Ext"  showHeader="false">
+<apex:form >
+<style>
+.alignright {
+    float: right;
+    display: inline; /*fixes IE float bug*/
+    text-align: left;
+    color : Black;
+}
+</style>
+
+<apex:inputHidden value="{!Task.Id}"/>
+<span id="countdown" class="timer"></span>
+<script>
+var seconds = {!dueDateMS};
+//var duew = '{!Task.Due_Date_SLO__c}';
+
+function secondPassed() {
+   if(seconds<0)
+   {
+   var value=-1*seconds;
+   var flag=true;
+   }
+   else 
+   {
+   value=seconds;
+   flag=false;
+   }
+    var minutes = Math.round((value - 30)/60);
+    var hours = Math.round((minutes-30)/60);
+    if (hours < 10) {
+        hours = "0" + hours; 
+        
+    }
+    
+    var remainingMinutes = minutes % 60;
+    if (remainingMinutes < 10) {
+        remainingMinutes = "0" + remainingMinutes;
+         
+    }
+    
+    var remainingSeconds = value % 60;
+    if (remainingSeconds < 10) {
+        remainingSeconds = "0" + remainingSeconds;
+         
+    } 
+    if(!flag)
+   {
+       document.getElementById('countdown').innerHTML = hours + ":" + remainingMinutes + ":" + remainingSeconds;
+       
+   }
+   else if(flag)
+   {
+   document.getElementById('countdown').innerHTML ="-" + hours + ":" + remainingMinutes + ":" + remainingSeconds;
+       
+   }
+   seconds--;
+}
+ 
+var countdownTimer = setInterval('secondPassed()', 1000);
+</script>
+</apex:form>
+</apex:page>

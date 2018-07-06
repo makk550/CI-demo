@@ -1,0 +1,50 @@
+<apex:page showHeader="true" sidebar="true" controller="scm_CodeCoverage" tabStyle="Account">
+        <apex:sectionHeader title="Code Coverage"/>
+        <apex:pagemessages id="pgemsg"></apex:pagemessages>
+    <apex:form >
+    <apex:actionstatus id="state" startText="Fetching" />
+        <apex:pageblock >
+        
+        <apex:pageBlockSection title="Organization Code Coverage" columns="1">
+        <br/>
+            <apex:pageBlockSectionItem >
+            <apex:outputpanel id="OrgWide">
+                <apex:outputLabel for="orgCov" value=" Organization Code Coverage  "/>
+                &nbsp;&nbsp;<apex:outputText value="{!cov} %"/>
+             </apex:outputpanel>   
+             <apex:commandButton value="Refresh" action="{!OrgWideCodeCoverage}" reRender="OrgWide"/>
+            </apex:pageBlockSectionItem>
+        <br/>
+        Note: Please run the all tests after the deployment to get the latest code coverage of the components. To run, Navigate to Develop - Classes - Run All Tests.
+        </apex:pageBlockSection>
+                
+        <apex:pageBlockSection title="Code Coverage Configuration" columns="1">
+        <apex:pageBlockSectionItem helpText="Enter a value between 0 and 100 ">
+        <apex:outputLabel value="Find Low Coverage Components "/>
+        <apex:outputPanel >
+        <apex:inputtext value="{!codeCov}" /> &nbsp;
+        <apex:commandButton action="{!calculate}" value="Go!" rerender="thereport,pgemsg" status="state"/>
+        </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection title="Code Coverage Report" columns="1" rendered="{!NOT(ISNULL(coverageList))}" id="pgeBlkSec3">
+            <apex:outputPanel >
+            <apex:commandButton action="{!nextSetClasses}" value="Next" rerender="pgeBlkSec3" disabled="{!!hasNext}" style="margin-left:30%;"/>
+            <apex:commandButton action="{!prevSetClasses}" value="Previous" rerender="pgeBlkSec3" disabled="{!!hasPrev}"/>
+            </apex:outputPanel>
+            <apex:pageBlockTable var="coverage" value="{!coverageList}" id="thereport">
+                  <apex:column headerValue="Class or Trigger">
+                               <apex:outputLink value="/{!coverage.classId}" target="_blank">{!coverage.name}</apex:outputLink>
+                   </apex:column>
+                   <apex:column headerValue="Percent Covered" value="{!coverage.percentage}% ({!coverage.covered} / {!coverage.totalLines})" />
+                   <apex:column headerValue="Last Modified Date" value="{!coverage.LastModified}" />
+                    <apex:column headerValue="Test classes">
+                                 <apex:outputLink value="/apex/scm_CodeCoverage2?classname={!coverage.classId}" target="_blank">Related Test Classes </apex:outputLink>
+                     </apex:column>
+             </apex:pageBlockTable>
+         </apex:pageBlockSection>
+                        
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,1048 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" contentType="text/css">
+@charset "utf-8";
+
+
+/* Structure Layout */
+
+body {
+    margin-left: 0px;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    background: url({!$Resource.bg_gif}) top left repeat-x;
+    
+}
+
+embed {display:block}
+
+a img   {
+    border-style: none; 
+}
+    
+img {
+    display: block;
+}
+
+form {
+    padding: 0; margin: 0;  
+}
+
+.header {
+    width: 1021px;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+        
+}
+
+.main_title {
+    width: 945px;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    padding:10px 10px 0 10px;
+}
+
+
+
+.container {
+    width: 945px;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    padding:10px 10px 10px 10px;
+    background:url({!$Resource.bg_container_gif}) top center;
+}
+
+.container:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.footer {
+    width: 100%;
+    height:168px;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    clear:both;
+    background:#000000;
+}
+
+.footer img {
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+}
+
+/* End Structure Layout */
+
+
+
+/* Search Layout */
+
+
+
+.search_container {
+    width: 97%;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    background:#CCC;
+    font: bold 12px "Arial", sans-serif; color:#333333;
+    padding: 15px 0 15px 0;
+}
+.search_tip{
+    font: italic 10px "Arial", sans-serif;
+}
+
+.search_container_location {
+    width: 915px;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    background:#CCC;
+    font: bold 12px "Arial", sans-serif; color:#333333;
+    padding: 5px 0 5px 0;
+ 
+}
+
+.advanced_search_container {
+    width: 97%;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+    background:#bbbbbb;
+    font: bold 12px "Arial", sans-serif; color:#333333;
+}
+
+h1 {
+    font: bold 22px "Arial", sans-serif; color:#333333; margin-bottom:10px; margin-left:17px; margin-top:20px;
+}
+
+h2 {
+    font: bold 14px "Arial", sans-serif; color:#333333; margin: 5px 0 0 15px;
+}
+
+.textbox {
+    background:transparent url({!$Resource.bg_input_png}) repeat-x scroll 0 0;
+    height:18px;
+    padding:3px 5px 0 0;
+    width:187px;
+}
+
+.textbox input {
+    background:transparent none repeat scroll 0 0;
+    border-style:none;
+    color:black;
+    font-size:11px;
+    height:18px;
+    width:182px;
+}
+
+
+.textbox_filter {
+    background:transparent url({!$Resource.bg_input_png}) repeat-x scroll 0 0;
+    height:18px;
+    padding:1px 0px 5px 0px;
+    width:275px;
+}
+
+.textbox_filter select {
+    background:transparent none repeat scroll 0 0;
+    border-style:none;
+    color:black;
+    font-size:11px;
+    height:17px;
+    width:275px;
+    padding-top:2px; padding-right:2px;
+}
+
+.multi_filter {
+    background:transparent url({!$Resource.bg_input_multi_png}) repeat-x scroll 0 0;
+    height:60px;
+    padding:1px 0px 5px 0px;
+    width:275px;
+}
+
+.multi_filter select {
+    background:transparent none repeat scroll 0 0;
+    border-style:none;
+    color:black;
+    font-size:11px;
+    height:51px;
+    width:275px;
+    padding-top:2px; padding-right:2px;
+}
+
+.textbox_sm {
+    background:transparent url({!$Resource.bg_input_png}) repeat-x scroll 0 0;
+    height:18px;
+    padding:1px 0px 5px 0px;
+    width:51px;
+}
+
+.textbox_sm select {
+    background:transparent none repeat scroll 0 0;
+    border-style:none;
+    color:black;
+    font-size:11px;
+    height:17px;
+    width:51px;
+    padding-top:2px; padding-right:2px;
+}
+
+.textbox_med {
+    background:transparent url({!$Resource.bg_input_png}) repeat-x scroll 0 0;
+    height:18px;
+    padding:1px 0px 5px 0px;
+    width:150px;
+}
+
+.textbox_med select {
+    background:transparent none repeat scroll 0 0;
+    border-style:none;
+    color:black;
+    font-size:11px;
+    height:17px;
+    width:150px;
+    padding-top:2px; padding-right:2px;
+}
+
+.textbox_lrg {
+    background:transparent url({!$Resource.bg_input_png}) repeat-x scroll 0 0;
+    height:18px;
+    padding:1px 0px 5px 0px;
+    width:400px;
+}
+
+.textbox_lrg select {
+    background:transparent none repeat scroll 0 0;
+    border-style:none;
+    color:black;
+    font-size:11px;
+    height:17px;
+    width:400px;
+    padding-top:2px; padding-right:2px;
+}
+
+.detail_logo {
+    float:right;
+    margin: 5px 18px 0 0;
+}
+
+.search_container a:link {
+    font: normal 11px "Arial", sans-serif; color:#3fa2c2; 
+}
+.search_container a:visited {
+    font: normal 11px "Arial", sans-serif; color:#3fa2c2;
+}
+.search_container a:hover {
+    font: normal 11px "Arial", sans-serif; color:#3fa2c2;
+}
+
+table.partner_search {
+    padding:0 ;
+    margin:0;
+}
+
+table.advanced_search {
+    padding:0;
+    margin:0;
+}
+
+.advanced_search_button {
+    margin:10px 0 10px 0;
+    float:right;
+}
+
+
+table.sub_search {
+    padding: 0px;
+    border-top: #666666 solid 1px; 
+
+}
+
+table.sub_search td { 
+    padding-top:10px;
+}
+
+.map {
+    width: 893px;
+    height:420px;
+    margin-top: 20px;
+    margin-right: auto;
+    margin-bottom: 20px;
+    margin-left: auto;
+}
+
+.map_details {
+    width: 893px;
+    height:460px;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 20px;
+    margin-left: auto;
+}
+
+.map_title {
+    width: 878px;
+    padding:15px 0 0 15px;
+    margin:0;
+    height: 40px;
+    background-color:#e2e2e2;
+    font: bold 14px/22px "Arial", sans-serif; color:#3fa2c2;
+}
+
+
+.partners_header {
+    width: 915px;
+    height:65px;
+    margin-top: 20px;
+    margin-right: auto;
+    margin-bottom: 20px;
+    margin-left: auto;
+}
+
+
+table.results                                   {   border-collapse: collapse;}
+table.results th, table.results td              {   padding: 12px 0 6px 12px; font: normal 11px/16px "Arial", sans-serif; vertical-align: top;  }
+table.results td                                {   border-top: #D5D5D5 1px solid; color: #333333;  }
+table.results td.logo img                       {   margin:0 auto 0 auto; }
+table.results th                                {   color: #333; font-weight: bold; text-align: left; white-space: nowrap; background-color:#CCCCCC; font: bold 14px "Arial", sans-serif;   }
+
+span.website {
+    margin-left: 15px;
+    font-weight: bold; 
+}
+
+span.no_locations {
+    margin-left: 15px;
+    font-weight: bold; 
+}
+
+
+table.results a:link {
+    font: bold 11px "Arial", sans-serif; color:#3fa2c2;
+}
+table.results a:visited {
+    font: bold 11px "Arial", sans-serif; color:#3fa2c2;
+}
+table.results a:hover {
+    font: bold 11px "Arial", sans-serif; color:#3fa2c2;
+}
+
+
+table.title {
+    border-collapse: collapse;  
+}
+
+table.title td  {
+    color: #333; font-weight: bold; 
+    text-align: left; white-space: nowrap;
+    background-color:#CCCCCC; 
+    font: bold 14px/22px "Arial", sans-serif; 
+    padding:10px 0 10px 15px; 
+    margin:0px;
+}
+
+table.title th  {
+    color: #333; font-weight: bold; 
+    text-align: right; white-space: nowrap;
+    background-color:#CCCCCC; 
+    font: bold 14px/22px "Arial", sans-serif; 
+    padding:10px 0 10px 15px; 
+    margin:0px;
+}
+
+table.title a:link {
+    font: bold 14px/22px "Arial", sans-serif; color:#3fa2c2; margin-bottom:10px;
+}
+
+table.title a:visited {
+    font: bold 14px/22px "Arial", sans-serif; color:#3fa2c2; margin-bottom:10px;
+}
+
+table.title a:hover {
+    font: bold 14px/22px "Arial", sans-serif; color:#3fa2c2; margin-bottom:10px;
+}
+
+
+
+
+/* Details Page */
+
+.details_header {
+    width: 100%;
+}
+
+.memberSortBox {
+    background:transparent url({!$Resource.sort_round_bg_png}) no-repeat scroll 100% 50%;
+    font-family:Arial, Helvetica, sans-serif;
+    color:#666666;  
+    font-size:12px;
+    font-weight:bold;
+    height:30px;
+    line-height:30px;
+    margin:0;
+    padding:0;
+    clear:both;
+}
+
+.memberSortBox .left_round {
+    background:transparent url({!$Resource.sort_left_png}) no-repeat scroll 0 0;
+    float:left;
+    padding:0 10px;
+}
+
+ol, ul {
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    margin:0;
+    padding:0;  
+}
+
+.memberSortBox li {
+    float:left;
+    margin-right:20px;
+}
+
+.memberSortBox li.right_link {
+    float:right;
+    margin-right:20px;  
+}
+
+.memberSortBox li.right_link a {
+    font-family:Arial, Helvetica, sans-serif;
+    color:red;  
+    font-size:12px;
+    font-weight:normal;
+    text-decoration:none;   
+}
+
+
+.memberSortBox li a {
+    font-family:Arial, Helvetica, sans-serif;
+    color:#3fa2c2;  
+    font-size:12px;
+    font-weight:normal;
+    text-decoration:none;   
+}
+
+.memberSortBox li.isActive {
+    background:transparent url({!$Resource.active_btn_left_png}) no-repeat scroll left bottom;
+
+    
+}
+
+.memberSortBox li.isActive a span {
+    background:transparent url({!$Resource.active_btn_bg_png}) repeat-x scroll left bottom;
+    float:left;
+    margin:0 3px;
+    padding:0 8px 0 10px;   
+}
+
+.memberSortBox li.isActive a {
+    background:transparent url({!$Resource.active_btn_right_png}) no-repeat scroll right bottom;
+    color:#333333;
+    float:left;
+}
+
+.paginationBox {
+    font-family:Arial, Helvetica, sans-serif;
+    color:#333; 
+    font-size:11px;
+    font-weight:normal;
+    height:30px;
+    margin:0px 0 0 0;
+    padding:0;
+    clear:both;
+    text-align:left;
+}
+.paginationBox li {
+    float:left;
+    margin-right:10px;
+}
+
+.paginationBox li.right_link {
+    float:right;
+    margin-right:10px;  
+}
+
+.paginationBox li a, .paginationBox li.right_link a {
+    font-family:Arial, Helvetica, sans-serif;
+    color:#3fa2c2;  
+    font-size:12px;
+    font-weight:normal;
+    text-decoration:none;   
+}
+
+.paginationBox li.isActive {
+    background:transparent url({!$Resource.active_btn_bg_pagination_left_png}) no-repeat scroll left center;
+    
+}
+
+.paginationBox li.isActive a span {
+    background:transparent url({!$Resource.active_btn_bg_pagination_png}) repeat-x scroll left center;
+    float:left;
+    margin:0 2px;
+    padding:0 5px 0 5px;    
+}
+
+.paginationBox li.isActive a {
+    background:transparent url({!$Resource.active_btn_bg_pagination_right_png}) no-repeat scroll right center;
+    color:#FFFFFF;
+    float:left;
+}
+
+
+
+a.grey_arrow:link {
+    font: bold 14px "Arial", sans-serif; color:#9f9f9f;
+}
+a.grey_arrow:visited {
+    font: bold 14px "Arial", sans-serif; color:#9f9f9f;
+}
+a.grey_arrow:hover {
+    font: bold 14px "Arial", sans-serif; color:#9f9f9f;
+}
+
+
+.detail_listing {
+    width: 915px;
+    padding: 15px 15px 0 15px;
+    margin:0;
+    font: normal 11px/16px "Arial", sans-serif;
+  
+}
+
+.detail_listing p {
+    margin:0 0 10px 0;
+    padding:0;
+}
+
+.detail_listing table {
+    border-collapse: collapse; margin-bottom:20px;  
+}
+
+.detail_listing table td {
+    padding: 5px 0 6px 12px;
+    font: normal 11px/16px "Arial", sans-serif;
+    vertical-align: top;
+}
+
+.detail_listing table td.border {
+    border-bottom: #D5D5D5 1px solid;
+    color: #333333; 
+}
+
+ul.documents {
+    margin:0;
+    padding:0 0 15px 0; 
+}
+
+ul.documents span {
+    margin-left:10px;
+
+}
+
+
+ul.documents li {
+    background:url({!$Resource.pdf_gif}) left top no-repeat;
+    padding-left:40px;
+    padding-top:8px;
+    height:20px;
+}
+
+ul.documents a:link {
+    margin:0;
+    padding:0;  
+    font-family:Arial, Helvetica, sans-serif;
+    color:#3fa2c2;  
+    font-size:11px;
+    font-weight:normal;
+    text-decoration:underline;  
+}
+
+ul.documents a:visited {
+    margin:0;
+    padding:0;  
+    font-family:Arial, Helvetica, sans-serif;
+    color:#3fa2c2;  
+    font-size:11px;
+    font-weight:normal;
+    text-decoration:underline;  
+}
+
+ul.documents a:hover {
+    margin:0;
+    padding:0;  
+    font-family:Arial, Helvetica, sans-serif;
+    color:#3fa2c2;  
+    font-size:11px;
+    font-weight:normal;
+    text-decoration:underline;  
+}
+
+table.pagination                {   border-collapse: collapse;}
+table.pagination  td            {   padding: 12px 0 6px 5px; font: normal 11px/16px "Arial", sans-serif; vertical-align: top;   }
+table.pagination td             {   border-top: #D5D5D5 1px solid; color: #333333;  }
+
+
+
+.pagination select {
+    color:black;
+    font-size:11px;
+    height:17px;
+    width:50px;
+    padding-top:0px; padding-right:0px;
+}
+
+
+.contact_partner {
+    width: 275px;
+    padding: 0;
+    margin:0 0 20px 0;
+    float:right;
+    font: normal 11px "Arial", sans-serif; color:#333333;
+    background:url({!$Resource.bg_contact_partner_gif}) bottom left no-repeat;
+}
+
+
+.contact_partner p {
+    font: normal 11px "Arial", sans-serif; color:#333333;
+    margin:0;
+    padding:0;
+}
+
+.contact_partner table {
+    margin:0;
+    padding:0;
+}
+
+.contact_partner table td {
+    margin:0;
+    padding:5px 3px 0px 10px;
+}
+
+.contact_partner table td.last {
+    margin:0;
+    padding:2px 3px 10px 10px;
+}
+
+
+.contact_partner a:link {
+    font: bold 11px "Arial", sans-serif; color:#3fa2c2;
+}
+.contact_partner a:visited {
+    font: bold 11px "Arial", sans-serif; color:#3fa2c2;
+}
+.contact_partner a:hover {
+    font: bold 11px "Arial", sans-serif; color:#3fa2c2;
+}
+
+.contact_partner_button {
+    margin:5px 0 5px 0;
+    padding:0;
+}
+
+ol.loclist {
+    border-top:1px solid #CCCCCC;
+    border-right:1px solid #CCCCCC;
+    border-left:1px solid #CCCCCC;
+    float:left;
+    font-size:12px;
+    width:205px;
+}
+
+ol.loclist li {
+    border-bottom:1px solid #CCCCCC;
+    list-style-type:none;
+    padding:10px 0 10px 5px;
+    float:left;
+    width:200px;
+    font: normal 11px "Arial", sans-serif; color:#333333;
+}
+
+ol.loclist li a.location_link:link {
+    font: bold 11px "Arial", sans-serif; color:#3fa2c2;
+}
+
+ol.loclist li a.location_link:visited {
+    font: bold 11px "Arial", sans-serif; color:#3fa2c2;
+}
+
+ol.loclist li a.location_link:hover {
+    font: bold 11px "Arial", sans-serif; color:#3fa2c2;
+}
+
+ol.loclist li a.contact_branch:link {
+    font: normal 11px "Arial", sans-serif; color:#333333;
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+ol.loclist li a.contact_branch:visited {
+    font: normal 11px "Arial", sans-serif; color:#333333;
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+ol.loclist li a.contact_branch:hover {
+    font: normal 11px "Arial", sans-serif; color:#3fa2c2;
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+.loc_number {
+    padding: 0 10px 0 5px;  
+    float:left;
+    font: bold 11px "Arial", sans-serif; color:#3fa2c2;
+}
+
+.loc_details {
+    float:left;
+    padding: 0 5px 0 5px;
+}
+
+.location_map {
+    width:600px;
+    float:left;
+    border:1px solid #CCCCCC;
+    margin-left:20px;
+    padding:10px;   
+   
+    
+}
+
+.bottom_bar {
+    width:964px;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 20px;
+    margin-left: auto;
+    clear:both;
+}
+
+
+/* Admin Details Styles */
+
+.current_status {
+    float:right;    
+    margin: 0px 0px 0 0;
+    text-align:right;
+    font: bold 12px "Arial", sans-serif; color:#333333;
+    background:#ccecfb;
+    border:1px solid #CCCCCC;
+    padding:3px 5px 3px 5px;
+    
+}
+
+.other_status {
+    float:right;    
+    margin: 1px 10px 0 0;
+    text-align:right;
+    font: bold 12px "Arial", sans-serif; color:#333333;
+    padding:3px 5px 3px 5px;
+}
+
+.current_status img, .other_status img {
+    display:inline;
+    margin: 0px 5px -2px 5px;
+    text-decoration:none;
+}
+
+
+.current_status a:link, .other_status a:link {
+    font: bold 12px "Arial", sans-serif; color:#3fa2c2;
+    text-decoration:none;
+    margin-left:5px;
+}
+
+.current_status a:visited, .other_status a:visited {
+    font: bold 12px "Arial", sans-serif; color:#3fa2c2;
+    text-decoration:none;
+    margin-left:5px;
+}
+
+.current_status a:hover, .other_status a:hover  {
+    font: bold 12px "Arial", sans-serif; color:#3fa2c2;
+    text-decoration:none;   
+    margin-left:5px;
+}
+
+.main_text {
+    font: bold 26px "Arial", sans-serif; color:#333333; 
+}
+
+ul.documents span a:link {
+    margin:0;
+    padding:0;  
+    font-family:Arial, Helvetica, sans-serif;
+    color:red;  
+    font-size:11px;
+    font-weight:normal;
+    text-decoration:underline;  
+}
+
+span.admin {
+    margin-left:15px;
+}
+
+span.admin a:link { 
+    font-family:Arial, Helvetica, sans-serif;
+    color:red;  
+    font-size:11px; 
+    text-decoration:underline;  
+}
+
+a.admin_link:link { 
+    font-family:Arial, Helvetica, sans-serif;
+    color:red;  
+    font-size:11px; 
+    text-decoration:underline;  
+}
+
+
+a.ovalbutton{
+background: transparent url('{!$Resource.left_button_png}') no-repeat top left;
+display: block;
+float: left;
+font: normal 11px Arial; /* Change 13px as desired */
+line-height: 14px; /* This value + 4px + 4px (top and bottom padding of SPAN) must equal height of button background (default is 24px) */
+height: 24px; /* Height of button background height */
+padding-left: 11px; /* Width of left menu image */
+text-decoration: none;
+}
+
+a:link.ovalbutton, a:visited.ovalbutton, a:active.ovalbutton{
+color: #494949; /*button text color*/
+}
+
+a.ovalbutton span{
+background: transparent url('{!$Resource.right_button_png}') no-repeat top right;
+color:#FFFFFF;
+display: block;
+padding: 4px 11px 4px 0; /*Set 11px below to match value of 'padding-left' value above*/
+}
+
+a.ovalbutton:hover{ /* Hover state CSS */
+background-position: top left;
+}
+
+a.ovalbutton:hover span{ /* Hover state CSS */
+background-position: top right;
+}
+
+.buttonwrapper{ /* Container you can use to surround a CSS button to clear float */
+overflow: hidden; /*See: http://www.quirksmode.org/css/clearing.html */
+width: 100%;
+}
+/* BEGIN Messaging */
+
+.message {
+    background-color: #ffc;
+    border-style: solid;
+    border-width: 1px;
+    color: #000;
+    padding: 6px 8px 6px 6px;
+    margin: 4px 20px;
+}
+
+.confirmM5,
+.warningM5,
+.infoM5,
+.errorM5 {
+    border: none;
+}
+
+.confirmM4,
+.confirmM3,
+.confirmM2,
+.confirmS1 {
+    border-color: #390;
+}
+
+.confirmM4 .msgIcon,
+.confirmSmall { background-image: url(/img/msg_icons/confirm16.png);
+    background-position: 0px 0px;width:16px;
+    height:16px; }
+
+.confirmM3 .msgIcon,
+.confirmMedium { background-image: url(/img/msg_icons/confirm24.png);
+    background-position: 0px 0px;width:24px;
+    height:24px; }
+
+.confirmM2 .msgIcon,
+.confirmLarge { background-image: url(/img/msg_icons/confirm32.png);
+    background-position: 0px 0px;width:32px;
+    height:32px; }
+
+.confirmS1 .msgIcon { background-image: url(/img/msg_icons/securityconfirm48.gif);
+    background-position: 0px 0px;width:48px;
+    height:48px; }
+
+.errorM4,
+.errorM3,
+.errorM2,
+.errorS1 {
+    border-color: #c00;
+}
+
+.errorM4 .msgIcon,
+.errorSmall { background-image: url(/img/msg_icons/error16.png);
+    background-position: 0px 0px;width:16px;
+    height:16px; }
+
+.errorM3 .msgIcon,
+.errorMedium { background-image: url(/img/msg_icons/error24.png);
+    background-position: 0px 0px;width:24px;
+    height:24px; }
+
+.errorM2 .msgIcon,
+.errorLarge { background-image: url(/img/msg_icons/error32.png);
+    background-position: 0px 0px;width:32px;
+    height:32px; }
+
+.errorS1 .msgIcon { background-image: url(/img/msg_icons/securityerror48.gif);
+    background-position: 0px 0px;width:48px;
+    height:48px; }
+
+.infoM4,
+.infoM3,
+.infoM2,
+.infoS1 {
+    border-color: #39f;
+}
+
+.infoM4 .msgIcon,
+.infoSmall { background-image: url(/img/sprites/master.png);
+    background-position: 0px -222px;width:16px;
+    height:16px; }
+
+.infoM3 .msgIcon,
+.infoMedium { background-image: url(/img/msg_icons/info24.png);
+    background-position: 0px 0px;width:24px;
+    height:24px; }
+
+.infoM2 .msgIcon,
+.infoLarge { background-image: url(/img/msg_icons/info32.png);
+    background-position: 0px 0px;width:32px;
+    height:32px; }
+
+.infoS1 .msgIcon { background-image: url(/img/msg_icons/securityinfo48.gif);
+    background-position: 0px 0px;width:48px;
+    height:48px; }
+
+.warningM4,
+.warningM3,
+.warningM2,
+.warningS1 {
+    border-color: #f90;
+}
+
+.warningM4 .msgIcon,
+.warningSmall { background-image: url(/img/msg_icons/warning16.png);
+    background-position: 0px 0px;width:16px;
+    height:16px; }
+
+.warningM3 .msgIcon,
+.warningMedium { background-image: url(/img/msg_icons/warning24.png);
+    background-position: 0px 0px;width:24px;
+    height:24px; }
+
+.warningM2 .msgIcon,
+.warningLarge { background-image: url(/img/msg_icons/warning32.png);
+    background-position: 0px 0px;width:32px;
+    height:32px; }
+
+.warningS1 .msgIcon { background-image: url(/img/msg_icons/securitywarning48.gif);
+    background-position: 0px 0px;width:48px;
+    height:48px; }
+
+.bPageBlock .message {
+    margin: 0 0 4px 0;
+}
+
+.message .messageTable .messageCell {
+    vertical-align: middle;
+}
+
+.pbError .message {
+        text-align: left;
+        font-weight: normal;
+}
+
+.errorM4 .messageText,
+.confirmM4 .messageText,
+.infoM4 .messageText,
+.warningM4 .messageText {
+    margin-left: 24px;
+}
+
+.errorM3 .messageText,
+.confirmM3 .messageText,
+.infoM3 .messageText,
+.warningM3 .messageText {
+    margin-left: 32px;
+}
+
+.errorM2 .messageText,
+.confirmM2 .messageText,
+.infoM2 .messageText,
+.warningM2 .messageText {
+    margin-left: 40px;
+}
+
+.message .messageText {
+    margin-left: 8px;
+}
+
+.message .messageText h4 {
+    font-weight: bold;
+    display: block;
+}
+
+.message .messageText a {
+    margin: 0 8px;
+    color: #333;
+    font-size: 91%;
+}
+
+.message .messageTextAndLinks a {
+    margin: 0 0;
+    font-size: 100%;
+}
+
+/* END Messaging */
+
+div.autocomplete {
+  position: absolute;
+  width: 250px; /* will be adjusted by script.aculo.us */
+  background-color: white; border: 1px solid #888;
+  margin: 0px; padding: 0px;
+}
+div.autocomplete ul {
+  list-style-type: none; margin: 0px; padding: 0px;
+}
+div.autocomplete ul li.selected { background-color:  #ff9;}
+div.autocomplete ul li {
+  list-style-type: none; display: block;
+  font-family: sans-serif; font-size: smaller; color: #444;
+  margin: 0; padding: 0.1em; height: 1.5em; line-height: 1.5em;
+  cursor: pointer;
+}
+
+</apex:page>

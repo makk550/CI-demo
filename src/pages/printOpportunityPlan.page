@@ -1,0 +1,235 @@
+<apex:page renderas="pdf" standardStylesheets="true" showHeader="false" sidebar="false" controller="printOpportunityGridController" tabStyle="Opportunity_Plan__c">
+<head>
+<style>
+.pbBody { border-right-width: 0 }
+.bPageBlock .secondaryPalette { border-right-width: 0 }
+   @page{
+         size:landscape;
+         margin:0.25in;
+         }
+</style>
+</head>
+    <p><h3>Customer Intelligence Licensing Landscape for {!$CurrentPage.parameters.AccName}</h3></p>
+    <apex:pageBlock rendered="{!IF(incOverview=='true',true,false)}" >
+        <apex:dataTable width="100%" value="{!lstOpportunityGrid}" var="opp" id="theTable" rowClasses=" dataRow even first, dataRow odd"
+        styleClass="list" style="page-break-after:always;">
+            <apex:column headerValue="Business Unit">
+                <apex:outputText value="{!opp.BusinessUnit}"/>
+            </apex:column>
+            <apex:column headerValue="NCV Driver">
+                <apex:outputText value="{!opp.NCVDriver}"/>
+            </apex:column>
+            <apex:column headerValue="CA License" styleClass="alignCenter" headerClass="alignCenter">
+                <apex:image url="{!$Resource.greenCircle}" rendered="{!IF(opp.CALicenseCount>0,true,false)}"></apex:image>  
+                <apex:image url="{!$Resource.redCircle}" rendered="{!IF(opp.CALicenseCount<=0,true,false)}"></apex:image>
+            </apex:column>
+            <apex:column headerValue="Competitor License" styleClass="alignCenter" headerClass="alignCenter">
+                <apex:image url="{!$Resource.greenCircle}" rendered="{!IF(opp.CompetitorLicenseIcon=='green',true,false)}"></apex:image>  
+                <apex:image url="{!$Resource.redCircle}" rendered="{!IF(opp.CompetitorLicenseIcon=='red',true,false)}"></apex:image>  
+                <apex:image url="{!$Resource.grayCircle}" rendered="{!IF(opp.CompetitorLicenseIcon=='grey',true,false)}"></apex:image>  
+            </apex:column>
+            <apex:column headerValue="Opportunity" styleClass="alignCenter" headerClass="alignCenter">
+                    <apex:image url="{!$Resource.grayCircle}" rendered="{!IF(opp.Opportunity==null || opp.Opportunity=='',true,false)}"></apex:image>  
+                    <apex:image url="{!$Resource.greenCircle}" rendered="{!IF(opp.Opportunity='Yes',true,false)}"></apex:image>  
+                    <apex:image url="{!$Resource.redCircle}" rendered="{!IF(opp.Opportunity='No',true,false)}"></apex:image>  
+            </apex:column>
+            <apex:column headerValue="Potential Upsell">
+                <apex:outputText value="{!opp.PotentialUpsell}"/>
+            </apex:column>
+            <apex:column headerValue="Open Opportunities" styleClass="alignCenter" headerClass="alignCenter">
+                <apex:outputText value="{!opp.OpenOppsCount}"/>
+            </apex:column>
+        </apex:dataTable>
+    </apex:pageBlock> 
+
+        <apex:repeat value="{!lstOpportunityGrid}" var="opp" id="theRepeat" rendered="{!IF(selectedIds!=null,true,false)}">
+            <apex:outputPanel layout="block" style="page-break-after:always;" rendered="{!contains($CurrentPage.parameters.selectedIds,opp.pdId)}">
+            <apex:sectionHeader title="{!opp.BusinessUnit}/{!opp.NCVDriver}" />            
+                <table>
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <apex:image style="vertical-align:text-top;" url="{!$Resource.greencopywhiteback}" rendered="{!IF(opp.Opportunity='Yes',true,false)}"></apex:image>  
+                            <apex:image style="vertical-align:text-top;" url="{!$Resource.Redcopywhiteback}" rendered="{!IF(opp.Opportunity='No',true,false)}"></apex:image>
+                            &nbsp;<h2>Opportunity</h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <apex:outputLabel value="If there is no opportunity please indicate why:"/>&nbsp;
+                            <apex:outputText value="{!opp.pDet.Opportunity_Question_1__c}" id="theValue"/>
+                        </td>
+                    </tr>
+                </table>
+                <hr>
+                <table>
+                    <tr>
+                        <td colspan="6" valign="top">
+                            <apex:image style="vertical-align:text-top;" url="{!$Resource.greencopywhiteback}" rendered="{!IF(opp.CompetitorLicenseIcon=='green',true,false)}"></apex:image>  
+                            <apex:image style="vertical-align:text-top;" url="{!$Resource.Redcopywhiteback}" rendered="{!IF(opp.CompetitorLicenseIcon=='red',true,false)}"></apex:image>  
+                            <apex:image url="{!$Resource.grayCircle}" rendered="{!IF(opp.CompetitorLicenseIcon=='grey',true,false)}"></apex:image>  
+                            &nbsp;<h2>Competitor License</h2>                        
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Competitor</th>
+                        <th>Product</th>
+                        <th># of License</th>
+                        <th>Renewal Date</th>
+                        <th>Supporter</th>
+                        <th>Detractor</th>
+                    </tr>
+                    <tr>
+                        <td valign="top">
+                            <apex:outputText id="Competitor_Name_1__c" value="{!opp.pDet.Competitor_Name_1__c}"/>
+                        </td>
+                        <td valign="top">
+                            <apex:outputText id="Competitor_Product1__c" value="{!opp.pDet.Competitor_Product1__c}"/>
+                        </td>                
+                        <td valign="top">
+                            <apex:outputText id="Competitor_License1__c" value="{!opp.pDet.Competitor_License1__c}"/>
+                        </td>
+                        <td valign="top">
+                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                <apex:param value="{!opp.pDet.Renewal_Date_1__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td valign="top">
+                            <apex:outputText id="Supporter_Contact1__c" value="{!opp.pDet.Supporter_Contact1__r.Name}"/>
+                        </td>
+                        <td valign="top">
+                            <apex:outputText id="Detractor_Contact1__c" value="{!opp.pDet.Detractor_Contact1__r.Name}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top">
+                            <apex:outputText id="Competitor_Name_2__c" value="{!opp.pDet.Competitor_Name_2__c}"/>
+                        </td>
+                        <td valign="top">
+                            <apex:outputText id="Competitor_Product2__c" value="{!opp.pDet.Competitor_Product2__c}"/>
+                        </td>                
+                        <td valign="top">
+                            <apex:outputText id="Competitor_License2__c" value="{!opp.pDet.Competitor_License2__c}"/>
+                        </td>
+                        <td valign="top">
+                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                <apex:param value="{!opp.pDet.Renewal_Date_2__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td valign="top">
+                            <apex:outputText id="Supporter_Contact2__c" value="{!opp.pDet.Supporter_Contact2__r.Name}"/>
+                        </td>
+                        <td valign="top">
+                            <apex:outputText id="Detractor_Contact2__c" value="{!opp.pDet.Detractor_Contact2__r.Name}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">Rating of Customer Satisfaction and Install?&nbsp;
+                            <apex:outputText id="Competitor_Question_1__c" value="{!opp.pDet.Competitor_Question_1__c}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">How "sticky" are competitors to clients environment?&nbsp;
+                            <apex:outputText id="Competitor_Question_2__c" value="{!opp.pDet.Competitor_Question_2__c}"/>
+                        </td>
+                    </tr>
+                </table>
+                <hr>
+                <table>
+                    <tr>
+                        <td valign="top">
+                                <apex:image style="vertical-align:text-top;" url="{!$Resource.greencopywhiteback}" rendered="{!IF(opp.CALicenseCount>0,true,false)}"></apex:image>  
+                                <apex:image style="vertical-align:text-top;" url="{!$Resource.Redcopywhiteback}" rendered="{!IF(opp.CALicenseCount<=0,true,false)}"></apex:image>
+                                &nbsp;
+                                <h2>CA License</h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Key Contact:&nbsp;
+                            <apex:outputText id="CA_License_Key_Contact__c" value="{!opp.pDet.CA_License_Key_Contact__r.Name}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Rating of Customer Satisfaction and Install?&nbsp;
+                            <apex:outputText id="CA_License_Question_1__c" value="{!opp.pDet.CA_License_Question_1__c}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>How "sticky" are competitors to clients environment?&nbsp;
+                            <apex:outputText id="CA_License_Question_2__c" value="{!opp.pDet.CA_License_Question_2__c}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>If above is 3 or below, what is the cause?&nbsp;
+                            <apex:outputText id="CA_License_Question_3__c" value="{!opp.pDet.CA_License_Question_3__c}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table style="border-style:solid;" border="1" cellspacing="0">
+                    <tr>
+                        <td rowspan="2" valign="top" align="center" bgcolor="#98FB98"><b>Site Id</b></td>
+                        <td rowspan="2" valign="top" align="center" bgcolor="#98FB98"><b>Material Code</b></td>
+                        <td rowspan="2" valign="top" align="center" bgcolor="#98FB98"><b>Product</b></td>
+                        <td colspan="2" align="center" bgcolor="#98FB98"><b>Version</b></td>
+                        <td colspan="3" align="center" bgcolor="#98FB98"><b>Contract</b></td>
+                        <td colspan="3" align="center" bgcolor="#98FB98"><b>Purchase</b></td>
+                        <td rowspan="2" valign="top" align="center" bgcolor="#98FB98"><b>Platform</b></td>
+                    </tr>
+                    <tr>
+     
+                        
+                        <td align="center" bgcolor="#98FB98"><b>Contract</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>Support</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>#</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>Start Date</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>End Date</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>Quantity</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>Price</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>Type</b></td>
+                        
+                    </tr>
+                                <apex:repeat var="license" value="{!opp.licenses}">
+                                <tr>
+                                    <td>{!license.Site_ID__c}&nbsp;</td>
+                                    <td>{!license.Material_Code__c}&nbsp;</td>
+                                    <td>{!license.Product_Name__c}&nbsp;</td>
+                                    <td>{!license.Contract_Version__c}&nbsp;</td>
+                                    <td>{!license.Support_Version__c}&nbsp;</td>
+                                    <td>{!license.Contract_Number__c}&nbsp;</td>
+                                    <td align="right">
+                                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                            <apex:param value="{!license.Contract_Start__c}" />
+                                        </apex:outputText>&nbsp;
+                                    </td>
+                                    <td align="right">
+                                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                            <apex:param value="{!license.Contract_End__c}" />
+                                        </apex:outputText>&nbsp;    
+                                    </td>
+                                    <td align="right">
+                                        <apex:outputText value="{0,number,#0}">
+                                            <apex:param value="{!license.Quantity__c}" />
+                                        </apex:outputText>&nbsp;
+                                    </td>
+                                    <td align="right">
+                                        <apex:outputText value="{0,number,###,###,##0.00}">
+                                            <apex:param value="{!license.Purchase_Price__c}" />
+                                        </apex:outputText>&nbsp;
+                                    </td>
+                                    <td>{!license.License_Type__c}&nbsp;</td>
+                                    <td>{!license.Operation_System__c}&nbsp;</td>
+                                </tr>
+                                </apex:repeat>
+                            </table>               
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center"><b>Note: ODS Values are converted to USD at the Income Statement rate in force for the booking month</b></td>
+                    </tr>
+                </table>
+            </apex:outputPanel>             
+        </apex:repeat>
+</apex:page>

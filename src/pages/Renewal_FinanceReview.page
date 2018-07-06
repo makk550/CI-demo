@@ -1,0 +1,414 @@
+<apex:page controller="Renewal_FinanceReview" >
+ <apex:sectionHeader title="OLD RPD Results"/>
+<apex:form >
+<apex:pageBlock id="pb" >
+<apex:messages />
+<!-- for req 8.04 -3 -by vaich01-->
+    <apex:pageBlockSection title="Total Results" rendered="{!showTotal}">
+        <apex:outputField value="{!rp.Total_Balance_of_Deferred_Revenue__c}"/><br/>
+         <apex:outputField value="{!rp.Total_Balance_of_Unbilled_Receivables__c}"/><br/>
+         <apex:outputField value="{!rp.Total_Realized_Revenue__c}"/><br/>
+         <apex:outputField value="{!rp.Total_Not_Realized_Revenue__c}"/><br/>
+         <apex:outputField value="{!rp.Total_Bill_LC__c}"/><br/>
+         <apex:outputField value="{!rp.Total_Daily_Revenue__c}"/><br/>
+         <apex:outputField value="{!rp.Opportunity__r.RPD_Comments__c}">{!comments}</apex:outputField>
+         </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="OLD RPD Results">
+        <apex:pageBlockTable value="{!rpdResults}" var="oldRPDResult">
+            <apex:column headerValue="Sold-To Site">
+            <apex:outputField value="{!oldRPDResult.Sold_To_Site__c}"/>
+            </apex:column>
+            <apex:column headerValue="Sales Doc Number">
+            <apex:outputField value="{!oldRPDResult.Sales_Doc_Number__c}"/>            
+            </apex:column>
+            <apex:column headerValue="Sales Doc Item">
+            <apex:outputField value="{!oldRPDResult.Sales_doc_item_number__c}"/>
+            </apex:column>
+            <apex:column headerValue="Product Code">
+            <apex:outputField value="{!oldRPDResult.Product_Code__c}"/>
+            </apex:column>
+            <apex:column headerValue="Product">
+            <apex:outputField value="{!oldRPDResult.Product_text__c}"/>
+            </apex:column>
+            <apex:column headerValue="Daily Revenue">    
+           <apex:outputText value="{0,number,##.##}">
+            <apex:param value="{!oldRPDResult.Daily_Revenue__c}"/>
+            </apex:outputText>           
+            </apex:column>
+            <apex:column headerValue="Currency">
+            <apex:outputField value="{!oldRPDResult.Currency_Code__c}"/>
+            </apex:column>
+            <apex:column headerValue="Balance of Deferred Revenue">
+           <apex:outputText value="{0,number,###,###,###.##}">
+            <apex:param value="{!oldRPDResult.Balance_of_Deferred_Revenue__c}"/>
+            </apex:outputText>
+            </apex:column>            
+            <apex:column headerValue="Balance of Unbilled Receivables">
+            <apex:outputText value="{0,number,###,###,###.##}">
+             <apex:param value="{!oldRPDResult.Balance_of_Unbilled_Receivables__c}"/>
+            </apex:outputText>
+            </apex:column>            
+            <apex:column headerValue="Last Bill Date">
+            <apex:outputField value="{!oldRPDResult.Last_Bill_Date__c}"/>
+            </apex:column>
+            <apex:column headerValue="Realized Revenue">
+            <apex:outputText value="{0,number,###,###,###.##}">
+             <apex:param value="{!oldRPDResult.Realized_Revenue__c}"/>
+            </apex:outputText>
+           </apex:column>
+            <apex:column headerValue="Not Realized Revenue">
+            <apex:outputText value="{0,number,###,###,###.##}">
+             <apex:param value="{!oldRPDResult.Not_Realized_Revenue__c}"/>
+            </apex:outputText>
+            </apex:column>            
+            <apex:column headerValue="Total Billed in LC">
+            <apex:outputText value="{0,number,###,###,###.##}">
+             <apex:param value="{!oldRPDResult.Total_Billed_in_LC__c}"/>
+            </apex:outputText>
+            </apex:column>
+            <apex:column headerValue="Last Revenue Post Date">
+            <apex:outputField value="{!oldRPDResult.Last_Revenue_Post_Date__c}"/>
+            </apex:column>             
+            <apex:column headerValue="Contract End Date">
+            <apex:outputField value="{!oldRPDResult.Contract_End_Date__c}"/>
+            </apex:column>             
+            <apex:column headerValue="Days Remaining">
+            <apex:outputText value="{!oldRPDResult.Days_Remaining__c}"/>
+            </apex:column>             
+            <!-- <apex:column headerValue="Daily Revenue">    
+           <apex:outputText value="{0,number,##.##}">
+            <apex:param value="{!oldRPDResult.Daily_Revenue__c}"/>
+            </apex:outputText>           
+            </apex:column> -->              
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    
+     <apex:actionStatus id="myPreviousStatus">
+       <apex:facet name="stop">
+        <apex:commandButton action="{!previous}" style="font-weight:bold" status="myPreviousStatus" value="<-Previous" rendered="{!hasPrevious}"  disabled="false"  rerender="pb" />
+        </apex:facet>
+        <apex:facet name="start">
+        <apex:commandButton action="{!previous}" style="font-weight:bold" status="mySaveStatus224" rendered="{!hasPrevious}" value="Processing..." disabled="true"/> </apex:facet>
+    </apex:actionStatus>
+    <apex:actionStatus id="myNextStatus">
+       <apex:facet name="stop">
+        <apex:commandButton action="{!next}" style="font-weight:bold" status="myNextStatus" value="Next->" rendered="{!HasNext}"  disabled="false"  rerender="pb" />
+        </apex:facet>
+        <apex:facet name="start">
+        <apex:commandButton action="{!next}" style="font-weight:bold" status="myNextStatus" rendered="{!HasNext}" value="Processing..." disabled="true"/> </apex:facet>
+    </apex:actionStatus>
+   
+       
+     <!--<apex:commandButton value="<-Previous" style="font-weight:bold" rerender="pb" rendered="{!hasPrevious}" action="{!previous}"/>
+      <apex:commandButton value="Next->" style="font-weight:bold" rerender="pb" rendered="{!hasNext}" action="{!next}"/>-->
+       <apex:outputPanel >
+            <div align="left">
+             <font size="1pt">Page #:&nbsp;<apex:outputLabel value="{!acpage}"/>&nbsp;out of&nbsp;<apex:outputLabel value="{!npages+1}"/>&nbsp;&nbsp;&nbsp;&nbsp;</font>
+             </div><br/>
+        </apex:outputPanel>
+         
+       <apex:pageBlockButtons >
+            <apex:CommandButton value="Return To Opportunity" action="{!returnToOpp}"/>
+            <apex:commandButton value="Approved By Finance" disabled="{!if($Profile.Name !='2.9 Sales Finance Admin Commit & PR' && $Profile.Name !='1.0 CA Sys Admin Commit & PR' && $Profile.Name !='2.8 Sales Accounting',true,false)}"  action="{!submit}" />
+            <apex:CommandButton value="Export RPD Results" action="{!ExportOLDRPDResult}"/>
+            <apex:CommandButton value="Export DealModeling Scenario" action="{!ExportRenewalScenario}"/>
+            
+       </apex:pageBlockButtons>
+
+<apex:pageBlockSection title="New RPD Results" Columns="1">
+<apex:outputPanel >
+<style>
+.rowstyle:hover
+{
+background: #fafad2;
+}
+</style>
+
+
+<table  cellspacing="0px" width="800px" style="border-top: solid 1px; border-bottom: solid 1px; border-left: solid 1px; border-right: solid 1px">
+    <tr style="background: silver">
+        <td class="rowstyle" width="200px">&nbsp;</td>
+         <apex:repeat var="sc"  value="{!lst}">
+          <td>Scenario <apex:outputField value="{!sc.name}" style="width:50px"/></td>
+        </apex:repeat>
+    </tr>
+        <tr class="rowstyle">
+         <td  >Months</td>
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.Months__c}"/></td>
+        </apex:repeat>
+    </tr>
+    <tr class="rowstyle">
+         <td  >Analysis Currency</td>
+        <apex:repeat var="sc"  value="{!lst}">
+          <td   ><apex:outputField value="{!sc.currencyisocode}"/></td>
+        </apex:repeat>
+    </tr>
+    <tr class="rowstyle"> 
+         <td  >Will Existing Contracts be Respread</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td   ><apex:outputField value="{!sc.Will_Existing_Contracts_be_Respread__c}"/></td>
+        </apex:repeat>  
+     </tr>
+
+    <tr class="rowstyle"> 
+         <td style="  border-bottom:solid 1px">Billing to be Cancelled / Credited</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  style=" border-bottom:solid 1px"><apex:outputField value="{!sc.Remaining_Billing_To_Be_Cancelled_Cred__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+         
+    <tr class="rowstyle"> 
+         <td >New Deal Revenue Date</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td   ><apex:outputField value="{!sc.New_Deal_Revenue_Date__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     
+    <tr class="rowstyle"> 
+         <td >     New Deal End Date</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td   ><apex:outputField value="{!sc.New_Deal_End_Date__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+     <tr class="rowstyle"> 
+         <td >     New Deal Time Amount</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.New_Deal_Time_Amount__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+        
+     <tr class="rowstyle"> 
+         <td >     New Deal  MF Capacity Amount</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.New_Deal_NCV_MF_Capacity_Amount__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     <tr class="rowstyle"> 
+         <td>     New Deal NCV Amount</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td><apex:outputField value="{!sc.New_Deal_NCV_Amount__c}"/></td>
+        </apex:repeat>  
+     </tr>
+       <tr class="rowstyle"> 
+         <td style="border-bottom:solid 1px;  ">  New Deal Services / Educ Amount</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.New_Deal_Services_Educ_Amount__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     
+      <tr class="rowstyle"> 
+         <td >Old Rev Stream Avg Month</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.Old_Rev_Stream_Avg_Month__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+        
+     <tr class="rowstyle"> 
+         <td >Old Rev Stream Avg Day</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.Old_Rev_Stream_Avg_Day__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     
+       <tr class="rowstyle"> 
+         <td >New Time Rev Stream Avg Month</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.New_Time_Rev_Stream_Avg_Month__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+     
+      <tr class="rowstyle"> 
+         <td >New Time Rev Stream Avg Day</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.New_Time_Rev_Stream_Avg_Day__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+        
+     <tr class="rowstyle"> 
+         <td >Difference Per Month</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.Difference_Per_Month__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     
+       <tr class="rowstyle"> 
+         <td >Difference Per Year</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.Difference_Per_Year__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     <tr class="rowstyle"> 
+         <td style="border-bottom:solid 1px;  ">Difference for Whole Deal</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.Difference_for_Whole_Deal__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+     
+       <tr class="rowstyle"> 
+         <td >Proposed Deal Time Only</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.Proposed_Deal_Time_Only__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     
+       <tr class="rowstyle"> 
+         <td style="border-bottom:solid 1px;  ">Revenue Neutral with Time only? GAP?</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.Revenue_Neutral_with_Time_only_GAP__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+       <tr class="rowstyle"> 
+         <td >New Time/MFC Rev Str Avg Mth</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.New_Time_MFC_Rev_Str_Avg_Mth__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     <tr class="rowstyle"> 
+         <td >New Time/MFC Rev Str Avg Day</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td ><apex:outputField value="{!sc.New_Time_MFC_Rev_Str_Avg_Day__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+     
+       <tr class="rowstyle"> 
+         <td >Proposed Deal Time/MFC</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.Proposed_Deal_Time_MFC__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     
+       <tr class="rowstyle"> 
+         <td style="border-bottom:solid 1px;  ">Revenue Neutral w MFC? GAP?</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.Revenue_Neutral_w_MFC_GAP__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+      
+       <tr class="rowstyle"> 
+         <td >New Time/MFC/NCV Rev Str Avg Mth</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.New_Time_MFC_NCV_Rev_Str_Avg_Mth__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     <tr class="rowstyle"> 
+         <td >New Time/MFC/NCV Rev Str Avg Day</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td ><apex:outputField value="{!sc.New_Time_MFC_NCV_Rev_Str_Avg_Day__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+          
+       <tr class="rowstyle"> 
+         <td >Proposed Deal Time/MFC/NCV</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.Proposed_Deal_Time_MFC_NCV__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     
+       <tr class="rowstyle"> 
+         <td style="border-bottom:solid 1px;  ">Revenue Neutral w MFC/NCV? GAP?</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.Revenue_Neutral_w_MFC_NCV_GAP__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+       <tr class="rowstyle"> 
+         <td >New Time/MFC/NCV/Svcs Rev Str Avg Mth</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.New_Time_MFC_NCV_Svcs_Rev_Str_Avg_Mth__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     <tr class="rowstyle"> 
+         <td >New Time/MFC/NCV/Svcs Rev Str Avg Day</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td ><apex:outputField value="{!sc.New_Time_MFC_NCV_Svcs_Rev_Str_Avg_Day__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+     
+       <tr class="rowstyle"> 
+         <td >Proposed Deal Time/MFC/NCV/Svcs</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.Proposed_Deal_Time_MFC_NCV_Svcs__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     
+       <tr class="rowstyle"> 
+         <td style="border-bottom:solid 1px;  ">Revenue Neutral w MFC/NCV/Svcs? GAP?</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.Revenue_Neutral_w_MFC_NCV_Svcs_GAP__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+     
+     <tr class="rowstyle"> 
+         <td >Pro Rated Credit</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td  ><apex:outputField value="{!sc.Pro_Rated_Credit__c}"/></td>
+        </apex:repeat>  
+     </tr> 
+          
+     <tr class="rowstyle"> 
+         <td >Additional Committed Billing</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td ><apex:outputField value="{!sc.Additional_Committed_Billing__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     <tr class="rowstyle"> 
+         <td >Gross Deal Should Be Rev Neutral at:</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td ><apex:outputField value="{!sc.Gross_Deal_Should_Be_Rev_Neutral_at__c}"/></td>
+        </apex:repeat>  
+     </tr>  
+     
+      <tr class="rowstyle"> 
+         <td style="  border-top:solid 1px;">Comments</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td style=" border-top:solid 1px;"><apex:inputField value="{!sc.Comments__c}"/></td>
+        </apex:repeat>  
+       
+     </tr>
+          <tr class="rowstyle"> 
+         <td style="  border-top:solid 1px;">Scenario Approved By Finance</td>   
+        <apex:repeat var="sc"  value="{!lst}">
+          <td style=" border-top:solid 1px;">
+          <apex:inputCheckbox value="{!sc.Finance_Approval__c}" />
+          <!--<apex:inputField value="{!sc.Finance_Approval__c}"/> -->
+                  <!-- <input type="radio" id="approval" name="app" onclick="show()" value="{!sc.Finance_Approval__c}">  
+                   <!-- <apex:inputHidden value="{!sc.Finance_Approval__c}" id="theField" /> 
+                     <script>
+                    var app;
+                    function show(){
+                    alert('hai');
+                    document.getElementsByName('{!$Component.theField}').value ='true'; 
+                                      alert(document.getElementsByName('{!$Component.theField}').value);
+                                        }
+                     function checked(approval){
+                    if(approval.checked){
+                        alert('hai');
+                    app = true; 
+                     }else{app = false;}
+                     }
+                   </script>
+                   </input> -->
+                     </td>
+        </apex:repeat>  
+     </tr>
+ 
+   </table> 
+   </apex:outputPanel>
+   
+    
+    <apex:outputLabel style="color:red" >{!msg}</apex:outputLabel>
+  </apex:pageBlockSection>  
+</apex:pageBlock>
+</apex:form>
+</apex:page>

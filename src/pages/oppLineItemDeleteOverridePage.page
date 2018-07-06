@@ -1,0 +1,68 @@
+<apex:page standardController="OpportunityLineItem" extensions="oppLineItemDeleteOverride" action="{!doDelete}">
+    <script type="text/javascript" src="/js/functions.js"></script> 
+    <script src="/soap/ajax/15.0/connection.js" type="text/javascript"></script> 
+    <script>
+        window.onload = new function(){
+            executeOnloadFunction();
+        }
+        function executeOnloadFunction(){
+            sforce.connection.init("{!$API.Session_ID}", "{!$API.Partner_Server_URL_90}"); 
+            
+            var recordtypequery = "select Id,Name from RecordType where (Name='New Opportunity' OR Name = 'Acquisition' OR Name = 'Deal Registration' OR Name='SB Record Type' OR Name='Entitlement Sync') and IsActive=true and SObjectType='Opportunity' order by Name"; 
+            var queryresults = sforce.connection.query(recordtypequery); 
+            var results = queryresults.getArray('records'); 
+            console.log('---result----'+results);
+            var newOppRecId;
+            var acqRecId;
+            var dealRegRecId;
+            var sbRecId;
+            var entlSyncRecId;
+            
+            for(i=0;i<results.length;i++){
+                if(results[i].get("Name")=='New Opportunity')
+                    newOppRecId = results[i].get("Id").substring(0,15);
+                else if(results[i].get("Name")=='Acquisition')
+                    acqRecId = results[i].get("Id").substring(0,15);
+                    else if(results[i].get("Name")=='Deal Registration')
+                        dealRegRecId = results[i].get("Id").substring(0,15);
+                        else if(results[i].get("Name")=='SB Record Type')
+                            sbRecId = results[i].get("Id").substring(0,15);
+                			else if(results[i].get("Name")=='Entitlement Sync')
+                            	entlSyncRecId = results[i].get("Id").substring(0,15);
+            }
+            
+            var recType = '{!Opp.RecordTypeId}';
+            recType = recType.substring(0,15);
+            console.log('rec type---'+recType);
+            if(recType==sbRecId  || recType == entlSyncRecId){
+                console.log('--entered----');
+                alert('In order to delete this line item, go to the primary quote and delete the line item from there.');
+                window.parent.location.href = '{!$Site.prefix}/{!opp.Id}'; 
+                //return false;
+                backtoOpp();
+            }
+        }
+    
+    function backtoOpp(){
+    backtoOpp_action();
+    }
+    </script>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">
+    </script>
+    
+    <div id="overlay_div" class="waiting" style="position:fixed; top:0; left:0; height:100%; width:100%; z-index:2000; background-color:#999; opacity:.6; display:none;" />
+    <div style="position:fixed; top:35%; left:45%; width:150px; height:115px; background-color:#FFF; border:#FF0000 thin solid; z-index:2001; display:none;" align="center" class="ui-corner-all waiting">
+        <div align="center" style="margin-top:17px;">
+            <img src="{!$Resource.loadingGif}"/>
+        </div>
+        <div align="center" id="waiting_msg">Working...</div>
+    </div>
+    <apex:actionStatus id="overlayStatus" onstart="$('.waiting').show();" onstop="$('.waiting').hide();"/>
+
+    
+    <apex:form >
+        <apex:actionFunction name="backtoOpp_action" action="{!backtoOpp}" status="overlayStatus" reRender="error"/>
+        <apex:pageMessages id="error"/>
+    </apex:form>
+</apex:page>

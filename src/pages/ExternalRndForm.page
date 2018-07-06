@@ -1,0 +1,24 @@
+<apex:page standardController="External_RnD__c" extensions="CreateExternalRndClass" action="{!redirect}">
+
+<apex:sectionHeader title="External R&D" subtitle="{!IF(External_RnD__c.Id!=null, External_RnD__c.Name, 'New R&D')}"/>
+    <apex:form >
+    <apex:pageMessages />
+    <apex:pageBlock title="R&D Edit" mode="edit">
+     <apex:pageBlockButtons location="top"  >
+                    <apex:commandButton value="Save" action="{!validate}" rendered="{!NOT(showButton)}" />
+                    <apex:commandButton value="Continue" action="{!save}" rendered="{!showButton}"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}"/>
+      </apex:pageBlockButtons>         
+      <apex:pageBlockSection title="Information" columns="2">
+         <apex:inputField value="{!External_RnD__c.Reference_ID__c}" required="true"/>     
+         <apex:inputField value="{!External_RnD__c.Component_ID__c}" />
+         <apex:inputField value="{!External_RnD__c.External_System__c}" required="true"/>
+         <apex:inputField value="{!External_RnD__c.Component_Release__c}" />
+         <apex:inputField value="{!External_RnD__c.Type__c}" required="true" />
+         <apex:inputField value="{!External_RnD__c.Solution_Type__c}" /> 
+         <apex:inputField value="{!External_RnD__c.Description__c}"/>
+         <apex:outputField value="{!External_RnD__c.Case__c}" />
+       </apex:pageBlockSection>  
+   </apex:pageBlock>
+   </apex:form>
+</apex:page>

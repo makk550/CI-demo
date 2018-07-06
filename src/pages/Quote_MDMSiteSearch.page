@@ -1,0 +1,660 @@
+<apex:page controller="Quote_MDMSiteSearchController" showHeader="false"  sidebar="false" applyHtmlTag="false" applyBodyTag="false" >
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <head>
+        <apex:slds />
+        <style>
+            .hederSD{
+                font-weight:bold;  
+                color: #0070d2;
+              }
+            .slds-scope .slds-text-title--caps{
+                font-weight: bold !importatant;
+            }
+            .bPageBlock {
+            	width:100% !important;
+            }
+        </style>
+    </head>
+    <body class="slds-scope">
+     <apex:form id="theForm" styleClass="hasMotif lookupTab  LookupSearchFrame">
+         <apex:pageMessages ></apex:pageMessages>
+        <script>
+         
+         function forCreatFunc(status,name,id,street,street2,city,state,pincode,country,nameLCL,streetLCL,street2LCL,cityLCL,stateLCL,cmpRegno){
+             if(status=='OK'){
+                 fillIn(name,id,street,street2,city,state,pincode,country,nameLCL,streetLCL,street2LCL,cityLCL,stateLCL,cmpRegno);
+             }
+         }
+         
+         function forDupSearchFunc(name,id,street,street2,city,state,pincode,country,nameLCL,streetLCL,street2LCL,cityLCL,stateLCL,cmpRegno,accGroup,accId,edmAct,action){ 
+             
+             populateEmailMethod(id,accGroup,accId,edmAct,action);
+             fillIn(name,id,street,street2,city,state,pincode,country,nameLCL,streetLCL,street2LCL,cityLCL,stateLCL,cmpRegno);
+             
+         }
+         
+         function forNameValidation(){
+         
+         }
+         
+         function populateEmailMethod(id,accGroup,accId,edmAct,action){
+             if (null==winMain)       
+             {          
+                 winMain=window.parent.opener; 
+                 
+             } 
+             var stype = "{!SearchType}";
+             var ele=winMain.document.getElementById('{!$CurrentPage.parameters.selectedSiteId}');
+             ele.value=id;
+             ele=winMain.document.getElementById('{!$CurrentPage.parameters.selectedAccGroup}');
+             ele.value=accGroup;
+             ele=winMain.document.getElementById('{!$CurrentPage.parameters.selectedAccId}');
+             ele.value=accId;
+             ele=winMain.document.getElementById('{!$CurrentPage.parameters.selectedType}');
+             ele.value=stype;
+             ele=winMain.document.getElementById('{!$CurrentPage.parameters.edmAction}');
+             ele.value=edmAct;
+             ele=winMain.document.getElementById('{!$CurrentPage.parameters.action}');
+             ele.value=action;
+         }
+
+             winMain=window.opener;       
+             function fillIn(name, id,street, street2, city, state,pincode,country,nameLCL,streetLCL,street2LCL,cityLCL,stateLCL,cmpRegno){       
+                   console.debug(name+'--'+id+'--'+'--'+street+'--'+street2+'--'+city+'--'+state+'--'+pincode+'--'+country);
+                    if (null==winMain)       
+                    {          
+                        winMain=window.parent.opener; 
+                            
+                    }    
+                     var ele=winMain.document.getElementById('{!$CurrentPage.parameters.namef}');
+                     ele.value=name;
+                     var hiddenEle = '{!$CurrentPage.parameters.namef}' + 'Hidden';
+                     ele=winMain.document.getElementById(hiddenEle);
+                     ele.value=name;
+                     ele=winMain.document.getElementById('{!$CurrentPage.parameters.idf}');
+                     ele.value=id;
+                     hiddenEle = '{!$CurrentPage.parameters.idf}' + 'Hidden';
+                     ele=winMain.document.getElementById(hiddenEle);
+                     ele.value=id;
+                     ele=winMain.document.getElementById('{!$CurrentPage.parameters.street}');
+                     ele.value=street;
+                     ele=winMain.document.getElementById('{!$CurrentPage.parameters.street2}');
+                     ele.value=street2;
+                     ele=winMain.document.getElementById('{!$CurrentPage.parameters.city}');
+                     ele.value=city;  
+                     ele=winMain.document.getElementById('{!$CurrentPage.parameters.state}');
+                     ele.value=state;  
+                     ele=winMain.document.getElementById('{!$CurrentPage.parameters.pincode}');
+                     ele.value=pincode;
+                     ele=winMain.document.getElementById('{!$CurrentPage.parameters.country}');
+                     ele.value=country;
+                     
+                 
+                    var serchtype="{!SearchType}";
+                     if(serchtype == 'SOLDTO'){
+                         
+                         /*ele=winMain.document.getElementById('{!$CurrentPage.parameters.CompanyCode}');
+                         ele.value=companycode;
+                         ele=winMain.document.getElementById('{!$CurrentPage.parameters.SalesOrg}');
+                         ele.value=salesorg;
+                         hiddenEle = '{!$CurrentPage.parameters.SalesOrg}' + 'Hidden';
+                         ele=winMain.document.getElementById(hiddenEle);
+                         ele.value=salesorg;*/
+                         
+                         var RegEle = '{!$CurrentPage.parameters.idf}' + 'Regcode';
+                         console.debug(RegEle);
+                         ele=winMain.document.getElementById(RegEle);
+                         ele.value=cmpRegno;
+                         console.debug(RegEle);
+                         RegEle = RegEle +'Hidden';
+                         ele=winMain.document.getElementById(RegEle);
+                         ele.value=cmpRegno;
+                         console.debug(RegEle);
+                         
+                     }
+                    if(nameLCL != ''){
+                         var LCLEle = '{!$CurrentPage.parameters.namef}' + 'LCL';
+                         var ele=winMain.document.getElementById(LCLEle);
+                         ele.value=nameLCL;
+                         LCLEle = '{!$CurrentPage.parameters.street}' + 'LCL';
+                         ele=winMain.document.getElementById(LCLEle);
+                         ele.value=streetLCL;
+                         LCLEle = '{!$CurrentPage.parameters.street2}' + 'LCL';
+                         ele=winMain.document.getElementById(LCLEle);
+                         ele.value=street2LCL;
+                         LCLEle = '{!$CurrentPage.parameters.city}' + 'LCL';
+                         ele=winMain.document.getElementById(LCLEle);
+                         ele.value=cityLCL;
+                         LCLEle = '{!$CurrentPage.parameters.state}' + 'LCL';
+                         ele=winMain.document.getElementById(LCLEle);
+                         ele.value=stateLCL;
+                        
+                    }
+                     
+                     CloseWindow();    
+            
+                }      
+                function CloseWindow()    { 
+            
+                    winMain=window.opener;       
+                    if (null==winMain)       
+                    {          
+                        winMain=window.parent.opener;       
+                    }
+                    var serchtype="{!SearchType}";
+                    if(serchtype == 'SOLDTO'){
+                        //alert('SOLDTO');
+                        winMain.closeMDMLookupPopup();
+                     }else if(serchtype=='ENDUSERID'){
+                         winMain.closeEndUserLookupPopup();
+                     }else{
+                         //alert('Other');
+                         winMain.closeBILLLookupPopup(); 
+                     }
+                      
+                 
+                }
+
+        </script>
+          <apex:actionStatus id="TableUpdateStatus">
+                    <!-- loading message -->
+                    <apex:facet name="start">
+                       <apex:outputPanel >
+                            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                                &nbsp;
+                            </div>
+                            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 9999; margin: 15% 50%">
+                                <div style="display: inline-block; padding: 2px; width: 125px;">
+                                    <img src="{!URLFOR($Asset.SLDS, '/assets/images/spinners/slds_spinner_brand.gif')}" style="float: left; margin: 8px;" />
+                                    <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                                </div>
+                            </div>
+                       </apex:outputPanel>
+                    </apex:facet>
+              <apex:facet name="stop"> </apex:facet>
+          </apex:actionStatus>
+           
+      <apex:pageBlock id="TablePanel">
+          
+          <!-- This div controls the header and lean customer create buttons -->
+          <div class="slds-page-header">
+          <div class="slds-grid">
+            <div class="slds-col slds-has-flexi-truncate">
+              <div class="slds-media slds-no-space slds-grow">
+                <div class="slds-media__figure">
+                  <svg class="slds-icon slds-icon-standard-account" aria-hidden="true">
+                    <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#search')}"></use>
+                  </svg>
+                </div>
+                <div class="slds-media__body">
+                  <p class="slds-text-title--caps slds-line-height--reset">Site Search</p>
+                  <h1 class="slds-page-header__title slds-m-right--small slds-align-middle slds-truncate" title="this should match the Record Title">{!SearchType}</h1>
+                </div>
+              </div>
+            </div>
+             <!--Search Header-->
+              <apex:commandbutton styleClass="slds-button slds-button_brand" value="Create Customer" rendered="{!ShowDataTable}" action="{!SelectCountry}" reRender="TablePanel" status="TableUpdateStatus">
+                          </apex:commandbutton>
+       
+            </div>
+          </div>
+          <!-- Div controlling the header and lean customer create buttons ends here -->
+          
+          <!-- This panel displays the site search screen where user inputs site search details-->
+          <apex:outputPanel id="NameFilter" rendered="{!siteSearchScreenEnabled}">
+              <br/>
+              <div class="slds-form slds-form_horizontal">
+                  <div class="slds-form-element slds-size--1-of-2">
+                      <label class="slds-form-element__label" ><abbr class="slds-required" title="required">*</abbr>Site Name: (Starts With)</label>
+                      <div class="slds-form-element__control">
+                          <apex:inputText styleClass="slds-input" value="{!SiteSearchRequestObj.Name1}"/>
+                          <div class="slds-form-element__help" id="form-error-01">Please enter atleast 2 characters for Site Name</div>
+                      </div>
+                  </div>
+              <br/>
+              <div class="slds-form-element slds-size--1-of-2">
+                  <label class="slds-form-element__label">Select Country</label>
+                  <div class="slds-form-element__control">
+                      <apex:selectList value="{!SiteSearchRequestObj.Country}" size="1" id="selCountry1" styleClass="slds-select">
+                          <apex:selectoptions value="{!countryPicklistValues}"></apex:selectoptions>
+                      </apex:selectList>
+                  </div>
+              </div>
+              <div class="slds-form-element slds-size--1-of-2"><br/>
+                  <div class="slds-form-element__control">
+                  <apex:commandbutton styleClass="slds-button slds-button_brand" value="Search Site" action="{!siteSearch}" reRender="TablePanel" status="TableUpdateStatus">
+                          </apex:commandbutton>
+                  </div>
+              </div>
+              </div>
+          </apex:outputPanel>
+          <!-- Panel displaying the site search screen where user inputs site search details, ends-->
+          
+          <!-- This panel displays the site search result details-->
+          <apex:outputPanel id="DispalyData" rendered="{!ShowDataTable}">
+              
+              <apex:dataTable value="{!MDMsitedataPagenation}" var="a" cellspacing="2" headerClass="headerRow"  styleClass="slds-table slds-table--bordered slds-table--cell-buffer">
+                  <apex:column >
+                      <apex:facet name="header">
+                          <div class="hederSD">
+                              Site ID
+                          </div>
+                      </apex:facet>
+                      <apex:outputLink value="#" onclick="fillIn('{!JSENCODE(a.Name)}', '{!a.SiteID}','{!JSENCODE(a.Street)}','{!JSENCODE(a.Street2)}','{!JSENCODE(a.City)}','{!JSENCODE(a.State)}','{!JSENCODE(a.Pincode)}','{!JSENCODE(a.Country)}','{!JSENCODE(a.NameLocal)}','{!JSENCODE(a.StreetLocal)}','{!JSENCODE(a.Street2Local)}','{!JSENCODE(a.CityLocal)}','{!JSENCODE(a.StateLocal)}','{!JSENCODE(a.ABNNumber)}')">{!a.SiteID}</apex:outputLink>
+                  </apex:column>
+                  <apex:column value="{!a.Name}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Name</div>
+                          
+                      </apex:facet> 
+                  </apex:column>
+                  <apex:column value="{!a.Name2}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Name2</div>
+                          
+                      </apex:facet> 
+                  </apex:column>
+                  <apex:column value="{!a.Street}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Street</div>
+                          
+                      </apex:facet>
+                  </apex:column>
+                  <apex:column value="{!a.Street2}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Street2</div>
+                          
+                      </apex:facet>
+                  </apex:column>
+                  <apex:column value="{!a.City}">
+                      <apex:facet name="header">
+                          <div class="hederSD">City</div>
+                          
+                      </apex:facet>
+                  </apex:column>
+                  <apex:column value="{!a.Pincode}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Postal Code</div>
+                          
+                      </apex:facet>
+                  </apex:column>
+                  <apex:column value="{!a.State}">
+                      <apex:facet name="header">
+                          <div class="hederSD">State</div>
+                          
+                      </apex:facet>
+                  </apex:column>
+                  <apex:column value="{!a.Country}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Country</div>
+                          
+                      </apex:facet>
+                  </apex:column>
+              </apex:dataTable>
+              
+              
+              
+          </apex:outputPanel>
+          <!-- Panel displaying the site search result details, ends-->
+          
+          <div style="slds-float--right">                 
+              <apex:pageBlockButtons rendered="{!ShowDataTable}" location="bottom">   
+                  <apex:commandButton styleClass="slds-button slds-button_neutral" value="Previous" action="{!previous}" disabled="{!!PrevCommandLink}" reRender="TablePanel" status="TableUpdateStatus"/>
+                  &nbsp;<apex:outputText style="slds-text-color_inverse"> Page {!currentPage}/{!pages} </apex:outputText> &nbsp;   
+                  <apex:commandButton styleClass="slds-button slds-button_neutral" value="Next" action="{!next}" disabled="{!!NextCommandLink}" reRender="TablePanel" status="TableUpdateStatus"/> 
+              </apex:pageBlockButtons>  
+          </div>          
+            
+             
+              
+          
+          <apex:outputPanel id="CreateCustomer" rendered="{!ShowCreateSite}">
+              <div style="margin:10px;">
+                  
+                    <fieldset class="slds-form--compound">
+                      <legend class="slds-form-element__label slds-text-title--caps">Customer Information</legend>
+                      <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                          <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Name1</label>
+                              <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Name1}" maxlength="40"/>
+                          </div>
+                          <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label">Name2</label>
+                            <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Name2}" maxlength="40"/>
+                          </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                           <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label">Name3</label>
+                              <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Name3}" maxlength="40"/>
+                          </div>
+                          <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label">Name4</label>
+                            <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Name4}" maxlength="40"/>
+                          </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                           <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Street1</label>
+                              <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Street1}" maxlength="60"/>
+                          </div>
+                          <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label">Street2</label>
+                            <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Street2}" maxlength="40"/>
+                          </div>
+                        </div>
+                          <div class="slds-form-element__row">
+                           <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label">Street3</label>
+                              <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Street3}"  maxlength="40"/>
+                          </div>
+                          <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label">Street4</label>
+                            <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Street4}" maxlength="40"/>
+                          </div>
+                        </div>
+                          <div class="slds-form-element__row">
+                           <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label">Street5</label>
+                            <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Street5}" maxlength="40"/>
+                          </div>
+                          <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Country</label>
+                            <apex:inputText value="{!LeanCustomerObj.CountryLabel}" styleClass="slds-input" disabled="true"/>
+                          </div>
+                        </div>
+                           <div class="slds-form-element__row">
+                               <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label"><apex:outputLabel rendered="{!isStateRequiredLean}"><abbr class="slds-required" title="required">*</abbr></apex:outputLabel>State</label>
+                            <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.RegionName}" rendered="{!!isStatePicklist}" maxlength="25"/>
+                             <apex:selectList value="{!LeanCustomerObj.RegionCode}" size="1" id="selstate" styleClass="slds-select" rendered="{!isStatePicklist}">
+                                                    <apex:selectoptions value="{!StatePicklistValues}"></apex:selectoptions>
+                             </apex:selectList>
+                          </div>
+                           <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>City</label>
+                            <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.City}" maxlength="35"/>
+                          </div>
+                          
+                        </div>
+                          <div class="slds-form-element__row">
+                              <div class="slds-form-element slds-size--1-of-2">
+                                <label class="slds-form-element__label"><apex:outputLabel rendered="{!isPostalRequiredLean}"><abbr class="slds-required" title="required">*</abbr></apex:outputLabel>Postal Code</label>
+                                  <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.PostalCode}"/>
+                              </div>
+                               <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label">Phone Number</label>
+                                  <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.PhoneNumber}" maxlength="25"/>
+                              </div>
+                              
+                        </div>
+                          <div class="slds-form-element__row">
+                           <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label">CA Account ID</label>
+                            <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.CAAccountID}" disabled="true"/>
+                          </div>
+                          <div class="slds-form-element slds-size--1-of-2">
+                            <label class="slds-form-element__label">Account Group</label>
+                            <apex:inputText value="{!LeanCustomerObj.AccountGroup}" styleClass="slds-input" disabled="true"/>
+                          </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <apex:outputPanel styleClass="slds-form-element slds-size--1-of-1" layout="block" style="padding-top:10px;" rendered="{!isTaxsectionRequired}">
+                                <fieldset class="slds-form--compound">
+                                    <legend class="slds-form-element__label slds-text-title--caps">Tax Details:</legend>
+                                    <div class="slds-form-element__group">
+                                        <div class="slds-form-element__row">
+                                          <apex:outputPanel styleClass="slds-form-element slds-size--1-of-2" rendered="{!CountryMappedData.TaxNumber1__c}" layout="block">
+                                            <label class="slds-form-element__label">{!CountryMappedData.TaxNumber1Label__c}</label>
+                                              <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.TaxNumber1}" maxlength="25"/>
+                                          </apex:outputPanel>
+                                            <apex:outputPanel styleClass="slds-form-element slds-size--1-of-2" rendered="{!CountryMappedData.TaxNumber2__c}" layout="block">
+                                                <label class="slds-form-element__label">{!CountryMappedData.TaxNumber2Label__c}</label>
+                                                <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.TaxNumber2}" maxlength="25"/>
+                                          </apex:outputPanel>
+                                        </div>
+                                        <div class="slds-form-element__row">
+                                          <apex:outputPanel styleClass="slds-form-element slds-size--1-of-2" rendered="{!CountryMappedData.TaxNumber3__c}" layout="block">
+                                            <label class="slds-form-element__label">{!CountryMappedData.TaxNumber3Label__c}</label>
+                                              <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.TaxNumber3}" maxlength="25"/>
+                                          </apex:outputPanel>
+                                            <apex:outputPanel styleClass="slds-form-element slds-size--1-of-2" rendered="{!CountryMappedData.TaxNumber4__c}" layout="block">
+                                                <label class="slds-form-element__label">{!CountryMappedData.TaxNumber4Label__c}</label>
+                                                <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.TaxNumber4}" maxlength="25"/>
+                                          </apex:outputPanel>
+                                        </div>
+                                        <div class="slds-form-element__row">
+                                            <apex:outputPanel styleClass="slds-form-element slds-size--1-of-2" rendered="{!CountryMappedData.VATRegistrationNumber__c}" layout="block">
+                                                <label class="slds-form-element__label">{!CountryMappedData.VATRegistrationNumberLabel__c}</label>
+                                                <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.VATRegistrationNumber}" maxlength="25"/>
+                                           </apex:outputPanel>
+                                        </div>
+                                        <div class="slds-form-element__row">
+                                            <apex:outputPanel styleClass="slds-form-element slds-size--1-of-2" rendered="{!CountryMappedData.GSTRegistrationNumber__c}" layout="block">
+                                                <label class="slds-form-element__label">{!CountryMappedData.GSTRegistrationNumberLabel__c}</label>
+                                                <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.GSTRegistrationNumber}" maxlength="25"/>
+                                           </apex:outputPanel>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </apex:outputPanel>
+                        </div>
+                        <div class="slds-form-element__row">
+                          <apex:outputPanel styleClass="slds-form-element slds-size--1-of-1" layout="block" style="padding-top:10px;" rendered="{!isLocalRequired}">
+                            
+                              
+                            <fieldset class="slds-form--compound">
+                              <legend class="slds-form-element__label slds-text-title--caps">International Version :</legend>
+                              <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                  <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Name1 (Local)</label>
+                                      <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Name1InternationalLanguage}" maxlength="40"/>
+                                  </div>
+                                  <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label">Name2 (Local)</label>
+                                    <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Name2InternationalLanguage}" maxlength="40"/>
+                                  </div>
+                                </div>
+                                <div class="slds-form-element__row">
+                                   <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label">Name3 (Local)</label>
+                                      <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Name3InternationalLanguage}" maxlength="40"/>
+                                  </div>
+                                  <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label">Name4 (Local)</label>
+                                    <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Name4InternationalLanguage}" maxlength="40"/>
+                                  </div>
+                                </div>
+                                <div class="slds-form-element__row">
+                                   <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Street1 (Local)</label>
+                                      <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Street1InternationalLanguage}" maxlength="60"/>
+                                  </div>
+                                  <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label">Street2 (Local)</label>
+                                    <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Street2InternationalLanguage}" maxlength="40"/>
+                                  </div>
+                                </div>
+                                  <div class="slds-form-element__row">
+                                   <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label">Street3 (Local)</label>
+                                      <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Street3InternationalLanguage}" maxlength="40"/>
+                                  </div>
+                                  <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label">Street4 (Local)</label>
+                                    <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Street4InternationalLanguage}" maxlength="40"/>
+                                  </div>
+                                </div>
+                                  <div class="slds-form-element__row">
+                                   <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label">Street5 (Local)</label>
+                                    <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.Street5InternationalLanguage}" maxlength="40"/>
+                                  </div>
+                                  <div class="slds-form-element slds-size--1-of-2">
+                                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>City (Local)</label>
+                                    <apex:inputText styleClass="slds-input" value="{!LeanCustomerObj.CityInternationalLanguage}" maxlength="35"/>
+                                  </div>
+                                </div>
+                              </div>
+                            </fieldset>
+                           </apex:outputPanel>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <apex:commandButton value="Create Customer"   styleClass="slds-button slds-button--brand slds-container--center" reRender="theForm" status="TableUpdateStatus" action="{!saveLeanCustomer}" oncomplete="forCreatFunc('{!JSENCODE(returnAzureResponse.status)}','{!JSENCODE(returnAzureResponse.Create_Customer.Name1)}', '{!SiteId}','{!JSENCODE(returnAzureResponse.Create_Customer.Street)}','{!JSENCODE(returnAzureResponse.Create_Customer.Street2)}','{!JSENCODE(returnAzureResponse.Create_Customer.City)}','{!JSENCODE(returnAzureResponse.Create_Customer.Region)}','{!JSENCODE(returnAzureResponse.Create_Customer.Postal_Code)}','{!JSENCODE(returnAzureResponse.Create_Customer.Country)}','{!JSENCODE(returnAzureResponse.Create_Customer.Name1InternationalLanguage)}','{!JSENCODE(returnAzureResponse.Create_Customer.Street1InternationalLanguage)}','{!JSENCODE(returnAzureResponse.Create_Customer.Street2InternationalLanguage)}','{!JSENCODE(returnAzureResponse.Create_Customer.CityInternationalLanguage)}','{!JSENCODE(returnAzureResponse.Create_Customer.CityInternationalLanguage)}','{!JSENCODE(returnAzureResponse.Create_Customer.VAT_Registration_Number)}')"/>
+                        </div>
+                      </div>
+                    </fieldset>
+                    
+                 </div>
+          </apex:outputPanel>
+          <apex:outputPanel id="SelectCountry" rendered="{!ShowCountrySelect}" layout="block">
+                <!--###### MODAL BOX Start From Here ######--> 
+                    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                        <div class="slds-modal__container">
+                            <!-- ###### MODAL BOX HEADER Part Start From Here ######-->
+                            <div class="slds-modal__header">
+                                <h2 id="header99" class="slds-text-heading--medium">Please Select Country</h2>
+                            </div>
+                            <!--###### MODAL BOX BODY Part Start From Here ######-->
+                            <div class="slds-modal__content slds-p-around--medium">
+                                <div class="slds-select_container">
+                                  <apex:selectList value="{!LeanCustomerCountry}" size="1" id="selCountry" styleClass="slds-select">
+                                                    <apex:selectoptions value="{!countryPicklistValues}"></apex:selectoptions>
+                                  </apex:selectList>
+                                </div>
+                            </div>
+                            <!--###### MODAL BOX FOOTER Part Start From Here ######-->
+                            <div class="slds-modal__footer">
+                                <apex:commandbutton action="{!cancelCountry}" styleClass="slds-button slds-button--neutral" value="Cancel" reRender="TablePanel" status="TableUpdateStatus"></apex:commandbutton>
+                                <apex:commandbutton action="{!createcustomer}" styleClass="slds-button slds-button--brand" value="Continue" reRender="TablePanel" status="TableUpdateStatus"></apex:commandbutton>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop slds-backdrop--open"></div>
+          </apex:outputPanel>
+          <apex:outputPanel id="DuplicateSiteSection" rendered="{!ShowDupTable}">
+              <br/>
+              <h1>
+                  Potential Matches Found
+              </h1>
+              <apex:dataTable value="{!AzureDuplicateRecords}" var="d" cellspacing="2" headerClass="headerRow"  width="100%" styleClass="slds-table slds-table--bordered slds-table--cell-buffer">
+                    
+                  <apex:column value="{!d.percentage} %">
+                    <apex:facet name="header">
+                        <div class="hederSD">Match Score</div>
+                    </apex:facet> 
+                </apex:column>
+                  
+                  <apex:column value="{!d.CA_Account_ID}">
+                      <apex:facet name="header">
+                          <div class="hederSD">CA Account ID</div>
+                      </apex:facet> 
+                  </apex:column>
+                  
+                  <apex:column >
+                      <apex:facet name="header">
+                          <div class="hederSD">
+                              Site ID
+                          </div>
+                      </apex:facet>                    
+                      <apex:outputLink value="#" onclick="forDupSearchFunc('{!JSENCODE(d.Name1)}', '{!d.SoldToId}','{!JSENCODE(d.Street)}','{!JSENCODE(d.Street2)}','{!JSENCODE(d.City)}','{!JSENCODE(d.Region_code)}','{!JSENCODE(d.Postal_Code)}','{!JSENCODE(d.Country_code)}',' ',' ',' ',' ',' ',' ','{!JSENCODE(d.Account_Group)}','{!JSENCODE(d.CA_Account_ID)}','{!JSENCODE(d.EDM_Action)}','{!JSENCODE(d.Action)}')" rendered="{!d.allowSelection}">{!d.SoldToId}</apex:outputLink>
+                      <apex:outputText rendered="{!!d.allowSelection}">{!d.SoldToId}</apex:outputText>
+                  </apex:column>
+                  
+                  <apex:column value="{!d.Account_Group}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Account Group</div>
+                      </apex:facet> 
+                  </apex:column>
+                  
+                  <apex:column value="{!d.Action}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Action</div>
+                      </apex:facet> 
+                  </apex:column>
+                  
+                  <apex:column value="{!d.Name1}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Name</div>
+                      </apex:facet> 
+                  </apex:column>
+                  
+                  <apex:column value="{!d.Name2}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Name2</div>
+                      </apex:facet> 
+                  </apex:column>
+                  
+                  <apex:column value="{!d.Street}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Street</div>                        
+                      </apex:facet>
+                  </apex:column>
+                  
+                  <apex:column value="{!d.Street2}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Street2</div>                        
+                      </apex:facet>
+                  </apex:column>
+                  
+                  <apex:column value="{!d.Postal_Code}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Postal Code</div>                        
+                      </apex:facet>
+                  </apex:column>
+                  
+                  <apex:column value="{!d.City}">
+                      <apex:facet name="header">
+                          <div class="hederSD">City</div>                          
+                      </apex:facet>
+                  </apex:column>
+                  
+                  <apex:column value="{!d.Region_code}">
+                      <apex:facet name="header">
+                          <div class="hederSD">State</div>                         
+                      </apex:facet>
+                  </apex:column>
+                  
+                  <apex:column value="{!d.Country_code}">
+                      <apex:facet name="header">
+                          <div class="hederSD">Country</div>                          
+                      </apex:facet>
+                  </apex:column>
+                  
+                  <apex:column value="{!d.EDM_Action}">
+                      <apex:facet name="header">
+                          <div class="hederSD">EDM Action</div>                          
+                      </apex:facet>
+                  </apex:column>
+                  
+            </apex:dataTable>
+              <br/>
+               <table border='1' cellpading='5' >
+                    <tr>
+                      <td width='70%' style="padding:5px;">
+                          
+                       	<apex:outputPanel rendered="{!!isPartnerQuote}">
+                          {!$Label.Direct_Quote_Dup_Site_Search_Message} <br/>
+                          {!$Label.Direct_Quote_Dup_Site_Search_Message_3} <a href="https://servicedesk.ca.com/" target="_blank">click here</a> {!$Label.Direct_Quote_Dup_Site_Search_Message_2}
+                         </apex:outputPanel>
+                          
+                          <apex:outputPanel rendered="{!isPartnerQuote}">
+                          {!$Label.Indirect_Quote_Dup_Site_Search_Message}                          
+                         </apex:outputPanel>
+                          
+                        </td>
+                        <td style="padding:5px; align:center;">
+                         Missing Site above?&nbsp;<apex:commandButton value="Request New Site"  styleClass="slds-button slds-button--brand slds-container--center" reRender="theForm" status="TableUpdateStatus" action="{!forceCreateLeanCustomer}" oncomplete="forCreatFunc('{!JSENCODE(returnAzureResponse.status)}','{!JSENCODE(returnAzureResponse.Create_Customer.Name1)}', '{!SiteId}','{!JSENCODE(returnAzureResponse.Create_Customer.Street)}','{!JSENCODE(returnAzureResponse.Create_Customer.Street2)}','{!JSENCODE(returnAzureResponse.Create_Customer.City)}','{!JSENCODE(returnAzureResponse.Create_Customer.Region)}','{!JSENCODE(returnAzureResponse.Create_Customer.Postal_Code)}','{!JSENCODE(returnAzureResponse.Create_Customer.Country)}','{!JSENCODE(returnAzureResponse.Create_Customer.Name1InternationalLanguage)}','{!JSENCODE(returnAzureResponse.Create_Customer.Street1InternationalLanguage)}','{!JSENCODE(returnAzureResponse.Create_Customer.Street2InternationalLanguage)}','{!JSENCODE(returnAzureResponse.Create_Customer.CityInternationalLanguage)}','{!JSENCODE(returnAzureResponse.Create_Customer.CityInternationalLanguage)}','{!JSENCODE(returnAzureResponse.Create_Customer.VAT_Registration_Number)}')"/>
+
+                        </td>
+                   </tr>
+                  </table>
+          </apex:outputPanel>
+    </apex:pageBlock>
+
+  </apex:form>
+    </body>
+         </html>
+</apex:page>

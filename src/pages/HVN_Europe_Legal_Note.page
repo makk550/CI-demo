@@ -1,0 +1,4 @@
+<apex:page standardController="HVN__c">
+    <font size="1" face="verdana" color="red">{!$Label.HVN_Europe_Legal_Note}
+    </font>
+</apex:page>

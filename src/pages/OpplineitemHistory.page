@@ -1,0 +1,31 @@
+<apex:page standardController="Opportunity" extensions="opplineitemhistorycontroller" sidebar="false" showHeader="false">
+ <apex:form >
+ <apex:pageBlock >
+  
+<apex:pageblockSection columns="1">
+        <apex:outputpanel style="margin:10px;padding:10px;width:100%;">
+                <apex:repeat value="{!delapprlist}" var="BPH" id="history" >
+                    <div style="padding:10px;line-height:10px;background-color:#b0b0b0;font-size:14px;">
+                        <apex:outputField value="{!BPH.CreatedDate}"/>    - <b> <apex:outputLink target="_BLANK" value="/servlet/servlet.FileDownload?file={!BPH.AttachmentID__c}"> Certificate Link </apex:outputLink>&nbsp;&nbsp;<apex:outputField value="{!BPH.IsLatest__c}" /> </b>
+                  
+                    </div>
+                    <div style="padding:15px;padding-left:20px;">
+                            <apex:dataTable value="{!BPH.Deal_Reg_Product_History__r}" var="historyItem" style="width:80%;border-style: solid;" >
+                           
+                            <apex:column style="width:5%;height:5%;padding-bottom:8px;"><b> Product</b>
+                                </apex:column>
+                                <apex:column style="width:10%;height:5%;padding-bottom:8px;"><apex:outputField value="{!historyItem.Product__c}" label="Product Name"/>
+                                </apex:column>
+                                <apex:column style="width:7%;height:5%;padding-bottom:8px;"><b><apex:outputField value="{!historyItem.Operation__c}" /></b>
+                                </apex:column>
+                                
+                            </apex:dataTable>
+                    </div>   
+                    
+                </apex:repeat>
+        </apex:outputpanel>
+    </apex:pageblocksection>  
+    
+ </apex:pageBlock>
+ </apex:form>
+</apex:page>

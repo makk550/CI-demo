@@ -1,0 +1,21 @@
+<apex:page showHeader="false" sidebar="false">  
+<html>
+<div style="padding-left:25px;padding-top:20px;font-size:20px;">
+SFTP Attachment
+</div>
+<body>
+<div style="padding-left:60px;padding-top:20px;font-size:15px;">
+<b>SFTP URL FORMAT For CA :</b> <i>ftp://supportftp.ca.com/Tops Site ID/Case Number/files_from_ca/</i>
+</div>
+<div style="padding-left:210px">
+Description: '0' Should be padded before Tops Site ID and Case Number to make it 7 and 8 digit respectively
+</div>
+<div style="padding-left:60px;padding-top:20px;font-size:15px;">
+<b>SFTP URL FORMAT For Customer:</b> <i>ftp://supportftp.ca.com/Tops Site ID/Case Number/files_from_customer/</i>
+</div>
+<div style="padding-left:210px">
+Description: '0' Should be padded before Tops Site ID and Case Number to make it 7 and 8 digit respectively
+</div>
+</body>
+</html>
+</apex:page>

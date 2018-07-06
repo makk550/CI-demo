@@ -1,0 +1,44 @@
+<apex:page standardController="TPC_Team__c" extensions="TPCTeamSiteSelection" standardStylesheets="true" >
+<apex:stylesheet value="{!URLFOR($Resource.bpstyles, 'styles.min.css')}" />
+ <script type="text/javascript">
+        function selectAllCheckboxes(obj,receivedInputID){
+            var inputCheckBox = document.getElementsByTagName("input");                  
+            for(var i=0; i<inputCheckBox.length; i++){          
+                if(inputCheckBox[i].id.indexOf(receivedInputID)!=-1){                                     
+                    inputCheckBox[i].checked = obj.checked;
+                }
+            }
+        }        
+    </script>    
+   <apex:form >
+       
+        <apex:pageBlock title="TPC Team Site ID Selection">
+        <apex:pageMessages id="showmsg"></apex:pageMessages>
+        <apex:pageBlockButtons >
+            <apex:commandbutton action="{!save}" value="Save" styleClass="btn"/>
+            <apex:commandButton action="{!cancel}" value="Cancel" styleClass="btn"/>   
+            <apex:commandButton value="Apply Filters" action="{!filterResult}" rerender="test,showmsg" styleClass="btn"/>  
+        </apex:pageBlockButtons>      
+            <apex:pageBlockSection columns="2">
+              <apex:inputField id="name" value="{!Site_Assocation.Name}" />  
+              <apex:inputField id="country" value="{!Site_Assocation.Country_Picklist__c}"/>    
+               
+               <apex:inputField id="site" value="{!Site_Assocation.SC_TOPS_ID__c}"/>
+                <apex:inputField id="city" value="{!Site_Assocation.City__c}"/>              
+               <apex:inputCheckbox id="allSiteCheck" value="{!checkbox1}" label="Check to save all sites"/> 
+                         
+            </apex:pageBlockSection> 
+            <apex:pageBlockTable value="{!SiteWrapper}" var="s" id="test">
+            <apex:column >
+                <apex:facet name="header"><apex:inputCheckbox onclick="selectAllCheckboxes(this,'inputId')" rendered="{!checkall}">
+                </apex:inputCheckbox></apex:facet>
+                 <apex:inputCheckbox value="{!s.checkbox}" id="inputId"/>
+             </apex:column>
+             <apex:column value="{!s.siteassociation.SC_TOPS_ID__c}" />
+             <apex:column value="{!s.siteassociation.Name}" />
+             <apex:column value="{!s.siteassociation.City__c}" />
+             <apex:column value="{!s.siteassociation.Country_Picklist__c}" />
+            </apex:pageBlockTable> 
+            </apex:pageBlock>           
+   </apex:form>            
+</apex:page>

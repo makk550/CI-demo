@@ -1,0 +1,51 @@
+<apex:page standardController="Renewal__c" extensions="Renewal_ConvToOppController" action="{!creatOppRecord}" >
+<!-- CSS goes in the document HEAD or added to your external stylesheet -->
+<style type="text/css">
+table.gridtable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+}
+table.gridtable th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #dedede;
+}
+table.gridtable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #ffffff;
+}
+</style>
+ <apex:pageMessages > </apex:pageMessages> 
+  <apex:repeat value="{!errorLog}"  var="errKey">    
+   <table class="gridtable">
+    <tr>
+    <th>
+    Renewal Id
+    </th>
+    <th>
+      Error Message
+    </th>
+    </tr>
+    <tr>
+    <td>
+       <apex:outputText value="{!errKey}" />
+    </td>
+    <td>
+       <apex:outputText value="{!errorLog[errKey]}" />
+    </td>
+    </tr>
+   </table>                   
+</apex:repeat>
+<apex:form >
+<apex:commandButton value="Email Logs" action="{!emailLogs}" rendered="{!showEmailLogButton}" />
+</apex:form>
+</apex:page>

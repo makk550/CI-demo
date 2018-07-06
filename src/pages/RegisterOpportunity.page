@@ -1,0 +1,296 @@
+<apex:page standardController="Opportunity_Registration__c" extensions="clsRegisterOpportunity" >
+ <apex:sectionHeader title="New Partner Influence Request"/>
+<apex:pagemessages ></apex:pagemessages>
+<script>
+
+   function funAllianceChk()
+   {
+   alert('---hi--'+showAlliance);
+     if({!showAlliance} == false)
+     {
+       alert('Please utilize the Alliance Partner 2 and Field Alliance Lead 2 fields when requesting an additional Influence Partner. An Alliance Partner has already been requested.');
+       return false;
+     }     
+   }
+
+</script>
+    <apex:form >    
+
+            <apex:pageBlock title="New Partner Influence Request" rendered="{!showApproverSectionEdit}">       
+         <apex:pageBlockButtons >
+                    <apex:commandButton action="{!save}" value="Save"/>
+                    <apex:commandButton action="{!saveNsubmit}"  value="Save and Submit for Approval"/>
+                    <apex:commandButton action="{!cancel}"  value="Cancel"/>    
+         </apex:pageBlockButtons>
+<!--              <apex:commandLink value="Return To Opportunity"  action="{!cancel}" />
+          </apex:pageblockButtons>-->
+        
+
+          <apex:pageBlockSection columns="2" >
+
+           <apex:outputField value="{!Opportunity_Registration__c.Opportunity_Name__c}"/>
+           <apex:outputText value=""/>
+
+           
+              
+          <apex:outputField value="{!Opportunity_Registration__c.Registration_Status__c}" rendered="{isapprovededit}"/>
+          <apex:outputField value="{!Opportunity_Registration__c.Registration_Status__c}" rendered="{!NOT(isEditable)}"/>
+           <apex:pageBlockSectionItem rendered="{!AND(Opportunity_Registration__c.Registration_Status__c=='Approved',isapprovededit,$ObjectType.Opportunity_Registration__c.createable,isEditable)}">
+          <apex:outputText value="Request Status" rendered="{!AND(Opportunity_Registration__c.Registration_Status__c=='Approved',isapprovededit,$ObjectType.Opportunity_Registration__c.createable)}"/> 
+           <apex:selectList value="{!selectedstatus}" multiselect="false" size="1" rendered="{!AND(Opportunity_Registration__c.Registration_Status__c=='Approved',isapprovededit,$ObjectType.Opportunity_Registration__c.createable)}">
+                <apex:selectOption itemValue="" itemLabel="--NONE--"/>   
+                <apex:selectOption itemValue="Terminated" itemLabel="Terminated"/> 
+             
+            </apex:selectList>
+            </apex:pageBlockSectionItem>
+           <apex:outputText value=""/>
+          
+            <apex:outputText value=""/>
+            <apex:outputText value=""/>
+
+         
+          
+            <apex:outputText value=""/>
+            <apex:outputText value=""/>
+            
+          <apex:outputField value="{!Opportunity_Registration__c.Alliance_Partner__c}" />                                              
+          <apex:outputField value="{!Opportunity_Registration__c.Alliance_Partner_2__c}"/>                            
+
+           <apex:outputField value="{!Opportunity_Registration__c.Field_Alliance_Leader__c}"/>
+           <apex:outputField value="{!Opportunity_Registration__c.Field_Alliance_Lead_2__c}"/>
+          
+           <apex:outputField value="{!Opportunity_Registration__c.Partner_Engagement_Phase__c}" />
+           <apex:outputField value="{!Opportunity_Registration__c.Partner_Engagement_Phase_2__c}" />
+
+           <apex:outputField value="{!Opportunity_Registration__c.JSO_Name__c}"  />
+           <apex:outputField value="{!Opportunity_Registration__c.JSO_Name_2__c}"  />
+
+            <apex:outputText value=""/>
+            <apex:outputText value=""/>
+          <apex:outputField value="{!Opportunity_Registration__c.Registration_Type__c}" />
+          <apex:outputField value="{!Opportunity_Registration__c.Will_the_Partner_provide_Implementation__c}"/>
+
+
+            <apex:outputField value="{!Opportunity_Registration__c.Partner_Role__c}" />
+            <apex:outputText value=""/>
+   
+                 <apex:outputField value="{!Opportunity_Registration__c.Is_there_a_documented_Teaming_Agreement__c}"/>
+             <apex:outputField value="{!Opportunity_Registration__c.Will_the_Partner_Provide_IT_Outsourcing__c}"/>         
+
+          <apex:outputField value="{!Opportunity_Registration__c.Comments__c}"  />
+          <apex:outputText value=""/>
+          <apex:outputField value="{!Opportunity_Registration__c.List_Influence_Products_in_Opportunity__c}"/>
+          
+
+          <div class="requiredInput">
+           <div class="requiredBlock"></div>
+          <apex:inputField value="{!Opportunity_Registration__c.First_Approver__c}" required="true"/>          
+         
+        </div>
+
+          <div>
+           <div></div>
+          <apex:inputField value="{!Opportunity_Registration__c.Second_Approver__c}"/>          
+          <apex:outputText value=""></apex:outputText>
+        </div>
+          <apex:outputText value=""/>
+          <apex:inputField value="{!Opportunity_Registration__c.Third_Approver__c}"/>
+
+      </apex:pageBlockSection>
+      </apex:pageBlock>
+    
+            <apex:pageBlock title="New Partner Influence Request" rendered="{!showReadOnly}">       
+                      <apex:pageblockButtons >
+              <apex:commandLink value="Return To Opportunity"  action="{!cancel}" />
+          </apex:pageblockButtons>
+        
+
+          <apex:pageBlockSection columns="2" >
+
+           <apex:outputField value="{!Opportunity_Registration__c.Opportunity_Name__c}"/>
+           <apex:outputText value=""/>
+
+          
+           <apex:outputField value="{!Opportunity_Registration__c.Registration_Status__c}"/>
+           <apex:outputText value=""/>
+          
+              
+              
+            <apex:outputText value=""/>
+            <apex:outputText value=""/>
+
+         
+          
+            <apex:outputText value=""/>
+            <apex:outputText value=""/>
+            
+          <apex:outputField value="{!Opportunity_Registration__c.Alliance_Partner__c}" />                                              
+          <apex:outputField value="{!Opportunity_Registration__c.Alliance_Partner_2__c}"/>                            
+
+           <apex:outputField value="{!Opportunity_Registration__c.Field_Alliance_Leader__c}"/>
+           <apex:outputField value="{!Opportunity_Registration__c.Field_Alliance_Lead_2__c}"/>
+          
+           <apex:outputField value="{!Opportunity_Registration__c.Partner_Engagement_Phase__c}" />
+           <apex:outputField value="{!Opportunity_Registration__c.Partner_Engagement_Phase_2__c}" />
+
+           <apex:outputField value="{!Opportunity_Registration__c.JSO_Name__c}"  />
+           <apex:outputField value="{!Opportunity_Registration__c.JSO_Name_2__c}"  />
+
+            <apex:outputText value=""/>
+            <apex:outputText value=""/>
+          <apex:outputField value="{!Opportunity_Registration__c.Registration_Type__c}" />
+          <apex:outputField value="{!Opportunity_Registration__c.Will_the_Partner_provide_Implementation__c}"/>
+
+
+            <apex:outputField value="{!Opportunity_Registration__c.Partner_Role__c}" />
+            <apex:outputText value=""/>
+   
+                 <apex:outputField value="{!Opportunity_Registration__c.Is_there_a_documented_Teaming_Agreement__c}"/>
+             <apex:outputField value="{!Opportunity_Registration__c.Will_the_Partner_Provide_IT_Outsourcing__c}"/>         
+
+          <apex:outputField value="{!Opportunity_Registration__c.Comments__c}"  />
+          <apex:outputText value=""/>
+          <apex:outputField value="{!Opportunity_Registration__c.List_Influence_Products_in_Opportunity__c}"/>
+          <apex:outputText value=""/>
+
+          <apex:outputField value="{!Opportunity_Registration__c.First_Approver__c}"  />          
+                    <apex:outputText value=""/>
+          <apex:outputField value="{!Opportunity_Registration__c.Second_Approver__c}"  />
+          <apex:outputText value=""/>
+          <apex:outputField value="{!Opportunity_Registration__c.Third_Approver__c}"/>
+          <apex:outputText value=""/>
+
+      </apex:pageBlockSection>
+      </apex:pageBlock>
+
+    
+      <apex:pageBlock title="New Partner Influence Request" mode="edit" rendered="{!showEdit}">
+         <apex:pageBlockButtons >
+                    <apex:commandButton action="{!save}" value="Save" />
+                    
+                    <apex:commandButton action="{!saveNsubmit}" value="Save and Submit for Approval" />
+                    <apex:commandButton action="{!cancel}"  value="Cancel"/>
+         </apex:pageBlockButtons>
+      <apex:pageBlockSection columns="2">
+     
+              <apex:outputField value="{!Opportunity_Registration__c.Registration_Status__c}" rendered="{!AND(!isapprovededit,Opportunity_Registration__c.Registration_Status__c!='Partially Approved',Opportunity_Registration__c.Registration_Status__c!='Approved')}" />
+ 
+                       <apex:outputField value="{!Opportunity_Registration__c.Registration_Status__c}" rendered="{!AND(!isEditable,Opportunity_Registration__c.Registration_Status__c=='Partially Approved')}"/> 
+              <apex:pageBlockSectionItem rendered="{!AND(Opportunity_Registration__c.Registration_Status__c=='Partially Approved',$ObjectType.Opportunity_Registration__c.createable,isEditable)}">
+          <apex:outputText value="Request Status" rendered="{!AND(Opportunity_Registration__c.Registration_Status__c=='Partially Approved',!isapprovededit,$ObjectType.Opportunity_Registration__c.createable)}"/> 
+           <apex:selectList value="{!selectedstatus}" multiselect="false" size="1" rendered="{!AND(Opportunity_Registration__c.Registration_Status__c=='Partially Approved',!isapprovededit,$ObjectType.Opportunity_Registration__c.createable)}">
+                <apex:selectOption itemValue="" itemLabel="--NONE--"/>
+                  
+                <apex:selectOption itemValue="Terminated" itemLabel="Terminated"/> 
+             
+            </apex:selectList>
+            </apex:pageBlockSectionItem>
+              <apex:outputText value=""/>            
+              
+            
+              
+           <div style="border-width:2px;border-style:solid;border-color:grey;"/>
+           <div style="border-width:2px;border-style:solid;border-color:grey;"/>
+           
+              <apex:outputText value=""/>
+
+          <apex:inputField value="{!Opportunity_Registration__c.Alliance_Partner__c}" onclick="funAllianceChk()" rendered="{!!showAlliance2}"/>  
+          <apex:outputField value="{!Opportunity_Registration__c.Alliance_Partner__c}"  rendered="{!showAlliance2}"/>                                             
+          <apex:inputField value="{!Opportunity_Registration__c.Alliance_Partner_2__c}" /> 
+                                       
+
+           <apex:inputField value="{!Opportunity_Registration__c.Field_Alliance_Leader__c}" rendered="{!!showAlliance2}"/>
+           <apex:outputField value="{!Opportunity_Registration__c.Field_Alliance_Leader__c}"  rendered="{!showAlliance2}"/>
+           <apex:inputField value="{!Opportunity_Registration__c.Field_Alliance_Lead_2__c}"/>
+          
+           <apex:inputField value="{!Opportunity_Registration__c.Partner_Engagement_Phase__c}" rendered="{!!showAlliance2}"/>
+            <apex:outputField value="{!Opportunity_Registration__c.Partner_Engagement_Phase__c}"  rendered="{!showAlliance2}"/>
+           <apex:inputField value="{!Opportunity_Registration__c.Partner_Engagement_Phase_2__c}" />
+
+           <apex:inputField value="{!Opportunity_Registration__c.JSO_Name__c}"  rendered="{!!showAlliance2}"/>
+           <apex:outputField value="{!Opportunity_Registration__c.JSO_Name__c}"  rendered="{!showAlliance2}" />
+           <apex:inputField value="{!Opportunity_Registration__c.JSO_Name_2__c}"  />
+
+              <div style="border-width:2px;border-style:solid;border-color:grey;"/>
+              <div style="border-width:2px;border-style:solid;border-color:grey;"/>
+            <apex:outputText value=""/>
+                        <apex:outputText value=""/>
+            <apex:outputText value=""/>
+            <apex:outputText value=""/>
+            <div class="requiredInput">
+            <div class="requiredBlock"></div>
+             <apex:inputField value="{!Opportunity_Registration__c.Registration_Type__c}" required="true"/>
+             <apex:inputField value="{!Opportunity_Registration__c.Will_the_Partner_provide_Implementation__c}" required="true"/>
+           </div>
+
+            <apex:outputText value=""/>
+             <apex:outputText value=""/>
+           <div class="requiredInput">
+             <div class="requiredBlock"></div>
+                <apex:inputField value="{!Opportunity_Registration__c.Partner_Role__c}" required="true"/>          
+                             <apex:outputText value=""/>
+           </div>   
+                                        <apex:outputText value=""/>
+          
+           <apex:outputText value=""/>
+
+   
+          <div class="requiredInput">
+           <div class="requiredBlock"></div>
+                        <apex:inputField value="{!Opportunity_Registration__c.Is_there_a_documented_Teaming_Agreement__c}" required="true"/>            
+                         <apex:inputField value="{!Opportunity_Registration__c.Will_the_Partner_Provide_IT_Outsourcing__c}" required="true"/>         
+          </div>
+
+           <apex:outputText value=""/>
+           <apex:outputText value=""/>
+           <div class="requiredInput">
+           <div class="requiredBlock"></div>
+              <apex:pageBlockSectionItem > 
+               <apex:outputLabel value="{!$ObjectType.Opportunity_Registration__c.Fields.List_Influence_Products_in_Opportunity__c.Label}"/>
+               
+                <c:CustomMultiSelectPicklist leftLabel="Available Products" leftOption="{!availableProducts}" rightLabel="Selected Products" rightOption="{!selectedProducts}" size="14" width="200px"/>
+                
+            </apex:pageBlockSectionItem>    
+           </div>   
+            <apex:inputHidden value="{!Opportunity_Registration__c.List_Influence_Products_in_Opportunity__c}" id="theHiddenVariable"/>         
+           
+          <div class="requiredInput">
+           <div class="requiredBlock"></div>
+             <apex:inputField value="{!Opportunity_Registration__c.Comments__c}"   required="true"/>
+          </div>
+
+           <apex:outputText value=""/>
+                      <apex:outputText value=""/>
+              <div style="border-width:2px;border-style:solid;border-color:grey;"/>
+              <div style="border-width:2px;border-style:solid;border-color:grey;"/>
+            
+            <apex:outputText value=""/>
+            <apex:outputText value=""/>
+            <apex:outputText value=""/>
+                        <apex:outputText value=""/>
+          <div class="requiredInput">
+           <div class="requiredBlock"></div>
+          <apex:inputField value="{!Opportunity_Registration__c.First_Approver__c}" required="true"/>          
+          <apex:outputText value=""></apex:outputText>
+        </div>
+
+          <apex:outputText value=""/>
+           <apex:outputText value=""/>
+
+          <div>
+           <div></div>
+          <apex:inputField value="{!Opportunity_Registration__c.Second_Approver__c}"/>          
+          <apex:outputText value=""></apex:outputText>
+        </div>
+          <apex:outputText value=""/>
+          <apex:inputField value="{!Opportunity_Registration__c.Third_Approver__c}"/>
+       
+       
+       
+      </apex:pageBlockSection>
+      </apex:pageBlock>
+    </apex:form>    
+      <apex:relatedList subject="{!Opportunity_Registration__c}"  list="CombinedAttachments" />
+      <apex:relatedList list="ProcessSteps" rendered="{!regStatus}"/>
+
+</apex:page>

@@ -1,0 +1,171 @@
+<apex:page standardController="Account_Visit__c" tabStyle="Account_Visit__c" extensions="EBCFormExt" action="{!initForm}" id="pg">
+<script>
+ function saveJS()
+        {
+           
+          var st;
+          st = document.getElementById('pg:theForm:thepageblock:AddInfo').innerText;
+           
+          if(st.length > 255)
+          {
+            alert('Max Length of Additional Information is 255 Characters');
+            return false;
+          }
+          else
+          {
+            return true;
+          }
+            
+        }
+
+        function openCustomerAttendeesLookup(url){
+            var contactIds = document.getElementById("{!$Component.theForm.contactIds}");
+            var strids = '';
+            if(contactIds!=null)
+                strids = contactIds.value;
+            
+            
+            var compId = '{!companyID}';
+            if(compId==null || compId==''){
+                var Company_Name__c = document.getElementById("{!$Component.theForm.thepageblock.CompInfo.Company_Name__c}_lkid");
+                if(Company_Name__c!=null)
+                    compId = Company_Name__c.value;
+            }
+            if(compId!=null && compId!='' && compId!='000000000000000')
+                window.open(url + '?VisitId={!ebcID}&Id=' + compId + '&contactids=' + strids,"_blank",'width=800,height=600,location=no,dependent=no,resizable=yes,toolbar=no,status=no,directories=no,menubar=no,scrollbars=yes');
+            else
+                alert('Please select a company before selecting attendees.');
+        }
+    
+        var selectedAttendees="No Attendees Selected";
+    
+        function setContacts(selectedContacts){
+     
+            var attendees = document.getElementById("{!$Component.theForm.thepageblock.attendees}");
+            var contactIds = document.getElementById("{!$Component.theForm.contactIds}");
+            var strids = '';
+            // document.getElementById('pg:theForm:thepageblock:customer_attendees__c').value=selectedContacts;
+            //  selectedAttendees=selectedContacts;
+            if(attendees!=null){
+                attendees.innerHTML = '';
+                var cntInfo = selectedContacts.split(',');
+                for(var i=0;i<=cntInfo.length-1;i++){
+                    if(cntInfo[i]!=null && cntInfo[i]!=''){
+                        attendees.innerHTML+= cntInfo[i].split(':')[1] + ' ,';
+                        strids+= cntInfo[i].split(':')[0] + ',';
+                    }
+                }
+               
+               
+                if(contactIds!=null){
+                    contactIds.value = strids;
+                }
+                var cstAttendees = document.getElementById("{!$Component.theForm.cstAttendees}");
+                if(cstAttendees!=null && attendees.innerHTML!=null){
+                    cstAttendees.value = attendees.innerHTML;                
+                   } 
+                if(attendees.innerHTML!=null)
+                document.getElementById('pg:theForm:thepageblock:customer_attendees__c').value=attendees.innerHTML; 
+                removeTrailingComma(cstAttendees,attendees);
+            }
+        }
+        
+        function removeTrailingComma(cstAttendees,attendees){
+            var strattendees = attendees.innerHTML;
+            if(strattendees.charAt(strattendees.length-1)==',')
+                strattendees = strattendees.substring(0,strattendees.length-1)
+                
+            attendees.innerHTML = strattendees;
+            cstAttendees.value = strattendees;
+        }
+</script>
+<style>
+  .requiredField
+         {
+            background-color: #C00;
+            width: 3px;
+            bottom: 1px;
+         }        
+ </style>
+<apex:sectionHeader title="EBC Visit Edit" subtitle="{!Account_Visit__c.Name}"/>
+<apex:form id="theForm">
+<apex:messages />
+<apex:pageBlock title="EBC Visit Edit" mode="Edit" id="thepageblock">
+    <apex:pageBlockButtons >
+        <apex:commandButton value="Save"  onclick="return saveJS()"  action="{!save}"/>
+        <apex:commandButton value="Cancel" action="{!cancel}"/>
+    </apex:pageBlockButtons>
+    <apex:pageBlockSection title="Information" collapsible="false" columns="1">
+        <apex:inputField required="true" value="{!EBCVisit.Requestor_Name__c}"/>
+        <apex:inputField value="{!EBCVisit.Send_Email_to_Account_Team__c}"/>
+    </apex:pageBlockSection>
+    <apex:pageBlockSection title="Company Information" collapsible="false" id="CompInfo">
+        <apex:inputField required="true" value="{!EBCVisit.Company_Name__c}" id="Company_Name__c"/>
+    </apex:pageBlockSection>
+    <apex:pageBlockSection title="Visit Information" collapsible="false" id="VisitInfo">
+    </apex:pageBlockSection>
+        <apex:panelGrid columns="4" id="theGrid" width="100%" columnClasses="labelCol first ,dataCol  first ,labelCol first ,dataCol  first " styleClass="detailList">
+            <apex:outputLabel value="Total Attendees" for="total_attendees__c"/>
+            <apex:inputField required="true" value="{!EBCVisit.total_attendees__c}" id="total_attendees__c"/>
+      
+
+            <apex:outputLabel value="Visit Objective" for="Visit_Objective__c"/>
+            <apex:inputField required="true" value="{!EBCVisit.Visit_Objective__c}" id="Visit_Objective__c"/>
+            
+
+            <apex:outputLabel value="Customer Attendees" for="attendees"/>
+            <apex:panelGroup id="theGroup"><span class="requiredField">&nbsp;</span>
+        
+      		<apex:outputPanel style="overflow: scroll;" id="attendees">
+                
+                <apex:outputText value="{!selectedAttendees}" id="cstAttendees1" html-readonly="true" />
+                </apex:outputPanel>
+                  <apex:inputHidden value="{!EBCVisit.Customer_Attendees__c}" id="customer_attendees__c"/>
+                <apex:outputLink title="Customer Attendees Lookup (New Window)" value="javascript:openCustomerAttendeesLookup('/apex/EBCAttendees');">
+                    <img src="/s.gif" alt="Customer Attendees Lookup (New Window)"  class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" title="Customer Attendees Lookup (New Window)"/>
+                </apex:outputLink>
+            </apex:panelGroup>
+
+            <apex:outputLabel value="Additional Information" for="AddInfo"/>
+            <apex:inputTextarea value="{!EBCVisit.Additional_Information__c}"  rows="3" cols="47" id="AddInfo"/>
+
+            <apex:outputLabel value="Most Senior Customer Title" for="Senior_customer_title__c"/>
+            <apex:outputPanel ><span class="requiredField">&nbsp;</span>
+                <apex:selectList size="1" multiselect="false" id="Senior_customer" value="{!Senior_customer}">
+                      <apex:selectOptions value="{!Senior_customers}"></apex:selectOptions>
+                </apex:selectList>
+            </apex:outputPanel>
+            <apex:outputLabel value="Other title" for="Other_title__c"/>
+            <apex:inputField value="{!EBCVisit.Other_title__c}" id="Other_title__c"/>
+
+        </apex:panelGrid>
+    <apex:pageBlockSection title="Visit Schedule" collapsible="false" columns="2">
+        <apex:inputField required="true" value="{!EBCVisit.Visit1Location__c}"/>
+        <apex:inputField value="{!EBCVisit.Visit2Location__c}"/>
+
+        <apex:inputField value="{!EBCVisit.Other_Location__c}"/>
+        <apex:inputField value="{!EBCVisit.Other_Location_2__c}"/>
+        
+        <apex:inputField value="{!EBCVisit.Visit1From__c}"/>
+        <apex:inputField value="{!EBCVisit.Visit2From__c}"/>
+        
+        <apex:inputField value="{!EBCVisit.Visit1To__c}"/>
+        <apex:inputField value="{!EBCVisit.Visit2To__c}"/>
+    </apex:pageBlockSection>
+</apex:pageBlock>
+<apex:inputHidden value="{!EBCVisit.contactIds__c}" id="contactIds"/>
+<apex:inputHidden value="{!EBCVisit.Customer_Attendees__c}" id="cstAttendees"/>
+<apex:inputHidden value="{!EBCVisit.Opp_Ids__c}" id="Opp_Ids__c"/>
+</apex:form>
+     <script>
+    	if(document.getElementById('pg:theForm:thepageblock:customer_attendees__c').value == '') {
+        	document.getElementById("pg:theForm:thepageblock:attendees").innerHTML='No Attendees selected!';
+        }else    {
+            
+            var s=document.getElementById('pg:theForm:thepageblock:customer_attendees__c').value;
+            
+            
+            document.getElementById("pg:theForm:thepageblock:attendees").innerHTML=document.getElementById('pg:theForm:thepageblock:customer_attendees__c').value;
+            }
+     </script>
+</apex:page>

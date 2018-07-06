@@ -1,0 +1,1165 @@
+<apex:page standardStylesheets="true" docType="html-5.0" standardController="Partner_Registration__c" extensions="PartnerRegistrationController" showHeader="false"  language="{!preferredLangCode}" >
+<link href="/sCSS/17.0/1247146914000/PortalDefault/00D80000000azBu/0608000000020Nv/portal.css" media="handheld,print,projection,screen,tty,tv" rel="stylesheet" type="text/css" />
+<apex:include pageName="PRMHeader"/>  
+ <style>
+ 
+ .activeTab {
+         
+        color:white;
+        background-image: none;
+ }
+ .inactiveTab {
+        background-color: #B0C4DE;
+        color:black;
+        background-image: none;
+ }
+.headerRow1 .headerStyle{background-color:#638658;color:#FFFFFF}
+.list1 { background-color: #FFFFFF; color: #333333;}
+
+
+.blueheader
+  {
+      color:Navy !important;
+      font-family:Verdana;
+      font-weight:bold;
+      font-size:18;
+      
+  }
+  .blueheaderPlain
+  {
+      color:blue !important;
+      font-family:Verdana;
+      font-size:18;
+  }
+  .greenline
+  {
+      
+      border-bottom:3px solid green !important;
+  }
+  .redcolor
+  {
+      color:Red
+  }   
+ 
+ .bold
+  {
+      color:Red;
+      
+  }
+  .formtopheader
+  {
+      color:Navy !important;
+      font-family:Verdana;
+      font-weight:bold;
+      font-size:14px;
+      margin-left:38%;
+      
+  }
+  .formheader
+  {
+      font-family:Arial, Helvetica, sans-serif;      
+      font-size:12px;   
+  }
+ .livechat
+ {
+   color:Navy !important;
+   font-family:Verdana;
+   font-weight:bold;
+   font-size:10px; 
+   cursor:pointer;
+   text-decoration:underline;
+ }
+ //BY YEDRA01
+img.helpOrb
+{
+  vertical-align: top;
+}
+
+#resultsHtmlTable
+{
+    border: 1px solid #CCFFFF;
+    width: 50%;
+    margin-left: 10%;
+    font-size:12px;
+}
+ #resultsHtmlTable tr, #resultsHtmlTable tr td
+ {
+    border: 1px solid #FFCCCC;
+    height: 25px;
+    text-align: center;
+    
+ }
+ 
+ #resultsHtmlTable .resultsHtmlTableCell td
+ {
+    background-color: white;
+ }
+ #resultsHtmlTable tr:first-child
+ {
+    font-weight: bold;
+ }
+  .rallypartnerform{
+        margin:10px;
+        padding:20px;
+        border:1px solid #b0b0b0;
+     }
+ .rallyfields{
+     
+     }
+ .rallyfields tr td{
+     padding-left:10px;
+   
+     
+  }
+ .rallyfields tr td.sectionhead{
+     font-size:16px;
+     background: #b0b0b0;
+     margin:0px;
+     padding:5px 5px 5px 5px;
+     font-weight:bold;
+     
+  }
+ .rallyfields tr td.sectiondiv{
+     font-size:14px;
+     
+  }
+  .rallyfields tr td textarea{
+        resize: none;
+     }
+   .rallysummaryfields .rallysummaryheader {
+     font-weight:bold;
+     }
+     .rallysummaryfields td {
+     padding:8px;
+     }
+ 
+ </style>
+
+
+ 
+ <apex:form id="frm1">  
+  
+ <apex:actionFunction name="tabChange" action="{!tabChange}" status="msg_refresh1" reRender="theTabPanel,panelButtons"> 
+  <apex:param name="tabName" value="" assignTo="{!theSelectedTab}"/> 
+ </apex:actionFunction>
+  
+ <apex:pageBlock mode="edit" id="PrtnerRegistration">
+ 
+ <table width="100%">  
+  <tr>
+   <td>
+   <apex:outputText Value="{!IF(IsReferralHeader,$Label.POB_MainHeading_Referral,$Label.POB_MainHeading)}" styleclass="formtopheader" />
+      
+   </td>
+  </tr>
+  <tr> 
+   <td>
+    <apex:outputText Value="{!IF(IsReferralHeader,$Label.POB_SubHeading_Referral,$Label.POB_SubHeading)}" styleClass="formheader"/>
+    <apex:outputText Value="{!$Label.POB_LiveChatHeader}" styleClass="formheader"/>
+   &nbsp;<b><a href="mailto:capartners@ca.com" Class="formheader" Style="text-decoration:none;">{!$Label.PartRegCompMsgNew6}</a></b>. 
+   </td>
+  </tr><tr/>
+    
+ </table>
+ 
+ <apex:pageMessages id="emsg"></apex:pageMessages>
+ 
+ <apex:tabPanel switchType="ajax" selectedTab="{!theSelectedTab}" Value="{!theSelectedTab}" id="theTabPanel" activetabClass="activeTab" inactivetabClass="inactiveTab" >      
+   <apex:tab label="{!$Label.Company_Details}" name="accTab" id="accTab" ontabenter="tabChange('accTab')"  >
+   <apex:actionRegion >
+             
+   <apex:pageBlockSection columns="2" >
+        
+        <apex:pageBlockSectionItem >    
+            <apex:outputLabel value="{!$Label.Account_Name}" />
+               
+            <apex:inputField value="{!taqAcc.Name}" required="true" id="accountname" /> 
+            
+        </apex:pageBlockSectionItem>  
+        <apex:outputLabel ></apex:outputLabel>
+        <!--  (Mari,Partner Profile R1) -->
+        <apex:pageBlockSectionItem >
+            
+            <apex:outputLabel value="{!$Label.POB_Country}"/>
+            
+            <apex:inputField value="{!taqAcc.Country_Picklist__c}" label="{!$Label.POB_Country}" required="true" />
+            
+                    
+        </apex:pageBlockSectionItem>
+        <apex:outputLabel ></apex:outputLabel> 
+     
+     
+        <apex:pageBlockSectionItem >   
+            <apex:actionStatus stopText="" id="msg_refresh99" style="margin-left:1%;">
+            <apex:facet name="start">  
+            <apex:image value="/img/loading32.gif" height="18px" />
+            </apex:facet>
+            </apex:actionStatus>  
+        </apex:pageBlockSectionItem> 
+        <apex:outputLabel ></apex:outputLabel>    
+      
+      
+   </apex:pageBlockSection> 
+   </apex:actionRegion> 
+   <apex:actionStatus id="msg_refresh" stopText="">
+         <apex:facet name="start">
+              <apex:outputPanel >
+                    <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 20px; position: absolute; left:50%;top:50%;"/></div>
+                </apex:outputPanel>
+            </apex:facet>
+     </apex:actionStatus>  
+     
+   <apex:outputPanel id="AccntDtlsPanel" > 
+    <apex:pageBlockSection columns="2" id="accntDtls" rendered="{!AND(renderAccntDtls == False, showFullFirstPage)}">  
+      <!-- GODVA01 - Changed from value="{!taqAcc.Country__c}" to value="{!taqAcc.Country_Picklist__c}" -->
+      <apex:inputField value="{!taqAcc.Physical_Street__c}" label="{!$Label.POB_Street}" required="true"/><apex:outputLabel ></apex:outputLabel>
+      <apex:inputField value="{!taqAcc.Physical_City__c}" label="{!$Label.POB_City}" required="true"/><apex:outputLabel ></apex:outputLabel>      
+      <apex:inputField value="{!taqAcc.Physical_State_Province__c}" label="{!$Label.POB_State}" required="true"/><apex:outputLabel ></apex:outputLabel>     
+      <apex:inputField value="{!taqAcc.Physical_Zip_Postal_Code__c}" label="{!$Label.POB_PostalCode}" required="true"/><apex:outputLabel ></apex:outputLabel>
+      <apex:inputField value="{!taqAcc.Website__c}" label="{!$Label.POB_Website}" required="true"/><apex:outputLabel ></apex:outputLabel>
+      
+     
+     <apex:pageBlockSectionItem >
+     
+     <apex:outputpanel >
+     
+      <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.Company_Email_Domain_s__c.Label}" />
+      <div id="mainContent">
+    
+    <span class="Custom ToolTip text">
+            <img src="/s.gif" alt="Help" class="helpIcon" title="{!$ObjectType.Partner_Registration__c.Fields.Company_Email_Domain_s__c.inlineHelpText}"/>
+     </span>
+</div>
+    </apex:outputpanel>
+     <apex:inputField value="{!partnerReg.Company_Email_Domain_s__c}" rendered="true" required="true"/>
+    </apex:pageBlockSectionItem>
+      <apex:outputLabel ></apex:outputLabel>
+           
+      <apex:inputField value="{!partnerReg.Tax_ID__c}" /><apex:outputLabel ></apex:outputLabel>            
+    </apex:pageBlockSection> 
+  </apex:outputPanel>
+   
+      
+  <apex:outputPanel id="ResultsPanel"  > 
+   <apex:pageblockSection columns="1" rendered="{!(renderAccntDtls == true)}">
+        <apex:outputText style="font-weight:bold; font-size:12px;margin-left:25%" value="{!$Label.PLMessage2}" />
+        <apex:outputText style="font-weight:bold; font-size:12px;" value="{!$Label.PLMessage}" />   
+    </apex:pageblockSection>
+      
+    <apex:pageblockSection title="Results" columns="1"  id="resultBlock" showHeader="false"  rendered="{!(renderAccntDtls == true)}">     
+        
+       <apex:outputPanel >
+         <apex:commandButton action="{!firstResultPage}" value="First" style="margin-left:25%;margin-top:.5%;width:75px;" reRender="AccntDtlsPanel,ResultsPanel,panelButtons" status="msg_refresh" disabled="{!!Prev}"/>
+         <apex:commandButton action="{!prevResultPage}" value="Previous" style="margin-top:.5%;width:75px;" reRender="AccntDtlsPanel,ResultsPanel,panelButtons" status="msg_refresh" disabled="{!!Prev}"/>
+         <apex:commandButton action="{!nextResultPage}" value="Next" style="margin-top:.5%;width:75px;" reRender="AccntDtlsPanel,ResultsPanel,panelButtons" status="msg_refresh" disabled="{!!Next}"/>
+         <apex:commandButton action="{!lastResultPage}" value="Last" style="margin-top:.5%;width:75px;" reRender="AccntDtlsPanel,ResultsPanel,panelButtons" status="msg_refresh" disabled="{!!Next}"/>
+   
+       </apex:outputPanel>
+             
+       <apex:outputPanel >
+       
+       <table id="resultsHtmlTable">
+            <tr class="headerRow"> <td style="width:10%;"> &nbsp; </td><td style="width:30%;"> Partner company</td><td style="width:30%;"> Address </td><td style="width:30%;"> Existing CA Partner</td></tr>
+            
+            <apex:repeat value="{!res}" var="acc">
+            <tr class ="resultsHtmlTableCell"> 
+            <td> <apex:outputPanel > <input type="radio" name="sel1">
+                <apex:actionsupport event="onclick" action="{!validateAccountSearch}"  rerender="emsg" status="msg_refresh">
+                <apex:param name="select"  value="{!acc.labelNumber}" assignTo="{!labelNumber}"/> 
+                </apex:actionsupport> 
+                </input>      </apex:outputPanel>   </td>
+            <td>{!acc.Name}</td><td> {!acc.address}</td><td>  <apex:image url="{!IF(acc.ExistingPartner,$Resource.checkbox_checked,$Resource.checkbox_unchecked)}"/> </td></tr>
+            </apex:repeat>
+            <apex:variable value="" var="c" rendered="{!isLast}">
+            <tr class ="resultsHtmlTableCell"> <td><apex:outputPanel > <input type="radio" name="sel1">
+                <apex:actionsupport event="onclick" action="{!validateAccountSearch}"  rerender="emsg" status="msg_refresh">
+                <apex:param name="select"  value="-2" assignTo="{!labelNumber}"/> 
+                </apex:actionsupport> 
+                </input>      </apex:outputPanel> </td><td colspan="3" style="text-align:left;font-weight: bold;"> &nbsp;&nbsp;I do not see my company in the list above </td></tr>
+            </apex:variable>
+       </table>
+       </apex:outputPanel>
+    </apex:pageblockSection> 
+    
+    <apex:outputPanel rendered="{!!showFullFirstPage}">
+    <apex:commandButton action="{!fetchAccDtls}" value="{!$Label.Search}" style="margin-left:25%;margin-top:.5%;width:75px;" reRender="AccntDtlsPanel,ResultsPanel,panelButtons,emsg" status="msg_refresh"/>
+    </apex:outputPanel>     
+    <apex:outputPanel rendered="{!(renderAccntDtls == true)}">      
+      <apex:commandButton action="{!redirectOnboardingorCommon}" value="{!$Label.Submit}" style="margin-left:25%;margin-top:.5%;width:75px;" reRender="PrtnerRegistration,panelButtons"/>
+    </apex:outputPanel>
+   </apex:outputPanel>
+     
+   </apex:tab>
+   
+   <apex:tab label="{!$Label.POB_ContactDetails}" name="contTab" id="contTab"  ontabenter="tabChange('contTab')" >
+
+    <apex:pageBlockSection columns="1" >
+     <apex:inputField value="{!partnerReg.First_Name__c}" required="true"/>
+     <apex:inputField value="{!partnerReg.Last_Name__c}" required="true"/> 
+     <apex:inputField value="{!partnerReg.Email_Address__c}" required="true"/>      
+     <apex:inputField value="{!partnerReg.Job_Title__c}" required="true"/>    
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection columns="2">   
+     <apex:commandButton action="{!copyAccntDtls}" value="{!$Label.Use_Company_Address}" style="margin-left:38%" reRender="ContDtls" immediate="true" status="cpyCompDtls"/>     
+     <apex:actionStatus stopText="" id="cpyCompDtls" style="margin-left:2%;">
+           <apex:facet name="start">  
+           <apex:image value="/img/loading32.gif" height="20px" />
+           </apex:facet>
+     </apex:actionStatus>      
+    </apex:pageBlockSection>
+  
+    <apex:outputPanel id="ContDtls">
+    <apex:pageBlockSection columns="1" >
+     
+     <apex:inputField value="{!partnerReg.Address_1__c}" required="true"/>
+     <apex:inputField value="{!partnerReg.Address_2__c}"/>
+     <apex:inputField value="{!partnerReg.City__c}" required="true"/>
+     <apex:inputField value="{!partnerReg.State_Province__c}" required="true"/>
+     <apex:inputField value="{!partnerReg.Country__c}" required="true"/>
+     <apex:inputField value="{!partnerReg.Postal_Code__c}" required="true"/>
+     <apex:inputField value="{!partnerReg.Phone__c}" required="true"/>
+     <apex:inputField value="{!partnerReg.Functional_Role__c}" required="true"/>
+     <apex:inputField value="{!partnerReg.Preferred_language__c}"/> 
+     <apex:inputField value="{!partnerReg.Preferred_Currency__c}"/>       
+    </apex:pageBlockSection>
+   </apex:outputPanel>
+  </apex:tab>   
+ 
+ <apex:tab label="{!$Label.Business_Model_Tab}" name="marketOverviewTab" id="marketOverviewTab" ontabenter="tabChange('marketOverviewTab')" >
+     <apex:actionRegion >  
+            <apex:pageBlockSection columns="1" >
+                     <apex:inputField value="{!partnerReg.Company_business_model__c}" required="true">
+                         <apex:actionSupport event="onchange" action="{!changeShippingSection}" reRender="otherFieldRequired" />
+                     </apex:inputField>
+            
+             </apex:pageBlockSection>
+      </apex:actionRegion>
+  <!-- 
+  <apex:inputField value="{!partnerReg.Program_specialty_interest__c}" required="true"/>
+  <apex:inputField value="{!partnerReg.sell_or_recommended_CA_solutions__c}"/>
+  -->
+ <apex:outputPanel id="otherFieldRequired">
+     <apex:outputPanel rendered="{! partnerReg.Company_business_model__c == $Label.POB_partner_referral}">
+         <div class="rallypartnerform">
+             
+            <table width="100%" class="rallyfields" cellpadding="5">
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.Agile_process}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Do_you_partner_with_other_organizations__c}" required="true"/>
+             </td>
+             <td>
+             </td>
+             <td>
+             </td>
+         </tr>
+         <tr>
+             <td colspan="4" class="sectiondiv">
+                 {!$Label.POB_Rally_mail_helptext}
+             </td>
+         </tr>
+          <tr>
+             <td colspan="4" class="sectionhead">
+                {!$Label.POB_Rally_Partnership}
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.ALM_Tools}"/>
+            </td>
+             <td >
+                 <apex:inputField value="{!partnerReg.Are_you_currently_selling_or_partnering__c}" required="true"/>
+             </td>
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.Another_tool}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Do_you_standardize_on_another_tool_If_s__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.Introduce_Rally}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Do_you_have_a_current_customer_you_would__c}" required="true"/>
+             </td>
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.Percentage_Rally}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.What_percentage_of_your_business_streams__c}"/>
+             </td>
+             
+         </tr>
+         <tr>
+             <td colspan="4" class="sectionhead">
+                 {!$Label.POB_Rally_Background}
+             </td>
+         </tr>
+        
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.Agile}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Do_you_have_an_Agile_Practice__c}" required="true"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.POB_Rally_AgileExpertise}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.How_would_you_rank_your_level_of_Agile_E__c}"/>
+             </td>
+         </tr>
+          <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.Interested_in_rally}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Why_are_you_interested_in_Rally_What_br__c}" required="true"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.Plan_rally}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.How_does_your_organization_plan_on_using__c}"/>
+             </td>
+             
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.Vertical_Rally}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.What_is_the_value_of_positioning_Rally_i__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.Agile_coaching}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Does_your_company_deliver_Agile_training__c}"/>
+             </td>
+         </tr>
+         <tr>
+              <td>
+                 <apex:outputLabel value="{!$Label.coaching_staff}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Do_you_have_a_coaching_staff__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.transformation_consulting}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Do_you_do_transformation_consulting__c}"/>
+             </td>
+            
+         </tr>
+         <tr>
+              <td>
+                 <apex:outputLabel value="{!$Label.Leading_Safe}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.What_is_your_familiarity_with_Leading_SA__c}"/>
+             </td>
+             <td style="border-left: 1px solid #b0b0b0;">
+             </td>
+             <td>
+             </td>
+         </tr>
+          <tr>
+             <td colspan="4" class="sectionhead">
+                 {!$Label.POB_Rally_Teammember}
+             </td>
+         </tr>
+          <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.employee_org}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.How_many_employees_does_your_organizatio__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.colocated}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Are_they_located_in_one_region_or_coloca__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.development_team}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Do_you_have_a_development_team_How_many__c}"/>
+             </td>
+             <td style="border-left: 1px solid #b0b0b0;">
+             </td>
+             <td>
+             </td>
+         </tr>
+         <tr>
+             <td colspan="4" class="sectionhead">
+                {!$Label.POB_Rally_CertificationHelp}
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.CSM_Certified_Scrum_Master__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.CSM_Certified_Scrum_Master__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.CSPO_Certified_Scrum_Product_Owner__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.CSPO_Certified_Scrum_Product_Owner__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.SPC_SAFe_Program_Consultant__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.SPC_SAFe_Program_Consultant__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.SA_SAFe_Agilist__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.SA_SAFe_Agilist__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.SP_SAFe_Practitioner__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.SP_SAFe_Practitioner__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.training_your_staff}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Would_you_be_interested_in_training_your__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.organization_have_exp}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Does_anyone_at_your_organization_have_ex__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.rally_for}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Where_were_they_when_they_worked_on_Rall__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td colspan="4" class="sectionhead">
+                 {!$Label.POB_Rally_Sales_Focus}
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.specific_verticals}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Do_you_focus_on_any_specific_verticals__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.size_org}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.In_the_past_what_size_organizations_have__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.operational}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.How_long_has_your_practice_been_operatio__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.what_is_your}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.What_is_your_company_s_primary_revenue_g__c}"/>
+             </td>
+         </tr>
+        
+         <tr>
+             <td colspan="4" class="sectionhead">
+                 {!$Label.POB_Rally_Tools_use}
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.Requirements__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Requirements__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.Dev_Tool__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Dev_Tool__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.Build_Tool__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Build_Tool__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.Source_Control_Tool__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Source_Control_Tool__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.Test_Cases__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Test_Cases__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.Defects__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Defects__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.Customer_Relationship_Management__c.Label}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Customer_Relationship_Management__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.are_you_focused}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Are_you_focused_on_SMB_Medium_Enterprise__c}"/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="{!$Label.Which_tool}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.What_tool_do_you_use_to_communicate_and__c}"/>
+             </td>
+             
+             <td style="border-left: 1px solid #b0b0b0;">
+                 <apex:outputLabel value="{!$Label.Approximate}"/>
+            </td>
+             <td>
+                 <apex:inputField value="{!partnerReg.Approximate_length_of_customer_engagemen__c}"/>
+             </td>
+         </tr>
+         
+     </table>
+        </div>
+     </apex:outputPanel>
+  </apex:outputPanel>
+     
+ </apex:tab>
+ 
+ <apex:tab label="{!$Label.Technology_Focus}" name="caSolutionsTab" id="caSolutionsTab" ontabenter="tabChange('caSolutionsTab')" >
+    <apex:actionRegion >             
+    <table> 
+    <tr>
+        <td>
+            <!--<apex:outputLabel value="{!$ObjectType.Partner_Registration__c.Fields.CA_Solutions_and_Products__c.Label}" />-->
+            <apex:outputLabel value="{!$Label.Solutions_Products}" />
+            <img src="img/alohaSkin/help_orange.png"  class="helpIcon" alt="Help" title= "{!$ObjectType.Partner_Registration__c.Fields.CA_Solutions_and_Products__c.InlineHelpText}"/>     
+        </td>
+        <td >
+            <apex:inputField rendered="{! partnerReg.Company_business_model__c != $Label.POB_partner_referral }" value="{!partnerReg.CA_Solutions_and_Products__c}" required="true" />
+            <apex:outputPanel rendered="{! partnerReg.Company_business_model__c == $Label.POB_partner_referral}">
+                <c:PartnerCustomMultipicklist leftLabel="Available" leftOption="{!availableProducts}" rightLabel="Chosen" rightOption="{!selectedProducts}" showUpDownButtons="false" size="7" width="200px"/>
+            </apex:outputPanel>
+        </td>
+  </tr> 
+  <tr>
+      <td>
+          <apex:outputLabel rendered="{! partnerReg.Company_business_model__c != $Label.POB_partner_referral}" value="{!$ObjectType.Partner_Registration__c.Fields.Please_Select_Your_Preferred_Distributor__c.Label}" />
+      </td>
+      <td>
+          <apex:inputField rendered="{! partnerReg.Company_business_model__c != $Label.POB_partner_referral}" value="{!partnerReg.Please_Select_Your_Preferred_Distributor__c}"/>
+      </td></tr> 
+       
+  </table >
+     
+     
+     
+
+</apex:actionRegion> 
+ </apex:tab>
+ 
+ <apex:tab label="{!$Label.POB_Summary}" name="summaryTab" id="summaryTab"  ontabenter="tabChange('summaryTab')">
+
+<table cellpadding="0" cellspacing="0" width="100%" style="font-family:Verdana;">
+            <tr>
+                <td ><div class="greenline"/></td>
+                <td><div class="greenline"/></td>
+            </tr>
+            <tr>
+                <td width="45%" valign="top">
+                    <table cellpadding="5px" cellspacing="5" width="100%" >
+                         <tr>
+                            <td colspan="2" class="blueheader">Summary</td>
+                        </tr>  
+                         <tr>
+                            <!--<td colspan="2">Please confirm that all the details are Correct</td>-->
+                            <td colspan="2">{!$Label.Summary_Msg}</td>
+                        </tr>  
+                        <tr>
+                            <td colspan="2"><hr style="height:2px; color:silver" /></td>
+                        </tr>
+                         <tr>
+                            <td colspan="2" class="blueheader">{!$Label.POB_CompanyInfo}</td>
+                        </tr>  
+                         <tr>
+                            <td colspan="2" class="blueheaderPlain">{!$Label.POB_CompInfo}</td>
+                            
+                        </tr>  
+                        <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.TAQ_Account__c.Fields.Name.Label}: </td> <td>{!taqAcc.Name}</td>
+                        </tr>    
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$Label.POB_Country}: </td> <td>{!taqAcc.Country_Picklist__c}</td>
+                            <!-- GODVA01 - Changed from taqAcc.Country__c to taqAcc.Country_Picklist__c and from ObjectType.TAQ_Account__c.Fields.Country__c.Label to Label.POB_Country-->
+                        </tr> 
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.TAQ_Account__c.Fields.Physical_State_Province__c.Label}:</td> <td>{!taqAcc.Physical_State_Province__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.TAQ_Account__c.Fields.Physical_Street__c.Label}: </td> <td>{!taqAcc.Physical_Street__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.TAQ_Account__c.Fields.Physical_City__c.Label}: </td> <td>{!taqAcc.Physical_City__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.TAQ_Account__c.Fields.Physical_Zip_Postal_Code__c.Label}: </td> <td>{!taqAcc.Physical_Zip_Postal_Code__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.TAQ_Account__c.Fields.Website__c.Label}: </td> <td>{!taqAcc.Website__c}</td>
+                        </tr> 
+                        <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.Company_Email_Domain_s__c.Label}: </td><td>{!partnerReg.Company_Email_Domain_s__c}</td>                                  
+                        </tr>
+                         <tr>
+                            <td class="bold"> {!$ObjectType.Partner_Registration__c.Fields.Tax_ID__c.Label}: </td> <td>{!partnerReg.Tax_ID__c}</td>
+                        </tr> 
+                         <tr>  
+                         <td/>                          
+                            <td>
+                             <apex:commandButton action="{!editAccDtls}" value="{!$Label.POB_BtnEdit}" status="msg_refresh1" reRender="theTabPanel,panelButtons"/>                              
+                            </td>
+                        </tr>
+                        
+                        
+                        <tr>
+                            <td colspan="2"><hr style="height:2px; color:silver" /></td>
+                        </tr>
+                         <tr>
+                            <td colspan="2" class="blueheaderPlain">{!$Label.POB_ContInfo}</td>
+                        </tr>  
+                          
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.First_Name__c.Label}:</td> <td>{!partnerReg.First_Name__c}</td>
+                        </tr>  
+                        <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.Last_Name__c.Label}:</td> <td>{!partnerReg.Last_Name__c}</td>
+                        </tr>  
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.Email_Address__c.Label}:</td> <td>{!partnerReg.Email_Address__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.Job_Title__c.Label}:</td> <td>{!partnerReg.Job_Title__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.Country__c.Label}:</td> <td>{!partnerReg.Country__c}</td>                            
+                        </tr> 
+                        <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.Address_1__c.Label}:</td> <td>{!partnerReg.Address_1__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold">{!$ObjectType.Partner_Registration__c.Fields.Address_2__c.Label}:</td> <td>{!partnerReg.Address_2__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.City__c.Label}:</td> <td>{!partnerReg.City__c}</td>
+                        </tr>
+                        <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.State_Province__c.Label}:</td> <td>{!partnerReg.State_Province__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.Postal_Code__c.Label}:</td> <td>{!partnerReg.Postal_Code__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.Phone__c.Label}:</td> <td>{!partnerReg.Phone__c}</td>                           
+                        </tr>
+                        <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.Functional_Role__c.Label}:</td> <td>{!partnerReg.Functional_Role__c}</td>                           
+                        </tr>
+                        <tr>
+                            <td class="bold">{!$ObjectType.Partner_Registration__c.Fields.Preferred_language__c.Label}:</td> <td>{!partnerReg.Preferred_language__c}</td>                           
+                        </tr>
+                        <tr>
+                            <td class="bold">{!$ObjectType.Partner_Registration__c.Fields.Preferred_Currency__c.Label}:</td> <td>{!partnerReg.Preferred_Currency__c}</td>                           
+                        </tr> 
+                        <tr>
+                        <td/>
+                         <td >
+                             <apex:commandButton action="{!editContDtls}" value="{!$Label.POB_BtnEdit}" status="msg_refresh1" reRender="theTabPanel,panelButtons"/>
+
+                            </td>
+                        </tr>    
+                    </table>
+                </td>
+                <td width="55%" valign="top" >
+                <table cellpadding="5px" cellspacing="5" width="100%">
+                         <tr>
+                            <td colspan="2" ><b>Email: </b>{!partnerReg.Email_Address__c}</td>
+                        </tr>  
+                         <tr>
+                            <td colspan="2">&nbsp;</td>
+                        </tr>  
+                         <tr>
+                            <td colspan="2" class="blueheader">&nbsp;</td>
+                        </tr>  
+                         <tr>
+                            <td colspan="2" class="blueheader">{!$Label.POB_MarketOverview}</td>
+                        </tr>  
+                        <tr>
+                            <td class="bold" style="width:35%">{!$ObjectType.Partner_Registration__c.Fields.Company_business_model__c.Label}: </td> <td>{!partnerReg.Company_business_model__c}</td>
+                        </tr>
+                        <tr>
+                            <td colspan ="2">
+                                <apex:outputPanel rendered="{! partnerReg.Company_business_model__c == $Label.POB_partner_referral}">
+                                    <table width="100%" cellspacing="5" class="rallysummaryfields">
+                                        <tr>
+                                            <td>{!$Label.Agile_process}</td><td>{!partnerReg.Do_you_partner_with_other_organizations__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="rallysummaryheader" colspan="2">{!$Label.POB_Rally_Partnership}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.ALM_Tools}</td><td>{!partnerReg.Are_you_currently_selling_or_partnering__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.Another_tool}</td><td>{!partnerReg.Do_you_standardize_on_another_tool_If_s__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.Introduce_Rally}</td><td>{!partnerReg.Do_you_have_a_current_customer_you_would__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.Percentage_Rally}</td><td>{!partnerReg.What_percentage_of_your_business_streams__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td colspan="2">{!$Label.POB_Rally_Background}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.Agile}</td><td>{!partnerReg.Do_you_have_an_Agile_Practice__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.POB_Rally_AgileExpertise}</td><td>{!partnerReg.How_would_you_rank_your_level_of_Agile_E__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.Interested_in_rally}</td><td>{!partnerReg.Why_are_you_interested_in_Rally_What_br__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.Plan_rally}</td><td>{!partnerReg.How_does_your_organization_plan_on_using__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.Vertical_Rally}</td><td>{!partnerReg.What_is_the_value_of_positioning_Rally_i__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.Agile_coaching}</td><td>{!partnerReg.Does_your_company_deliver_Agile_training__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.coaching_staff}</td><td>{!partnerReg.Do_you_have_a_coaching_staff__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.transformation_consulting}</td><td>{!partnerReg.Do_you_do_transformation_consulting__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.Leading_Safe}</td><td>{!partnerReg.What_is_your_familiarity_with_Leading_SA__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td class="rallysummaryheader" colspan="2">{!$Label.POB_Rally_Teammember}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.employee_org}</td><td>{!partnerReg.How_many_employees_does_your_organizatio__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.colocated}</td><td>{!partnerReg.Are_they_located_in_one_region_or_coloca__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.development_team}</td><td>{!partnerReg.Do_you_have_a_development_team_How_many__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td class="rallysummaryheader" colspan="2">{!$Label.POB_Rally_CertificationHelp}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.CSM_Certified_Scrum_Master__c.Label}</td><td>{!partnerReg.CSM_Certified_Scrum_Master__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.CSPO_Certified_Scrum_Product_Owner__c.Label}</td><td>{!partnerReg.CSPO_Certified_Scrum_Product_Owner__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.SPC_SAFe_Program_Consultant__c.Label}</td><td>{!partnerReg.SPC_SAFe_Program_Consultant__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.SA_SAFe_Agilist__c.Label}</td><td>{!partnerReg.SA_SAFe_Agilist__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.SP_SAFe_Practitioner__c.Label}</td><td>{!partnerReg.SP_SAFe_Practitioner__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.training_your_staff}</td><td>{!partnerReg.Would_you_be_interested_in_training_your__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.organization_have_exp}</td><td>{!partnerReg.Does_anyone_at_your_organization_have_ex__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.rally_for}</td><td>{!partnerReg.Where_were_they_when_they_worked_on_Rall__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="rallysummaryheader" colspan="2">{!$Label.POB_Rally_Sales_Focus}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.specific_verticals}</td><td>{!partnerReg.Do_you_focus_on_any_specific_verticals__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.size_org}</td><td>{!partnerReg.In_the_past_what_size_organizations_have__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$Label.operational}</td><td>{!partnerReg.How_long_has_your_practice_been_operatio__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{!$Label.what_is_your}</td><td>{!partnerReg.What_is_your_company_s_primary_revenue_g__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td class="rallysummaryheader" colspan="2">{!$Label.POB_Rally_Tools_use}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.Requirements__c.Label}</td><td>{!partnerReg.Requirements__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.Dev_Tool__c.Label}</td><td>{!partnerReg.Dev_Tool__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.Build_Tool__c.Label}</td><td>{!partnerReg.Build_Tool__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.Source_Control_Tool__c.Label}</td><td>{!partnerReg.Source_Control_Tool__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.Test_Cases__c.Label}</td><td>{!partnerReg.Test_Cases__c}</td>
+                                        </tr>
+                                         <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.Defects__c.Label}</td><td>{!partnerReg.Defects__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{!$ObjectType.Partner_Registration__c.Fields.Customer_Relationship_Management__c.Label}</td><td>{!partnerReg.Customer_Relationship_Management__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{!$Label.are_you_focused}</td><td>{!partnerReg.Are_you_focused_on_SMB_Medium_Enterprise__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{!$Label.Which_tool}</td><td>{!partnerReg.What_tool_do_you_use_to_communicate_and__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{!$Label.Approximate}</td><td>{!partnerReg.Approximate_length_of_customer_engagemen__c}</td>
+                                        </tr>
+                                        
+                                    </table>
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                    
+                        <!--  
+                         <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.Program_specialty_interest__c.Label}: </td> <td>{!partnerReg.Program_specialty_interest__c}</td>
+                        </tr> 
+                         <tr>
+                            <td class="bold">{!$ObjectType.Partner_Registration__c.Fields.sell_or_recommended_CA_solutions__c.Label}: </td> <td>{!partnerReg.sell_or_recommended_CA_solutions__c}</td>
+                        </tr> 
+                         -->
+                         <tr>
+                        <td/>
+                         <td>
+                             <apex:commandButton action="{!editMktDtls}" value="{!$Label.POB_BtnEdit}" status="msg_refresh1" reRender="theTabPanel,panelButtons"/>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="padding-right:5px"><hr style="height:2px; color:silver" /></td>
+                            <td style="padding-left:5px;">
+                                <hr style="height:2px; color:silver" /></td>
+                        </tr>
+                        
+                         <tr>
+                            <td colspan="2" class="blueheader">{!$Label.Solutions_Products}</td>
+                        </tr>  
+                        <tr>
+                            <td class="bold"><span class="redcolor">*</span>{!$ObjectType.Partner_Registration__c.Fields.CA_Solutions_and_Products__c.Label}: </td> <td>{!partnerReg.CA_Solutions_and_Products__c}</td>
+                        </tr> 
+                        <tr>
+                            <td class="bold"><span class="redcolor"> </span>
+                                <apex:outputLabel style="font-size: 11px;"  rendered="{! partnerReg.Company_business_model__c != $Label.POB_partner_referral}" >
+                                    {!$ObjectType.Partner_Registration__c.Fields.Please_Select_Your_Preferred_Distributor__c.Label}
+                                </apex:outputLabel>
+                            </td> 
+                            <td>
+                                <apex:outputLabel style="font-size: 11px;"  rendered="{! partnerReg.Company_business_model__c != $Label.POB_partner_referral}" >
+                                    {!partnerReg.Please_Select_Your_Preferred_Distributor__c}
+                                </apex:outputLabel>
+                                
+                            </td>
+                        </tr> 
+                        
+                          <tr>
+                        <td/>
+                         <td >
+                              <apex:commandButton action="{!editsolnDtls}" value="{!$Label.POB_BtnEdit}" status="msg_refresh1" reRender="theTabPanel,panelButtons"/>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr><td><div class="greenline"/></td><!--Anitha-->
+                <td ><div class="greenline"/></td>
+            </tr>
+        </table>
+  
+ 
+
+ </apex:tab>
+ 
+ <apex:tab label="{!$Label.POB_Complete}" name="completeTab" id="completeTab" ontabenter="tabChange('completeTab')" >
+ <apex:pageBlockSection columns="1" >
+ 
+ <table style="margin-left:1%;"> 
+ <tr><td>
+  <apex:outputLabel value="{!$Label.Privacy} " style="font-size:12px;" id="Privacy" rendered="{!displayPrivacyMsg && partnerReg.Company_business_model__c != $Label.POB_partner_referral}">  
+  </apex:outputLabel>
+  <apex:outputLabel value="{!$Label.Privacy_Referral} " style="font-size:12px;" id="PrivacyReferral" rendered="{!displayPrivacyMsg && partnerReg.Company_business_model__c == $Label.POB_partner_referral}">  
+  </apex:outputLabel>
+  </td></tr>
+  
+  
+ </table>
+ </apex:pageBlockSection>
+ 
+
+ 
+  
+   
+ 
+          
+ 
+ 
+   <apex:outputPanel style="font-size:12px" id="CompletePanel" rendered="{!displayCompleteMsg}">
+   <table style="margin-left:2%;">
+  <tr>
+  <td>{!$Label.PartRegCompMsgNew}</td>
+  </tr><tr>
+  </tr><tr>
+  <td>
+      {!if(partnerReg.Company_business_model__c == $Label.POB_partner_referral,$Label.PartRegCompMsg1_referral,$Label.PartRegCompMsg1)} <b>{!Id}</b>.&nbsp;{!if(partnerReg.Company_business_model__c == $Label.POB_partner_referral,$Label.PartRegCompMsgNew1_Referral,$Label.PartRegCompMsgNew1)}&nbsp;
+  </td></tr><tr></tr>
+  <tr><td>
+          <!--{!$Label.PartRegCompMsg2} <b>{!$Label.PartRegCompMsg3}</b> {!$Label.PartRegCompMsg4}-->
+          {!$Label.PartRegCompMsgNew3}&nbsp;<b>{!$Label.PartRegCompMsg3}</b>&nbsp;{!$Label.PartRegCompMsgNew4}&nbsp;<b><a href="mailto:capartners@ca.com">{!$Label.PartRegCompMsgNew6}</a></b>&nbsp;{!$Label.PartRegCompMsgNew7}
+  </td></tr>
+  
+  <tr/><tr/><tr/>
+  <tr><td>
+        {!$Label.PartRegCompMsgNew5} &nbsp;<b><a href="http://www.ca.com/partners">{!$Label.PartRegCompMsgNew8}</a></b>.
+  </td></tr>
+  <!--<tr><td>
+          {!$Label.PartRegCompMsg6}
+  </td></tr>
+  <tr><td>
+          <b>{!$Label.PartRegCompMsg7}</b>
+  </td></tr>-->
+  
+  </table>
+   </apex:outputPanel> 
+   
+   <apex:outputpanel rendered="{!displayPrivacyMsg}">
+   <table style="margin-left:33%;" > 
+ <tr><td style="font-weight:bold;">
+     <b>{!if(partnerReg.Company_business_model__c == $Label.POB_partner_referral,$Label.PartRegCompMsg8_referral,$Label.PartRegCompMsg8)} &nbsp; <apex:outputPanel rendered="{! partnerReg.Company_business_model__c == $Label.POB_partner_referral}"><c:PartneronBordingTerms ></c:PartneronBordingTerms></apex:outputPanel><apex:outputPanel rendered="{! partnerReg.Company_business_model__c != $Label.POB_partner_referral}"><apex:outputLink value="http://www.ca.com/us/privacy.aspx" id="theLink" target="_blank" style="color:Navy !important;">{!$Label.PartRegCompMsg9}</apex:outputLink></apex:outputPanel>
+   </b>
+   <td/>
+   </td>
+   <td>&nbsp;&nbsp;</td>
+   <td style="margin-left:1%;">
+      <apex:inputField value="{!partnerReg.Terms_and_Conditions__c}" required="true" />
+  </td></tr>
+   </table>
+   </apex:outputpanel>
+ 
+   <apex:outputpanel rendered="{!displayDupUsrMsg}">
+   <table style="margin-left:25%;" > 
+    <tr><td style="color:red;font-size:12px;font-weight:bold;">
+       {!$Label.POB_Duplicate_User}&nbsp;
+         <a href="http://partnerportal.ca.com" target="_blank" >{!$Label.POB_Duplicate_UserLnk}</a>
+         &nbsp;{!$Label.POB_Duplicate_UserendMsg}     
+    </td>
+   </tr>
+   </table>
+   </apex:outputpanel>
+ 
+ </apex:tab>
+ </apex:tabPanel>                   
+ </apex:pageBlock>
+    
+   <apex:outputPanel id="panelButtons" style="margin-left:25%"  rendered="{!renderLinks}">   
+    <apex:commandButton action="{!prev}" rendered="{!theSelectedTab  != 'accTab'}" value="{!$Label.btnBack}" immediate="true" reRender="theTabPanel,panelButtons" />
+    <apex:commandButton action="{!next}" rendered="{!AND(theSelectedTab != 'completeTab',renderAccntDtls==False, showFullFirstPage)}" value="{!$Label.btnnext}" reRender="emsg,theTabPanel,panelButtons"/>
+    <apex:commandButton action="{!saveForm}" rendered="{!theSelectedTab == 'completeTab'}" value="Register Now" />
+    <apex:actionStatus startText="" stopText=""  id="msg_refresh1" >
+    <apex:facet name="start">  
+       <apex:image value="/img/loading32.gif" height="16px" style="margin-left:15%" />
+    </apex:facet>
+   </apex:actionStatus>
+  </apex:outputPanel>
+ </apex:form>
+
+</apex:page>

@@ -1,0 +1,820 @@
+<apex:page standardController="Opportunity">
+    
+  
+
+
+    <script src="/soap/ajax/9.0/connection.js" type="text/javascript"></script> 
+    <script type="text/javascript" src="/js/functions.js"></script> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript"> 
+        
+      
+
+        // ====== Following section varies based on salesforce instance ======== 
+        //Opportunity Types 
+        var oppType1PickListId = "00N30000001dEwV"; 
+    var oppType2PickListId = "00N30000001dEv4"; 
+    var oppType3PickListId = "00N30000001dEwa"; 
+    
+    //Market Focus Area 
+    var marketFocusAreaCat1PickListId = "00N30000001zrqT"; 
+    var marketFocusAreaCat2PickListId = "00N30000001zrqZ"; 
+    var marketFocusAreaCat3PickListId = "00N30000001zrpq"; 
+    
+    //Products 
+    var prod1PickListId = "00N30000001zrqU"; 
+    var prod2PickListId = "00N30000001zrpr"; 
+    var prod3PickListId = "00N30000001zrqV"; 
+    
+    //Product Lookup Fields 
+    var product1Lookup = "CF00N30000002GK7E"; // cm - prod: CF00N30000002GK7E 
+    var product2Lookup = "CF00N30000002GK7O"; // cm - prod: CF00N30000002GK7O 
+    var product3Lookup = "CF00N30000002GK7Y"; // cm - prod: CF00N30000002GK7Y 
+    
+    var oppRecordType_NCV = "NCV"; // cm 
+    var oppRecordType_Indirect = "Indirect"; // cm 
+    var tsoReqRecordType_TSO = "01230000000DUCW"; // cm - prod: 01230000000DUCW 
+    var tsoReqRecordType_Indirect = "01230000000EEGo"; // cm - prod: 01230000000EEGo 
+    
+    var cfStr = "CF"; 
+    var forwadUrlMd = "a00"; 
+    var baseUrl = "/"+forwadUrlMd+"/e?nooverride=1&"; 
+    // ====== End of the section that could vary based on salesforce instance ======== 
+    
+    
+    
+    var percentTwoF = "%2F"; 
+    var retUrlPrf = "retURL="+percentTwoF; 
+    var retUrlSfx = "o"; 
+    var GlobalIdValStr = "idValStr"; 
+    var productNumberFldName = "totalNumberOfProduct"; 
+    var id; 
+    var name; 
+    var idFieldName = "id"; 
+    var nameFieldName = "nameFld"; 
+    
+    var fldName = "fldName"; 
+    var fldLinkName = "fldLinkName"; 
+    var finalUrlStr; 
+    var oppRecordType = ""; 
+    var openPopWindowYn = ""; 
+    var recTypeId; 
+    
+    var populateOppPick1List; 
+    var populateProdPick1List; 
+    var populateMarketFocusArea1List; 
+    var populateSolPick1List; 
+    
+    var populateOppPick2List; 
+    var populateProdPick2List; 
+    var populateMarketFocusArea2List; 
+    var populateSolPick2List; 
+    
+    var populateOppPick3List; 
+    var populateProdPick3List; 
+    var populateMarketFocusArea3List; 
+    var populateSolPick3List; 
+    
+    var oTable; 
+    var oFields; 
+    
+    
+    var percentMatch = 80; 
+    
+    $(document).ready(function(){
+        initPage();
+    }
+    );
+    
+    function initPage() 
+    { 
+        
+        sforce.connection.init("{!$API.Session_ID}", "{!$API.Partner_Server_URL_90}"); 
+        setup(); 
+    } 
+    
+    function setup() 
+    { 
+        determineAndPopulateIdAndName(); 
+        printLineItems(); 
+    } 
+    
+    //Construct the base url for account or opportunity 
+    function constructForwardUrl() 
+    { 
+        
+        var tsoRequestRecordType = ""; 
+        var tmpOppRecordType = "{!Opportunity.RecordType}"; 
+        // cm - set record type for TSO Request 
+        if (oppRecordType == oppRecordType_NCV) 
+        { 
+            tsoRequestRecordType = tsoReqRecordType_TSO; 
+        } 
+        if (oppRecordType == oppRecordType_Indirect) 
+        { 
+            tsoRequestRecordType = tsoReqRecordType_Indirect; 
+        } 
+        //alert("tsoRequestRecordType:"+tsoRequestRecordType); 
+        //return (baseUrl+cfStr+getFldValFromParam(fldName)+"="+encodeURIComponent(unescape(name))+"&"+cfStr+getFldValFromParam(fldLinkName)+"="+id+"&"+retUrlPrf+id); 
+        
+        return (baseUrl+cfStr+getFldValFromParam(fldName)+"="+encodeURIComponent(unescape(name))+"&"+cfStr+getFldValFromParam(fldLinkName)+"="+id+"&"+retUrlPrf+id) + "&RecordType="+tsoRequestRecordType; // cm 
+        
+        //return (baseUrl+cfStr+getFldValFromParam(fldName)+"="+encodeURIComponent(unescape(name))+"&"+cfStr+getFldValFromParam(fldLinkName)+"="+id+"&"+retUrlPrf+id); 
+    } 
+    
+    //Get Id field 
+    function determineAndPopulateIdAndName() 
+    { 
+        //if(isEmpty(id) == true) 
+        //{ 
+        id = "{!Opportunity.Id}"; 
+        if(isEmpty(id) == true) 
+        { 
+            id = getQueryStringValue(idFieldName); 
+        } 
+        //} 
+        if(isEmpty(id) == true) 
+        { 
+            id = document.getElementById(idFieldName).value; 
+        } 
+        name = getName(); 
+    } 
+    
+    //Get any field value from parameter and if not found try find it in document 
+    function getFldValFromParam(fieldNameStr) 
+    { 
+        var fldVal = getQueryStringValue(fieldNameStr); 
+        if(isEmpty(id) == true) 
+        { 
+            fldVal = getTextFldValFromDoc(fieldNameStr); 
+        } 
+        return fldVal; 
+    } 
+    
+    //Get any field value from document 
+    function getTextFldValFromDoc(fieldNameStr) 
+    { 
+        var fldVal = document.getElementById(fieldNameStr).value; 
+        if(isEmpty(id) == true) 
+        { 
+            fldVal = ""; 
+        } 
+        return fldVal; 
+    } 
+    
+    //get an object name based on the object type and id 
+    function getName(objId) 
+    { 
+        var objName = ""; 
+        //if(isEmpty(objName) == true) 
+        //{ 
+        objName = "{!Opportunity.Name}"; 
+        //} 
+        if(isEmpty(objName) == true) 
+        { 
+            objName = getQueryStringValue(nameFieldName); 
+            if(isEmpty(objName) == true) 
+            { 
+                objName = document.getElementById(nameFieldName).value; 
+            } 
+            if(isEmpty(objName) == true) 
+            { 
+                var strQry = " Select name from Opportunity where id = '"+objId+"'"; 
+                var result = sforce.connection.query(strQry); 
+                
+                if (result != null && result.size > 0) 
+                { 
+                    var objRecords = result.getArray('records'); 
+                    for (var i = 0; i < objRecords.length; i++) 
+                    { 
+                        var objObj = objRecords[i]; 
+                        objName = objObj.get("name"); 
+                    } 
+                } 
+            } 
+        } 
+        return objName; 
+    } 
+    
+    //get opportunity record type 
+    function populateOppType() 
+    { 
+        oppRecordType = "{!Opportunity.RecordType}"; 
+    } 
+    
+    //Utility method to get value for a given parameter 
+    //from the Url Query String 
+    function getQueryStringValue(name) 
+    { 
+        
+        var query = location.search.substring(1); 
+        var pairs = query.split("&"); 
+        for(var i = 0; i < pairs.length; i++) 
+        { 
+            var pos = pairs[i].indexOf('='); 
+            if (pos == -1) continue; 
+            var argname = pairs[i].substring(0,pos); 
+            var value = pairs[i].substring(pos+1); 
+            
+            if (argname == name) return unescape(value); 
+        } 
+        return ""; 
+    } 
+    
+    
+    //populate picklist for a given pickListName 
+    function populatePickList() 
+    { 
+        try 
+        { 
+            oTable = sforce.connection.describeSObject("TSO_Request__c"); 
+            oFields = oTable.fields; 
+        }catch(e) 
+        { 
+            //alert("Error at outer loop "+e); 
+        } 
+        populateOppPick1List = populatePikList("Opportunity_Type__c"); 
+        populateProdPick1List = populatePikList("Product_1__c"); 
+        populateMarketFocusArea1List = populatePikList("Market_Focus_Area_1__c"); 
+        
+        populateOppPick2List = populatePikList("Opportunity_Type_2__c"); 
+        populateProdPick2List = populatePikList("Product_2__c"); 
+        populateMarketFocusArea2List = populatePikList("Market_Focus_Area_2__c"); 
+        
+        populateOppPick3List = populatePikList("Opportunity_Type_3__c"); 
+        populateProdPick3List = populatePikList("Product_3__c"); 
+        populateMarketFocusArea3List = populatePikList("Market_Focus_Area_3__c"); 
+        
+    } 
+    
+    //populate picklist for a given pickListName 
+    function populatePikList(pickListNmStr) 
+    { 
+        var vArray; 
+        //loop through all the fields 
+        try 
+        { 
+            if(oFields != null) 
+            { 
+                for (var a=0; a<oFields.length; a++) 
+                { 
+                    if(oFields[a].name==pickListNmStr) 
+                    { 
+                        var oPicklistVals = oFields[a].picklistValues; 
+                        vArray = new Array(oPicklistVals.length); 
+                        for (var b=0; b<oPicklistVals.length; b++) 
+                        { 
+                            //loop through all picklist values 
+                            var valValue = oPicklistVals[b].value; 
+                            vArray[b] = valValue; 
+                        } 
+                    } 
+                } 
+            } 
+        } catch(e) 
+        { 
+            //alert("Error at outer loop "+e); 
+        } 
+        return vArray; 
+    } 
+    
+    
+    function stringArray(thisArray) 
+    { 
+        var vDisplay = ""; 
+        if(thisArray != null) 
+        { 
+            vDisplay += " size is "+thisArray.length+" array elements are "; 
+            for (var b=0; b<thisArray.length; b++) 
+            { 
+                vDisplay += (b+1)+thisArray[b]+"<br>"; 
+            } 
+        } 
+        return vDisplay; 
+    } 
+    function printArray(thisArray) 
+    { 
+        
+        alert(stringArray(thisArray)); 
+    } 
+    
+    function isEmpty(str) 
+    { 
+        if(str=="") 
+            return true; 
+        if(str==null) 
+            return true; 
+        if(str=="undefined") 
+            return true; 
+        if(str=="000000000000000") 
+            return true; 
+        return false; 
+    } 
+    
+    // function to sort by product name 
+    //assuming that the productName is in the 2nd indexed element 
+    function compareOnProductName(Item1, Item2) 
+    { 
+        var item1 = Item1[1]; 
+        var item2 = Item2[1]; 
+        if (item1 > item2) return 1; 
+        if (item1 < item2) return -1; 
+        return 0; 
+    } 
+    
+    //Method to display the product list 
+    //Method to display the product list 
+    function printLineItems() 
+    { 
+        var ele = document.getElementById('printLineItems'); 
+        var strPageHTML = ""; 
+        try 
+        { 
+            var arrSearchResult = getLineItems(); 
+            populateOppType(); 
+            if(arrSearchResult != null) 
+            { 
+                arrSearchResult.sort(compareOnProductName); 
+                strPageHTML = strPageHTML +" <TABLE class='list' cellpadding='0' cellspacing='0' border='0'>"; 
+                strPageHTML = strPageHTML +"    <TR>"; 
+                strPageHTML = strPageHTML +"    <TD class='labelCol' width='33%'>Select</TD>"; 
+                strPageHTML = strPageHTML +"    <TD class='labelCol' width='33%'>BU</TD>"; 
+                strPageHTML = strPageHTML +"    <TD class='labelCol' width='34%'>Product Name</TD>"; 
+                var hiddenEntries = ""; 
+                var hiddenIdValString = ""; 
+                strPageHTML = strPageHTML +"    </TR>"; 
+                var idStr = ""; 
+                for(var arrSearchResultCnt=0;arrSearchResultCnt<arrSearchResult.length;arrSearchResultCnt++) 
+                { 
+                    hiddenIdValString = GlobalIdValStr+arrSearchResultCnt; 
+                    idStr = "<input type='checkbox' id='"+hiddenIdValString+"' name='"+hiddenIdValString+"' value='"+arrSearchResult[arrSearchResultCnt][0]+"'>"; 
+                    hiddenEntries = hiddenEntries + "<input type='hidden' id='prod_"+arrSearchResult[arrSearchResultCnt][0]+"' name='prod_"+arrSearchResult[arrSearchResultCnt][0]+"' value='"+escapeSingleQuote(arrSearchResult[arrSearchResultCnt][1])+"'>"; 
+                    hiddenEntries = hiddenEntries + "<input type='hidden' id='marketFocusArea_"+arrSearchResult[arrSearchResultCnt][0]+"' name='marketFocusArea_"+arrSearchResult[arrSearchResultCnt][0]+"' value='"+escapeSingleQuote(arrSearchResult[arrSearchResultCnt][2])+"'>"; 
+                    
+                    hiddenEntries = hiddenEntries + "<input type='hidden' id='prodId_"+arrSearchResult[arrSearchResultCnt][0]+"' name='prodId_"+arrSearchResult[arrSearchResultCnt][0]+"' value='"+escapeSingleQuote(arrSearchResult[arrSearchResultCnt][3])+"'>"; // cm 
+                    
+                    strPageHTML = strPageHTML + "<TR>"; 
+                    strPageHTML = strPageHTML + "<TD class='dataCol'><div align=right>"+idStr+"</div></TD>"; 
+                    strPageHTML = strPageHTML + "<TD class='dataCol'><div align=right>"+arrSearchResult[arrSearchResultCnt][2]+"</div></TD>"; 
+                    strPageHTML = strPageHTML + "<TD class='dataCol'><div align=right>"+arrSearchResult[arrSearchResultCnt][1]+"</div></TD>"; 
+                    strPageHTML = strPageHTML + "</TR>"; 
+                } 
+                if(arrSearchResult.length>0) 
+                { 
+                    //productNumberFldName 
+                    hiddenEntries = hiddenEntries + "<input type='hidden' id='"+productNumberFldName+"' name='"+productNumberFldName+"' value='"+arrSearchResult.length+"'>"; 
+                } 
+                strPageHTML = strPageHTML +" </TABLE>"; 
+                strPageHTML = strPageHTML +hiddenEntries; 
+            } 
+        }catch(error) 
+        { 
+            //handleErrors("printLineItems", errors); 
+            strPageHTML = strPageHTML +" An error occurred while getting the product information to display."+errors; 
+        } 
+        ele.innerHTML = strPageHTML; 
+    } 
+    
+    //handle errors 
+    function handleErrors(location, errors) 
+    { 
+        alert("Error for "+location+" is: "+errors); 
+    } 
+    //This function gets the values to be displayed 
+    /** 
+array[0]---> price book entry id 
+array[1]---> product name 
+array[2]---> Market Focus Area 
+*/ 
+    function getLineItems() 
+    { 
+        
+        var arrSearchResult = new Array(); 
+        //try 
+        //{ 
+        var productName = ""; 
+        var productDesc = ""; 
+        var prodBu = ""; 
+        var prodSol = ""; 
+        //var lineItemStrSQL="Select pricebookEntry.product2.name, pricebookEntry.product2.Market_Focus_Area__c, PricebookEntryId from OpportunityLineItem "; 
+        var lineItemStrSQL="Select pricebookEntry.product2.Id, pricebookEntry.product2.name, pricebookEntry.product2.Market_Focus_Area__c, PricebookEntryId from OpportunityLineItem "; // cm 
+        lineItemStrSQL = lineItemStrSQL +" where OpportunityId = '"+id+"'"; 
+        var priceBookEntryId = ""; 
+        var qrOppLine= sforce.connection.query(lineItemStrSQL); 
+        if(qrOppLine !=null && qrOppLine.size>0) 
+        { 
+            var k=0; 
+            var KeepLooking = true; 
+            while(KeepLooking==true) 
+            { 
+                k=0; 
+                var objRecords = qrOppLine.getArray('records'); 
+                for (var i = 0; i < objRecords.length; i++) 
+                { 
+                    var OppLine=objRecords[i]; 
+                    if(OppLine != null) 
+                    { 
+                        priceBookEntryId = OppLine.get("PricebookEntryId"); 
+                        if(priceBookEntryId != null) 
+                        { 
+                            var prod = OppLine.PricebookEntry.Product2; 
+                            if(prod != null) 
+                            { 
+                                var SearchResultArrLength=arrSearchResult.length; 
+                                arrSearchResult[SearchResultArrLength]=new Array(3); 
+                                arrSearchResult[SearchResultArrLength][0]=priceBookEntryId; 
+                                arrSearchResult[SearchResultArrLength][1]=prod.Name; 
+                                arrSearchResult[SearchResultArrLength][2]=prod.Market_Focus_Area__c; 
+                                arrSearchResult[SearchResultArrLength][3]=prod.Id; // cm 
+                            } 
+                            
+                        } 
+                    }//end of if(OppLine != null) 
+                } 
+                if(qrOppLine.getBoolean("done")) 
+                { 
+                    KeepLooking=false; 
+                } 
+                else 
+                { 
+                    qrOppLine=sforce.connection.queryMore(qrOppLine.queryLocator) 
+                } 
+            }//end of while(KeepLooking==true) 
+        } 
+        /*}catch(error) 
+{ 
+handleErrors("getLineItems"); 
+}*/ 
+    return arrSearchResult; 
+    
+} 
+    
+    
+    //jump back to default Url 
+    function jumpbackToDefault() 
+    { 
+        jumpbackTo(constructForwardUrl()); 
+    } 
+    
+    function jumpBackToOpp() 
+    { 
+        determineAndPopulateIdAndName(); 
+        jumpbackTo("/"+id); 
+    } 
+    
+    //jump back to final Url 
+    function jumpbackTo(locStr) 
+    { 
+        parent.frames.location.replace(locStr); 
+    } 
+    
+    function getUserEntries() 
+    { 
+        var userEntryArray = new Array(); 
+        var arraySize = document.getElementById(productNumberFldName).value; 
+        var currVal = ""; 
+        var currIndex = 0; 
+        var prodElem = ""; 
+        var buElem = ""; 
+        var solElem = ""; 
+        
+        if(arraySize != null && arraySize>0) 
+        { 
+            
+            var hiddenIdValString = ""; 
+            for(var i=0;i<arraySize;i++) 
+            { 
+                hiddenIdValString = GlobalIdValStr+i; 
+                if(document.getElementById(hiddenIdValString).checked != false) 
+                { 
+                    currVal = document.getElementById(hiddenIdValString).value; 
+                    prodElem = document.getElementById("prod_"+currVal).value; 
+                    marketFocusAreaElem = document.getElementById("marketFocusArea_"+currVal).value; 
+                    prodIdElem = document.getElementById("prodId_"+currVal).value; // cm 
+                    var values = "Index "+currIndex+" hiddenVal "+hiddenIdValString+" Id "+currVal+"\nProduct "+prodElem+"\n"; 
+                    values = values + "MFA "+marketFocusAreaElem+"\n"; 
+                    userEntryArray[currIndex]=new Array(3); // cm 
+                    userEntryArray[currIndex][0]=prodElem; 
+                    userEntryArray[currIndex][1]=marketFocusAreaElem; 
+                    userEntryArray[currIndex][2]=prodIdElem; // cm 
+                    currIndex = currIndex + 1; 
+                } 
+            } 
+        } 
+        return userEntryArray; 
+    } 
+    
+    //function to apply the selection to new TSO Request 
+    function applySelection() 
+    { 
+        try 
+        { 
+            var userEntryArray = getUserEntries(); 
+            var cCount = userEntryArray.length; 
+            var strProdsIds = ''; 
+            if(cCount < 4) 
+            { 
+                finalUrlStr = constructForwardUrl(); 
+                populateOppType(); 
+                if(isEmpty(oppRecordType) == false && cCount >0) 
+                { 
+                    populatePickList(); 
+                    for(var i=0;i<cCount;i++) 
+                    { 
+                        if(i==0) 
+                        { 
+                            finalUrlStr = finalUrlStr +"&"+oppType1PickListId+"="+//encodeURIComponent(unescape(oppRecordType)) 
+                                findOppTypeMatchingVale(oppRecordType,populateOppPick1List) 
+                            +"&"+marketFocusAreaCat1PickListId+"="+findMatchingVale(userEntryArray[i][1],populateMarketFocusArea1List) 
+                            +"&"+prod1PickListId+"="+findMatchingVale(userEntryArray[i][0],populateProdPick1List) 
+                            +"&"+product1Lookup+"="+findMatchingVale(userEntryArray[i][0],populateProdPick1List) 
+                            +"&prodid1TEST=x&"+product1Lookup+"_lkid="+userEntryArray[i][2] 
+                            ; 
+                            strProdsIds+= userEntryArray[i][2] + ','; 
+                        } // cm 
+                        if(i==1) 
+                        { 
+                            finalUrlStr = finalUrlStr +"&"+oppType2PickListId+"="+//encodeURIComponent(unescape(oppRecordType)) 
+                                findOppTypeMatchingVale(oppRecordType,populateOppPick2List) 
+                            +"&"+marketFocusAreaCat2PickListId+"="+findMatchingVale(userEntryArray[i][1],populateMarketFocusArea2List) 
+                            +"&"+prod2PickListId+"="+findMatchingVale(userEntryArray[i][0],populateProdPick2List) 
+                            +"&"+product2Lookup+"="+findMatchingVale(userEntryArray[i][0],populateProdPick2List) 
+                            +"&"+product2Lookup+"_lkid="+userEntryArray[i][2] 
+                            ; 
+                            strProdsIds+= userEntryArray[i][2] + ','; 
+                        } 
+                        if(i==2) 
+                        { 
+                            finalUrlStr = finalUrlStr +"&"+oppType3PickListId+"="+//encodeURIComponent(unescape(oppRecordType)) 
+                                findOppTypeMatchingVale(oppRecordType,populateOppPick3List) 
+                            +"&"+marketFocusAreaCat3PickListId+"="+findMatchingVale(userEntryArray[i][1],populateMarketFocusArea3List) 
+                            +"&"+prod3PickListId+"="+findMatchingVale(userEntryArray[i][0],populateProdPick3List) 
+                            +"&"+product3Lookup+"="+findMatchingVale(userEntryArray[i][0],populateProdPick3List) 
+                            +"&"+product3Lookup+"_lkid="+userEntryArray[i][2] 
+                            ; 
+                            strProdsIds+= userEntryArray[i][2]; 
+                        } 
+                        
+                    } 
+                } 
+                
+                jumpbackTo(finalUrlStr + '&00NQ0000000Gc8P=' + strProdsIds + '&00N300000048GgU=' + strProdsIds); 
+            }else 
+            { 
+                alert("Selection of more than three products is not permitted."); 
+            } 
+        }catch(error){ 
+            alert("An uexpected error occurred and you will be directed to TSO Request page without pre-selection."); 
+            jumpbackToDefault(); 
+        } 
+    } 
+    
+    
+    //find matching values 
+    function findMatchingVale(thisVal, pickListArray) 
+    { 
+        var retVal = thisVal; 
+        var currMatchVal =0; 
+        var highestMatchVal = 0; 
+        if(pickListArray != null) 
+        { 
+            for(var i=0;i<pickListArray.length;i++) 
+            { 
+                currMatchVal = percentMatchMethod(thisVal, pickListArray[i]); 
+                if(currMatchVal == 100) 
+                { 
+                    return encodeURIComponent(unescape(pickListArray[i])); 
+                } 
+                if( Number(currMatchVal) > Number(highestMatchVal)) 
+                { 
+                    retVal = pickListArray[i]; 
+                    highestMatchVal = currMatchVal; 
+                } 
+            } 
+        } 
+        return encodeURIComponent(unescape(retVal)); 
+    } 
+    
+    
+    //find matching values 
+    function findOppTypeMatchingVale(thisVal, pickListArray) 
+    { 
+        var retVal = thisVal; 
+        var currMatchVal =0; 
+        var highestMatchVal = 0; 
+        if(pickListArray != null) 
+        { 
+            for(var i=0;i<pickListArray.length;i++) 
+            { 
+                currMatchVal = percentMatchMethod(thisVal, pickListArray[i]); 
+                if(currMatchVal == 100) 
+                { 
+                    return encodeURIComponent(unescape(pickListArray[i])); 
+                } 
+                if( Number(currMatchVal) > Number(highestMatchVal)) 
+                { 
+                    retVal = pickListArray[i]; 
+                    highestMatchVal = currMatchVal; 
+                } 
+            } 
+        } 
+        return encodeURIComponent(unescape(retVal)); 
+    } 
+    
+    function filterNum(str) 
+    { 
+        if(isEmpty(str)) 
+        { 
+            return ""; 
+        } 
+        return str.replace(/[\ .,-/\n/\r/\t!#\$\/:\?'\(\)\[\]_\-\\]/g,""); 
+                           } 
+                           
+                           
+                           function percentMatchMethod(val1, val2) 
+        { 
+            var retVal = 0; 
+            var valDisplay = ""; 
+            try 
+            { 
+                if(isEmpty(val1) ==false && isEmpty(val2) ==false) 
+                { 
+                    var v1 = val1.toLowerCase(); 
+                    var v2 = val2.toLowerCase(); 
+                    if(v1 ==v2) 
+                    { 
+                        return 100; 
+                    } 
+                    v1 = filterNum(v1); 
+                    v2 = filterNum(v2); 
+                    if(v1==v2) 
+                    { 
+                        return 99; 
+                    } 
+                    if(percentMatch == 80) 
+                    { 
+                        retVal = matchCountWord(percentMatch,val1.toLowerCase(), val2.toLowerCase()); 
+                    } 
+                } 
+            }catch(error) 
+            { 
+                //alert("Error at percentMatch"+error+" values are "+val1+" "+val2); 
+            } 
+            return retVal; 
+        } 
+        
+        
+        function matchCountWord(mainVal, val1, val2) 
+        { 
+            var retVal =0; 
+            try 
+            { 
+                if(isEmpty(val1) ==false && isEmpty(val2) ==false) 
+                { 
+                    var v1 = Trim(val1).split(" "); 
+                    var v2 = Trim(val2).split(" "); 
+                    var countMatch = 0; 
+                    for(var i=0;i<v1.length;i++) 
+                    { 
+                        for(var j=0;j<v2.length;j++) 
+                        { 
+                            if(v1[i] == v2[j]) 
+                            { 
+                                if(i==j) 
+                                { 
+                                    countMatch = countMatch + 1;//(1/10000) 
+                                } 
+                            }else 
+                            { 
+                                if(filterNum(v1[i]) == filterNum(v2[j])) 
+                                { 
+                                    if(i==j) 
+                                    { 
+                                        countMatch = countMatch + .5 ; 
+                                    } 
+                                } 
+                            } 
+                        } 
+                    } 
+                    
+                    if(countMatch>0) 
+                    { 
+                        retVal = ((mainVal-1)+(countMatch/1000)); 
+                    } 
+                } 
+                
+            } 
+            catch(error) 
+            { 
+                //alert("Error at percentMatch"+error+" values are "+val1+" "+val2); 
+            } 
+            return retVal; 
+        } 
+        
+        
+        
+        function escapeSingleQuote(str) 
+        { 
+            if(isEmpty(str) == true) 
+            { 
+                return ""; 
+            } 
+            return str.replace(/'/g, "\'"); 
+        } 
+        
+        
+        function Trim(str) 
+        { 
+            if(isEmpty(str) == true) 
+            { 
+                return ""; 
+            } 
+            return str.replace(/^\s*|\s*$/g, ""); 
+            //return str.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,""); 
+        } 
+</script> 
+
+    <link href="/dCSS/Theme2/default/common.css" type="text/css" media="handheld,print,projection,screen,tty,tv" rel="stylesheet"/> 
+    <link href="/dCSS/Theme2/default/custom.css" type="text/css" media="handheld,print,projection,screen,tty,tv" rel="stylesheet"/>
+    
+    <style>
+        .bDescription {
+           padding: 0;
+           margin: 0.75%% 0;
+        }
+        h1,h2,h3,h4,h5,h6{
+            margin : 0px 2.5%;
+        }
+        .pageTitleIcon{
+            position : relative;
+        }
+        body .pbBody table.list tr th, body .pbBody table.list tr td {
+            border: 0px solid #ededed;
+            color: #000;
+        }
+    </style>
+    
+    <body class="opportunity editPage"> 
+        
+        <div class="bPageTitle"> 
+            <div class="secondaryPalette"> 
+                <div class="content">
+                    <img src="/s.gif" alt="Opportunity" class="pageTitleIcon" title="Opportunity"/> 
+                    <h1 class="pageType">Opportunity <span class="titleSeparatingColon">:</span></h1> 
+                    <h2 class="pageDescription" id="pdes" >Select Products</h2> 
+                    <br/ > 
+                    
+                    <!-- <div class="blank">&nbsp;</div>--> 
+                </div> 
+            </div> <!-- end ptBody --> 
+        
+        <div class="bDescription" id="descript">Please review the product list. Up to 3 products can be selected.</div>
+        
+        <div id="pagebody"> 
+            <div class="hotListElement">
+                <div class="bPageBlock secondaryPalette"><div class="pbHeader"> 
+                
+                </div> 
+                <div class="pbBody"> 
+                    <table class="list" border="0" cellspacing="0" cellpadding="0"> 
+                        
+                        <TR><TD class="labelCol" width="25%">Opportunity </TD><TD class="dataCol col02">{!Opportunity.Name}</TD> 
+                            <TD class="labelCol" width="25%">Opportunity Type</TD><TD class="dataCol col02">{!Opportunity.RecordType.Name}</TD></TR> 
+                    </table> 
+                </div></div>
+                <br/>
+                <div class="bPageBlock bEditBlock secondaryPalette" id="ep"><div class="pbHeader"> 
+            <TABLE cellpadding="0" cellspacing="0" border="0" > 
+                <TR> 
+                    <TD class="pbButton" align="center"> 
+                        <input value="Apply Selection" class="button" type="button" title="Apply Selection" name="apply_selection" onclick="return applySelection()"/ > 
+                        <input value="Skip Selection" align="center" class="button" type="button" title="Skip Selection" name="skipSelection" onclick="return jumpbackToDefault()"/> 
+                        <input value="Cancel" align="center" class="button" type="button" title="Cancel" name="cancel" onclick="return jumpBackToOpp()"/> 
+                    </TD> 
+                </TR> 
+            </TABLE> 
+            </div> 
+            <div class="pbBody"> 
+                
+                <div id="printLineItems"></div> 
+                
+            </div> 
+            <div class="pbHeader"> 
+                <TABLE cellpadding="0" cellspacing="0" border="0" > 
+                    <TR> 
+                        <TD class="pbButton" align="center"> 
+                            <input value="Apply Selection" class="button" type="button" title="Apply Selection" name="apply_selection" onclick="return applySelection()" /> 
+                            <input value="Skip Selection" align="center" class="button" type="button" title="Skip Selection" name="skipSelection" onclick="return jumpbackToDefault()"/> 
+                            <input value="Cancel" align="center" class="button" type="button" title="Cancel" name="cancel" onclick="return jumpBackToOpp()" /> 
+                        </TD> 
+                    </TR> 
+                </TABLE> 
+            </div> 
+            
+        </div> 
+            </div>
+        </div>
+        </div>
+    </body>
+    
+</apex:page>

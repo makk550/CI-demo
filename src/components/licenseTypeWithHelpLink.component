@@ -1,0 +1,17 @@
+<apex:component >
+<apex:attribute name="fieldvalue" description="Value attribute"
+                    type="OpportunityLineItem" required="true"/>
+<apex:attribute name="id" description="Id attribute"
+                    type="String" required="true"/>
+
+  <!-- Begin Default Content REMOVE THIS -->
+  <tr><td class="labelCol first ">
+  <apex:outputLabel value="License Type"></apex:outputLabel>
+  </td>
+  <td class="data2Col  first  last ">
+  <apex:inputField value="{!fieldvalue.License_Type__c}" id="License_Type__c"/> 
+  <a href="/servlet/servlet.FileDownload?file=01530000000qn08" target="_blank" id="help">HELP</a>
+  </td></tr>
+  
+  <!-- End Default Content REMOVE THIS -->
+</apex:component>

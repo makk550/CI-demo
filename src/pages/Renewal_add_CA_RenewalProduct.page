@@ -1,0 +1,35 @@
+<apex:page standardController="CA_Product_Renewal__c" recordSetVar="prodRen" extensions="Renewal_AddRenewalProduct">
+  <apex:form >
+  <apex:outputLink value="/{!$CurrentPage.parameters.Id}">Go back to opportunity page</apex:outputLink>
+  <apex:pageblock id="pb">  
+  <apex:pagemessages />
+  
+      <apex:pageBlockButtons >
+          <apex:commandButton value="Add" action="{!addProduct}"/>
+          <apex:commandButton value="Remove"/>
+      </apex:pageBlockButtons>
+      <apex:commandButton value="<-Previous" style="font-weight:bold" rerender="pbs" rendered="{!hasPrevious}" action="{!previous}"/>
+      <apex:commandButton value="Next->" style="font-weight:bold" rerender="pbs" rendered="{!hasNext}" action="{!next}"/>
+      <apex:pageBlockSection id="pbs">
+          <apex:pageBlockTable value="{!RenewalProductList}" var="prodList">
+              <apex:column >
+                 <apex:inputCheckbox value="{!prodList.selected}"/>
+             </apex:column>
+              <apex:column headerValue="Contract Product">
+              <apex:outputLink value="/{!prodList.activeContractProd.Id}">{!prodList.activeContractProd.name}</apex:outputLink>
+              </apex:column>
+              <apex:column headerValue="Contract#" value="{!prodList.activeContractProd.Active_Contract__r.name}" />
+              <apex:column headerValue="OCV" value="{!prodList.activeContractProd.OCV__c}" />
+              <apex:column headerValue="AOCV" value="{!prodList.activeContractProd.AOCV__c}" />
+              <apex:column headerValue="Renewal Name">
+              <apex:outputLink value="/{!prodList.activeContractProd.Renewal_Product__r.Renewal__c}">{!prodList.activeContractProd.Renewal_Product__r.Renewal__r.name}</apex:outputLink>
+              </apex:column>
+              <apex:column headerValue="Renewal Converted" value="{!prodList.activeContractProd.Renewal_Product__r.Renewal__r.Converted_To_Opportunity__c}" />
+          </apex:pageBlockTable>
+      </apex:pageBlockSection>
+      <apex:commandButton value="<-Previous" style="font-weight:bold" rerender="pbs" rendered="{!hasPrevious}" action="{!previous}"/>
+      <apex:commandButton value="Next->" style="font-weight:bold" rerender="pbs" rendered="{!hasNext}" action="{!next}"/>
+
+  </apex:pageblock>
+  </apex:form>
+</apex:page>

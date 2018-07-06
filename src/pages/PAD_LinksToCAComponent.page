@@ -1,0 +1,29 @@
+<!-- Page to be displayed in the PRM Home page component to show links
+     to the CA education portal 
+     Created by Accenture (PRM R2)-->
+<apex:page showHeader="false" sideBar="false">
+<style type="text/css">
+        #cmComponent {
+            font-family: arial;
+            font-size: 10px;
+         }
+        a {
+            color: #333333;
+            font-size:10px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            font-size:10px;
+        }
+
+    </style>    
+<div id="cmComponent">
+    <a href="http://education.ca.com" target="_blank" class='sidebarModulePortalWelcome'>{!$Label.Partner_Education_Portal}</a><br/>        
+
+    <!-- Commenting out the old calearning link to the new one -->
+    <!-- a href="https://calearning.ca.com/plateau/user/portal.do?siteID=PARTNER" target="_blank" class='sidebarModulePortalWelcome'>{!$Label.Partner_Education_Portal}</a><br/ -->        
+    <!--a href="http://www.ca.com/us/ca-education.aspx" target="_blank" class='sidebarModulePortalWelcome'>{!$Label.Education_Information}</a><br/-->
+    <a href="{!$Label.PRM_Reference_Guide_Link}" target="_blank" class='sidebarModulePortalWelcome'>{!$Label.PRM_Reference_Guide}</a><br/>
+</div>
+</apex:page>

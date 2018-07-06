@@ -1,0 +1,64 @@
+<apex:page Controller="HVNController" tabStyle="HVN__c">
+<script type="text/javascript">
+    var strRoleName = "{!$UserRole.Name}";
+    if(strRoleName.search(/APJ/)==0){
+        alert("We’re sorry, HVN access is only available to NA, LA and Europe at this time");
+        window.parent.location.href = "/home/home.jsp";
+    }
+</script>
+<style>
+    th {background:lightgrey;text-align:center;}
+    .btm {border-bottom:1px solid black;)
+</style>
+    <table width="100%">
+        <tr>
+            <td>
+                <apex:image value="/servlet/servlet.FileDownload?file=01530000001WOs7" style="align:absmiddle" height="90px" width="120px"/>
+            </td>
+            <td valign="middle" width="80%">
+                <br><br>
+                <font size='6'>HIGH VALUE NETWORKING</font>
+            </td>
+            <td align="right">
+                <a href="https://km.ca.com/sales/hvn/Pages/default.aspx" target="_blank">HVN Home</a><br>
+                <a href="https://km.ca.com/sales/hvn/bookstore/default.aspx" target="_blank">HVN Store</a><br>
+                <a href="https://km.ca.com/sales/hvn/tktmaster/Pages/default.aspx" target="_blank">HVN tktMaster</a>
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <table width="100%">
+        <tr> 
+            <td>
+                <apex:image value="/servlet/servlet.FileDownload?file={!IF($User.User_Photo_ID__c==null || $User.User_Photo_ID__c=='','01530000000smio',$User.User_Photo_ID__c)}" height="75" width="60" style="align:absmiddle"/>               
+            </td>
+            <td valign="bottom" width="80%">
+                <br><br><br>
+                <h3>{!$User.FirstName}&nbsp;{!$User.LastName}<br>
+                {!$User.Title}</h3>            
+            </td>
+            <td align="right" VALIGN="MIDDLE">
+                <h3>
+                    <script type="text/javascript">
+                        document.write(new Date("{!NOW()}").toUTCString().substring(0,16));
+                    </script> 
+                </h3>
+            </td>
+        </tr>
+    </table>
+
+    <apex:tabPanel switchType="server" id="theTabPanel" tabClass="activeTab" inactiveTabClass="inactiveTab" value="{!currentTab}">
+        <apex:tab label="My HVN Contacts" name="myhvn" id="myhvn">
+                <apex:include pageName="My_HVN_Contacts"  rendered="{!IF(strKeyword==null || strKeyword=='',IF(totalRecords>0, true, false), true)}" />
+                <apex:outputText value="No records found." rendered="{!IF(totalRecords>0, false, true)}" />
+                <!-- Click <apex:outputLink value="{!URLFOR($Action.HVN__c.New)}" rendered="{!IF(totalRecords>0, false, true)}">here</apex:outputLink> to create new HVN Contact.  -->
+         </apex:tab>
+        <apex:tab label="All HVN Contacts" name="allhvn" id="allhvn">
+            <apex:include pageName="All_HVN_Contacts"  rendered="{!IF(strKeyword==null || strKeyword=='',IF(totalRecords>0, true, false), true)}" />
+               <apex:outputText value="No records found." rendered="{!IF(totalRecords>0, false, true)}" />
+        </apex:tab>
+    </apex:tabPanel>    
+    <script>
+        //alert("{!strQuery}");
+    </script>
+</apex:page>

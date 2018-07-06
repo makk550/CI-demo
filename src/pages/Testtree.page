@@ -1,0 +1,77 @@
+<apex:page controller="Testtreecontroller">
+    <apex:includeScript value="https://code.jquery.com/jquery-3.3.1.min.js" />
+    <apex:includeScript value="{!URLFOR($Resource.jExpand, '/jExpand/jExpand.js')}" />
+    
+    <script>
+   var j$ = jQuery.noConflict();
+ 
+   j$(document).ready(function()
+   {
+      resetTable();
+   });
+ 
+   //Collapses the outer table and hides the inner table.
+   function resetTable()
+   {
+      j$("#originalDrilldowns tr.pleaseHideMe").hide();
+      j$("#originalDrilldowns tr:first-child").show();
+ 
+      j$("#originalDrilldowns tr.odd").click(function()
+      {
+         j$(this).next("tr").toggle();
+         j$(this).find(".arrow").toggleClass("up");
+      });
+   }
+</script>
+    <apex:pageBlock >
+    <table id="originalDrilldowns">
+   <tr>
+      <th></th>
+      <th>Name</th>
+      <th>Account</th>
+      <th>Active</th>
+      
+      <th>End Date</th>
+      <th>Total Active Budget</th>
+   </tr>
+   <apex:repeat value="{!wrappers}" var="wrap">
+      <tr class="odd">
+         <td><apex:outputPanel layout="none"><div class="arrow"></div></apex:outputPanel></td>
+         <td><apex:outputField value="{!wrap.PRfund.Name}" /></td>
+         <td><apex:outputField value="{!wrap.PRfund.Account__c}" /></td>
+         <td><apex:outputField value="{!wrap.PRfund.Active__c}" /></td>
+        
+         <td><apex:outputField value="{!wrap.PRfund.End_Date__c}" /></td>
+         <td><apex:outputField value="{!wrap.PRfund.Total_Active_Budget__c}" /></td>
+      </tr>
+      <apex:outputPanel layout="none">
+         <tr class="first-child">
+            <td colspan="7">
+               <apex:pageBlockTable value="{!wrap.funreq}" var="drilldown" rendered="{!wrap.funreq.size > 0}" rowClasses="doNothing">
+                  <apex:column >
+                     <apex:facet name="header">Name</apex:facet>
+                     <apex:outputField value="{!drilldown.Name}" />
+                  </apex:column>
+                  <apex:column >
+                     <apex:facet name="header">Status</apex:facet>
+                     <apex:outputField value="{!drilldown.Status__c}" />
+                  </apex:column>
+               </apex:pageBlockTable>
+               <apex:pageBlockTable value="{!wrap.funclaims}" var="drilldown" rendered="{!wrap.funclaims.size > 0}" rowClasses="doNothing">
+                  <apex:column >
+                     <apex:facet name="header">Name</apex:facet>
+                     <apex:outputField value="{!drilldown.Name}" />
+                  </apex:column>
+                  
+                  <apex:column >
+                     <apex:facet name="header">Status</apex:facet>
+                     <apex:outputField value="{!drilldown.Status__c}" />
+                  </apex:column>
+               </apex:pageBlockTable>
+            </td>
+         </tr>
+      </apex:outputPanel>
+   </apex:repeat>
+</table>
+        </apex:pageBlock>
+</apex:page>

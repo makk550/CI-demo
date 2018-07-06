@@ -1,0 +1,46 @@
+<apex:page id="pg" standardController="Account" tabStyle="Customer_Success_Program__c" extensions="CSP_AddOpportunities">
+    <apex:sectionHeader title="{!If(csp.id <> null,'Add or Remove Opportunities from ','Attach Opportunities to ')} CSP" />
+    <apex:form >
+        
+       <apex:pageBlock id="pb" >
+        <apex:messages id="msg" styleClass="errorMsg" layout="table" style="margin-top:1em;"/>
+        <span style="color:red">{!msg}</span>
+
+         <apex:pageBlockButtons > 
+                <apex:commandButton action="{!saveOpps}" rendered="{!(csp.id <> null)}" value="Save Opportunities"/>
+                <apex:commandButton action="{!ApplySelection}" rendered="{!!(csp.id <> null)}" value="Apply Selection"  >
+                               <apex:param name="newUrl1" assignTo="{!newurl}" value="{!URLFOR($Action.Customer_Success_Program__c.New)}" />
+                </apex:commandButton>
+                
+                <apex:commandButton action="{!SkipSelection}" rendered="{! !(csp.id <> null)}" value="Skip Selection"  rerender="pg">
+                         <apex:param name="newUrl2" assignTo="{!newurl}" value="{!URLFOR($Action.Customer_Success_Program__c.New)}" />
+                </apex:commandButton>
+         </apex:pageBlockButtons>     
+         <apex:pageBlockSection title="Opportunities" columns="1">
+           <apex:pageBlockTable value="{!lstopps}" var="wo" width="100%" id="pgTable">
+                    <apex:column headerValue="Select" >
+                      <apex:inputCheckbox selected="{!wo.isSelected}" />
+                    </apex:column>        
+                    <apex:column value="{!wo.opp.name}" />
+                    <apex:column value="{!wo.opp.StageName}" />
+                    <apex:column value="{!wo.opp.closedate}" />
+                    <apex:column value="{!wo.opp.amount}" />
+                    <apex:column value="{!wo.opp.id}" rendered="false"/>
+                </apex:pageBlockTable>
+                <apex:outputpanel >Showing Page # {!pageNumber} of {!totalPages}</apex:outputpanel>  
+                <apex:outputpanel >
+                 <apex:commandButton value="First" action="{!start}" rerender="pgTable,pb"
+                                    status="status" disabled="{!DisablePrevious}" title="Click to go to first page of list of Opportunities" />
+                 <apex:commandButton value="Previous" action="{!Previous}" rerender="pgTable,pb"
+                                    status="status" disabled="{!DisablePrevious}" title="Click to go to previous page" />
+                <apex:commandButton value="Next" action="{!Next}" reRender="pgTable,pb"
+                                    status="status" disabled="{!DisableNext}" title="Click to go to next page"/>
+                <apex:commandButton value="Last" action="{!End}" reRender="pgTable,pb"
+                                    status="status" disabled="{!DisableNext}" title="Click to go to last page of list of Opportunities" />
+                <apex:actionStatus id="status" startText="Please Wait..."/>   
+                </apex:outputpanel>
+            </apex:pageBlockSection>  
+           
+         </apex:pageBlock>
+     </apex:form>
+</apex:page>

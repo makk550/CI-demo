@@ -1,0 +1,81 @@
+<apex:component id="SomeObjectHistory"  
+    controller="PDDHistoryController" >
+
+    <apex:attribute type="String[]"
+        name="lstPddIds"
+        assignTo="{!PDDIds}"
+        description="The SomeObject id to display SomeObject history information" />
+
+    <apex:outputPanel id="RelatedEntityHistoryList"
+        layout="block"
+        styleclass="bRelatedList">
+
+        <apex:pageBlock id="blockRelatedList"
+            title="PDD History">
+
+            <apex:form id="formRelatedList">
+                <apex:outputPanel layout="block"
+                    rendered="{!PDDHistories.size == 0}"
+                    style="border: 1px solid #D4DADC; padding: 5px 2px 4px 5px;">
+
+                    <span>No records to display</span>
+                </apex:outputPanel>
+
+                <apex:pageBlockTable id="tableRelatedList"
+                    value="{!PDDHistories}"
+                    var="item"
+                    rendered="{!PDDHistories.size != 0}">
+                    
+                     <apex:column headerValue="Instance Record Name">
+                        <apex:outputField id="instRec"
+                            value="{!item.History.parent.Instance__r.Name}"
+                            rendered="{!item.showDateAndUser}" />
+                    </apex:column>
+                    <apex:column headerValue="Date">
+                        <apex:outputField id="fieldCreatedDate"
+                            value="{!item.History.CreatedDate}"
+                            rendered="{!item.showDateAndUser}" />
+                    </apex:column>
+
+                    <apex:column headerValue="User">
+                        <apex:outputLink id="linkCreatedBy"
+                            value="/{!item.History.CreatedById}"
+                            rendered="{!item.showDateAndUser}">{!HTMLENCODE(item.History.CreatedBy.Name)}</apex:outputLink>
+                    </apex:column>
+
+                    <apex:column headerValue="Action">
+                        <apex:outputText id="textActionFormat"
+                            value="{!item.ActionFormat}"
+                            escape="false">
+
+                            <apex:param value="{!item.History.Field}" />
+                            <apex:param value="{!item.FieldLabel}" />
+                            <apex:param value="{!item.History.OldValue}" />
+                            <apex:param value="{!item.History.NewValue}" />
+                        </apex:outputText>
+                    </apex:column>
+                </apex:pageBlockTable>
+
+                <apex:outputPanel id="panelShowMore"
+                    layout="block"
+                    styleClass="pShowMore"
+                    rendered="{!AllowShowMore}">
+
+                    <apex:commandLink id="linkShowMore"
+                        action="{!showMore}"
+                        rerender="formRelatedList">Show more »</apex:commandLink>
+
+                      <!--  <span> | </span>
+
+                    <apex:outputLink id="linkGotoList"
+                        value="/_ui/common/history/ui/EntityHistoryFilterPage?id={!subject}">Go to list »</apex:outputLink>-->
+                </apex:outputPanel>
+            </apex:form>
+
+            <!-- The following script removes unwanted style class names so that the page block resembles a native related list block -->
+            <script type="text/javascript">
+                document.getElementById('{!$Component.blockRelatedList}').className='bPageBlock secondaryPalette';}
+            </script> 
+        </apex:pageBlock>
+    </apex:outputPanel>
+</apex:component>

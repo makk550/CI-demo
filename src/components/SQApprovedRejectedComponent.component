@@ -1,0 +1,67 @@
+<apex:component controller="SQApprovalProcessApprovedRejected" access="global">  
+  <apex:attribute name="objID" description="Obj ID" type="Id" assignTo="{!recID}"/> 
+  <head>
+  <style type="text/css">
+        td { width: 150px; word-wrap:break-word;}
+        table { width : 500px; table-layout: fixed; }
+    </style>
+    </head>
+    <body>
+  <br/>
+  
+  <apex:outputtext rendered="{!isApproved=='Approved'}">Your quote has been approved by <br/><apex:repeat value="{!ApproverorRejectuserid}" var="AR">{!AR.Name} - {!AR.Title}<br/></apex:repeat> <br/></apex:outputtext>
+  <apex:outputtext rendered="{!isApproved=='Rejected'}">Your quote has been rejected by <br/><apex:repeat value="{!ApproverorRejectuserid}" var="AR">{!AR.Name} - {!AR.Title}</apex:repeat><br/></apex:outputtext>
+  
+  <br/>
+  <table border="1" cellspacing="0" cellpadding="0" >
+        <tr>
+        <td width="180"><b>Sterling Quote Name</b></td>
+        <td align="Center" width="600"><a href="{!urlStr}" >{!SQuote.Name}</a></td>
+        </tr>
+        <tr>
+        <td width="180"><b>Opportunity Number</b></td>
+        <td align="Center" width="600">{!SQuote.Opportunity_Number__c}</td>
+        </tr>
+        <tr>
+            <td width="180"><b>Customer Name Sold To</b></td>
+        <td align="Center" width="600">{!SQuote.CA_Customer_Name_Sold_To__c}</td>
+        </tr>
+       
+        <tr>
+        <td width="180"><b>Header Effective Date</b></td>
+            <td align="Center" width="600"><apex:outputText value="{0, date, yyyy'-'MM'-'d}">
+                <apex:param value="{!SQuote.CA_Effective_Date__c}" /> 
+                </apex:outputText></td>
+        </tr>
+        
+        <tr>
+        <td width="180"><b>End Date</b></td>
+            <td align="Center" width="600"><apex:outputText value="{0, date, yyyy'-'MM'-'d}">
+                <apex:param value="{!SQuote.CA_Contract_End_Date__c}" /> 
+                </apex:outputText></td>
+        </tr>
+       
+        <tr>
+        <td width="180"><b>Payment Terms</b></td>
+        <td align="Center" width="600">{!SQuote.Net_Payment_Terms__c}</td>
+        </tr>
+      
+      
+      
+        <tr>
+            <td width="180"><b>CPQ Quote Total</b></td>
+        <td align="Center" width="600"><apex:outputText value="{0, number, ###,###,###,##0.00}">
+       <apex:param value="{!SQuote.CA_CPQ_Quote_Total__c}" />
+</apex:outputText></td>
+        </tr>
+        <apex:outputpanel rendered="{!isApproved=='Rejected'}">
+        <tr>
+        <td width="180">Comments</td>
+        <td align="Center" width="500">{!rejectedComments}</td>
+        </tr>
+        </apex:outputPanel>
+        </table>
+      <br/>
+ <apex:outputtext rendered="{!isApproved=='Rejected'}">The quote has been reverted to draft status.  Please update in CPQ and resubmit for approval.</apex:outputtext>
+ </body>
+</apex:component>

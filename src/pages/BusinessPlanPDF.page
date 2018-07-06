@@ -1,0 +1,7 @@
+<apex:page standardcontroller="Business_Plan__c" renderAs="Pdf">
+
+
+   <apex:detail subject="{!Business_Plan__c.Id}" relatedList="true" title="true">
+   </apex:detail>
+   
+</apex:page>

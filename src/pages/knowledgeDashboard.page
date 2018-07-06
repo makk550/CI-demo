@@ -1,0 +1,587 @@
+<apex:page showHeader="true" sidebar="true" standardStylesheets="true" controller="dashboardController">
+
+<head>
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/jquery-1.11.3.min.js" />
+<apex:stylesheet value="{!$Resource.KBDashboard}/CSS/jquery-ui.css" />
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/jquery.dataTables.min.js" />
+<apex:stylesheet value="{!$Resource.KBDashboard}/CSS/jquery.dataTables.min.css" />
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/jquery.highlight.js" />
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/dataTables.searchHighlight.min.js" />
+<apex:stylesheet value="{!$Resource.KBDashboard}/CSS/dataTables.searchHighlight.css" />
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/dataTables.buttons.min.js" />
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/buttons.flash.min.js" />
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/jszip.min.js" />
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/pdfmake.min.js" />
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/vfs_fonts.js" />
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/buttons.html5.min.js" />
+<apex:includeScript value="{!$Resource.KBDashboard}/JS/buttons.print.min.js" />
+<apex:stylesheet value="{!$Resource.KBDashboard}/CSS/buttons.dataTables.min.css" />
+
+
+
+<script type="text/javascript">
+
+function testMe(){
+   
+   
+var searchTable = $('[cid$="searchTable"]').parent('table').eq(0).DataTable({
+   //enables results highlight
+   searchHighlight: true,
+   //sets record lengths to show in picklist
+   aLengthMenu: [
+     [10, 25, 50, 100, 200, -1],
+     [10, 25, 50, 100, 200, "All"]
+   ],
+   "iDisplayLength": 10,
+   "aaSorting": [[ 6, "desc" ]] ,
+   //adds copy, print buttons...
+   dom: 'lBfrtip', //l=length, B=buttons, f=filter(search), r=processing, t=the table, I=table summary, p=page controls
+   buttons: [
+     'copy', 'csv', 'pdf',
+     {
+       extend: 'print',
+       customize: function(win) {
+         $(win.document.body)
+         .css( 'font-size', '10pt' );
+
+
+         $(win.document.body).find( 'table' )
+         .addClass( 'compact' )
+         .css( 'font-size', 'inherit' );
+       }
+     }
+   ],
+});
+     
+}
+
+$(document).ready(function(){
+    //testMe();
+    
+    var queueTable = $('[cid$="queTable"]').parent('table').eq(0).DataTable({
+      //enables results highlight
+   searchHighlight: true,
+   //sets record lengths to show in picklist
+   aLengthMenu: [
+     [10, 25, 50, 100, 200, -1],
+     [10, 25, 50, 100, 200, "All"]
+   ],
+   "iDisplayLength": 10,
+    "aaSorting": [[ 5, "desc" ]] ,
+   //adds copy, print buttons...
+   dom: 'lBfrtip', //l=length, B=buttons, f=filter(search), r=processing, t=the table, I=table summary, p=page controls
+   buttons: [
+     'copy', 'csv', 'pdf',
+     {
+       extend: 'print',
+       customize: function(win) {
+         $(win.document.body)
+         .css( 'font-size', '10pt' )
+         ;
+
+         $(win.document.body).find( 'table' )
+         .addClass( 'compact' )
+         .css( 'font-size', 'inherit' );
+       }
+     }
+   ],
+});
+
+var pubTable = $('[cid$="pendTable"]').parent('table').eq(0).DataTable({
+   //enables results highlight
+   searchHighlight: true,
+   //sets record lengths to show in picklist
+   aLengthMenu: [
+     [10, 25, 50, 100, 200, -1],
+     [10, 25, 50, 100, 200, "All"]
+   ],
+   "iDisplayLength": 10,
+   "aaSorting": [[ 6, "desc" ]] ,
+   
+   //adds copy, print buttons...
+   dom: 'lBfrtip', //l=length, B=buttons, f=filter(search), r=processing, t=the table, I=table summary, p=page controls
+   buttons: [
+     'copy', 'csv', 'pdf',
+     {
+       extend: 'print',
+       customize: function(win) {
+         $(win.document.body)
+         .css( 'font-size', '10pt' );
+         
+
+         $(win.document.body).find( 'table' )
+         .addClass( 'compact' )
+         .css( 'font-size', 'inherit' );
+       }
+     }
+   ],
+
+});
+
+var draftsTable = $('[cid$="draftsTable"]').parent('table').eq(0).DataTable({
+   //enables results highlight
+   searchHighlight: true,
+   //sets record lengths to show in picklist
+   aLengthMenu: [
+     [10, 25, 50, 100, 200, -1],
+     [10, 25, 50, 100, 200, "All"]
+   ],
+   "iDisplayLength": 10,
+   "aaSorting": [[ 6, "desc" ]] ,
+   //adds copy, print buttons...
+   dom: 'lBfrtip', //l=length, B=buttons, f=filter(search), r=processing, t=the table, I=table summary, p=page controls
+   buttons: [
+     'copy', 'csv', 'pdf',
+     {
+       extend: 'print',
+       customize: function(win) {
+         $(win.document.body)
+         .css( 'font-size', '10pt' )
+         ;
+
+         $(win.document.body).find( 'table' )
+         .addClass( 'compact' )
+         .css( 'font-size', 'inherit' );
+       }
+     }
+   ],
+});
+
+
+var pendingAppTable = $('[cid$="pendingAppTable"]').parent('table').eq(0).DataTable({
+   //enables results highlight
+   searchHighlight: true,
+   //sets record lengths to show in picklist
+   aLengthMenu: [
+     [10, 25, 50, 100, 200, -1],
+     [10, 25, 50, 100, 200, "All"]
+   ],
+   "iDisplayLength": 10,
+   "aaSorting": [[ 6, "desc" ]] ,
+   //adds copy, print buttons...
+   dom: 'lBfrtip', //l=length, B=buttons, f=filter(search), r=processing, t=the table, I=table summary, p=page controls
+   buttons: [
+     'copy', 'csv', 'pdf',
+     {
+       extend: 'print',
+       customize: function(win) {
+         $(win.document.body)
+         .css( 'font-size', '10pt' )
+         ;
+
+         $(win.document.body).find( 'table' )
+         .addClass( 'compact' )
+         .css( 'font-size', 'inherit' );
+       }
+     }
+   ],
+});
+
+var rejTable = $('[cid$="rejTable"]').parent('table').eq(0).DataTable({
+   //enables results highlight
+   searchHighlight: true,
+   //sets record lengths to show in picklist
+   aLengthMenu: [
+     [10, 25, 50, 100, 200, -1],
+     [10, 25, 50, 100, 200, "All"]
+   ],
+   "iDisplayLength": 10,
+   "aaSorting": [[ 6, "desc" ]] ,
+   //adds copy, print buttons...
+   dom: 'lBfrtip', //l=length, B=buttons, f=filter(search), r=processing, t=the table, I=table summary, p=page controls
+   buttons: [
+     'copy', 'csv', 'pdf',
+     {
+       extend: 'print',
+       customize: function(win) {
+         $(win.document.body)
+         .css( 'font-size', '10pt' );
+        
+
+         $(win.document.body).find( 'table' )
+         .addClass( 'compact' )
+         .css( 'font-size', 'inherit' );
+       }
+     }
+   ],
+});
+
+
+
+var compTable = $('[cid$="compTable"]').parent('table').eq(0).DataTable({
+   //enables results highlight
+   searchHighlight: true,
+   //sets record lengths to show in picklist
+   aLengthMenu: [
+     [10, 25, 50, 100, 200, -1],
+     [10, 25, 50, 100, 200, "All"]
+   ],
+   "iDisplayLength": 10,
+   "aaSorting": [[ 6, "desc" ]] ,
+   //adds copy, print buttons...
+   dom: 'lBfrtip', //l=length, B=buttons, f=filter(search), r=processing, t=the table, I=table summary, p=page controls
+   buttons: [
+     'copy', 'csv','pdf',
+     {
+       extend: 'print',
+       customize: function(win) {
+         $(win.document.body)
+         .css( 'font-size', '10pt' );
+        
+
+         $(win.document.body).find( 'table' )
+         .addClass( 'compact' )
+         .css( 'font-size', 'inherit' );
+       }
+     }
+   ],
+});
+
+var archTable = $('[cid$="archTable"]').parent('table').eq(0).DataTable({
+   //enables results highlight
+   searchHighlight: true,
+   //sets record lengths to show in picklist
+   aLengthMenu: [
+     [10, 25, 50, 100, 200, -1],
+     [10, 25, 50, 100, 200, "All"]
+   ],
+   "iDisplayLength": 10,
+   "aaSorting": [[ 6, "desc" ]] ,
+   //adds copy, print buttons...
+   dom: 'lBfrtip', //l=length, B=buttons, f=filter(search), r=processing, t=the table, I=table summary, p=page controls
+   buttons: [
+     'copy', 'csv','pdf',
+     {
+       extend: 'print',
+       customize: function(win) {
+         $(win.document.body)
+         .css( 'font-size', '10pt' );
+        
+
+         $(win.document.body).find( 'table' )
+         .addClass( 'compact' )
+         .css( 'font-size', 'inherit' );
+       }
+     }
+   ],
+});
+
+
+
+var searchTable = $('[cid$="searchTable"]').parent('table').eq(0).DataTable({
+   //enables results highlight
+   searchHighlight: true,
+   //sets record lengths to show in picklist
+   aLengthMenu: [
+     [10, 25, 50, 100, 200, -1],
+     [10, 25, 50, 100, 200, "All"]
+   ],
+   "iDisplayLength": 10,
+   "aaSorting": [[ 6, "desc" ]] ,
+   //adds copy, print buttons...
+   dom: 'lBfrtip', //l=length, B=buttons, f=filter(search), r=processing, t=the table, I=table summary, p=page controls
+   buttons: [
+     'copy', 'csv', 'pdf',
+     {
+       extend: 'print',
+       customize: function(win) {
+         $(win.document.body)
+         .css( 'font-size', '10pt' )
+         ;
+
+         $(win.document.body).find( 'table' )
+         .addClass( 'compact' )
+         .css( 'font-size', 'inherit' );
+       }
+     }
+   ],
+});
+
+
+
+
+
+});
+
+
+</script>
+<style>
+ 
+.Custom38Tab .tertiaryPalette, .individualPalette .Custom38Block .tertiaryPalette, .layoutEdit .individualPalette .Custom38Block .tertiaryPalette{
+    background-color: #1797c0;
+    border-color: #1797c0;
+}
+
+.dataTable{margin: 50px auto!important;
+    table-layout: fixed;
+    margin-bottom: 15px!important;}
+    .dt-buttons{
+        position: relative;
+        float: left;
+        margin-top: -7px;
+        margin-left: 15px;
+    }
+    
+    
+     .dataTables_wrapper{padding: 15px 0;}
+    .dataTable{margin: 50px auto!important;
+    table-layout: fixed;
+    margin-bottom: 15px!important;}
+    .dataTable th:nth-child(1) { width: 110px!important;}
+    .dataTable th:nth-child(3) { width: 100px!important;}
+    .dataTable th:nth-child(6) { width: 150px!important;}
+    .dataTable th:nth-child(7) { width: 150px!important;}
+    .dt-buttons{
+        position: relative;
+        float: left;
+        margin-top: -7px;
+        margin-left: 15px;
+    }
+    .dt-buttons a{
+        color: #333!important;
+    }
+    .dataTables_length label{color: #fff; font-size: 0;}
+    .dataTables_length label::before{content: 'Show';color: #333; font-size: 12px;margin-right: 5px;}
+    .dataTables_length label::after{content: 'Articles';color: #333; font-size: 12px;margin-left: 5px;}
+    
+    .infoImage{vertical-align: inherit;margin-right: 5px;}
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled{color: #aaa!important;}
+    
+    table.dataTable thead .sorting {
+      background: image-url("../images/sort_both.png");
+    }
+    table.dataTable thead .sorting_asc {
+      background-image: url(../images/sort_asc.png);
+    }
+    table.dataTable thead .sorting_desc {
+      background-image: url(../images/sort_desc.png);
+    }
+    table.dataTable thead .sorting_asc_disabled {
+      background: image-url(../images/sort_asc_disabled.png);
+    }
+    table.dataTable thead .sorting_desc_disabled {
+      background: image-url(../images/sort_desc_disabled.png);
+    }
+            
+</style>
+</head>
+
+
+
+<apex:form >
+
+
+<apex:pageBlock > 
+<apex:pageBlockSection title="Create Knowledge Article" columns="1">
+<apex:panelGroup >
+    <apex:pageBlockSectionItem dataStyle="width: 8%;padding: 8px 3px;">
+    <apex:selectList value="{!selectedVal}" size="1"> 
+    <apex:selectOptions value="{!optns}" /> 
+    </apex:selectList>
+    </apex:pageBlockSectionItem>
+      &nbsp;&nbsp;   &nbsp;&nbsp; &nbsp;
+    <apex:pageBlockSectionItem dataStyle="width: 2%;padding:2px;" id="ias">
+    <apex:commandButton value="Create KB Article" id="createBtn" style="width:30;" action="{!Create}" reRender="createErr"/>
+    </apex:pageBlockSectionItem>
+        <apex:pageMessages id="createErr" ></apex:pageMessages>
+    </apex:panelGroup>
+    
+    
+
+  
+    </apex:pageBlockSection>                                                                
+</apex:pageBlock> 
+
+ <apex:pageBlock id="acct" >
+ <apex:pageBlockSection title="Search All Articles" columns="1">
+      
+ <apex:panelGroup >
+ <div style="">
+ <apex:inputText value="{!searchStr}" onkeypress="return disableEnter(event);"/>
+
+    
+ <apex:commandButton value="Search" action="{!searchKB}" reRender="acct,searchErr" oncomplete="testMe();" status="artStatusId" style="margin-left:8px;"/>
+     <apex:inputCheckbox value="{!useExactMatch}" /> Exact Phrase
+     </div>
+    
+ <apex:pageBlockSectionItem dataStyle="width: 0%;" >
+ <apex:actionStatus id="artStatusId">
+                <apex:facet name="start" >
+                    <img src="/img/loading.gif"/>                    
+                </apex:facet>
+  </apex:actionStatus>
+  </apex:pageBlockSectionItem>
+   <apex:pageMessages id="searchErr"></apex:pageMessages>
+
+ </apex:panelGroup>
+        
+        <apex:pageBlockTable value="{!accList }" var="acc" html-cid="searchTable" rendered="{!IF(searchStr=='',false,true)}">
+             <apex:column value="{!acc.Auto_Article_Number__c}" headerValue="Article Number"/>
+             <apex:column headerValue="Title">
+             <a target="_blank" href= "/apex/CustomKnowledgeEdit?articleId={!acc.Id}" >{!acc.title}</a>
+             </apex:column>
+             <apex:column value="{!acc.PublishStatus}" headerValue="Status"/>
+             <apex:column value="{!acc.Product_Names__c}" headerValue="Product"/>
+             <apex:column value="{!acc.Releases__c}" headerValue="Releases"/>
+            <apex:column headerValue="Last Modified Date">
+            <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!acc.LastModifiedDate}" /> </apex:outputText>
+            </apex:column>
+             <apex:column value="{!acc.CreatedById }" headerValue="Created By"/>
+         </apex:pageBlockTable>
+           </apex:pageBlockSection>
+    </apex:pageBlock>
+
+ 
+
+</apex:form>
+
+       
+
+ <apex:pageBlock >
+ <apex:pageBlockSection title="My Draft Articles" id="draftSec" columns="1">
+ <apex:pageBlockTable var="a" html-cid="draftsTable" value="{!MyDrafts}">
+     <apex:column value="{!a.Auto_Article_Number__c}" headerValue="Article Number"/>
+     <apex:column headerValue="Title">
+     <a target="_blank" href= "/apex/CustomKnowledgeEdit?articleId={!a.Id}" >{!a.title}</a>
+     </apex:column>
+     <apex:column value="{!a.PublishStatus}" headerValue="Status"/>
+     <apex:column value="{!a.Product_Names__c}" headerValue="Product"/>
+     <apex:column value="{!a.Releases__c}" headerValue="Releases"/>
+     <apex:column headerValue="Last Modified Date">
+     <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!a.LastModifiedDate}" /> </apex:outputText>
+     </apex:column>
+     <apex:column value="{!a.CreatedById }" headerValue="Created By"/>
+     </apex:pageBlockTable>
+ </apex:pageBlockSection>
+</apex:pageBlock>
+
+ <apex:pageBlock >
+ <apex:pageBlockSection title="Pending My Approval" id="pendAppSec" columns="1" rendered="{!IF(MyPendingApprovals.size > 0,true,false)}">
+ <apex:pageBlockTable var="a" html-cid="pendingAppTable" value="{!MyPendingApprovals}">
+     <apex:column value="{!a.Auto_Article_Number__c}" headerValue="Article Number"/>
+     <apex:column headerValue="Title">
+     <a target="_blank" href= "/apex/CustomKnowledgeEdit?articleId={!a.Id}" >{!a.title}</a>
+     </apex:column>
+     <apex:column value="{!a.PublishStatus}" headerValue="Status"/>
+     <apex:column value="{!a.Product_Names__c}" headerValue="Product"/>
+     <apex:column value="{!a.Releases__c}" headerValue="Releases"/>
+     <apex:column headerValue="Last Modified Date">
+     <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!a.LastModifiedDate}" /> </apex:outputText>
+     </apex:column>
+     <apex:column value="{!a.CreatedById }" headerValue="Created By"/>
+     </apex:pageBlockTable>
+ </apex:pageBlockSection>
+</apex:pageBlock>
+
+<apex:pageBlock >
+ <apex:pageBlockSection title="My Pending Articles" columns="1">
+<apex:pageBlockTable value="{!PendingApprovals}" var="pa" html-cid="pendTable">
+     <apex:column value="{!pa.Auto_Article_Number__c}" headerValue="Article Number"/>
+     <apex:column headerValue="Title">
+      <a target="_blank" href= "/apex/CustomKnowledgeEdit?articleId={!pa.Id}" >{!pa.title}</a>
+      </apex:column>
+     <apex:column value="{!pa.PublishStatus}" headerValue="Status"/>
+     <apex:column value="{!pa.AssignedTo.Name}" headerValue="Assigned To"/>
+     <apex:column value="{!pa.Product_Names__c}" headerValue="Product"/>
+     <apex:column value="{!pa.Releases__c}" headerValue="Releases"/>
+     <apex:column headerValue="Last Modified Date">
+     <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!pa.LastModifiedDate}" /> </apex:outputText>
+     </apex:column>
+     <apex:column value="{!pa.CreatedById }" headerValue="Created By"/>
+ </apex:pageBlockTable>
+ </apex:pageBlockSection>
+</apex:pageBlock>
+
+<!--apex:outputPanel rendered="{!IF(isApprover,true,false)}">
+  <apex:pageBlock >
+     <apex:pageBlockSection title="My Approvals Queue" columns="1">
+  <apex:pageBlockTable value="{! ApprovalsQueue }" var="r" html-cid="queTable">
+      <apex:column value="{!r.Auto_Article_Number__c}" headerValue="Article Number"/>
+     <apex:column headerValue="Title">
+      <a target="_blank" href= "/apex/CustomKnowledgeEdit?articleId={!r.Id}" >{!r.title}</a>
+      </apex:column>
+     <apex:column value="{!r.PublishStatus}" headerValue="Status"/>
+     <apex:column value="{!r.Product_Names__c}" headerValue="Product"/>
+     <apex:column value="{!r.Releases__c}" headerValue="Releases"/>
+     <apex:column headerValue="Last Modified Date">
+     <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!r.LastModifiedDate}" /> </apex:outputText>
+     </apex:column>
+
+     <apex:column value="{!r.CreatedById }" headerValue="CreatedBy"/>
+   
+
+     </apex:pageBlockTable>
+     </apex:pageBlockSection>
+  </apex:pageBlock>
+  </apex:outputPanel-->
+
+
+<apex:pageBlock >
+ <apex:pageBlockSection title="My Rejected Articles" columns="1">
+ <apex:pageBlockTable value="{!RejectedKBs}" var="r" html-cid="rejTable">
+     <apex:column value="{!r.Auto_Article_Number__c}" headerValue="Article Number"/>
+     <apex:column headerValue="Title">
+      <a target="_blank" href= "/apex/CustomKnowledgeEdit?articleId={!r.Id}" >{!r.title}</a>
+      </apex:column>
+     <apex:column value="{!r.PublishStatus}" headerValue="Status"/>
+     <apex:column value="{!r.Product_Names__c}" headerValue="Product"/>
+     <apex:column value="{!r.Releases__c}" headerValue="Releases"/>
+<apex:column headerValue="Last Modified Date">
+     <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!r.LastModifiedDate}" /> </apex:outputText>
+     </apex:column>
+     <apex:column value="{!r.CreatedById }" headerValue="Created By"/>
+
+     </apex:pageBlockTable>
+ </apex:pageBlockSection>
+</apex:pageBlock>
+
+ <apex:pageBlock >
+ <apex:pageBlockSection title="My Completed Articles" columns="1">
+ <apex:pageBlockTable value="{!PubKBArticles}" var="p" html-cid="compTable">
+     <apex:column value="{!p.Auto_Article_Number__c}" headerValue="Article Number"/>
+     <apex:column headerValue="Title">
+      <a target="_blank" href= "/apex/CustomKnowledgeEdit?articleId={!p.Id}" >{!p.title}</a>
+      </apex:column>
+     <apex:column value="{!p.PublishStatus}" headerValue="Status"/>
+     <apex:column value="{!p.Product_Names__c}" headerValue="Product"/>
+     <apex:column value="{!p.Releases__c}" headerValue="Releases"/>
+     <apex:column headerValue="Last Modified Date">
+     <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!p.LastModifiedDate}" /> </apex:outputText>
+     </apex:column>
+     <apex:column value="{!p.CreatedById }" headerValue="Created By"/>
+     
+     </apex:pageBlockTable>
+ </apex:pageBlockSection>
+</apex:pageBlock>
+
+ <apex:pageBlock >
+ <apex:pageBlockSection title="My Archived Articles" columns="1">
+ <apex:pageBlockTable value="{!ArchivedArticles}" var="p" html-cid="archTable">
+     <apex:column value="{!p.Auto_Article_Number__c}" headerValue="Article Number"/>
+     <apex:column headerValue="Title">
+      <a target="_blank" href= "/apex/CustomKnowledgeEdit?articleId={!p.Id}" >{!p.title}</a>
+      </apex:column>
+     <apex:column value="{!p.PublishStatus}" headerValue="Status"/>
+     <apex:column value="{!p.Product_Names__c}" headerValue="Product"/>
+     <apex:column value="{!p.Releases__c}" headerValue="Releases"/>
+     <apex:column headerValue="Last Modified Date">
+     <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!p.LastModifiedDate}" /> </apex:outputText>
+     </apex:column>
+     <apex:column value="{!p.CreatedById }" headerValue="Created By"/>
+     
+     </apex:pageBlockTable>
+ </apex:pageBlockSection>
+</apex:pageBlock>
+    <script>
+        function disableEnter(e){
+            var key;
+            if (window.event)
+                key = window.event.keyCode;
+            else
+                key = e.which;
+            
+            return (key != 13);
+        }
+    </script>
+</apex:page>

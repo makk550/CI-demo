@@ -1,0 +1,83 @@
+<apex:page showHeader="true" sidebar="true" controller="CustomKnowledgeApprovalController" tabStyle="Account">
+   <apex:form >
+   <apex:sectionHeader title="Article" subtitle="{!objArticle.ArticleNumber}"/>
+   <apex:pageBlock title="Approve/Reject Approval Request" id="theBlock">
+        <apex:pageMessages />
+       <apex:pageBlockButtons location="bottom">
+           <apex:commandButton value="Approve" action="{!approve}" rendered="{!NOT(aqiOnly)}"/>
+           <apex:commandButton value="Reject" action="{!reject}" rendered="{!NOT(aqiOnly)}"/>
+           <apex:commandButton value="Submit AQI" action="{!submitAQI}" rendered="{!aqiOnly}"/>
+           <apex:commandButton value="Cancel" action="{!cancel}"/>
+       </apex:pageBlockButtons>  
+       <apex:pageBlockSection columns="1" title="Article Overview" id="overview">
+          <apex:pageBlockSectionItem >
+               Article Number <apex:outputField value="{!objArticle.ArticleNumber}"/>
+           </apex:pageBlockSectionItem>
+          <apex:pageBlockSectionItem >
+               Title <apex:outputField value="{!objArticle.Title}"/>
+           </apex:pageBlockSectionItem>
+       </apex:pageBlockSection>
+       <apex:pageBlockSection columns="1" title="Approval" id="approvalSection" rendered="{!NOT(aqiOnly)}">       
+           <apex:pageBlockSectionItem >
+              Comments <font color="red">(Mandatory for Rejection)</font> <apex:inputTextArea value="{!comments}" rows="5" cols="100"/>
+           </apex:pageBlockSectionItem>
+       </apex:pageBlockSection>
+       <apex:pageBlockSection columns="1" title="Article Quality Index Survey" id="AQISection">
+          <apex:pageBlockSectionItem >
+               Is this article the only one like this? (i.e., it has no duplicates) 
+               <apex:selectRadio value="{!rating.No_Duplicates__c}">
+                   <apex:selectOptions value="{!aqiOptions}" />
+               </apex:selectRadio>
+           </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+               Appropriate template followed? 
+               <apex:selectRadio value="{!rating.Appropriate_Template__c}">
+                   <apex:selectOptions value="{!aqiOptions}" />
+               </apex:selectRadio>
+           </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+               Title reflects article content? 
+               <apex:selectRadio value="{!rating.Title_Reflects_Content__c}">
+                   <apex:selectOptions value="{!aqiOptions}" />
+               </apex:selectRadio>
+           </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+               Search summary sums up more of the article without repeating the title?
+               <apex:selectRadio value="{!rating.Search_Summary__c}">
+                   <apex:selectOptions value="{!aqiOptions}" />
+               </apex:selectRadio>
+           </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+               Relevant resolution described in correct section? 
+               <apex:selectRadio value="{!rating.Relevant_Resolution__c}">
+                   <apex:selectOptions value="{!aqiOptions}" />
+               </apex:selectRadio>
+           </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+               Concise sentences and well described phrases to avoid wordiness?
+               <apex:selectRadio value="{!rating.Concise__c}">
+                   <apex:selectOptions value="{!aqiOptions}" />
+               </apex:selectRadio>
+           </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+               Sensitive / confidential information removed? 
+               <apex:selectRadio value="{!rating.Sensitive_Information_Removed__c}">
+                   <apex:selectOptions value="{!aqiOptions}" />
+               </apex:selectRadio>
+           </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+               Written from user's perspective? 
+               <apex:selectRadio value="{!rating.User_s_Perspective__c}">
+                   <apex:selectOptions value="{!aqiOptions}" />
+               </apex:selectRadio>
+           </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+               Comments (What was done well/could be done better?) <apex:inputTextArea value="{!rating.Comments__c}" rows="5" cols="100"/>
+           </apex:pageBlockSectionItem>
+           
+
+       </apex:pageBlockSection>
+       <!--script> twistSection(document.getElementById('{!$Component.theBlock.AQISection}').getElementsByTagName('img')[0]) </script-->
+   </apex:pageBlock>
+   </apex:form> 
+</apex:page>

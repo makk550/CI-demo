@@ -1,0 +1,6 @@
+<apex:component controller="SalesOptApprovalHistoryController" access="global">
+    <apex:attribute name="entityId1" assignTo="{!entityId}" type="String" description="Id of the record"/> 
+    <apex:attribute name="entityName1" assignTo="{!entityName}" type="String" description="Name of the record"/> 
+    <apex:attribute name="responseText1" assignTo="{!responseText}" type="String" description="Approval or Rejection"/> 
+    <apex:outputtext value="{!details}" escape="false"/>
+</apex:component>

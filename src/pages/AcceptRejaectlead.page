@@ -1,0 +1,98 @@
+<apex:page standardController="Lead" extensions="AcceptRejectlead_controller" sidebar="false" showHeader="false">
+    <apex:form >
+        
+        heheheheheheh
+      <!--  <apex:pageMessages ></apex:pageMessages>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>//
+/*   <apex:includeScript value="https://code.jquery.com/jquery-1.11.1.min.js"/>
+         <apex:includeScript value="/support/console/30.0/integration.js"/>
+        <script>
+           
+        
+        ///////////////////////////////////////////////////////////////////////////////
+        window.onunload = refreshParent;
+        
+         function refreshParent() {
+     
+             var loc='/partner/00Q/o'
+             
+window.top.location.href = loc;
+             // window.parent.location.reload();
+      
+        
+    }
+         function close_window() {
+          //  alert('entered close window');
+         var Booleanvalue='{!showhiderej}';
+             // alert(Booleanvalue);
+             if(Booleanvalue!='True'){
+             window.parent.sd.hide();
+                        window.parent.location.reload(); 
+                        return false;
+             }else{
+             
+              alert (' The lead is already accepted');
+             }
+        }
+            
+        function close_windowrej() {
+       // alert('entered close window 2');
+             var  v = document.getElementById('{!$Component.PB.pbs.Accrej}').value;
+          var  rreason = document.getElementById('{!$Component.PB.pbs.rreason}').value;
+          var Booleanvalue2='{!showhiderej}';
+            // alert(''+rreason);
+            if(v=='Reject'){
+                if(rreason!=''){
+                    // alert('---'+rreason);
+                    if(Booleanvalue2!='True'){
+                    	callSubmt();
+                    }else{
+                alert ('You cannot Reject the lead once it is Accepted');
+                }
+                    
+            
+                 
+                }else{
+                alert ('Rejection Reason should not be empty');
+                }
+            
+            }
+           
+          
+        }
+    */
+        </script>
+        <apex:actionFunction action="{!Submitresp}" name="callSubmt" />
+        <apex:pageBlock id="PB" >
+            <!--
+            <apex:pageBlockButtons location="bottom">
+                 <apex:commandButton action="{!Submitresp}" value="Submit"  oncomplete="close_window();return false;" rendered="{!currentlead.AcceptReject__c!='Reject'}"/>
+                <apex:commandButton value="Submit"  onclick="close_windowrej();return false;" rendered="{!currentlead.AcceptReject__c=='Reject'}"/>
+            
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pbs">
+            
+            
+               <apex:inputField value="{!currentlead.AcceptReject__c}" required="true" id="Accrej"  >
+                  <apex:actionSupport event="onchange" rerender="pbs,PB,fgh" action="{!refresh}" status="status" />
+                </apex:inputField>
+                               
+                <apex:outputPanel rendered="{! if(currentlead.AcceptReject__c='Reject',true,false)}" id="fgh">
+                    haha
+                <apex:outputLabel styleclass="labelCol" value="{!$ObjectType.Lead.fields.Rejection_Reason__c.Label}" />
+                	<apex:outputPanel styleClass="requiredInput" layout="block">
+     				<apex:outputPanel styleClass="requiredBlock" layout="block"/> 
+     				<apex:inputField value="{!currentlead.Rejection_Reason__c }" id="rreason"  />
+ 				     </apex:outputPanel>
+  				</apex:outputPanel>
+  
+
+           
+            </apex:pageBlockSection>
+           
+        </apex:pageBlock>
+        <apex:inputHidden value="{!currentlead.AcceptReject__c}" id="Accrej" />
+        <apex:inputHidden value="{!currentlead.Rejection_Reason__c}" id="hiddenElement" />
+     -->
+    </apex:form>
+</apex:page>

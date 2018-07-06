@@ -1,0 +1,40 @@
+<apex:page standardController="Checklist_Type__c" tabStyle="Checklist_Type__c" >
+    <script>
+        function checkChild()
+        {
+         //   if(winChild != null)
+         //       winChild.close();
+         }       
+    </script>
+    <apex:form onmouseover="checkChild()"  >
+        <apex:variable id="ci" value="{!Checklist_Type__c}" var="ci" />
+        <apex:pageBlock mode="edit" >
+            <apex:sectionHeader title="Checklist Type {!ci.Name}" />
+            <apex:pageBlockSection >
+                <apex:inputField value="{!ci.Name}" />
+                <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                <apex:inputField value="{!ci.Roles__c}" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Profile</apex:outputLabel>
+                    <apex:outputPanel >
+                        <apex:inputTextarea id="txtprofile" value="{!ci.Profiles__c}" />
+                        <script>
+                            var winChild = null;
+                            function openWin()
+                            {
+                               winChild =  window.open('checklist_lookup',"mywindow","location=1,status=1,scrollbars=1,width=700,height=700"); 
+                            }
+                        </script>
+                        <span style="cursor:pointer;cursor:hand"><img src="/s.gif" alt="Profile Lookup (New Window)" onclick="openWin()" class="lookupIcon"  onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" /></span>
+                    </apex:outputPanel>    
+                 </apex:pageBlockSectionItem>   
+             </apex:pageBlockSection>  
+             <apex:pageBlockButtons >
+                 <apex:commandButton value="Save" action="{!save}"/>
+                 <apex:commandButton value="Cancel" action="{!cancel}"/>
+             </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+        
+        
+</apex:page>

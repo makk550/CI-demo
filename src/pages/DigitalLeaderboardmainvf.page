@@ -1,0 +1,35 @@
+<apex:page controller="DigitalLeaderboardController" applyBodyTag="false" docType="html-5.0" showHeader="false" standardStylesheets="false">
+    <html class="no-js">
+        <head>
+            <meta charset="utf-8"></meta>
+            <title>Digital Sales</title>
+            <meta name="description" content="" />
+        	
+        <meta name="viewport" content="width=device-width"/>
+            <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+            <link rel="stylesheet" href="{!URLFOR($Resource.DigitalsalesLeaderboard, 'styles/vendor.cb177ce0.css')}" />
+            <link rel="stylesheet" href="{!URLFOR($Resource.DigitalsalesLeaderboard, 'styles/main.1ea5a8e1.css')}" />
+        </head> 
+        <body ng-app="insideSalesApp">
+            <header>
+                <img class="logo" src="{!URLFOR($Resource.DigitalsalesLeaderboard, 'images/logo.d5411243.svg')}"></img>
+                <h1>Digital Sales</h1>
+                <div ng-include= "'{!URLFOR($Resource.DigitalsalesLeaderboard,'components/gearMenu/gearMenu.html')}'" ng-controller="gearMenuController"></div>
+                <div ng-include= "'{!URLFOR($Resource.DigitalsalesLeaderboard,'components/headerStackRankings/headerStackRankings.html')}'"  ng-controller="headerStackRankingsController"></div>
+            </header> 
+            <section>
+                <div ng-include= "'{!URLFOR($Resource.DigitalsalesLeaderboard,'components/stackRankings/stackRankings.html')}'"  ng-controller="stackRankingsController"></div> 
+                <div ng-include= "'{!URLFOR($Resource.DigitalsalesLeaderboard,'components/bookedDeals/bookedDeals.html')}'"  ng-controller="dealsBookedController" class="deals-booked"></div>
+           	</section> 
+            <footer> 
+                
+                <div ng-include= "'{!URLFOR($Resource.DigitalsalesLeaderboard,'components/likelyDeals/likelyDeals.html')}'" ng-controller="likelyDealsController" class="likely-deals"></div> 
+            </footer> 
+
+			<script src="{!URLFOR($Resource.DigitalsalesLeaderboard, 'scripts/vendor.202b1ffc.js')}"></script>
+			<script src="{!URLFOR($Resource.DigitalsalesLeaderboard, 'scripts/scripts.807c2193.js')}"></script>
+          	
+		</body>
+	</html>
+
+</apex:page>

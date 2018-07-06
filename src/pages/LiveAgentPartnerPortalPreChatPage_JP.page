@@ -1,0 +1,138 @@
+<apex:page showHeader="false"  controller="LiveAgentPartnerPortalPreChatController" language="ja" standardStylesheets="false" sidebar="false"> 
+    <html>
+        <head>
+            
+            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>    
+            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css"/>
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>  
+            <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+            <script type="text/javascript">
+            (function() { 
+                function handlePageLoad() {
+                    var endpointMatcher = new RegExp("[\\?\\&]endpoint=([^&#]*)");
+                    document.getElementById('prechatForm').setAttribute('action',decodeURIComponent(endpointMatcher.exec(document.location.search)[1]));
+                } 
+                if (window.addEventListener) {
+                    window.addEventListener('load', handlePageLoad, false);
+                } else { 
+                    window.attachEvent('onload', handlePageLoad, false);
+                }
+            })(); 
+            
+            /*function pageLanguage(){
+                	pageLanguage('ja');
+                }*/
+            </script>
+            <style>
+                .form-group.required .control-label:after {
+                content:"*";
+                color:red;
+                }
+                .panel-heading {
+                padding: 10px 25px 10px 25px;                
+                }
+                .logo {max-height: 100px; max-width: 100px;}
+                
+            </style>
+        </head>
+        <body>
+            <form method="post" id="prechatForm" >
+                <apex:outputPanel id="portalPrechatForm">
+                <div class="container">
+                    <div class="panel panel-info">
+                        <!-- Default panel contents -->
+                        <div class="panel-heading">
+                            <div class="row">
+                                
+                                <div class="col-sm-2 col-md-2 "><center><img src="{!$Resource.LiveAgentCALogo}" class="img-responsive logo" /></center></div>
+                                <div class="col-sm-10 col-md-10">
+                                  
+                                    <div class="row">
+                                        
+                                        <p>                                            
+                                           {!$Label.Live_Agent_Partner_Welcome_Text } 
+                                            {!$Label.Live_Agent_Partner_Welcome_Text_2 }
+                                            
+                                            <a href="http://www.ca.com/us/privacy.aspx" target="_blank">{!$Label.Live_Agent_US_Link_Label }</a>
+                                             <a href="http://www.ca.com/gb/privacy.aspx" target="_blank">{!$Label.Live_Agent_UK_Link_Label }</a>
+                                             <a href="http://www.ca.com/au/privacy.aspx" target="_blank">{!$Label.Live_Agent_AU_Link_Label } </a>.
+                                            {!$Label.Live_Agent_Partner_Welcome_Text_3 }
+                                            {!$Label.Live_Agent_Partner_Welcome_Text_Contact}
+                                            <a href="mailto:capartners@ca.com">SupportJp@ca.com</a><!-- code fixed for Ticket 100-300406-->
+                                        </p>                                        
+                                    </div>   
+                                </div>
+                            </div>                              
+                        </div>
+                        <div class="panel-body ">
+                            <div class="form-horizontal">                                
+                                <div class="form-group required">
+                                    <label class="col-sm-3 col-xs-3 control-label"> <apex:outputText value="{!$Label.Live_Agent_Partner_Name}"/></label>
+                                    <div class="col-sm-9 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:Name" id="name" class="form-control" required="required" />
+                                    </div>
+                                </div>                                
+                                <div class="form-group required">
+                                    <label class="col-sm-3 col-xs-3 control-label"><apex:outputText value="{!$Label.Live_Agent_Partner_Email}"/></label>
+                                    <div class="col-sm-9 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:email" id="email" class="form-control" required="required" />
+                                    </div>
+                                </div>                                
+                                <div class="form-group required">
+                                    <label class="col-sm-3 col-xs-3 control-label"><apex:outputText value="{!$Label.Live_Agent_Partner_Help}"/></label>
+                                    <div class="col-sm-9 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:help" id="help" class="form-control" required="required" />
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>                
+                    </div>                    
+                    <center> 
+                        <input type="submit" value="Request Chat" id="prechat_submit" class="btn btn-primary"/> 
+                    </center>
+                </div>
+                <input type= "hidden" name= "liveagent.prechat.findorcreate.displayToAgent: Name" value= "true" />                
+                <input type= "hidden" name= "liveagent.prechat.findorcreate.displayToAgent: help" value= "true" />
+                <input type= "hidden" name= "liveagent.prechat.findorcreate.displayToAgent: email" value= "true" />
+             </apex:outputPanel>
+            </form>  
+            <apex:form >
+                   <apex:actionFunction name="setLanguage" action="{!pageLanguage}" reRender="portalPrechatForm" >
+                    <apex:param name="languageId" assignTo="{!language}" value=""/>
+                </apex:actionFunction>
+            </apex:form>
+           <script type='text/javascript' src='{!$Label.Live_Agent_Pre_Chat_Link}' />
+                <script type='text/javascript'>                    
+                    liveagent.details.preChatInit('{!$Label.Live_Agent_Pre_Chat_Callback_Link}','detailCallback');
+                </script>
+            <script type="text/javascript">                
+            var n = 0;
+            var topscode ;
+            var connectId;
+            //console.log('callback');
+             
+            //console.log('finssih');
+            var detailCallback = function (details){
+                if(n==0){
+                    for (var i = 0; i < details.customDetails.length; i++) {                        
+                        /* if(details.customDetails[i].label == 'email'){
+                            $('#email').val(details.customDetails[i].value);                             
+                        }else if(details.customDetails[i].label == 'name'){
+                            $('#name').val(details.customDetails[i].value);                             
+                        }else */
+                        if(details.customDetails[i].label == 'language'){
+                            var lang = details.customDetails[i].value;  
+                            //console.log('***language***'+lang);
+                            setLanguage(lang); 
+                        }                        
+                    }                    
+                }
+                n++;    
+                
+             };
+            </script>
+            
+        </body>
+    </html>
+</apex:page>

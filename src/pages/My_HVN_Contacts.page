@@ -1,0 +1,183 @@
+<apex:page Controller="HVNController">
+<apex:form >
+
+    <table bgcolor="lightgrey" width="100%">
+        <tr>
+            <td>
+
+    <table bgcolor="white" style="border:1px solid lightgrey" width="100%" >
+        <tr>
+            <th colspan="5">&nbsp;</th>
+            <th colspan="2">Touchpoint</th>
+        </tr>
+        <tr>
+            <th>
+                <apex:commandLink value="Account" action="{!doSort}">
+                    <apex:param name="sortField" value="Contact__r.Account.Name" assignTo="{!sortField}"/>
+                </apex:commandLink>
+                <apex:image rendered="{!IF(sortField=='Contact__r.Account.Name', true, false)}" url="{!IF(strSortOrder=='desc', $Resource.sort_desc_arrow, $Resource.sort_asc_arrow)}"/>
+            </th>
+            <th>
+                <apex:commandLink value="Contact" action="{!doSort}">
+                    <apex:param name="sortField" value="Contact_Name__c" assignTo="{!sortField}"/>
+                </apex:commandLink>
+                <apex:image rendered="{!IF(sortField=='Contact_Name__c', true, false)}" url="{!IF(strSortOrder=='desc', $Resource.sort_desc_arrow, $Resource.sort_asc_arrow)}"/>
+            </th>
+            <th>Title</th>
+            <th>Account Owner</th>
+            <th>
+                <apex:commandLink value="Relationship" action="{!doSort}">
+                    <apex:param name="sortField" value="Relationship_Status__c" assignTo="{!sortField}"/>
+                </apex:commandLink>
+                <apex:image rendered="{!IF(sortField=='Relationship_Status__c', true, false)}" url="{!IF(strSortOrder=='desc', $Resource.sort_desc_arrow, $Resource.sort_asc_arrow)}"/>
+            </th>
+            <th>Last</th>
+            <th>
+                <apex:commandLink value="Next" action="{!doSort}">
+                    <apex:param name="sortField" value="Next_Touchpoint_2__c" assignTo="{!sortField}"/>
+                </apex:commandLink>
+                <apex:image rendered="{!IF(sortField=='Next_Touchpoint_2__c', true, false)}" url="{!IF(strSortOrder=='desc', $Resource.sort_desc_arrow, $Resource.sort_asc_arrow)}"/>
+            </th>
+        </tr>
+        <apex:repeat var="acc" value="{!myaccounts}" id="rptList">
+        <tr>
+            <td align="center"><br>
+                <apex:outputText value="{!acc.Contact__r.Account.Company_Logo__c}" escape="false"/><br><br>
+                <a href="/{!acc.Contact__r.Account.Id}">{!acc.Contact__r.Account.Name}</a>
+            </td>
+            <td align="center">
+                <apex:outputText value="{!acc.HVN_Contact_Photo__c}" escape="false"/>
+                <br>
+                <a href="mailto:{!acc.Contact__r.Email}"><apex:image value="/servlet/servlet.FileDownload?file=01530000000sq6T" style="align:absmiddle"/></a>
+                <a href="/{!acc.ID}">{!acc.Contact_Name__c}</a>
+            </td>
+            <td align="center"><br><br><br><br><br>{!acc.Contact__r.Title}</td>
+            <td align="center">
+                <apex:outputText value="{!acc.Contact__r.Account.Owner.User_Photo__c}" escape="false"/>
+                <br>
+                <a href="/{!acc.Contact__r.Account.OwnerId}">{!acc.Contact__r.Account.Owner.Name}</a>
+            </td>
+            <td align="center" valign="middle"><br><br><apex:outputText value="{!acc.Relationship_Status_Graphic__c}" escape="false"/></td>
+            <td align="center"><br>
+                {!acc.Last_Touchpoint_Contact_by__c}<br><br>
+                {!acc.Last_Touchpoint__c}<br><br>
+                <!--{!TEXT(acc.Last_Touchpoint_Date__c)}-->
+                <script type="text/javascript">
+                    if("{!acc.Last_Touchpoint_Date__c}"!=""){
+                        document.write(new Date("{!acc.Last_Touchpoint_Date__c}").toUTCString().substring(0,16));
+                    }
+                </script> 
+            </td>
+            <td align="center"><br><br><br><br><br>
+                <script type="text/javascript">
+                    if("{!acc.Next_Touchpoint_2__c}"!=""){
+                        document.write(new Date("{!acc.Next_Touchpoint_2__c}").toUTCString().substring(0,16));
+                    }
+                </script> 
+            </td>
+        </tr>
+        <tr><td class="btm" colspan="7">&nbsp;</td></tr>
+        </apex:repeat>
+        <tr>
+            <td colspan="4" style="color:lightgrey"><b>
+                <apex:commandLink value="A" action="{!bindList}">
+                    <apex:param name="A" assignTo="{!strKeyword}" value="A"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="B" action="{!bindList}">
+                    <apex:param name="B" assignTo="{!strKeyword}" value="B"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="C" action="{!bindList}">
+                    <apex:param name="C" assignTo="{!strKeyword}" value="C"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="D" action="{!bindList}">
+                    <apex:param name="D" assignTo="{!strKeyword}" value="D"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="E" action="{!bindList}">
+                    <apex:param name="E" assignTo="{!strKeyword}" value="E"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="F" action="{!bindList}">
+                    <apex:param name="F" assignTo="{!strKeyword}" value="F"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="G" action="{!bindList}">
+                    <apex:param name="G" assignTo="{!strKeyword}" value="G"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="H" action="{!bindList}">
+                    <apex:param name="H" assignTo="{!strKeyword}" value="H"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="I" action="{!bindList}">
+                    <apex:param name="I" assignTo="{!strKeyword}" value="I"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="J" action="{!bindList}">
+                    <apex:param name="J" assignTo="{!strKeyword}" value="J"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="K" action="{!bindList}">
+                    <apex:param name="K" assignTo="{!strKeyword}" value="K"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="L" action="{!bindList}">
+                    <apex:param name="L" assignTo="{!strKeyword}" value="L"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="M" action="{!bindList}">
+                    <apex:param name="M" assignTo="{!strKeyword}" value="M"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="N" action="{!bindList}">
+                    <apex:param name="N" assignTo="{!strKeyword}" value="N"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="O" action="{!bindList}">
+                    <apex:param name="O" assignTo="{!strKeyword}" value="O"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="P" action="{!bindList}">
+                    <apex:param name="P" assignTo="{!strKeyword}" value="P"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="Q" action="{!bindList}">
+                    <apex:param name="Q" assignTo="{!strKeyword}" value="Q"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="R" action="{!bindList}">
+                    <apex:param name="R" assignTo="{!strKeyword}" value="R"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="S" action="{!bindList}">
+                    <apex:param name="S" assignTo="{!strKeyword}" value="S"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="T" action="{!bindList}">
+                    <apex:param name="T" assignTo="{!strKeyword}" value="T"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="U" action="{!bindList}">
+                    <apex:param name="U" assignTo="{!strKeyword}" value="U"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="V" action="{!bindList}">
+                    <apex:param name="V" assignTo="{!strKeyword}" value="V"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="W" action="{!bindList}">
+                    <apex:param name="W" assignTo="{!strKeyword}" value="W"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="X" action="{!bindList}">
+                    <apex:param name="X" assignTo="{!strKeyword}" value="X"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="Y" action="{!bindList}">
+                    <apex:param name="Y" assignTo="{!strKeyword}" value="Y"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="Z" action="{!bindList}">
+                    <apex:param name="Z" assignTo="{!strKeyword}" value="Z"/>
+                </apex:commandLink>&nbsp;/&nbsp;
+                <apex:commandLink value="All" action="{!bindList}">
+                    <apex:param name="All" assignTo="{!strKeyword}" value="All"/>
+                </apex:commandLink></b>
+            </td> 
+            <td>&nbsp;</td>
+            <td colspan="2" align="right">
+                <apex:commandLink value="Show Fewer" action="{!bindList}"  rendered="{!IF(currentLimit<=defaultLimit, false, true)}">
+                    <apex:param name="ShowFewer" assignTo="{!nLimit}" value="-20"/>
+                    <apex:image url="{!$Resource.contacts_show_fewer_arrow}"/>
+                </apex:commandLink>
+                <apex:outputText value="&nbsp;/&nbsp;" rendered="{!IF(currentLimit<=defaultLimit, false, true)}" escape="false"/>
+                <apex:commandLink value="Show More" action="{!bindList}" rendered="{!hasRecords}">
+                    <apex:param name="ShowMore" assignTo="{!nLimit}" value="20"/>
+                    <apex:image url="{!$Resource.accounts_show_more_arrow}"/>
+                </apex:commandLink>
+            </td>
+        </tr>        
+    </table>
+            </td>
+        </tr>
+    </table>
+</apex:form>
+</apex:page>

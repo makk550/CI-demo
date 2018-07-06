@@ -1,0 +1,160 @@
+<apex:page id="opplipage" standardcontroller="OpportunityLineItem" extensions="Renewal_addMainFrameProducts" sidebar="false">
+<apex:includeScript value="{!URLFOR($Resource.JQueryUiLibrary, '/js/jquery-1.4.2.min.js')}"/> 
+    
+    <script language="javascript">
+    
+    function performArrCalculation(){
+    
+        getDaysBetweenLineItem_action();
+    }
+  
+    //Added by SAMTU01 - US392086
+    function performStretchCalculation(){
+        performStretchCalculation_action();
+     }
+     function performSalesPriceCalculation(){
+         performSalesPriceCalculation_action();
+     }
+     //Added by SAMTU01 - US392086 -end
+    
+</script>
+    
+    
+    
+     <apex:form id="form1" >
+         <apex:pageMessages id="error"/>
+         <apex:actionStatus id="msgUF">
+             <apex:facet name="start">
+                 <apex:outputPanel >
+                     <apex:commandButton value="Processing..." status="myStatus" disabled="true"/>
+                     <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 20px; position: absolute; left:50%;top:50%;"/></div>
+                 </apex:outputPanel>
+             </apex:facet>
+         </apex:actionStatus>
+         
+     <apex:actionFunction name="getDaysBetweenLineItem_action" action="{!getDaysBetweenLineItem}"  status="msgUF"  rerender="pbs1,pbs2,error"></apex:actionFunction>
+   <!-- //Added by SAMTU01 - US392086 -->
+     <apex:actionFunction name="performStretchCalculation_action" action="{!performStretchCalc}"  status="msgUF" rerender="pbs1,pbs2,error"></apex:actionFunction>
+     <apex:actionFunction name="performSalesPriceCalculation_action" action="{!performSalesPriceCalc}"  status="msgUF" rerender="pbs1,pbs2,error"></apex:actionFunction>
+    <!-- //Added by SAMTU01 - US392086 -end -->
+     <apex:sectionHeader subtitle="{!opportunity.name}" title="Add/Edit Mainframe Capacity"/>
+     <apex:outputLink value="/{!opportunity.Id}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb1">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveproducts}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+                <apex:pageBlockSection id="pbs1" title="Opportunity Details" >
+                    <apex:outputField value="{!opportunity.New_Deal_Term_months__c}" id="newdealterm" />
+                    <apex:inputField value="{!opportunity.Stretch_Deal_Term_Months__c}" id="stretchterm" onchange="performArrCalculation()" />
+                    <apex:inputField value="{!opportunity.Stretch_Sales_Price_Gap_Reason__c}" id="stretchgap"/>
+                    <apex:inputField value="{!opportunity.Reason_duration_is_1_year__c}" id="res" />
+                    <apex:inputField value="{!opportunity.Status_at_end_of_term__c}" id="sts" />
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection id="pbs2" title="Mainframe Capacity Details" >
+                    
+                    <!-- Added by SAMTU01 - US392086 -->
+                    
+                    <apex:inputField value="{!oppLineItem.unitprice}" rendered="{!!oppLineItem.Override_Fees__c }" onchange="performArrCalculation()" required="true" />
+                    <apex:inputField value="{!oppLineItem.unitprice}" rendered="{!oppLineItem.Override_Fees__c }" onchange="performArrCalculation()" html-disabled="True" />
+                    
+                    <apex:inputField value="{!oppLineItem.Stretch__c}" rendered="{!!oppLineItem.Override_Fees__c}" onchange="performArrCalculation()" />
+                    <apex:inputField value="{!oppLineItem.Stretch__c}" rendered="{!oppLineItem.Override_Fees__c}" onchange="performArrCalculation()" html-disabled="True" />
+                    
+                    <apex:inputField value="{!oppLineItem.Start_Date__c}" onchange="performArrCalculation()" required="True"/>
+                    <apex:inputField value="{!oppLineItem.End_Date__c}" onchange="performArrCalculation()" required="True"/>
+                                        
+                    <apex:inputField value="{!oppLineItem.UF_License_Fee__c}" rendered="{!!oppLineItem.Override_Fees__c || oppLineItem.License__c =='Subscription' }" html-disabled="true"  />
+                    <apex:inputField value="{!oppLineItem.UF_License_Fee__c}" rendered="{!oppLineItem.Override_Fees__c && oppLineItem.License__c =='Ratable'}" onchange="performSalesPriceCalculation()"  />
+             
+                   
+                    <apex:inputField value="{!oppLineItem.Stretch_License_Fee__c}" rendered="{!!oppLineItem.Override_Fees__c || oppLineItem.License__c =='Subscription' }" html-disabled="True" />
+                     <apex:inputField value="{!oppLineItem.Stretch_License_Fee__c}" rendered="{!oppLineItem.Override_Fees__c && oppLineItem.License__c =='Ratable' }" onchange="performStretchCalculation()" />
+                            
+                    
+                    <apex:inputField value="{!oppLineItem.Total_Maintenance__c}" rendered="{!!oppLineItem.Override_Fees__c || oppLineItem.License__c =='Subscription'}" html-disabled="true"  />
+                    <apex:inputField value="{!oppLineItem.Total_Maintenance__c}" rendered="{!oppLineItem.Override_Fees__c && oppLineItem.License__c =='Ratable'}" onchange="performSalesPriceCalculation()"  />
+                    
+                    <apex:inputField value="{!oppLineItem.Stretch_Total_Maintenance__c}" onchange="performStretchCalculation()" rendered="{!!oppLineItem.Override_Fees__c || oppLineItem.License__c =='Subscription' }" html-disabled="True" />
+                     <apex:inputField value="{!oppLineItem.Stretch_Total_Maintenance__c}" rendered="{!oppLineItem.Override_Fees__c && oppLineItem.License__c =='Ratable'}" onchange="performStretchCalculation()" />
+                     <!--
+                      <apex:inputField value="{!oppLineItem.Override_Fees__c}" id="prd_overrideFee" rendered="{! If( (oppLineItem.License__c =='Subscription'||oppLineItem.License__c ==null ) ,true,false) }" html-disabled="true" />
+                        <apex:inputField value="{!oppLineItem.Override_Fees__c}"  rendered="{! If((oppLineItem.License__c =='Ratable')  ,true,false) }" onchange="performArrCalculation()" />
+                       -->
+                       <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Override Fees"/>
+                        <apex:outputPanel >
+                        <apex:inputField value="{!oppLineItem.Override_Fees__c}" id="prd_overrideFee" rendered="{! If(oppLineItem.id != null && (oppLineItem.License__c =='Subscription'||oppLineItem.License__c ==null ) ,true,false) }" html-disabled="true" />
+                    
+                        <apex:inputField value="{!oppLineItem.Override_Fees__c}"  rendered="{! If(oppLineItem.id != null && oppLineItem.License__c =='Ratable' ,true,false) }" onchange="performArrCalculation();"/>
+                    </apex:outputPanel>
+                     </apex:pageBlockSectionItem>
+                       <!-- //Added by SAMTU01 - US392086 --ends here -->
+                <apex:outputField value="{!oppLineItem.Term_Month__c}"/> <!-- SAMTU01 - US418864 -->
+                  	 
+                 <!-- SAMTU01 - US398729 -->
+                <apex:pageBlockSectionItem id="bus">                   
+                        <apex:outputLabel value="Business Type"/>                       
+                             <apex:selectList value="{!oppLineItem.Business_Type__c}" size="1"  >   
+                            <apex:selectOptions value="{!BusinessTypeList}"/>
+                        </apex:selectList>                  
+                   
+                </apex:pageBlockSectionItem>
+             
+                <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="ARR"/>
+                <apex:outputtext value="{0, number, ###,###,###,##0.00}" >
+                    <apex:param value="{!oppLineItem.Corporate_ARR__c}" />
+                </apex:outputtext>
+                </apex:pageBlockSectionItem>
+                <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                
+                <!-- SAMTU01 - US398729 end-->
+                     
+                 
+                 <apex:pageBlockSectionItem id="lic">                   
+                        <apex:outputLabel value="License Type"/>                       
+                             <apex:selectList value="{!oppLineItem.License__c}" id="prd_Licensetype" size="1" onchange="performArrCalculation()"  >   
+                            <apex:selectOptions value="{!LicenseType}"/>
+                        </apex:selectList>                  
+                   
+                </apex:pageBlockSectionItem>
+               <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="ARR Stretch"/> 
+                <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                    <apex:param value="{!oppLineItem.Stretch_Corporate_ARR__c}" />
+                </apex:outputtext>
+                    </apex:pageBlockSectionItem>
+                  <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                
+                <!-- //Added by SAMTU01 - US392086 --end -->
+                      
+                     <!-- //Added by SAMAP01 - US370554 --> 
+                         
+                <apex:pageBlockSectionItem id="licclass" rendered="{! If((oppLineItem.License__c =='Subscription')  ,true,false) }" >
+                        <apex:outputLabel value="License Classification"/>
+                        
+                        <apex:selectList value="{!licclassification}" id="prd_License" size="1" disabled="true"  >   
+                            <apex:selectOptions value="{!LicenseClassification}"/>
+                        </apex:selectList>  
+                </apex:pageBlockSectionItem>
+                 <apex:pageBlockSectionItem id="licclass2" rendered="{! If((oppLineItem.License__c =='Ratable')  ,true,false) }" >
+                        <apex:outputLabel value="License Classification"/>
+                         <apex:selectList value="{!licclassification}" id="prd_License2" size="1"   >   
+                            <apex:selectOptions value="{!LicenseClassificationOverride}"/>
+                        </apex:selectList>                  
+                        
+                </apex:pageBlockSectionItem>
+                 <apex:inputField value="{!oppLineItem.Quote_Number__c}" id="qtnumber" /> 
+                 <apex:inputField value="{!oppLineItem.Contract_Number__c}" id="cntrctnumber" />  
+                          
+                       <!-- //Added by SAMAP01 - US370554 end-->   
+               
+            </apex:pageBlockSection>
+         </apex:pageBlock>
+         </apex:form>       
+
+</apex:page>

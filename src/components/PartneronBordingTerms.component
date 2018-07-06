@@ -1,0 +1,426 @@
+<apex:component >
+    <head>
+        <style>
+        /* The Modal (background) */
+        .ReferralPopmodal {
+            display: none; /* Hidden by default */
+            margin: 0px;
+            position: absolute;
+            z-index: 999999;
+            padding-top: 80px;
+            left: 0;
+            top: -200px;
+            width: 100%;
+            height: 900px;
+            font-size: 17px;
+            font-weight: normal;
+            /* overflow: auto; */
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .ReferralPopmodal h2{
+            margin: 5px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        /* Modal Content */
+        .Referralmodal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            width: 90%;
+            height:85%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+        .Referralmodal-content .modal-header{
+             background-color: #258399;
+            padding: 5px 8px 5px 10px;
+            border-top: 1px solid #258399;
+            /* border-radius: 10px; */
+        }
+        
+        /* The Close Button */
+        .Referralmodal-content .modal-header .Referralmodalclose {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .Referralmodal-content .modal-header .Referralmodalclose:hover,
+        .Referralmodal-content .modal-header .Referralmodalclose:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .Referralmodal-content .modal-body{
+                padding: 5px 15px 5px 15px;
+             max-height: 90%;
+              overflow: auto;
+        }
+        .Referralmodal-content .modal-footer {
+            background-color: #258399;
+            padding: 5px 8px 5px 10px;
+            /* border-top: 1px solid #258399; */
+            /* line-height: 20px; */
+            height: 10px;
+        }
+        .Referralmodal-content .modal-body .body-sectionheader{
+             color: black;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0px 30px;
+            padding: 10px 0px;
+            text-align: center;
+            border-bottom: 1px solid #d1c7c7;
+        }
+        
+        .Referralmodal-content .modal-body ol li,.Referralmodal-content .modal-body p{
+              padding: 10px 0px;
+            text-align: justify;
+            line-height: 150%;
+        }
+        .Referralmodal-content .modal-body ol {
+          list-style-type: none;
+          counter-reset: item;
+          margin: 0;
+          padding: 0;
+        }
+        
+        .Referralmodal-content .modal-body li {
+          display: table;
+          counter-increment: item;
+          margin-bottom: 0.6em;
+        }
+        
+        .Referralmodal-content .modal-body li:before {
+            content: counters(item, ".") ". ";
+            display: table-cell;
+            padding-right: 0.6em;    
+        }
+        
+        .Referralmodal-content .modal-body li li {
+            margin: 0;
+        }
+        
+        .Referralmodal-content .modal-body li li:before {
+            content: counters(item, ".") " ";
+        }
+        
+        /* Add Animation */
+        @-webkit-keyframes animatetop {
+            from {top:-300px; opacity:0}
+            to {top:0; opacity:1}
+        }
+        
+        @keyframes animatetop {
+            from {top:-300px; opacity:0}
+            to {top:0; opacity:1}
+        }
+        
+        
+        
+        
+        
+        
+        </style>
+        </head>
+    <a id="myBtn" href="#" style="color:Navy !important;">{!$Label.PartRegCompMsg9}</a>
+
+
+<div id="myModal" class="ReferralPopmodal">
+  <div class="Referralmodal-content">
+    <div class="modal-header">
+      <span class="Referralmodalclose">&times;</span>
+        <h2>CA Global Agile Central Referral Partner Program</h2>
+    </div>
+    <div class="modal-body">
+        <div class="body-sectionheader">Terms of Service</div>
+        <ol>
+                <li>Welcome to the CA Partner Experience Platform (the Site) which is made available to our partners for the purpose of furthering the sales of CA products and services (the Authorized Activities). CA makes the Site and any services made available from the Site (Services) available subject to the following terms and conditions of use (Terms). Please read the Terms carefully as they contain the legal terms and conditions of an agreement (Agreement) that you agree to be bound by when you access and/or use the Site.</li>
+                <li>"Compliance Rules" means collectively the following: The U.S. Foreign Corrupt Practices Act,; local laws prohibiting bribery and corruption in the country or countries in which Partner will be conducting business with or on behalf of CA; the OECD Convention on Combating Bribery of Foreign Public Official in International Business Transactions, CA's Code of Conduct (available at The Partner's Guide to the CA Code of Conduct) and international accounting standards.</li>
+                <li>By accessing any page on the Site or using Services, you agree to be bound by the Terms. To the extent that this Agreement contradicts or is inconsistent with any signed written agreement between you or your company for Services, the terms and conditions of such signed written agreement will always govern and take precedence.
+                </li><li>All brand, product and service names used on the Site which identify CA, the Site and any Services are proprietary marks of CA. All brand, product and service names used in the Services which identify third parties and their products and services are proprietary marks of such third parties. Nothing on the Site shall be deemed to confer on any person any license or right on the part of CA or any third party with respect to any such image, logo or name.
+                </li><li>Each party (you and CA) shall, at its own expense, comply with all statutes, regulations, rules, ordinances, and orders of any governmental body, department or agency which apply to or result from its obligations under the Agreement.
+                </li><li>You shall, at all times, conduct business ethically and in compliance with the law and the Compliance Rules. CA may request, from time to time, that you and its employees/agents performing hereunder shall take certain legal and compliance-related training courses that shall be provided by CA. When such requests are made, You shall ensure that its employee/agents promptly complete such training. You represent and warrant on a continuing basis that: (i) neither it nor anyone acting on its behalf has made or shall make any payments (or promises of payments) or otherwise give anything of value (directly or indirectly) to any entity with whom it is conducting business on behalf of CA in an attempt to obtain or retain business or otherwise obtain an improper advantage; and, (ii) neither it nor anyone acting on its behalf is a government official (as defined by anti-corruption laws) who may be in a position in his/her role to influence your business as it relates to that government. You as it relates to this section also includes all owners, directors, officers, employees and agents.
+                </li><li>You shall promptly notify CA's Chief Ethics and Compliance Officer (compliance@ca.com) in writing if it learns that (i) it is being investigated for any violation of the Compliance Rules; or (ii) if it learns that it has been named in a judicial or administrative proceeding alleging that it has violated the Compliance Rules; or, (iii) if it has a reasonable belief that it has violated the Compliance Rules in relation to any issue or transaction that involves CA or CA's business.
+                </li><li>You acknowledge and agree that the Site and the information contained in it are owned by CA and/or its third party content providers (Content Providers), and are protected by U.S. and international copyright and other intellectual property laws. Each Content Provider is a third party beneficiary under this Agreement to the extent required to enable it to enforce its proprietary rights in the data and the applicable use restrictions in this Agreement. CA has the absolute right to terminate your access or exclude you from the Site if you use the Site or Services to violate the intellectual property rights or other rights of third parties. You agree to indemnify and hold CA harmless for any violation of this provision.
+                </li><li>You acknowledge and agree that the Site contains confidential and proprietary data and information of CA and its Content Providers, that you will not use this data or information for any unlawful or unauthorized purpose, and that you will use reasonable efforts to keep such data and information confidential. Any confidential information of CA that you receive through the site may be used only for Authorized Activities, and not for competitive or other purposes. You will take all steps necessary to ensure that your directors, officers, employees and consultants who have or may have access to the CA confidential information are subject to obligations of confidentiality consistent with those imposed by these terms and conditions. Upon request by CA, you shall cease to use and immediately return to CA or destroy all of CA’s confidential information that you received through this Site. You shall use the same degree of care you use to protect your own confidential information of a similar nature, but not less than reasonable care, to prevent the unauthorized use, dissemination or publication of the confidential information.
+                </li><li>From time to time CA may provide links that will take you to third party web sites. These links are provided for your convenience only. If you decide to access linked web sites you do so at your own risk. CA does not endorse or take responsibility for the content on other web sites or the availability of other web sites and you agree that CA is not liable for any loss or damage that you may suffer by using other web sites.
+                </li><li>We reserve the right to amend any Terms agreed to by you from time to time without notice. Your continued use of the Site constitutes acceptance of any amendments, additions, or modifications to this Agreement. CA may change, terminate, suspend or discontinue any aspect of the Site, including the availability of any features of the Site with or without notice. You agree that CA will not be liable for any modification, suspension or discontinuation of the Site.
+                </li><li>Registration data and certain other information about you is subject to our Privacy Policy. For more information, see our full privacy policy here. You understand that through your use of the Site, you consent to the collection and use (as set forth in the Privacy Policy) of this information, including the transfer of this information to the United States and/or other countries for storage, processing, and use by CA and its affiliates.
+                </li><li>You agree that you are solely responsible for the accuracy of any and all information you input into the Site or provide to CA in connection with the Site (the Data). Data shall not include anything that actually or potentially infringes or misappropriates the copyright, trade secret, trademark or other intellectual property right of any third party, violates the privacy rights of any third party, or contains anything that is obscene, defamatory, harassing, offensive or malicious.
+                </li><li>CA has taken reasonable efforts to ensure that the content contained on the Site is accurate. However, all content on the Site is provided AS IS and CA does not warrant and makes no representation that content provided on the Site is accurate, appropriate or applicable for your use.
+                </li><li>UNDER NO CIRCUMSTANCES SHALL CA OR ITS LICENSORS BE LIABLE FOR ANY TYPE OF DAMAGES OR CLAIMS RELATED TO THE SITE, INCLUDING BUT NOT LIMITED TO, INCIDENTAL, SPECIAL, PUNITIVE, INDIRECT OR CONSEQUENTIAL DAMAGES, EVEN IF RALLY OR ITS REPRESENTATIVES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR CLAIMS
+                </li><li>You agree that the breach of these Terms may cause serious and irreparable harm to the activities, competitive position and business interests of CA. Accordingly, you agree that in addition to all other remedies at law or equity, CA will be entitled to seek equitable relief, including injunction and specific performance, as a remedy for any breach of these Terms. In the event you are no longer a partner of CA, you will immediately cease using the Site.
+                </li><li>The parties agree that this Agreement and any claims hereunder shall be governed by and subject to the laws of the state of New York, without giving effect to any principles of conflicts of law. In the event that a dispute is required to be litigated, you agree that the proper forum for any and all claims under this Agreement will be the state and federal courts located in Suffolk County, New York, and you agree to submit to the jurisdiction of these courts. The prevailing party in any action will be entitled to recover reasonable expenses, including attorneys' fees. Your use of the Site and Service is subject to all applicable local, state, national and international laws and regulations.
+                </li><li>If any provision of this Agreement is found by a court of competent jurisdiction to be invalid, the parties nevertheless agree that the court should endeavor to give effect to the parties' intentions as reflected in the provision, and the other provisions of this Agreement remain in full force and effect.
+                </li>
+        </ol>
+        <div class="body-sectionheader">AGILE CENTRAL REFERRAL PARTNER AGREEMENT</div>
+        <p>This Agile Central Referral Partner Agreement ("Agreement") is made and entered into by and between CA, Inc. ("CA") and its subsidiaries, and You. "YOU" refers to you as an individual and the company on behalf of which you are entering into this Agreement as an employee or agent ("Referral Partner"). You represent and warrant that You have the full corporate right, power, and authority to enter into this Agreement on behalf of Referral Partner, that this Agreement has been duly authorized by Referral Partner, and that this Agreement will constitute the legal, valid, and binding obligation of Referral Partner, enforceable against Referral Partner in accordance with its terms.</p>
+        <p>CA is a provider of knowledge, coaching and tools to software-driven enterprises that enable such enterprises to succeed with Agile development practices. Referral Partner has extensive experience, business relationships, and network contacts within its industry stands in a position to act as a Referral Partner with CA. By entering into this Agreement, Referral Partner agrees to participate in CA's lead referral program in which Referral Partner will provide CA with potential commercial customers identified by Referral Partner Referral Partner ("Leads") in exchange for which CA may pay certain referral percentage as described below. No referral percentage shall be paid for any Lead related to a Governmental or Quasi-governmental Entity. Governmental or Quasi-government Entity shall mean any agency, division or instrumentality of a state, local, or national government in the U.S. or abroad; any agency or instrumentality of a government-owned or controlled business; any public international organization (e.g., the World Bank, IMF, United Nations); any legislative, administrative or judicial office of a government or any of its departments, agencies or divisions; any political party; and any government-owned or controlled business.</p>
+        
+        <p>BY CLICKING "AGREE," SUBMITTING A LEAD, OR OTHERWISE PARTICIPATING IN THE Agile Central REFERRAL PARTNER PROGRAM, REFERRAL PARTNER ACKNOWLEDGES THAT IT HAS READ AND AGREES TO BE BOUND BY THE TERMS AND CONDITIONS OF THIS AGREEMENT, INCLUDING THOSE TERMS CONTAINED ON THE FOLLOWING PAGES HEREOF. CA MAY AMEND THIS AGREEMENT AT ANY TIME BY POSTING AN AMENDED COPY OF THE AGREEMENT TO THE SITE. In entering this Agreement, Referral Partner recognizes and accepts the terms of CA's Usage Statement (http://www.rallydev.com/about/rally-usage-statement) and Privacy Statement (http://www.rallydev.com/privacy-statement) as applicable to CA's provision of CA Products to Leads, and regarding Referral Partner's adherence to the Privacy Statement in all matters involving privacy of Lead information.
+        </p>
+        <ol>
+            <li><b>DEFINED TERMS</b>
+                <ol>
+                    <li>
+                        "Actively Participate" means Referral Partner's active engagement by Collaborating with the CA direct sales team participating in the sales process. It is defined as completing at least 1 of the listed activities
+                        <ol>
+                            <li>
+                                Joint sales calls
+                            </li>
+                            <li>
+                                Demos
+                            </li>
+                            <li>
+                                
+                                Presentations
+                                </li>
+                            <li>
+                                Host Event 
+                                </li>
+                            <li>
+                                Joint RFP responses/proposals
+                                </li>
+                        </ol>
+                    </li>
+                    <li>"Annualized Recurring Revenue " (ARR) means, for Agile Central Products, the applicable equivalent monthly subscription fee multiplied by the number of users less relevant discounts for a 12-month period in the currency such sale is consummated in.</li>
+                    <li>
+                        Intentionally Omitted.
+                    </li>
+                    <li>
+                       "Confidential Information" means all information regarding a party's business, including, without limitation, technical, marketing, financial, employee, planning, and other confidential or proprietary information, disclosed under this Agreement, that is clearly identified as confidential or proprietary at the time of disclosure or that the receiving party knew or should have known, under the circumstances, was considered confidential or proprietary. Confidential Information includes information derived from or concerning the CA Products or the Documentation and the terms of this Agreement.
+                    </li>
+                    <li>
+                        "Converted Lead" means a Lead for which Referral Partner is eligible under Section 2.1(a) to be paid a referral percentage because said Lead satisfies the requirements set forth in Section 2.2(a) below.
+                    </li>
+                    <li>
+                        "Lead Referral Date" means the date CA receives a Lead from Referrer.
+                    </li>
+                    <li>
+                       "Material Support" means Referral Partner's continued support of CA through the sales process.
+                    </li>
+                    <li>
+                       "Notification Date" means the date that CA notifies Referral Partner that it has accepted Referral Partner's Lead as a Converted Lead.
+                    </li>
+                    <li>
+                       "Portal" or “Site” means the website operated by CA at https://samlgwsm.ca.com/affwebservices/public/saml2sso?SPID=http://forms.webinfinity.com/ca-sso/sso/relay-2 by which Leads must be submitted to CA.
+                    </li>
+                    <li>
+                        "CA Marks" means CA's names, word marks, logos, logo types, trade dress, designs, trademarks, service marks, or other CA branding and intellectual property.
+                    </li>
+                    <li>
+                        "Agile Central Products" means the Agile Central Service and the Agile Central Software.
+                    </li>
+                    <li>
+                        "Agile Central Service" means the on-line business application known as Agile Central or similar or successor product, which CA provides to Customers via a subscription.
+                    </li>
+                    <li>
+                        "Agile Central" means the computer software known as Agile Central or similar or successor product, which CA licenses to Customers.
+                    </li>
+                    <li>
+                        "Territory" means the industry and/or geography from which Referral Partner refers Leads to CA, and which shall be determined in CA's sole discretion.
+                    </li>
+                </ol>
+            </li>
+            <li>
+                <b>TERMS AND CONDITIONS OF LEAD REFERRAL AND ACCEPTANCE</b>
+                <ol>
+                    <li>
+                        License
+                            <br/><br/>(a) General. CA hereby grants to Referral Partner a non-exclusive, non-transferrable, non-sub licensable, limited, revocable license to (i) promote the Agile Central Products to Leads, (ii) to use the CA Marks for the sole purpose of promoting the Agile Central Products to Leads in accordance with paragraph (e) below, and (iii) conduct demonstrations of the Agile Central Products in accordance with paragraph (f) below.
+                            <br/><br/>(b) Prohibited Activities. Referral Partner will not (i) associate CA, the Agile Central Products, or any of the content provided to Referral Partner by CA with content that is unlawful or otherwise harmful, threatening, defamatory, obscene, offensive, harassing, sexually explicit, violent, discriminatory, or otherwise objectionable in CA's reasonable discretion. Referral Partner will not send unsolicited messages or make unsolicited calls to groups of recipients, or otherwise engage in any other form of mass electronic communications prohibited by law in connection with this Agreement.
+                            <br/><br/>(c) Compliance. Referral Partner will comply with all applicable laws in its performance under this Agreement.
+                            <br/><br/>(d) Warranties. Referral Partner represents and warrants that it possesses all necessary rights and licenses to perform its obligations hereunder, including all rights and licenses necessary to provide information about Leads to CA. By agreeing to this Agreement, you represent and warrant you have all necessary authority to bind the entity providing the Lead to this Agreement. THE Agile Central product AND ALL OTHER DATA, MATERIALS, AND DOCUMENTATION PROVIDED IN CONNECTION WITH THIS AGREEMENT BY CA AND ITS SUPPLIERS ARE PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT REPRESENTATIONS OR WARRANTIES OF ANY KIND. CA AND ITS SUPPLIERS MAKE NO OTHER WARRANTIES, EXPRESS OR IMPLIED, BY OPERATION OF LAW OR OTHERWISE, INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF NONINFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE OR ANY IMPLIED WARRANTIES ARISING OUT OF COURSE OF PERFORMANCE, COURSE OF DEALING OR USAGE OF TRADE. CA DOES NOT WARRANT THAT THE Agile Central product WILL BE PROVIDED ERROR-FREE, UNINTERRUPTED, COMPLETELY SECURE, OR VIRUS-FREE.
+                            <br/><br/>(e) Use of Marks. This Agreement does not grant Referral Partner any right, title, interest, or license in or to any of CA's names, word marks, logos, logo types, trade dress, designs, trademarks, service marks, or other CA branding and intellectual property ("CA Marks"). CA grants to Referral Partner a non-exclusive, revocable, and limited license to use CA's corporate name and names of Agile Central product solely to accurately identify and refer to CA and the Agile Central products in order to generate Leads and for no other purpose, provided that such use shall not be likely to cause confusion about the source of the Agile Central products or Referral Partner's own products and services or Referral Partner's relationship with CA. Referral Partner use of the CA Marks shall comply with CA usage guidelines available on the Site. CA grants to Referral Partner a non-exclusive, revocable, and limited license to access and copy the CA marketing materials made available to Referral Partner via the Site solely for the purpose of fulfilling its obligations under this Agreement. Referral Partner represents and warrants it possess and will maintain all necessary rights in the marks it uses in conjunction with its use of the CA Marks. Upon CA's request, Referral Partner shall provide CA with a copy of its materials containing the CA Marks, and Referral Partner shall, upon request from CA, modify or cease its use of the CA Marks. Referral Partner shall not modify the CA Marks in any way.
+                            <br/><br/>(f) License to CA Products. Referral Partner shall receive not license or right to the CA Products under this Agreement.
+                    </li>
+                    <li>
+                        Referral Partner's Identification and Referral of Leads.
+                        
+                         <br/><br/>(a) Referral Partner acknowledges and agrees that in order for a Lead to qualify as a Converted Lead, the following must have occurred: 
+                            (i) Referral Partner must have provided valid details of the Converted Lead to CA through the Site; and 
+                            (ii) Referral Partner must have, in writing, introduced CA to the Lead within 14 days from submitting the Lead and scheduled an introductory event; and 
+                            (iii) CA must have reviewed Referral Partner's Lead and accepted the Lead (i.e., not rejected the Lead for any of the reasons stated in the Exclusions section below, or otherwise); 
+                            (iv) Referral Partner must be in good standing with CA; and 
+                            (v) The Converted Lead, at its own discretion and without receiving any monetary or other incentive from Referral Partner, enters into an agreement with CA and obtain Agile Central Products (or a subscription thereto) within 12 months from the date Referral Partner submits the Lead. 
+                             (vi) Referral partner must Actively Participate in the sale of the Agile Central product with the CA Direct Sales team as defined in these terms. 
+                            Fulfillment of the above criteria does not guarantee that a Lead qualifies as a Converted Lead. CA may decline to qualify a Lead as a Converted Lead for any reason in its sole discretion. 
+                            (b) Referral Partner acknowledges and agrees that no referral percentage will be paid to Referral Partner by CA for the referral of a Lead: 
+                            (i) that was an existing customer of CA's at the time of the Lead submission; or 
+                            (ii) pertaining to a potential customer which CA was already involved in preliminary or advanced discussions relating to a possible commercial relationship at the time of the Lead submission); or 
+                            (iii) that had previously been submitted to CA by Referral Partner or any other third party (including other referrers); or 
+                            (iv) that Referral Partner did not Actively Participate in developing and/or soliciting; or  
+                            (v) that Referral Partner also submitted to a CA competitor. 
+                            (c) Referral Partner acknowledges that it shall be solely responsible for and shall bear all costs associated with Referral Partner's solicitation and development of any Leads for referral to CA. 
+                            (d) Referral Partner acknowledges and agrees the following are required in order for Referral Partner to earn Referral Percentages on Converted Leads who renew their orders for Agile central Products: 
+                            (i)Referral Partner was actively engaged in the adoption and retention of the Agile Central Products by the Converted Lead through in-person meetings and/or remote sessions; 
+                            (ii) Referral Partner Actively Participated as defined previously in the renewal cycle with CA sales 
+                            (iii) Referral Partner attended quarterly update sessions with CA's Custom Advocacy Team and continued to support CA throughout the enablement process; and 
+                            (iv) Upon request, Referral Partner provided CA with status updates regarding usage of the Agile Central Products by the Converted Leads. 
+
+                            Fulfillment of the above criteria does not guarantee that a Converted Lead that renews will result in renewal referral percentage payments to Referral Partner. CA may decline to pay referral percentage on renewals for any reason in its sole discretion.
+
+                    </li>
+                    
+                    
+                    
+                    <li>
+                         CA's Obligations Upon Lead Referral
+                        <br/><br/>
+                            <br/><br/>(a) CA shall review Leads submitted by Referral Partner to determine whether to accept or reject the Lead(s) as converted pursuant to Section 2 above, or other commercially reasonable reason as determined by CA. 
+                                      (b) Within thirty (30) days after submission of a Lead, CA will notify Referral Partner as to whether the Lead is converted. 
+                                      (c) Upon acceptance of a Lead as converted, CA shall be solely responsible for all costs associated with the sale of an Agile Central Products to said Lead. 
+                                      (d) CA shall provide and Referral Partner may obtain Agile Central's standard product training services. CA will make available Site as the primary means of self-service training. CA may require that certain Agile Central Referral Partners maintain minimum certification requirements set forth by CA. Agile Central Referral Partner will bear the cost of all travel, lodging and meals of its own personnel
+                                      (e) CA shall compensate Referral Partner on Converted Leads as set forth in Section 3 below.
+
+                    </li>
+                    
+                    <li> Mutual Obligations Re: Lead Development/Sale. Each party will:
+                    
+                           <br/><br/>(a) cooperate with the other to develop and execute a strategy to best serve the needs of the Converted Lead, including how the Parties will work separately or together, if at all, regarding the Lead; 
+                                     (b) upon request of the other Party, provide the other with all non-confidential information it has regarding a Lead in order to assist the other party in (i) verifying the eligibility of the Lead as converted; and/or (ii) successfully soliciting the Lead to purchase Agile Central Products. 
+                                     (c) upon request of the other Party, in its reasonable discretion, provide the other Party with information regarding its services and/or products. Such information shall include sales and marketing materials and informal training. Any training provided under this Section shall be conducted at mutually agreed times and places and shall be conducted in accordance with the training Party's discretion.
+                                     (d) conduct all of its business in its own name and in a businesslike and professional manner. Referral Partner will not make any representations or guarantees concerning the Agile Central Products. Referral Partner will not take any action that may disparage CA or the Agile Central Products.
+                    </li>
+                 
+                    
+               </ol>
+                
+                
+                    
+
+
+                
+
+            </li>
+            <li>
+            <b>REFERRAL FEES</b>
+                <ol>
+                    <li>Payment. Subject to the terms and conditions of this Agreement, CA will pay Referral Partner a referral percentage as determined by the schedule set forth in Exhibit "A" for each Converted Lead referred by Referral Partner to CA in compliance with the requirements of this Agreement. The payment of referral percentages will be made in the local currency that the Converted Lead sales transaction is consummated in. Referral Partner shall be solely responsible for payment of any and all national, state, and local taxes and charges arising from or imposed on the payments made to Referral Partner by CA. If a Converted Lead obtains a refund of any fees within six (6) months after execution of an order for a Agile Central Product, the amount of the applicable referral percentage paid to Referring Party will be set-off against any subsequent referral percentages earned by Referral Partner. In any event, referral percentages paid shall not exceed the local currency equivalent of $50,000USD determined using CA’s corporate exchange rates for any individual Lead, or issued to a single subscription ID</li>
+                    <li>Payment Timing. Referral percentages under this Section shall be due no later than the last day of the quarter following the month after CA actually receives the applicable payment of fees from the Converted Lead, but in no case earlier than the expiration of any return period agreed to by CA and the Converted Lead. CA’s fiscal year is defined as April 1 through March 31 with a quarter end on June 30, September 30, December 31 and March 31. Payments shall be remitted to Referral Partner by the local CA subsidiary.
+                    </li>
+                </ol>
+                
+            </li>
+            <li>
+            <b>TERM AND TERMINATION</b>
+                <ol>
+                    <li>Term. The term of this Agreement will commence on the Effective Date and continue until terminated in accordance with Section 4.2 below.
+                    </li>
+                    <li>
+                        Termination. This Agreement may be terminated by CA or Referral Partner for convenience for any reason or no reason upon thirty (30) days written notice to the other party. In addition, CA may terminate your participation effective immediately upon your violation of any applicable law or regulation.
+                    </li>
+                    <li>
+                        Effect of Termination. Following termination of this Agreement, CA will pay Referral Partner, in accordance with Section 3 above, any amounts earned by Referral Partner for Converted Leads submitted to CA up to the date of termination. Regardless of any other provision of these terms and conditions, CA will not by reason of the termination or expiration of this Agreement be liable for compensation, reimbursement or damages on account of the loss of prospective profits or on account of expenditures, investments or commitments in connection with Referral Partner's business or goodwill, or otherwise.
+
+                    </li>
+                </ol>
+            </li>
+            <li>
+            <b>CONFIDENTIALITY</b>
+                <ol>
+                    <li>Obligation. Each party agrees (a) to hold the other party's Confidential Information in strict confidence, (b) to limit access to the other party's Confidential Information to those of its employees or agents having a need to know and who are bound by confidentiality obligations at least as restrictive as those contained herein, and (c) not to use such Confidential Information for any purpose except as expressly permitted hereunder. Notwithstanding the foregoing, the receiving party will not be in violation of this Section 5.1 with regard to a disclosure that was in response to a valid order or requirement by a court or other governmental body, provided that the receiving party gives the other party with prior written notice of such disclosure in order to permit the other party to seek confidential treatment of such information.
+</li>
+                    <li>Exceptions. The restrictions on use and disclosure of Confidential Information set forth above will not apply to any Confidential Information, or portion thereof, which (a) is or becomes a part of the public domain through no act or omission of the receiving party, (b) was in the receiving party's lawful possession prior to the disclosure, as shown by the receiving party's competent written records, (c) is independently developed by the receiving party without reference to the disclosing party's Confidential Information, as shown by the receiving party's competent written records, or (d) is lawfully disclosed to the receiving party by a third party without restriction on disclosure.
+</li>
+                </ol>
+            </li>
+            <li>
+            <b>GENERAL</b>
+                <ol>
+                    <li>Assignment. CA may assign this Agreement at any time. Referral Partner may not assign any rights or obligations arising under this Agreement, whether by operation or law or otherwise, without the prior written consent of CA. Subject to the foregoing limitation, this Agreement shall inure to the benefit of and shall be binding on the successors and assignees of the parties.</li>
+                    <li>Governing Law and Venue. This Agreement will be governed by and construed in accordance with the laws of the New York without giving effect to principles of conflict of laws. The United Nations Convention on Contracts for the International Sale of Goods will not apply to this Agreement. Any action or proceeding arising from or relating to this Agreement must be brought in a federal or state court sitting in Suffolk County New York, and each party irrevocably submits to the jurisdiction and venue of any such court in any such action or proceeding. If a dispute arising under this Agreement results in litigation, the non-prevailing party shall pay the court costs and reasonable attorneys' fees of the prevailing party.</li>
+                    <li>Notices. Any notice or other communication required or permitted under this Agreement and intended to have legal effect must be given in writing to the other party at the address set forth above (each party may change its address from time to time upon written notice to the other party of the new address). Unless otherwise set forth below, notices will be deemed to have been given upon receipt (or when delivery is refused) and may be (a) delivered personally, (b) sent via certified mail (return receipt requested) (c) sent via email (deemed delivered upon transmission), (d) sent via fax (with confirmation of receipt), or (e) sent by recognized air courier service.
+                    </li>
+                    <li>Entire Agreement. This Agreement is the entire understanding and agreement of the parties, and supersedes any and all previous and contemporaneous understandings, agreements, proposals or representations, written or oral, between the parties, as to the subject matter hereof.
+                    </li>
+                    <li>Severability and Waiver. In the event that any provision of this Agreement is held to be invalid or unenforceable, the valid or enforceable portion thereof and the remaining provisions of this Agreement will remain in full force and effect. Any waiver or failure to enforce any provision of this Agreement on one occasion will not be deemed a waiver of any other provision or of such provision on any other occasion. All waivers must be in writing. Other than as expressly stated herein, the remedies provided herein are in addition to, and not exclusive of, any other remedies of a party at law or in equity.
+                    </li>
+                    <li>Relationship of the Parties. The parties to this Agreement are independent contractors, and no agency, partnership, franchise, joint venture or employee-employer relationship is intended or created by this Agreement. Nothing contained in this Agreement will be construed to (a) give either party the power to direct or control the day-to-day activities of the other, (b) create an employer-employee relationship between the parties, or (c) constitute the parties as joint ventures, co-owners or otherwise as participants in a joint undertaking. Referral Partner shall not have the authority to make any commitments or agreements or to incur any liabilities whatsoever on behalf of CA, nor shall CA be liable for any acts, omissions to act, contracts, commitments, promises, or representations made by Referral Partner.
+                    </li>
+                    <li>Counterparts. This Agreement may be executed in counterparts, which taken together shall form one legal instrument.
+                    </li>
+                </ol>
+            </li>
+            <li>
+            
+            <b>INDEMNIFICATION AND LIABILITY</b>
+                <ol>
+                    <li>
+                        Indemnification. If any action is instituted by a third party against CA related to the acts or omissions of Referral Partner ("Claim"), Referral Partner will defend such action at its own expense on behalf of CA and shall pay all damages attributable to such claim which are finally awarded against CA or paid in settlement of such claim. If CA seeks indemnity from Referral Partner, CA must (a) promptly notify Referral Partner of the Claim, and (b) give Referral Partner the sole control over the defense of such Claim. Upon Referral Partner's assumption of the defense of such Claim, CA will cooperate with Referral Partner in such defense, at Referral Partner's expense. CA may choose, in its sole discretion, to assume control over any litigation or settlement for any Claim. Further, Referral Partner will not discontinue or settle any claim in a manner that does not unconditionally release CA without CA's prior written consent.
+                    </li>
+                    <li>
+                        Limitation of Liability. CA's total cumulative liability to Referral Partner for any and all claims arising from or in connection with this Agreement (under any legal theory including claims in contract or tort) will not exceed the amounts actually paid to Referral Partner by CA in the twelve (12) month period immediately preceding formal written notice of the claim for liability hereunder. All claims that CA may have against the other party will be aggregated to satisfy this limit and multiple claims will not enlarge this limit. In no event will CA be liable for special, incidental, indirect or consequential damages arising out of or in connection with this agreement (under any legal theory including claims in contract or tort, even if such party has been advised of the possibility of such damages, and notwithstanding the failure of essential purpose of any limited remedy provided herein.
+                    </li>
+                </ol>
+            </li>
+        </ol>
+        <div class="body-sectionheader">
+        EXHIBIT A - REFERRAL PARTNER COMMISSION FORMULA
+        </div>
+        <p>For each Converted Lead, CA will pay Referral Partner a referral percentage, as specified below, of the Annualized Reoccurring Revenue (ARR) for Agile Central Products actually received by CA from the Converted Lead from the provision of Agile Central Products to such Converted Lead during the twelve (12) month period beginning on the date of the initial order for Agile Central Products (the, "Referral Period"). CA Software and CA Service</p>
+        <ol>
+            <li>
+                10% base referral fee
+            </li>
+            <li>If Agile Central Referral Partner refers exceed the local currency equivalent of $100,000USD determined using CA’s corporate exchange rates $in ARR year 1 the increased referral rate of 15% is paid for the remainder of the current fiscal year </li>
+            <li>
+                Intentionally Omitted.
+            </li>
+            <li>
+                If Referral Partner and one or more other referrers submit the same Lead, CA may, at its sole discretion, pay the entire referral percentage to one referrer or divide the referral percentage among Referral Partner and the other referrers in proportions determined by CA in its sole discretion, and CA shall not be liable to Referral Partner for any difference between the amount it received and the amount it might have received without such a division.
+            </li>
+             <li>
+                Renewals on Converted Leads: 10%. Referral for add on business/ renewal business can be earned up to year 1 only. Referral Partner must demonstrate current participation as defined in Actively Participate to be eligible. Only product added at year 1 renewal are eligible for referral payment if defined activity complete. All other renewals are ineligible
+            </li>
+      </ol>
+      <p>
+      No cash consideration will be paid to Referral Partner for professional services, technical services, support services, or third party software products purchased by the Converted Lead.
+        
+
+      </p>
+      <p>
+      I Accept the above terms
+      </p>
+    </div>
+     <div class="modal-footer">
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("Referralmodalclose")[0];
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+</script>
+</apex:component>

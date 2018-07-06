@@ -1,0 +1,96 @@
+<apex:page standardController="Case" extensions="JiraCreateIssueUtility" tabStyle="Task">
+<head>
+    <apex:includeScript value="{!URLFOR($Resource.JqueryPopup, '/jquery-1.8.2.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.JqueryPopup, '/postmessage/jquery.ba-postmessage.js')}"/>
+
+    
+    <script type="text/javascript">
+        var j$ = jQuery.noConflict();
+
+        var parent_domain = '{!$CurrentPage.parameters.parent_domain}';
+
+        j$(document).ready(function() {
+            j$('input[id$=btnCloseModalDialog]').click(function(event) {
+                event.preventDefault();
+                closeModalDialogAndRedirect();
+            });
+        });
+
+        function closeModalDialog() {
+            var cross_result = new Object();
+            cross_result.action = 'close_modal_dialog';
+            //alert('enter 1');
+            j$.postMessage(
+                cross_result,
+                parent_domain,
+                parent
+            );
+        }
+
+        function closeModalDialogAndRedirect(errorFlag) {
+            if(!errorFlag){
+                var redirectUrl = j$('input[id$=redirectUrl]').val();
+                //alert(redirectUrl);
+                var cross_result = new Object();
+                cross_result.action = 'close_modal_dialog_redirect';
+                cross_result.redirect_url = redirectUrl;
+
+                j$.postMessage(
+                    cross_result,
+                    parent_domain,
+                    parent
+                );
+            }
+        }
+    </script>
+</head>
+ 
+ <apex:outputpanel >
+     <apex:actionstatus id="actStatusId">
+       <apex:facet name="start">
+          <div class="waitingSearchDiv" id="el_loading" style="height: 100%;opacity:0.65;width:100%;">
+          <div class="waitingHolder" style="top: 74.2px; width: 91px;">
+        <img class="waitingImage" src="/img/loading.gif"     title="Please Wait..." />
+        <span class="waitingDescription">Processing...</span>
+          </div>
+          </div>
+       </apex:facet>
+     </apex:actionstatus>
+  </apex:outputpanel>
+ 
+ <apex:form id="fr">
+  <apex:pageBlock mode="edit" id="pgeblck">
+    <apex:pageMessages id="msg"></apex:pageMessages>
+    <apex:pageBlockButtons location="bottom">
+        <apex:commandButton value="Submit" action="{!sendInfoToJira}" onclick="this.disabled=true;" oncomplete="closeModalDialogAndRedirect({!isError});" reRender="fr" status="actStatusId"/>
+            
+        <apex:commandButton value="Cancel" style="margin:30px;" onclick="closeModalDialog();"/>
+    </apex:pageBlockButtons>
+
+    <apex:pageBlockSection columns="1" collapsible="false" id="pgeblksec">
+    
+       <apex:pageblockSection >
+         <apex:outputText value="{!c.casenumber}" />
+       </apex:pageblockSection>
+          
+       <apex:pageBlockSection >
+         <apex:outputText value="{!c.Component_Name__c}" />
+       </apex:pageBlockSection>
+          
+        <apex:pageBlockSection >
+          <apex:InputField value="{!c.Request_Type__c}" required="true" rendered="{!(requestTypeInvisible)}" />
+        </apex:pageBlockSection>
+       
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel >Summary</apex:outputLabel>
+                <apex:outputPanel layout="block" styleClass="requiredInput">
+                  <div class="requiredBlock"></div>      
+            <apex:inputTextarea value="{!comment}" rows="17" cols="70"/>
+                </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        
+    </apex:pageBlockSection>
+    
+  </apex:pageBlock>
+  </apex:form>
+</apex:page>

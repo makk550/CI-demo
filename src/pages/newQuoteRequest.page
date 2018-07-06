@@ -1,0 +1,39 @@
+<apex:page controller="quoteRequestController" tabStyle="Opportunity">
+    
+    <apex:pageMessages />
+    <apex:form rendered="{!renderForm}">
+        <apex:sectionHeader title="Opportunity" subtitle="Select Type"/>
+        
+        <apex:pageBlock >
+            <apex:pageBlockSection >
+                <apex:outputPanel >
+                    Select the Type of the Quote Request and press Apply Selection.
+                </apex:outputPanel>
+                <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Opportunity.fields.Name.label}"/>
+                    <apex:outputField value="{!opp.Name}"/>
+                </apex:pageBlockSectionItem>               
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Opportunity Type"/>
+                    <apex:outputField label="Opportunity Type" value="{!opp.RecordType.Name}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock title="Select Quote Type">
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Apply Selection" action="{!applySelection}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection >
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Quote Request Type</apex:outputLabel>
+                    <apex:selectList value="{!selectedQuoteType}" multiselect="false" size="1" required="true">
+                        <apex:selectOptions value="{!quoteTypeValues}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    
+</apex:page>

@@ -1,0 +1,23 @@
+<apex:page standardController="Case" showHeader="false" >
+    <style type="text/css">
+        .highlight
+        {
+        display: inline;
+        font-weight: 900;
+        font-size: 100%;
+        color : red;
+        padding-bottom: 50%;
+        
+        }
+    </style>
+   
+    <apex:form >
+        
+        <span class="{!if(Case.Special_Conditions__c >0 ,'highlight', '')}">
+            
+            <apex:outputField value="{!Case.Special_Conditions__c}"/>
+        </span>
+        
+    </apex:form>
+    
+</apex:page>

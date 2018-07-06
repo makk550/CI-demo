@@ -1,0 +1,137 @@
+<apex:page showHeader="false" sidebar="false" standardController="Opportunity_Plan__c" extensions="AccountOverviewExt" tabStyle="Opportunity_Plan__c">
+<style>
+.alignCenter = {text-align:center;}
+.capitalize = {text-transform: capitalize;}
+</style>
+<script>
+   
+    function checkAll(cb)
+    {
+        var inputElem = document.getElementsByTagName("input");
+        for(var i=0; i<inputElem.length; i++)
+        {
+            if(inputElem[i].id.indexOf("chkpDIds")!=-1)
+                inputElem[i].checked = cb.checked;
+        }
+    }
+
+    function setURL(theUrl){
+        //alert(theUrl);
+        window.top.location.href = theUrl;      
+    }
+</script>
+
+<Script>
+    function printSelected(){
+        var incOverview = document.getElementById("chkInclude");
+        var selectedIds = '';
+        var inputElem1 = document.getElementsByTagName("input");
+        for(var i=0; i<=inputElem1.length-1; i++)
+        {
+            if(inputElem1[i].id.indexOf("chkpDIds")!=-1)
+                if(inputElem1[i].checked)
+                    selectedIds = selectedIds + inputElem1[i].value + ':'; 
+
+        }
+        //alert(selectedIds);
+        if(selectedIds=='' && !incOverview.checked){
+            alert('No selection has been made.');
+            return false;
+        }else{
+            window.open('/apex/printOpportunityPlan?incOverview=' + incOverview.checked + '&selectedIds=' + selectedIds + '&planId={!PlanId}&AccountId={!AccountId}&AccName={!URLENCODE(AccName)}');
+            return false;
+        }
+    }
+    
+   
+    
+</Script>
+<apex:Messages id="errMsg" rendered="{!hasErrors}" />
+<apex:form >
+<apex:pageBlock tabStyle="Opportunity_Plan__c">
+    <apex:pageBlockButtons >
+        <apex:commandButton action="{!save}" value="Save"/>
+    </apex:pageBlockButtons>
+       <apex:panelGrid columns="4" width="100%" styleClass="detailList" columnClasses="labelCol first ,dataCol  first ,labelCol first ,dataCol  first ">
+            <apex:outputLabel ><b>Account Name</b></apex:outputLabel>
+            <apex:outputText value="{!Opportunity_Plan__c.Account_Name__c}" id="Account_Name__c" escape="false"/>
+            <apex:outputLabel ><b>Account Owner</b></apex:outputLabel>
+            <apex:outputLabel id="AccountOwner" value="{!Opportunity_Plan__c.Account__r.Owner.Name}"/>
+            <apex:outputLabel for="Preferred_Partner__c"><b>Preferred Procurement</b></apex:outputLabel>
+            <apex:inputField id="Preferred_Partner__c" value="{!Opportunity_Plan__c.Preferred_Partner__c}"/>
+            <apex:outputLabel for="slTop_Competitor"><b>Top Competitor</b></apex:outputLabel>
+            <apex:selectList id="slTop_Competitor" value="{!Opportunity_Plan__c.Top_Competitor__c}" size="1">
+                     <apex:selectOptions value="{!TopCompetitor}"/>
+            </apex:selectList>
+            <apex:outputLabel for="Account_Team__c"><b>Account Team</b></apex:outputLabel>
+            <apex:outputText value="{!Opportunity_Plan__c.Account_Team__c}" id="Account_Team__c" escape="false"/>
+            <apex:outputLabel for="Account_Class__c"><b>Account Class</b></apex:outputLabel>
+            <apex:inputField value="{!Opportunity_Plan__c.Account_Class__c}" id="Account_Class__c"/>
+            <apex:outputText value=""/>
+            <apex:outputText value=""/>
+            <apex:outputLabel for="SAP_ERP__c"><b>What ERP System?</b></apex:outputLabel>
+            <apex:inputField value="{!Opportunity_Plan__c.ERP__c}" id="ERP__c" />
+            </apex:panelGrid> 
+
+    <apex:pageBlockSection columns="2" Title="Customer Financials" collapsible="false">
+        <apex:inputField value="{!Opportunity_Plan__c.Annual_Revenue__c}"/>
+        <apex:inputField value="{!Opportunity_Plan__c.Company_Size__c}"/>
+        <apex:inputField value="{!Opportunity_Plan__c.Total_IT_Budget__c}"/>
+        <apex:inputField value="{!Opportunity_Plan__c.Fiscal_Year_End__c}"/>
+        <apex:inputField value="{!Opportunity_Plan__c.CurrencyIsoCode}"/>
+    </apex:pageBlockSection>
+
+    <apex:pageBlockSection Title="Recon Campaigns" collapsible="false">
+        <p style="font-size:12px;">
+        <b>North America:</b>  <A HREF="https://km.ca.com/sales/nasalesworkbench/mmrecons/Pages/MMRecons_NA.aspx" target="_blank">click here</A><br>
+        <b>Europe:</b>  <A HREF="https://km.ca.com/SALES/NASALESWORKBENCH/MMRECONS/Pages/MMRecons_Europe.aspx " target="_blank">click here</A><br>
+        </p>
+  </apex:pageBlockSection>
+
+
+
+    <apex:pageBlockSection Title="Upcoming Opportunities" collapsible="false">  </apex:pageBlockSection>
+        <input type="button" class="button" value="Print Selected" onclick="printSelected();"/>
+        &nbsp;&nbsp;<input type="checkbox" align="top"  value="includeOverview" id="chkInclude"/> Include Overview
+        <br/>
+        <br/>
+        <apex:dataTable width="100%" value="{!lstOpportunityGrid}" var="opp" id="theTable" rowClasses=" dataRow even first, dataRow odd"
+        styleClass="list">
+            <apex:column >
+                <apex:facet name="header"> 
+                    <input type="Checkbox" id="chkAll" value="all" onclick="checkAll(this)" />
+                </apex:facet>
+                <input type="checkbox" value="{!opp.pDId}" id="chkpDIds"/>
+            </apex:column>
+            <apex:column headerValue="Business Unit">
+                <apex:outputText value="{!opp.BusinessUnit}"/>
+            </apex:column>
+            <apex:column headerValue="NCV Driver">
+                <apex:outputLink onclick="setURL('/apex/OpportunityPlan?pdId={!opp.pDId}&ncvId={!opp.NcvId}&Driver={!opp.NCVDriver}&BU={!opp.BusinessUnit}&AccId={!opp.AccountId}&PlanId={!$CurrentPage.parameters.Id}&Id={!$CurrentPage.parameters.Id}');">{!opp.NCVDriver}</apex:outputLink>
+            </apex:column>
+            <apex:column headerValue="CA License" styleClass="alignCenter" headerClass="alignCenter">
+                <apex:image url="{!$Resource.greenCircle}" rendered="{!IF(opp.CALicenseCount>0,true,false)}"></apex:image>  
+                <apex:image url="{!$Resource.redCircle}" rendered="{!IF(opp.CALicenseCount<=0,true,false)}"></apex:image>
+            </apex:column>
+            <apex:column headerValue="Competitor License" styleClass="alignCenter" headerClass="alignCenter">
+                <apex:image url="{!$Resource.greenCircle}" rendered="{!IF(opp.CompetitorLicenseIcon=='green',true,false)}"></apex:image>  
+                <apex:image url="{!$Resource.redCircle}" rendered="{!IF(opp.CompetitorLicenseIcon=='red',true,false)}"></apex:image>  
+                <apex:image url="{!$Resource.grayCircle}" rendered="{!IF(opp.CompetitorLicenseIcon=='grey',true,false)}"></apex:image>  
+            </apex:column>
+            <apex:column headerValue="Opportunity" styleClass="alignCenter" headerClass="alignCenter">
+                    <apex:image url="{!$Resource.greenCircle}" rendered="{!IF(opp.Opportunity='Yes',true,false)}"></apex:image>  
+                    <apex:image url="{!$Resource.redCircle}" rendered="{!IF(opp.Opportunity='No',true,false)}"></apex:image>  
+            </apex:column>
+            <apex:column headerValue="Potential Upsell" styleClass="alignCenter" headerClass="alignCenter">
+                <apex:outputText escape="false" value="{!IF(opp.PotentialUpsell==null || opp.PotentialUpsell=='','&nbsp;',opp.PotentialUpsell)}"/>
+            </apex:column>
+            <apex:column headerValue="Open Opportunities" styleClass="alignCenter" headerClass="alignCenter">
+                <apex:outputPanel rendered="{!IF(opp.OpenOppsCount>0,true,false)}">
+                    <a target="top" href="/00O300000048DVf?pv0={!LEFT(opp.AccountId,15)}&pv1={!opp.NCVDriver}&pv2={!LEFT(opp.AccountId,15)}&pv3={!Ent_id}"  id="reportLink">{!opp.OpenOppsCount}</a>
+                </apex:outputPanel>
+                <apex:outputText rendered="{!IF(opp.OpenOppsCount=0,true,false)}" value="{!opp.OpenOppsCount}"/>
+            </apex:column>
+        </apex:dataTable>
+</apex:pageBlock>
+</apex:form>    
+</apex:page>

@@ -1,0 +1,5 @@
+<apex:page standardcontroller="Accreditation__c">
+<apex:detail subject="{!Accreditation__c.Id}" relatedList="true" title="true" inlineEdit="true" showChatter="true">
+     </apex:detail>
+     
+</apex:page>

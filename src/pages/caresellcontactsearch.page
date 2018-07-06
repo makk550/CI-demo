@@ -1,0 +1,214 @@
+<apex:page sidebar="false" controller="CAResellContactSearch" id="thePage"  showHeader="false">
+<apex:pagemessages ></apex:pagemessages>
+
+<script>
+
+ winMain=window.opener;       
+ function fillIn(name, id, email, phone, mobile, fax, title)    {       
+       
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener; 
+                
+        }    
+
+        var ele=winMain.document.getElementById('{!$CurrentPage.parameters.namef}');               
+        ele.value=name;
+        ele=winMain.document.getElementById('targetResellContact');       
+        ele.innerHTML=name;       
+        ele=winMain.document.getElementById('{!$CurrentPage.parameters.idf}');       
+        ele.value=id;   
+        
+        CloseWindow();    
+
+    }      
+    function CloseWindow()    {       
+        winMain=window.opener;       
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener;       
+        }       
+    winMain.closeLookupPopup();  
+     
+    }
+       
+    function validateContact()
+    {
+       if(document.getElementById('thePage:theForm:theCreate:FirstName').value.length <= 0)
+        {
+            alert("Please enter the First Name");
+            return false;
+        }
+        else if(document.getElementById('thePage:theForm:theCreate:LastName').value.length <= 0)
+        {
+            alert("Please enter the Last Name");
+            return false;
+        }
+        else if(document.getElementById('thePage:theForm:theCreate:Email').value.length <= 0)
+        {
+            alert("Please enter the Email");
+            return false;
+        }
+        else
+            return true;
+    }
+</script>
+  <apex:form id="theForm" styleClass="hasMotif lookupTab  LookupSearchFrame">
+        <div class="lookup">
+ <div class="bPageTitle">
+  <div class="ptBody secondaryPalette">
+    <div class="content">
+      <img title="" class="pageTitleIcon" alt="" src="/s.gif"/>
+    <h1> Contact Search</h1>
+    </div></div></div></div>   
+    <apex:pageBlock id="thesearch" rendered="{!showCreate}">
+     <table>
+         <!--<tr>
+             <td>
+                 <apex:outputLabel value="Account Name: "></apex:outputLabel>    
+             </td>                   
+             <td>
+                 <b><apex:outputLabel value="{!accountName}"></apex:outputLabel></b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <apex:commandButton action="{!SearchContacts}" value="Search"/>
+             </td>
+         </tr>-->
+         <tr>
+             <td>
+                 <apex:outputLabel value="Account Name: "></apex:outputLabel>    
+             </td>                   
+             <td>
+                 <b><apex:outputLabel value="{!accountName}"></apex:outputLabel></b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+             </td>
+             <td colspan="2" >&nbsp;</td>
+         </tr>
+         <tr>
+             <td>
+                 <apex:outputLabel value="Contact Name"></apex:outputLabel>
+             </td>
+             <td>
+                 <apex:inputText id="searchtext" value="{!searchcon}"/>
+             </td>
+             <td colspan="2" align="center">
+                 <apex:commandButton action="{!SearchContacts}" value="Search"/>
+             </td>
+         </tr>
+    </table>
+    </apex:pageblock>
+
+     <apex:pageBlock id="theCreate" rendered="{!showCreateBlock}">
+        <table>
+            <tr>
+                <td>
+                    <apex:outputLabel value="Account Name"></apex:outputLabel>
+                </td>                   
+               <td>
+                   <b><apex:outputLabel value="{!accountName}"></apex:outputLabel></b>
+               </td>
+            </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="First Name"></apex:outputLabel>
+                    </td>
+                    <td>
+                         <apex:outputPanel styleClass="requiredInput" layout="block" >
+                         <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                            <apex:inputtext id="FirstName" value="{!firstName}"/>
+                        </apex:outputPanel>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Last Name"></apex:outputLabel>
+                    </td>
+                    <td>
+                         <apex:outputPanel styleClass="requiredInput" layout="block" >
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                            <apex:inputtext id="LastName" value="{!lastName}"/>
+                        </apex:outputPanel>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="E-mail"></apex:outputLabel>
+                    </td>
+                    <td>
+                         <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputtext id="Email" value="{!email}"/>
+                        </apex:outputPanel>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Title"></apex:outputLabel>
+                    </td>
+                    <td>
+                        <apex:inputtext id="Title" value="{!title}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Functional Role"></apex:outputLabel>
+                    </td>
+                    <td>  
+                        <apex:selectList value="{!selectedFunctionalRole}" size="1" id="selCountry">
+                            <apex:selectoptions value="{!functionalRoles}"></apex:selectoptions>
+                        </apex:selectList> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Phone"></apex:outputLabel>
+                    </td>
+                    <td>  
+                        <apex:inputtext id="Phone" value="{!phone}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Mobile"></apex:outputLabel>  
+                    </td>
+                    <td>
+                        <apex:inputtext id="Mobile" value="{!mobile}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Fax"></apex:outputLabel>  
+                   </td>
+                   <td>
+                        <apex:inputtext id="Fax" value="{!fax}"/>
+                    </td>
+                </tr>
+                <tr>
+                        <td colspan="2">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <apex:commandButton value="CreateContact" onclick="return validateContact()" action="{!CreateContact}"/>
+                    </td>
+                </tr>
+            </table>
+        </apex:pageBlock>    
+        <apex:pageBlock rendered="{!showResults}">
+               <apex:pageblockSection title="Results" showHeader="false" id="resultsBlock">
+                   <apex:dataTable value="{!results}" cellspacing="2" headerClass="headerRow" styleClass="list" var="partnerContact" width="100%">
+                       <apex:column headerValue="Name" width="50px">
+                           <apex:outputLink value="#" onclick="fillIn('{!partnerContact.Name}', '{!partnerContact.id}','{!partnerContact.Email}','{!partnerContact.Phone}','{!partnerContact.MobilePhone}','{!partnerContact.Fax}','{!partnerContact.Title}')">{!partnerContact.Name}</apex:outputLink>
+                       </apex:Column>                           
+                       <apex:column headerValue="Phone" width="50px">
+                           <apex:outputText value="{!partnerContact.Phone}"/>
+                       </apex:Column>
+                       <apex:column headerValue="MobilePhone" width="50px">
+                           <apex:outputText value="{!partnerContact.MobilePhone}"/>
+                       </apex:Column>
+                        <apex:column headerValue="Fax" width="50px">
+                           <apex:outputText value="{!partnerContact.Fax}"/>
+                       </apex:Column>
+                   </apex:dataTable>                   
+               </apex:pageblockSection>
+           </apex:pageBlock>
+            <apex:pageBlock id="createLinkBlock" rendered="{!showCreate}">
+            Click <apex:commandLink id="createLink" action="{!showCreateContact}" value="here"></apex:commandLink> to create a New Contact.
+        </apex:pageBlock>  
+      </apex:form>
+</apex:page>

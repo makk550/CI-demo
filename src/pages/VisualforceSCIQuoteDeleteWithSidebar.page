@@ -1,0 +1,15 @@
+<!--
+Standard Class::      scpq__SciQuote__c
+Extension     ::      VisualforceSCIQuoteDelete_Pilot
+Purpose       ::      This page is the used to display steriling page with sidebar.
+Created Date  ::      April 2011
+Modified History:
+-->
+<apex:page standardController="scpq__SciQuote__c" extensions="VisualforceSCIQuoteDelete_Pilot"   sidebar="true">
+<style>
+iframe {
+  border: 0px solid #ffffff;
+}
+</style>
+  <iframe id="itarget2"  width="100%" scrolling="no" height="{!iframeHeight}" frameborder="false" src="/apex/scpq__VisualforceSCIQuoteDelete?id={!scpq__SciQuote__c.id}&&retURL=%2F{!scpq__SciQuote__c.scpq__OpportunityId__c}&sfdc.override=1&isdtp=mn" />
+</apex:page>

@@ -1,0 +1,17 @@
+{
+    "projectName": "fsb1",
+    "username": "kumma13@ca.com.fsb1",
+    "id": "5d847250-8109-11e8-a68c-a721dd630f6c",
+    "namespace": "",
+    "orgType": "developer",
+    "loginUrl": "https://login.salesforce.com/",
+    "instanceUrl": "https://ca--FSB1.cs79.my.salesforce.com",
+    "workspace": "C:\\Users\\kumma13\\Documents",
+    "subscription": [
+        "ApexClass",
+        "ApexComponent",
+        "ApexPage",
+        "ApexTrigger",
+        "StaticResource"
+    ]
+}

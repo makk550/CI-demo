@@ -1,0 +1,83 @@
+<apex:page controller="VOppPipelineReportHelper_4_7Momentum">
+    <script>
+        function getData() {
+            alert("Fetching data, Click OK to continue.");
+        }
+    </script>
+
+    <style>
+    .header TABLE{
+        BACKGROUND-COLOR: #FFFFFF;
+        FONT-WEIGHT: normal; 
+        FONT-SIZE: 1.0em; 
+        COLOR: #000; 
+        FONT-FAMILY: 'Verdana', 'Geneva', sans-serif
+    }
+    .header TH{
+        BACKGROUND-COLOR: #AAAAAA
+    }
+
+    .header TD{
+        BACKGROUND-COLOR: #EEEEEE;
+        BORDER-TOP: #dddddd 1px solid;
+        BORDER-BOTTOM: #dddddd 1px solid
+    }
+
+    TABLE {
+        FONT-WEIGHT: normal; 
+        FONT-SIZE: 1.0em; 
+        COLOR: #333; 
+        FONT-FAMILY: 'Verdana', 'Geneva', sans-serif
+    }
+
+    </style>
+        <apex:form >
+                <apex:pageBlock title="Pipeline Reporting" mode="edit">
+                    
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    Select Date :<apex:selectList style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedDate}" multiselect="flase" size="1">
+                    <apex:selectOptions value="{!dateItems}"/>
+                    </apex:selectList>
+                    &nbsp;&nbsp;
+
+                    <apex:commandButton value="Generate Report" id="GenerateReport" action="{!populateData}"/>
+                </apex:pageBlock>
+                <apex:outputText rendered="{!showDataTable}" style="FONT-WEIGHT: bold;" value="USD in thousands(000's)"></apex:outputText>  
+                <apex:pageBlock rendered="{!showDataTable}" mode="edit"    title="4.7 Milestone change during Quarter">
+                    <apex:pageBlockTable value="{!OppNewPipeLineBeanForMomentum}" var="bean" id="theTable" rowClasses="odd,even" styleClass="tableClass">
+                        <apex:column width="10%">
+                            <apex:facet name="header">Milestone at<br> Beginning of Quarter</apex:facet>
+                            <apex:outputText value="{!bean.milestone}" />
+                        </apex:column>
+                        <apex:column width="10%">
+                            <apex:facet name="header">Beginning <br>of Period</apex:facet>
+                            <apex:outputText value="{!bean.begofQtr}" />
+                        </apex:column>
+                        <apex:column width="10%">
+                            <apex:facet name="header">30%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM30Pipelines}" />
+                        </apex:column>
+                        <apex:column width="10%">
+                            <apex:facet name="header">50%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM50Pipelines}" />
+                        </apex:column>
+                        <apex:column width="10%">
+                            <apex:facet name="header">70%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM70Pipelines}" />
+                        </apex:column>
+                        <apex:column width="10%">
+                            <apex:facet name="header">90%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM90Pipelines}" />
+                        </apex:column>
+                        <apex:column width="10%">
+                            <apex:facet name="header">100%/Won</apex:facet>
+                            <apex:outputText value="{!bean.totalSMWonPipelines}" />
+                        </apex:column>
+                        <apex:column width="10%">
+                            <apex:facet name="header">Lost</apex:facet>
+                            <apex:outputText value="{!bean.totalSMLostPipelines}" />
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+        </apex:form>
+</apex:page>

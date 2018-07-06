@@ -1,0 +1,9 @@
+<apex:component >
+  <apex:attribute name="jQueryVersion" description="Version of Jquery to be used. Defaults to 1.12.3" type="String" default="1.12.3"/>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/{!jQueryVersion}/jquery.min.js"></script>
+  
+  <script type="text/javascript"> 
+  		window.j$ = jQuery.noConflict();
+
+  </script>
+</apex:component>

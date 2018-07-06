@@ -1,0 +1,86 @@
+<apex:page controller="ProdRelLkpController" sidebar="false" showheader="false">
+    <script type="text/javascript">
+        window.onload = function() 
+        { 
+            // bring popup window to front
+            var ele = document.getElementById('{!$Component.form.block.section.query}');
+            var ele2 = document.getElementById('{!$Component.form.block.section.queryText}');
+            var prodID = '{!$CurrentPage.parameters.fldVal}';
+            if (ele)
+            {
+                //ele.focus();
+                ele.value=prodID;
+            }
+            if(ele2)
+            {
+                ele2.focus();
+                ele2.value=prodID;
+            }
+
+        }
+        
+        function getReleases()
+        {
+            CallApexMethod();
+        }
+       
+        function fillIn(name, gaLelVal)
+        {
+            
+            var winMain=window.opener;
+            if (null==winMain)
+            {
+                winMain=window.parent.opener;
+            }
+            var ele=winMain.document.getElementById('{!$CurrentPage.parameters.namefield}');
+            var galevel=winMain.document.getElementById('{!$CurrentPage.parameters.gaVal}');
+            galevel.value = gaLelVal;
+            ele.value=name;
+            var hiddenEle = '{!$CurrentPage.parameters.namefield}' + 'Hidden';
+            var ele=winMain.document.getElementById(hiddenEle);
+            ele.value=name;
+            var gahiddenEle = '{!$CurrentPage.parameters.gaVal}' + 'Hidden';
+            var gaele=winMain.document.getElementById(gahiddenEle);
+            gaele.value=gaLelVal;
+            CloseWindow();
+        }
+    
+        function CloseWindow()
+        {
+            var winMain=window.opener;
+            if (null==winMain)
+            {
+                winMain=window.parent.opener;
+            }
+            winMain.closeLookupPopup();
+        }
+    </script>
+    <apex:messages />
+    <apex:form id="form" >  
+        <div style="width 100%">
+            <apex:pageBlock title="Lookup" id="block">
+                <apex:pageBlockSection id="section">
+                    Material<br/>
+                    <apex:inputText disabled="true" id="queryText"/> 
+                    <apex:inputHidden value="{!query}" id="query"/> 
+                    <apex:commandButton value="Go" action="{!runQuery}"/>
+                    <!--<apex:actionFunction name="CallApexMethod" action="{!runQuery}" reRender="results"/>-->
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+    
+            <apex:pageBlock >
+                <apex:pageBlockSection columns="1" id="results">
+                    <apex:pageBlockTable value="{!prdmats}" var="prdmat">
+                        <apex:column headerValue="Material" value="{!prdmat.Product_Material__r.SAP_Product_Mapping__c}"/>
+                        <apex:column headerValue="Product Name" value="{!prdmat.Product_Material__r.Product__r.Name}"/>
+                        <apex:column headerValue="Material Text" value="{!prdmat.Product_Material__r.Material_Text__c}"/>
+                        <apex:column headerValue="Release">
+                            <apex:outputLink value="#" onclick="fillIn('{!prdmat.Product_Release__c}','{!prdmat.GA_Level_Text__c}')">{!prdmat.Product_Release__c}</apex:outputLink>       
+                        </apex:column>
+                    </apex:pageBlockTable>    
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            <button type="button" onclick="CloseWindow();">Close Window</button>
+        </div>
+    </apex:form>
+</apex:page>

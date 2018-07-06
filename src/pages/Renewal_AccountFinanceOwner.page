@@ -1,0 +1,20 @@
+<apex:page standardController="Active_Contract__c" extensions="Renewal_AccountFinanceOwner" tabStyle="Active_Contract__c">
+  <apex:sectionHeader title="Mass Ownership Edit"/>  
+  <style>
+    .dmlError { color: red; font-weight: strong;}
+  </style>
+  This screen allows you to change the Finance Owner of Contracts  
+  <apex:form >
+  <apex:pageBlock >
+  <apex:messages styleClass="dmlError"/>
+  <apex:pageBlockSection title="Select New Owner" collapsible="false">
+      <apex:inputField value="{!newOwner.Finance_Owner__c}">
+      </apex:inputField>
+  </apex:pageBlockSection><br/>
+  <center>
+      <apex:commandButton value="Save" action="{!save}"/>
+      <apex:commandButton value="Cancel" action="{!cancel}"/>
+  </center>
+  </apex:pageBlock>  
+  </apex:form>
+</apex:page>

@@ -1,0 +1,236 @@
+<!-- This page is to show all the contacts to a TPC user which belongs to his TPC Team -->
+<apex:page controller="TPC_ShowAllCasesController" tabStyle="Case" showHeader="true">
+     <style>
+     #loading-container{
+            position: absolute;
+            z-index:100;
+            background-color: rgba(0, 0, 0, 0.3);
+            top: 0;
+            bottom:0;
+            left:0;
+            right:0;
+       }
+       .btn-table td{
+            vertical-align : middle !important;
+        }
+    </style>
+    <apex:form >
+        <!-- <apex:inputText value="{!searchTermText}" />
+        <apex:commandButton action="{!search}" value="Search"/> -->
+    <apex:sectionHeader title="Cases" subtitle="Home" />
+        <apex:pageMessage severity="error" summary="Sorry you are not assiged to a TPC team" title="No TPC Team" rendered="{!showNoTeamMessage}"></apex:pageMessage>
+        <apex:pageBlock id="dataBlock" rendered="{!!showNoTeamMessage}">
+            <apex:actionStatus id="fetchStatus" >
+                <apex:facet name="start">
+                    <div id="loading-container">
+                        <center><img src="{!$Resource.LoadingIcon}" style="position:absolute; top:50%;"/></center>
+                    </div>
+                </apex:facet>
+                <apex:facet name="stop"  />
+            </apex:actionstatus>
+            <apex:pageBlockButtons >
+                <a href="{!$site.baseURL}/tpc_createCase" class="btn" style="text-decoration: none !important;">New</a>
+            </apex:pageBlockButtons>
+            <center>
+
+                Assigned To : <apex:selectList value="{!assignedValue}" size="1" onchange="filterCaseFunction();" >
+                    <apex:selectOptions value="{!assignedTo}"/>
+                </apex:selectList>
+
+                Sites : <apex:selectList size="1" value="{!selectedSite}" onchange="filterCaseFunction();" >
+                    <apex:selectOptions value="{!siteIds}" />
+                </apex:selectList>
+
+                Case Status : <apex:selectList value="{!filterType}" size="1" onchange="filterCaseFunction();">
+                    <apex:selectOptions value="{!views}"/>
+                </apex:selectList>
+
+
+            </center> <br/><br/>
+            <apex:pageBlockTable value="{!cases}" var="case" id="caseList">
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.caseNumber" assignTo="{!SortField}" />
+                            <apex:outputText value="Case Number {!IF(SortField=='case.caseNumber',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    <a href="{!$Site.BaseUrl+'/'+case.Id}"> {!case.caseNumber} </a>
+                </apex:column>
+                <apex:column >
+                 <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.Site_Association__r.SC_TOPS_ID__c" assignTo="{!SortField}" />
+                            <apex:outputText value="Site Association {!IF(SortField=='case.Site_Association__r.SC_TOPS_ID__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.Site_Association__r.SC_TOPS_ID__c}: {!case.Site_Association__r.Name}
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.Contact.Name" assignTo="{!SortField}" />
+                            <apex:outputText value="Contact Name {!IF(SortField=='case.Contact.Name',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.Contact.Name}
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="Subject" assignTo="{!SortField}" />
+                            <apex:outputText value="Subject {!IF(SortField=='Subject',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.Subject}
+                </apex:column>
+
+                <!-- US88789 -->
+                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                        <apex:param name="SortField" value="case.Troubleshooting_Stage__c" assignTo="{!SortField}" />
+                        <apex:outputText value="Troubleshooting Stage{!IF(SortField=='case.Troubleshooting_Stage__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                    </apex:commandLink>
+                     </apex:facet>
+                     {!case.Troubleshooting_Stage__c}
+                </apex:column>
+                  <!-- US88789 -->
+
+                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                        <apex:param name="SortField" value="Status" assignTo="{!SortField}" />
+                        <apex:outputText value="Status {!IF(SortField=='Status',IF(SortDirection='asc','▲','▼'),'')}" />
+                    </apex:commandLink>
+                     </apex:facet>
+                     {!case.Status}
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.Priority" assignTo="{!SortField}" />
+                            <apex:outputText value="Priority {!IF(SortField=='case.Priority',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.Priority}
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.Internal_Priority_New__c" assignTo="{!SortField}" />
+                            <apex:outputText value="Internal Priority {!IF(SortField=='case.Internal_Priority_New__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.Internal_Priority_New__c}
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.Severity__c" assignTo="{!SortField}" />
+                            <apex:outputText value="Severity {!IF(SortField=='case.Severity__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.Severity__c}
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.createdDate" assignTo="{!SortField}" />
+                            <apex:outputText value="Open Date {!IF(SortField=='case.createdDate',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                        <apex:param value="{!case.createdDate}" />
+                    </apex:outputText>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.Age_of_a_case__c" assignTo="{!SortField}" />
+                            <apex:outputText value="Age of Case {!IF(SortField=='case.Age_of_a_case__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.Age_of_a_case__c}
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.Owner.Alias" assignTo="{!SortField}" />
+                            <apex:outputText value="Case Owner Alias {!IF(SortField=='case.Owner.Alias',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.Owner.Alias}
+
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.Owner.Name" assignTo="{!SortField}" />
+                            <apex:outputText value="Case Owner Name {!IF(SortField=='case.Owner.Name',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.Owner.Name}
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.CA_product_Controller__r.Name" assignTo="{!SortField}" />
+                            <apex:outputText value="CA Product {!IF(SortField=='case.CA_product_Controller__r.Name',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.CA_product_Controller__r.Name}
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.CA_Product_Component__r.Name" assignTo="{!SortField}" />
+                            <apex:outputText value="Component {!IF(SortField=='case.CA_Product_Component__r.Name',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!case.CA_Product_Component__r.Name}
+
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!SortToggle}" rerender="dataBlock" status="fetchStatus" styleClass="tableheader">
+                            <apex:param name="SortField" value="case.ClosedDate" assignTo="{!SortField}" />
+                            <apex:outputText value="Closed Date {!IF(SortField=='case.ClosedDate',IF(SortDirection='asc','▲','▼'),'')}" />
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                        <apex:param value="{!case.ClosedDate}" />
+                    </apex:outputText>
+                </apex:column>
+
+            </apex:pageBlockTable>
+
+           <apex:panelGrid columns="6" styleClass="btn-table">
+                <apex:commandButton status="fetchStatus" reRender="dataBlock" value="|< First " action="{!first}" disabled="{!!hasPrevious}" title="First Page"/>
+                <apex:commandButton status="fetchStatus" reRender="dataBlock" value="< Previous" action="{!previous}" disabled="{!!hasPrevious}" title="Previous Page"/>
+                <apex:outputText rendered="{!pageNumber != NULL && size != NULL && noOfRecords != NULL}">{!(pageNumber * size)+1-size}-{!IF((pageNumber * size)>noOfRecords, noOfRecords,(pageNumber * size))} of {!noOfRecords}</apex:outputText>
+                <apex:commandButton status="fetchStatus" reRender="dataBlock" value="Next >" action="{!next}" disabled="{!!hasNext}" title="Next Page"/>
+                <apex:commandButton status="fetchStatus" reRender="dataBlock" value="Last >|" action="{!last}" disabled="{!!hasNext}" title="Last Page"/>
+
+                <apex:commandButton status="fetchStatus" reRender="dataBlock" value="Refresh" action="{!refresh}" title="Refresh Page"/>
+           </apex:panelGrid>
+        </apex:pageBlock>
+        <apex:actionFunction name="filterCase" action="{!filterCase}" reRender="dataBlock" status="fetchStatus">
+        </apex:actionFunction>
+    </apex:form>
+
+    <script>
+       $('#phSearchContainer').remove();
+        function filterCaseFunction(){
+            filterCase();
+        }
+    /*    
+        $( "#searchBox" ).on( "keyup", function(event) {
+          var keycode = (event.keyCode ? event.keyCode : event.which);
+            if(keycode == '13') {
+                window.location.href = 'tpc_search?searchTerm='+$(this).val();   
+            }
+        });
+ */       
+    </script>
+</apex:page>

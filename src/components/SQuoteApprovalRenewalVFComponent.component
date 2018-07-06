@@ -1,0 +1,321 @@
+<apex:component controller="sterlingQuoteApprovalProcessforRenewal" access="global">  
+  <apex:attribute name="objID" description="Obj ID" type="Id" assignTo="{!recID}"/> 
+  <apex:attribute name="userID" description="User ID" type="Id" assignTo="{!approverID}"/>
+
+  
+  <br/>
+  <br/>
+  
+  <apex:outputPanel rendered="{!Approvalneeded1.size>0}"></apex:outputPanel>
+    
+  <apex:outputpanel rendered="{!approverornot}">
+  <apex:outputtext rendered="{!NOt(EAIuser)}">The following quote requires your approval<br/></apex:outputtext> 
+   <apex:outputtext rendered="{!EAIuser}"> The following quote requires your approval because the Net Payment Terms are not Net 30.<br/></apex:outputtext>  
+   <br/>
+  <br/>
+  <table border="1" cellspacing="0" cellpadding="0">
+        <tr>
+        <td width="350"><b>Link to Sterling Quote</b></td>
+        <td align="Center" width="600"><a href="{!SQurlStr}" >{!SQuote.Name}</a></td>
+        </tr>
+        <tr>
+        <td width="350"><b>Opportunity Number</b></td>
+        <td align="Center" width="600">{!SQuote.Opportunity_Number__c}</td>
+        </tr>
+        <tr>
+        <td width="350"><b>Customer Name Sold To</b></td>
+        <td align="Center" width="600">{!SQuote.CA_Customer_Name_Sold_To__c}</td>
+        </tr>
+        
+        <tr>
+        <td width="350"><b>Header Effective Date</b></td>
+            <td align="Center" width="600"><apex:outputText value="{0, date, yyyy'-'MM'-'d}">
+                <apex:param value="{!SQuote.CA_Effective_Date__c}" /> 
+                </apex:outputText></td>
+        </tr>
+        
+        <tr>
+        <td width="350"><b>End Date</b></td>
+            <td align="Center" width="600"><apex:outputText value="{0, date, yyyy'-'MM'-'d}">
+                <apex:param value="{!SQuote.CA_Contract_End_Date__c}" /> 
+                </apex:outputText></td>
+        </tr>
+       
+        <tr>
+        <td width="350"><b>Payment Terms</b></td>
+        <td align="Center" width="600">{!SQuote.Net_Payment_Terms__c}</td>
+        </tr>
+        
+        <tr>
+        <td width="350"><b>CPQ Quote Total</b></td>
+        <td align="Center" width="600">
+            <apex:outputText value="{0, number, ###,###,###,##0.00}">
+        		<apex:param value="{!SQuote.CA_CPQ_Quote_Total__c}" />
+            </apex:outputText>
+        </td>
+        </tr>
+		
+		
+		<tr>
+        <td width="350"><b>Realization Rate</b></td>
+        <td align="Center" width="600">
+            <apex:outputText value="{0, number, ###,###,###,##0.00}">
+        		<apex:param value="{!SQuote.CA_Realization_Rate__c}" />
+            </apex:outputText>
+        </td>
+        </tr>
+      
+      
+      	<tr>
+        <td width="350"><b>Royalties</b></td>
+        <td align="Center" width="600">
+            <apex:outputField value="{!SQuote.Royalty_For_Template__c}"/>
+        </td>
+        </tr>
+
+		<tr>
+        <td width="350"><b>Migration/Upgrade</b></td>
+        <td align="Center" width="600">
+            <apex:outputField value="{!SQuote.Migration_Upgrade_On_Template__c}"/>
+        </td>
+        </tr>
+       <tr>
+        <td width="350"><b>Special Metric</b></td>
+        <td align="Center" width="600">
+            <apex:outputField value="{!SQuote.Special_Metric_on_Template__c}"/>
+        </td>
+        </tr>
+      
+        </table>
+      <br/>
+      <br/>
+  <br/>
+  
+  <b>Deal Description</b>&nbsp;&nbsp;{!SQuote.CA_Brief_Deal_Desc__c}
+  <br/>
+  <br/>
+  
+  <apex:outputpanel rendered="{!Approvalneeded1.size>0}">
+  <table cellspacing="0" cellpadding="0" border="1">
+  <tr>
+  <th width="175">Business Unit</th>
+  <th width="450">Product Name</th>
+  
+  <!--<th width="200">Dis%off Volume license/subs</th>-->
+  <th width="200">Total Proposed Price</th>
+  <th width="300">Discount Off Volume Price Curve</th>
+  <th width="200">Maximum Royalty Discount%</th>
+  <th width="200">License Type</th>
+  <th width="200">Transaction Type</th>
+  <th width="200">Global Paid Seats</th>
+  <th width="200">Existing Quantity</th>
+  <th width="200">License Metric</th>
+  <th width="200">Start Date</th>
+  <th width="200">End Date</th>
+  <th width="200">Status</th>
+  </tr>
+  <apex:repeat value="{!Approvalneeded1}" var="QPR">
+  <tr>
+  <td align="Center">{!QPR.Business_Unit__c}</td>
+  <td>{!QPR.Product_Name__c}</td>
+  
+  <!--<td>{!QPR.Disc_off_List_License_Subs__c}</td>-->
+  <td align="Center"><apex:outputText value="{0, number, ###,###,###,##0.00}">
+       <apex:param value="{!QPR.Total_Proposed_Price__c}" />
+</apex:outputText></td>
+    <td align="Center"><apex:outputText value="{0, number, ###,###,###,##0.00}">
+       <apex:param value="{!QPR.Lic_Sub_off_List__c}" /></apex:outputText><apex:outputText >%</apex:outputText>
+	</td>
+
+  <td align="Center">
+  <apex:outputText value="N/A" rendered="{!!QPR.Royalty_Product__c}"/>
+  <apex:outputText value="{!QPR.Max_Royalty_Discount_Percent__c }%" rendered="{!QPR.Royalty_Product__c}"/>
+  </td>
+  <td align="Center">
+  <apex:outputText value="{!QPR.License_Type__c}" />
+  </td>
+  <td align="Center">
+  <apex:outputText value="{!QPR.Bus_Transaction_Type__c}" />
+  </td>
+  <td align="Center">
+    <apex:outputText value="{0, number, ###,###,###,##0}"> <apex:param value="{!QPR.Global_Paid_Seats_Used__c}" /> </apex:outputText>
+  </td>
+  <td align="Center">
+    <apex:outputText value="{0, number, ###,###,###,##0}"> <apex:param value="{!QPR.Existing_Quantity__c}" /> </apex:outputText>
+  </td>
+  <td align="Center">
+  <apex:outputText value="{!QPR.License_Metric__c}" />
+  </td>
+  <td align="Center">
+      <apex:outputText value="{0, date, yyyy'-'MM'-'d}">
+                <apex:param value="{!QPR.Effective_Date__c}" /> 
+      </apex:outputText>
+  </td>
+  <td align="Center">
+      <apex:outputText value="{0, date, yyyy'-'MM'-'d}">
+                <apex:param value="{!QPR.End_Date__c}" /> 
+      </apex:outputText>
+  </td>
+  <td align="Center">Approval Requested</td>
+  </tr>
+  </apex:repeat>
+  </table>
+  
+    <br/>
+  <br/>
+ 
+  <div align="Right"><a href="{!urlStr}" ><font color="Red" size="5"><b>Approve/Reject</b></font></a>  </div>
+    </apex:outputpanel>
+    <apex:outputpanel rendered="{!AutoApproved1.size>0}">
+      <br/>
+  <br/>
+  <table cellspacing="0" cellpadding="0" border="1">
+  <tr>
+  <th width="175">Business Unit</th>
+  <th width="450">Product Name</th>
+   
+  <!--<th width="200">Dis%off Volume license/subs</th>-->
+  <th width="200">Total Proposed Price</th>
+  <th width="300">Discount Off Volume Price Curve</th>
+  <th width="200">Maximum Royalty Discount%</th>
+  <th width="200">License Type</th>
+  <th width="200">Transaction Type</th>
+  <th width="200">Global Paid Seats</th>
+  <th width="200">Existing Quantity</th>
+  <th width="200">License Metric</th>
+  <th width="200">Start Date</th>
+  <th width="200">End Date</th>
+  </tr>
+  <apex:repeat value="{!AutoApproved1}" var="QPR">
+  <tr>
+  <td align="Center">{!QPR.Business_Unit__c}</td>
+  <td align="Center">{!QPR.Product_Name__c}</td>
+  
+  <!--<td>{!QPR.Disc_off_List_License_Subs__c}</td>-->
+  <td align="Center"><apex:outputText value="{0, number, ###,###,###,##0.00}">
+       <apex:param value="{!QPR.Total_Proposed_Price__c}" />
+</apex:outputText></td>
+  <td align="Center"><apex:outputText value="{0, number, ###,###,###,##0.00}">
+       <apex:param value="{!QPR.Lic_Sub_off_List__c}" /></apex:outputText><apex:outputText >%</apex:outputText>
+	</td>
+
+  <td align="Center">
+  <apex:outputText value="N/A" rendered="{!!QPR.Royalty_Product__c}"/>
+  <apex:outputText value="{!QPR.Max_Royalty_Discount_Percent__c }%" rendered="{!QPR.Royalty_Product__c}"/>
+  </td>
+  <td align="Center">
+  <apex:outputText value="{!QPR.License_Type__c}" />
+  </td>
+  <td align="Center">
+  <apex:outputText value="{!QPR.Bus_Transaction_Type__c}" />
+  </td>
+  <td align="Center">
+    <apex:outputText value="{0, number, ###,###,###,##0}"> <apex:param value="{!QPR.Global_Paid_Seats_Used__c}" /> </apex:outputText>
+  </td>
+  <td align="Center">
+    <apex:outputText value="{0, number, ###,###,###,##0}"> <apex:param value="{!QPR.Existing_Quantity__c}" /> </apex:outputText>
+  </td>
+  <td align="Center">
+  <apex:outputText value="{!QPR.License_Metric__c}" />
+  </td>
+  <td align="Center">
+      <apex:outputText value="{0, date, yyyy'-'MM'-'d}">
+                <apex:param value="{!QPR.Effective_Date__c}" /> 
+      </apex:outputText>
+  </td>
+  <td align="Center">
+      <apex:outputText value="{0, date, yyyy'-'MM'-'d}">
+                <apex:param value="{!QPR.End_Date__c}" /> 
+      </apex:outputText>
+  </td>
+  </tr>
+  </apex:repeat>
+  </table>
+  </apex:outputpanel>
+    
+    <br />
+    <br />
+    You can approve/reject this quote by responding to this email with the word “approve,” “approved,” “yes,” “reject,” “rejected,” or “no” in the first line of the email body. You can also add comments in the second line.
+    </apex:outputpanel>
+    
+    <apex:outputpanel rendered="{!!approverornot}">
+        <br />
+        <br />
+        The following quote has been submitted for approval:
+        <br />
+        <br />
+        <table border="1" cellspacing="0" cellpadding="0">
+            <tr>
+                <td width="350"><b>Link to Sterling Quote</b></td>
+                <td align="Center" width="600"><a href="{!SQurlStr}" >{!SQuote.Name}</a></td>
+            </tr>
+            <tr>
+                <td width="350"><b>Opportunity Number</b></td>
+                <td align="Center" width="600">{!SQuote.Opportunity_Number__c}</td>
+            </tr>
+            <tr>
+                <td width="350"><b>Customer Name Sold To</b></td>
+                <td align="Center" width="600">{!SQuote.CA_Customer_Name_Sold_To__c}</td>
+            </tr>
+            
+            <tr>
+                <td width="350"><b>Header Effective Date</b></td>
+                <td align="Center" width="600"><apex:outputText value="{0, date, yyyy'-'MM'-'d}">
+                    <apex:param value="{!SQuote.CA_Effective_Date__c}" /> 
+                    </apex:outputText></td>
+            </tr>
+            
+            <tr>
+                <td width="350"><b>End Date</b></td>
+                <td align="Center" width="600"><apex:outputText value="{0, date, yyyy'-'MM'-'d}">
+                    <apex:param value="{!SQuote.CA_Contract_End_Date__c}" /> 
+                    </apex:outputText></td>
+            </tr>
+            
+            <tr>
+                <td width="350"><b>Payment Terms</b></td>
+                <td align="Center" width="600">{!SQuote.Net_Payment_Terms__c}</td>
+            </tr>
+            
+            <tr>
+                <td width="350"><b>CPQ Quote Total</b></td>
+                <td align="Center" width="600"><apex:outputText value="{0, number, ###,###,###,##0.00}">
+                    <apex:param value="{!SQuote.CA_CPQ_Quote_Total__c}" />
+                    </apex:outputText></td>
+            </tr>
+			
+			<tr>
+				<td width="350"><b>Realization Rate</b></td>
+				<td align="Center" width="600">{!SQuote.CA_Realization_Rate__c}</td>
+			</tr>
+            
+            <tr>
+        <td width="350"><b>Royalties</b></td>
+        <td align="Center" width="600">
+            <apex:outputField value="{!SQuote.Royalty_For_Template__c}"/>
+        </td>
+        </tr>
+
+		<tr>
+        <td width="350"><b>Migration/Upgrade</b></td>
+        <td align="Center" width="600">
+            <apex:outputField value="{!SQuote.Migration_Upgrade_On_Template__c}"/>
+        </td>
+        </tr>
+         
+        <tr>
+        <td width="350"><b>Special Metric</b></td>
+        <td align="Center" width="600">
+            <apex:outputField value="{!SQuote.Special_Metric_on_Template__c}"/>
+        </td>
+        </tr>
+            
+        </table>
+        <br/>
+        <br/>
+  		<br/>
+  
+  		<b>Deal Description</b>&nbsp;&nbsp;{!SQuote.CA_Brief_Deal_Desc__c}        
+    </apex:outputpanel>
+    
+</apex:component>

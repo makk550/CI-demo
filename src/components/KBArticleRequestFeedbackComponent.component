@@ -1,0 +1,168 @@
+<apex:component controller="KBArticleFeedbackController" allowDML="true">
+    <apex:attribute name="articleNumber" assignTo="{!aNumber}" description="This is the article number" type="String" required="true"/>
+    <apex:attribute name="articleTitle" description="This is the Title of the article" type="String" required="true"/>
+    <apex:attribute name="legacyArticleNumber" assignTo="{!legArticleNumber}" description="This is the article version" type="String" />
+
+    <apex:pageBlock >
+        <apex:form id="mainBlock">
+            <apex:outputPanel >
+            <!--<h3 style="line-height: 0">Please help us improve!</h3> -->
+            <div><apex:PageMessages /></div>
+            </apex:outputPanel>
+            <!--<apex:outputPanel id="requestFeedback" > 
+                <apex:commandButton action="{!requestFeedback}" value="Provide Feedback" reRender="requestFeedback, feedbackInput" 
+                    rendered="{!NOT(renderFeedbackInput) && NOT(renderAcknowledgement)}" accesskey=""
+                    styleClass="kbarticles__button"/>
+            </apex:outputPanel>-->
+                          
+            <apex:outputPanel id="acknowledgeFeedback">
+                  <br style="clear: both;"/>
+                <div><b><apex:outputText value="Thank you for your feedback." rendered="{!renderAcknowledgement}"/></b></div>
+            </apex:outputPanel> 
+            
+            <apex:outputPanel id="feedbackInput">            
+            <apex:pageBlockSection rendered="{!renderFeedbackInput}" columns="1"> 
+                <apex:pageBlockSectionItem >
+                <apex:outputPanel >
+                    <p class="feedback"><strong><apex:outputLabel value="Was this information helpful?"/></strong></p>
+                    <apex:outputPanel id="voteUpPanel" style="cursor:pointer;">
+                        <apex:image value="{!$Resource.GreyThumbsUp}" id="greyThumbsUp" rendered="{!renderGreyThumbsUp}">
+                            <apex:actionSupport event="onclick" action="{!incrementVoteCount}" reRender="voteUpPanel, voteDownPanel, contactPanel, feedbackButtons" />
+                        </apex:image>
+                        <apex:image value="{!$Resource.GreenThumbsUp}" id="greenThumbsUp" rendered="{!NOT(renderGreyThumbsUp)}"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel id="voteDownPanel" style="margin-left:50px; cursor:pointer;">
+                        <apex:image value="{!$Resource.GreyThumbsDown}" id="greyThumbsDown" rendered="{!renderGreyThumbsDown}">
+                            <apex:actionSupport event="onclick" action="{!decrementVoteCount}" reRender="voteDownPanel, voteUpPanel, contactPanel, feedbackButtons"/>
+                        </apex:image>
+                        <apex:image value="{!$Resource.RedThumbsDown}" id="redThumbsDown" rendered="{!NOT(renderGreyThumbsDown)}"/>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputPanel id="contactPanel">
+                        <apex:pageBlockSectionItem >
+                            <apex:outputPanel >
+                            <p class="feedback"><strong><apex:outputLabel value="{!$Label.CommentsOnRating}" rendered="{!renderContactPanel}"/></strong></p>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputPanel >
+                            <p class="feedback"><strong><apex:outputLabel value="Contact Name" for="contactName" rendered="{!renderContactPanel}"/></strong></p>
+                            <div><apex:inputText value="{!contactName}" size="50" id="contactName" styleClass="feedback-label-input" rendered="{!renderContactPanel}"/></div>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputPanel >
+                            <p class="feedback"><strong><apex:outputLabel value="Email Address" for="contactEmail" rendered="{!renderContactPanel}"/></strong></p>
+                            <div><apex:inputText value="{!contactEmail}" size="50" id="contactEmail" styleClass="feedback-label-input" rendered="{!renderContactPanel}"/></div>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputPanel >
+                            <p class="feedback"><strong><apex:outputLabel value="Please tell us what we can do better." for="feedbackComment" rendered="{!renderContactPanel}"/></strong></p>
+                            <div class="feedback-textarea"><apex:inputTextArea value="{!feedbackComment}" 
+                                    onmouseout="disableBtn()"
+                                    onkeyUp="disableBtn()"
+                                    rows="5" cols="100" styleClass="inputComment" id="feedbackComment" rendered="{!renderContactPanel}"/></div>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>  
+                        <apex:pageBlockSectionItem >
+                            <apex:outputPanel id="feedbackButtons">
+                                <apex:commandButton id="submitFeedback" action="{!save}" value="Submit Feedback" 
+                                                    disabled="{!disableSubmitFeedback}"
+                                                    styleClass="{!IF(disableSubmitFeedback,'kbarticles__buttonDisabled','kbarticles__button')}" 
+                                                    rerender="mainBlock"/>
+                                
+                                 <apex:commandButton action="{!reset}" value="Cancel" styleClass="kbarticles__button" 
+                                                    disabled="{!disableSubmitFeedback}"
+                                                    
+                                                    reRender="mainBlock,feedbackInput"/>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            </apex:outputPanel>
+            
+            <apex:actionFunction name="disableBtn" action="{!disableSubmitButton}" reRender="feedbackButtons"/>
+        
+        </apex:form> 
+              
+    </apex:pageBlock>
+    <style>
+        @font-face{font-family:"Averta";font-style:normal;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-bold-webfont.woff')})format("woff")}
+        @font-face{font-family:"Averta";font-style:normal;font-weight:bold;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-bold-webfont.woff2')}) format("woff2")}
+        @font-face{font-family:"Averta";font-style:normal;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-regular-webfont.woff')}) format("woff")}
+        @font-face{font-family:"Averta";font-style:italic;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-regular-webfont.woff2')} format("woff2")}
+    
+        
+        .fewerMore { display: none;}
+        
+        .kbarticles__buttonDisabled{
+            background-color:#BEBEBE;
+            color:#fff;
+            border:0;
+            border-radius:5px;
+            padding:15px 20px;
+            margin-top:1.25rem;
+            marging;
+            margin-right:5px;
+            font-size:1rem
+        }
+        .kbarticles__button{
+            background-color:#34aeff;
+            color:#fff;
+            border:0;
+            border-radius:5px;
+            padding:15px 20px;
+            margin-top:1.25rem;
+            marging;
+            margin-right:5px;
+            font-size:1rem
+        }
+        
+       
+        
+        
+        h3{
+            font-family: "Averta",Arial,sans-serif;
+            font-size: 1.5rem;
+            line-height: 1.5rem;
+            font-weight: bold;
+            color: #38364d;
+        }
+        
+        .feedback{
+            font-size: 1rem;
+            line-height: 1.375rem;
+            font-family: "Averta",Arial,sans-serif;
+            color: #272638;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+                
+        
+        .feedback-textarea textarea{
+            height: 100px;
+            width:50%;
+            font-family: "Averta",Arial,sans-serif;
+            font-size:1.15rem
+        }
+        <!--
+        .feedback-label{
+             font-size: 1rem;
+             line-height: 1.375rem;
+             font-family: "Averta",Arial,sans-serif;
+             color: #272638;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+        -->
+       
+       .feedback-label-input{
+        height : 20px;
+       }
+
+    </style>
+</apex:component>

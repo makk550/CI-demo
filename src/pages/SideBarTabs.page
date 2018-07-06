@@ -1,0 +1,36 @@
+<apex:page standardController="Case" showHeader="true" tabStyle="Account" extensions="SC_Ext">
+<apex:form >
+<style>
+.alignright {
+    float: right;
+    display: inline; /*fixes IE float bug*/
+    text-align: left;
+    color : Black;
+}
+.activeTab { color:Black !important; font-size:150%;
+background-image:URL() !important; align:left !important;}
+.inactiveTab { background-color: lightgrey; color:black;
+background-image:none}
+</style>
+    
+         <!--<apex:image id="theImage" value="https://c.cs15.content.force.com/servlet/servlet.FileDownload?file=015e0000000FgUV" width="220" height="55"/> -->
+            <apex:inputHidden value="{!case.Site_Association__c} "/>
+            <apex:inputHidden value="{!case.Product__c} "/>
+            <apex:inputHidden value="{!case.ContactId} "/>
+            <apex:inputHidden value="{!case.Product_Code__c} "/>
+            <div align="left"> 
+               <br></br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;  <apex:outputLink value="/apex/SC_VFComponents?id={!caRec.id}&blkRender=SC" styleClass="activeTab">Special Conditions</apex:outputLink> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    
+                    <apex:outputLink value="/apex/SC_VFComponents?id={!caRec.id}&blkRender=CTS" styleClass="activeTab">Cases with same Site</apex:outputLink> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      
+                    <apex:outputLink value="/apex/SC_VFComponents?id={!caRec.id}&blkRender=CTC" styleClass="activeTab">Cases with same Contact</apex:outputLink> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  
+                    <apex:outputLink value="/apex/SC_VFComponents?id={!caRec.id}&blkRender=CTSP" styleClass="activeTab">Cases with same Site/Product</apex:outputLink> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    
+                    <apex:outputLink value="/apex/SC_VFComponents?id={!caRec.id}&blkRender=EOS" styleClass="activeTab">EOS and EOL Calendar</apex:outputLink> 
+                
+            </div>
+        
+</apex:form>
+</apex:page>

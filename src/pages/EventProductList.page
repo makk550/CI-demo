@@ -1,0 +1,23 @@
+<apex:page standardController="Event" extensions="EventProductExtension">
+    <apex:form id="CustomEditPage"> 
+
+        <apex:pageBlock title="Products">
+                <apex:pageBlockButtons location="top">                    
+                    <apex:commandButton value="Add New Product" onclick="window.parent.location.href ='/apex/TSOProductEdit?src=event&retURL={!event.id}';"/>
+                </apex:pageBlockButtons>            
+                <apex:pageBlockTable value="{!products}" var="item">
+                <apex:column headerValue="Action">
+                  <b><apex:outputLink value="#;" onclick="window.parent.location.href ='/apex/TSOProductEdit?src=event&id={!item.Id}&retURL={!event.id}';">Edit</apex:outputLink></b>
+                    |
+                  <b><apex:outputLink onclick="if(confirm('Are you sure?')){window.parent.location.href = '/setup/own/deleteredirect.jsp?delID={!item.Id}&retURL=/{!event.id}';}" value="#;">Del</apex:outputLink></b>
+                </apex:column>
+                <apex:column value="{!item.ProductId__r.Name}"/>
+                <apex:column value="{!item.ProductFamily__c}"/>
+                <apex:column value="{!item.Business_Unit__c}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form> 
+<script>
+//  alert("{!eventId}");
+</script>    
+</apex:page>

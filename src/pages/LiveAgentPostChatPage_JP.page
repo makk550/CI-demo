@@ -1,0 +1,338 @@
+<apex:page showHeader="false" controller="LiveAgentPostChatPageController_Jp" standardStylesheets="false" sidebar="false">    
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8" />
+            <title>アンケートのお願い</title>
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css" />
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+            <style type="text/css">
+                .bs-example,.alert-danger{
+                margin: 20px;
+                }
+                .survey>tbody>tr>td{  border-top: none;}
+              
+                .banner {
+                background-color: #CCC;
+                
+                }
+                .banner .container {
+                    background-color: #d9edf7;
+                    min-height: 10%;
+                    color: #31708f;
+                    border-color: #bce8f1;
+                    padding: 10px 40px 10px 40px;
+                }
+                .banner .container p {
+                    font-size: 22px;
+                    padding-left: 5px;
+                    font-weight: 300;
+                }
+                .middle {
+                background-color: #CCC;
+                }
+                .middle .container {
+                background-color: #FFF;
+                min-height: 300px;
+                padding-bottom: 20px;
+                }
+                .logo {max-height: 100px; max-width: 100px;}
+            </style>
+        </head>
+        
+        <body>            
+            <!--<div class="banner">
+                <div class="container">
+                    <center><h1>Post Chat Surveys</h1></center>
+                    <p>
+                        Please comment on our service performance so that we can serve you better. Thanks for your time.Also don't forget to note down chat key for future reference.
+                        <br/>Chat Key : <b><apex:outputText value="{!$CurrentPage.parameters.chatKey}" /></b>
+                    </p>
+                     
+                </div>
+            </div>-->
+            
+            
+          
+            <div class="surveyBody  ">   
+                <div class="container">
+                    <div class="panel panel-info">
+                        <!-- Default panel contents -->
+                        <div class="panel-heading">
+                            <div class="row">
+                                
+                                <div class="col-sm-2 col-md-2 "><center><img src="{!$Resource.LiveAgentCALogo}" class="img-responsive logo" style="margin-top: 15px;"/></center></div>
+                                <div class="col-sm-10 col-md-10">
+                                    <div class="row">   
+                                        <b><h3>アンケートのお願い</h3></b>                                    
+                                    </div>
+                                    <div class="row">
+                                        今後のサービス向上のため、私たちの対応についてコメントをお書きください。ご協力感謝いたします。
+                                        <!--Also don't forget to note down chat key for future reference.
+                                        <br/>Chat Key : <b><apex:outputText value="{!$CurrentPage.parameters.chatKey}" /></b> -->
+                                        
+                                    </div>   
+                                </div>
+                            </div>  
+                            
+                        </div>
+                        <div class="panel-body ">
+                            <table  class="table survey" style="width:80%;margin: auto;">
+                                
+                                <tbody class="chat">
+                                    
+                                    
+                                    <!-- question 1 starts here-->
+                                    
+                                    <apex:repeat value="{!booleanQuestions}" var="question">
+                                        <tr id="{!question.Id}"  data-question-type="{!question.Question_Type__c}">
+                                            <td>
+                                                <b>{!question.Name}: </b>
+                                            </td>
+                                            <td colspan="90%" class="{!question.Id}"  >
+                                                {!question.Question__c}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <b>回答 : </b>
+                                            </td>
+                                            <td >
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="True" selectd="true"/> はい</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="False" /> いいえ</label>
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                    <apex:repeat value="{!numberQuestions}" var="question">
+                                        <tr id="{!question.Id}" data-question-type="{!question.Question_Type__c}">
+                                            <td>
+                                                <b>{!question.Name}: </b>
+                                            </td>
+                                            <td colspan="90%" class="{!question.Id}"  >
+                                                {!question.Question__c}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <b>ポイント : </b>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="0" /> 0</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="1" /> 1</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="2" selectd="true"/> 2</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="3" /> 3</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="4" /> 4</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="5" /> 5</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}"  value="6" /> 6</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="7" /> 7</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="8"  /> 8</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="9" /> 9</label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline"><input type="radio" name="{!question.Id}" value="10" /> 10</label>
+                                            </td>
+                                        </tr>                            
+                                    </apex:repeat>     
+                                    <apex:repeat value="{!textQuestions}" var="question">
+                                         <tr id="{!question.Id}" data-question-type="{!question.Question_Type__c}">
+                                            <td>
+                                                <b>{!question.Name}: </b>
+                                            </td>
+                                            <td colspan="90%" class="{!question.Id}"  >
+                                                {!question.Question__c}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <b><label for="user-comment">コメント:</label></b>
+                                            </td>
+                                            <td colspan="90%">
+                                                <textarea rows="3" cols="50" name="{!question.Id}" id="user-comment" class="form-control"/> 
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>          
+                            </table>                      
+                            <center><input type="button" value="submit" onclick="submit();"  class="btn btn-success"/></center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bs-example" >
+                <div class="alert alert-success">
+                    <a href="#" class="close" data-dismiss="alert">&times;</a>
+                     ご協力くださいまして、誠にありがとうございました。アンケートが送信されました。いただいたご意見をもとに、改善に努めてまいります。ご利用ありがとうございました。
+                </div>
+            </div>
+           <div class="alert alert-danger data-error">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                <strong>Error!</strong> お客様のデータの処理中に障害が発生しました。
+            </div>
+            
+             <div class="alert alert-danger no-agent">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                <strong>{!$CurrentPage.parameters.error}</strong> 
+            </div>
+            <!-- These variables are passed to the post-chat page and can be used to customize your post-chat experience -->     
+           <!--Request Time:
+                <apex:outputText value="{!$CurrentPage.parameters.requestTime}" /><br/>
+                Start Time:
+                <apex:outputText value="{!$CurrentPage.parameters.startTime}" /><br/>
+                Button Id:
+                <apex:outputText value="{!$CurrentPage.parameters.buttonId}" /><br/>
+                Deployment Id:
+                <apex:outputText value="{!$CurrentPage.parameters.deploymentId}" /><br/>
+                Last Visited Page:
+                <apex:outputText value="{!$CurrentPage.parameters.lastVisitedPage}" /><br/>
+                Original Referer:
+                <apex:outputText value="{!$CurrentPage.parameters.originalReferrer}" /><br/>
+                Latitude:
+                <apex:outputText value="{!$CurrentPage.parameters.latitude}" /><br/>
+                Longitude:
+                <apex:outputText value="{!$CurrentPage.parameters.longitude}" /><br/>
+                City:
+                <apex:outputText value="{!$CurrentPage.parameters.city}" /><br/>
+                Region:
+                <apex:outputText value="{!$CurrentPage.parameters.region}" /><br/>
+                Country:
+                <apex:outputText value="{!$CurrentPage.parameters.country}" /><br/>
+                Organization:
+                <apex:outputText value="{!$CurrentPage.parameters.organization}" /><br/>
+                Transcript:
+                <apex:outputText value="{!$CurrentPage.parameters.transcript}" /><br/>
+                Disconnected By:
+                <apex:outputText value="{!$CurrentPage.parameters.disconnectedBy}" /><br/>
+                Chat Key:
+                <apex:outputText value="{!$CurrentPage.parameters.chatKey}" /><br />
+                Chat Details:
+                <apex:outputText value="{!$CurrentPage.parameters.chatDetails}" /><br />
+                Error:
+                <apex:outputText value="{!$CurrentPage.parameters.error}" /><br />-->
+            <!-- Implement your post-chat message, form, or survey here --> 
+            
+        </body>
+     <script>
+        var errorMessage  = "{!$CurrentPage.parameters.error}";
+        //console.log(errorMessage);
+        $('.no-agent').css('display','none');
+        if(errorMessage !=undefined && errorMessage.trim().length > 0 ){
+            //console.log(errorMessage.length);
+            $(".surveyBody").css('display','none');
+            $('.no-agent').css('display','block');
+           
+            //console.log($('.no-agent'));              
+        }
+    //console.log($("tbody.chat").find("tr"));
+        $('.bs-example').css('display','none');
+        $('.data-error').css('display','none');
+        /*var JSONObj = '[{ "orderId":"'+orderId+'" , "orderItemStatus":"'+orderItemStatus+'" , "caseId":"'+caseId+ '" , "orderItemId":"'+orderItemId+'" }]';    */  
+        var JSONResponse =  new Array();      
+        var jsonObj = [];
+        function submit(){  
+            $('.data-error').css('display','none');
+            var chatkey = "{!$CurrentPage.parameters.chatKey}";
+            var response ;
+            $("tbody.chat").find("tr").each(function (i, row) {
+                
+                if (i % 2 === 0) {
+                    var id = $(this).attr('id');
+                    //console.log('type-->'+$(this).data('question-type'));
+                    var type = $(this).data('question-type');
+                    var nextRow = $("tbody.chat tr:eq("+(i+1)+")");
+                    //console.log('id ***'+id);
+                    var res;
+                   
+                    if(type != 'text'){
+                        res = $("input[name='"+id+"']:checked").val();
+                    }else {
+                        res = $("textarea[name='"+id+"']").val();
+                    }
+                
+                    if(res!=undefined){  
+                        var question =$(this).find('td:nth-child(2)').text().trim();
+                        if(response!=undefined){
+                             response +='-#'+id+' == '+ res;
+                            
+                         }else{
+                             response = id+' == '+ res;
+                         }
+                        
+                        var item = {};
+                        item['questionType'] = type;
+                        item['id'] = id;
+                        item['question'] = question;
+                        item['response'] = res;
+                        
+                        
+
+                        //console.log('question-->'+question);                        
+                        //console.log('res-->'+res);
+                        var jsonRecord = '{ "questionType":"'+type+'" , "id":"'+id+'" , "question":"'+question+ '" , "response":"'+res+'" }'; 
+                        //JSONResponse.push(JSONObj);
+                        jsonObj.push(jsonRecord);
+                    }
+                }
+            });
+            //console.log(JSONResponse);
+            var comment = $('#user-comment').val();
+            if(comment!=undefined && comment!=''){
+                if(response!=undefined){
+                    response +='-#'+'comment'+' == '+ comment;
+                    
+                }else{
+                    response = 'comment'+' == '+ comment;
+                }
+            }
+            if(response!=undefined){
+                //console.log(jsonObj);
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.LiveAgentPostChatPageController_Jp.saveSurveyResponse}', 
+                    chatkey,jsonObj,
+                    function(result, event){
+                        if (event.status) {
+                            //console.log(result);
+                            // $('.bs-example').css('display', 'block');
+                            if(result == 'success'){
+                                $(".bs-example").css("display", "block");
+                                $(".surveyBody").css('display','none');
+                            }else{
+                                $('.data-error').css('display','block');
+                            }
+                           
+                        } else if (event.type === 'exception') {
+                             $('.data-error').css('display','block');
+                        } else {
+                             $('.data-error').css('display','block');
+                        }
+                    }
+                );
+            }else{
+                $('.alert-danger').css('display','block');                
+            }
+        }
+     </script>
+    </html>
+</apex:page>

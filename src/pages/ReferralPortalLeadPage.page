@@ -1,0 +1,309 @@
+<apex:page standardStylesheets="true" docType="html-5.0" showHeader="false" standardcontroller="Lead" extensions="ReferralPortalLeadPageController">
+    <head>
+         <style>
+        .ReferralPortalLead{
+            margin:80px 300px 0px 300px;
+            padding:50px;
+            border:1px solid #b0b0b0;
+            box-shadow: inset 0 20px 20px -20px rgba(0,0,0,0.3);
+        }
+         .CompleteMessageLead{
+           }
+         a {
+            color: #00A9E0;
+            text-decoration: none;
+        }
+         .ReferralPortalLead h1{
+             font: 34px/44px "HelveticaNeueW01-55Roma", Helvetica;
+             letter-spacing: 0.6px;
+             padding: 10px;
+             width:100%
+             }
+          .ReferralPortalLead .mainrequired{
+                margin:0;
+                margin-top:-10px;
+             padding:20px 10px 20px 10px;
+             }
+            .individualPalette .bPageBlock .secondaryPalette {
+                background-colr:white;
+             }
+            .individualPalette .leadBlock .secondaryPalette{
+                 background-color: white;
+                border-color: white;
+             }
+             body .individualPalette .secondaryPalette.bPageBlock{
+                 background-color:white;
+                border:0px;
+             }
+             .referralLeadformdiv{
+                 padding: 10px;
+                font-size:14px;
+             }
+             .referralLeadformdiv td{
+                width: 50%;
+                min-height: 40px;
+                padding: 10px;
+             }
+             .referralLeadformdiv th {
+                font: 18px/23px "HelveticaNeueW01-55Roma", Helvetica, sans-serif;
+                padding: 10px;
+            }
+             .referralLeadformdiv input[type=text] {
+                border: none;
+                background: #e8e9eb;
+                width: 213px;
+                height: 24px;
+                font: 15px 'HelveticaNeueW01-65Medi', Helvetica, sans-serif;
+                padding: 0 10px;
+                color: #929394;
+            }
+            .referralLeadformdiv select {
+                border: none;
+                background: #e8e9eb;
+                width: 233px;
+                height: 24px;
+                font: 15px 'HelveticaNeueW01-65Medi', Helvetica, sans-serif;
+                padding: 0 0 0 10px;
+                color: #929394;
+            }
+             .referralLeadformdiv textarea{
+                width:213px;
+             }
+             .bEditBlock .btn {
+                background: none !important;
+                border: 0px none;
+                color: #48abe9;
+                display: inline-block;
+                font-size: 17px;
+                height: 35px;
+                padding-top: 2px;
+                width: 104px;
+                line-height: 32px;
+                padding-left: 12px;
+                
+            }
+             .submit_container{
+                display: inline-block;
+                margin-top: 20px;
+                padding-left: 20px;
+                position: relative;
+             }
+             .submit_container::before {
+                content: "→";
+                position: absolute;
+             //left: 6px;
+                top: 6px;
+                color: rgb(72, 171, 233);
+                font-size: 29px;
+                font-weight: bold;
+                font-family: Arial, Helvetica, sans-serif;
+                line-height: 21px;
+            }
+             .ReferralCALogoHead img {
+                float: left;
+                padding: 10px;
+            }
+            .Referrallogolabel {
+                font: 34px/44px "HelveticaNeueW01-55Roma", Helvetica;
+                letter-spacing: 0.6px;
+                padding: 14px;
+            }
+           
+    </style>
+        
+    </head>
+    <apex:outputPanel rendered="{!isRegistrationcompleted}">
+        <div class="ReferralPortalLead">
+            <div class="CompleteMessageLead">
+                 <p style="font-size:24px;">Thank You for CA Referral Partner Lead registration</p>
+                <apex:form >
+                    <apex:commandLink value="Register Another Lead" action="{!redirecttoLeads}"/> <br/>
+                    <apex:commandLink value="View Your Pending Leads" action="{!viewpendingLeads}"/>
+                </apex:form>
+                 
+            </div>
+        </div>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{! !isRegistrationcompleted}" id="ThereferralForm">
+            <div Class="ReferralPortalLead" >
+                    <div class="ReferralCALogoHead">
+                        <apex:image url="{!URLFOR($Resource.ReferralPortalImages,
+                  'CAlogo.PNG')}" width="50" height="50"/>
+                        <div class="Referrallogolabel">
+                             Agile Central - Refer a Lead
+                       </div>
+                       
+                     </div>
+                        <apex:outputPanel rendered="{!isleadnew}">
+                             <div class="mainrequired">To submit a new lead, fill out the form below with the prospect's details (not yours, the Partner).
+                            Fields with an asterisk (*) are required.</div>
+                        </apex:outputPanel>
+
+                    <apex:form >
+                        <apex:pageBlock mode="edit">
+                            <apex:pageMessages ></apex:pageMessages>
+                            <div class="referralLeadformdiv">
+                                 <table width="60%">
+                                     <tr>
+                                         <th colspan="2">
+                                             Customer/Prospect Information
+                                         </th>
+                                     </tr>
+                                    <tr>
+                                        <td>
+                                            <apex:outputLabel value="First Name" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.FirstName}" required="true" />  
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <apex:outputLabel value="Last Name" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.LastName}" required="true" />  
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                        <td>
+                                            <apex:outputLabel value="Email" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.email}" required="true" />  
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                        <td>
+                                            <apex:outputLabel value="Title" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.title}" required="true" />  
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                        <td>
+                                            <apex:outputLabel value="Phone" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.phone}" required="true" />  
+                                        </td>
+                                    </tr>
+                                      <tr>
+                                        <td>
+                                            <apex:outputLabel value="Partner Comments" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.Comments_Field__c}"/>  
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                         <th colspan="2">
+                                             Customer/Prospect Company Information
+                                         </th>
+                                     </tr>
+                                      <tr>
+                                        <td>
+                                            <apex:outputLabel value="Company Name" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.Company}" required="true" />  
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                        <td>
+                                            <apex:outputLabel value="Country Picklist" />
+                                        </td>
+                                        <td>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                    <apex:actionRegion >    
+                                                        <apex:selectList value="{!physicalCountry}" size="1">
+                                                            <apex:selectoptions value="{!countries}"></apex:selectoptions>
+                                                            <apex:actionSupport event="onchange" rerender="TheStatepopLabel" action="{!popupthestates}"/>
+                                                        </apex:selectList>
+                                                    </apex:actionRegion>
+                                                </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <apex:outputLabel value="Address" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.Street}" required="true" />  
+                                        </td>
+                                    </tr>
+                                      
+                                       <tr>
+                                        <td>
+                                            <apex:outputLabel value="City" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.City}" required="true" />  
+                                        </td>
+                                    </tr>
+                                      
+                                      
+                                       <tr>
+                                        <td>
+                                            <apex:outputLabel value="State / Province"  id="statelabel"/>
+                                        </td>
+                                        <td>
+                                            <apex:outputPanel id="TheStatepopLabel">
+                                                <apex:inputText value="{!physicalStateFree}" rendered="{! !isstatepicklist}" /> 
+                                                <apex:outputPanel rendered="{!isstatepicklist}">
+                                                    <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                        <apex:selectList value="{!physicalStateCAUS}" size="1"  required="true" >
+                                                            <apex:selectoptions value="{!respectedstates}"></apex:selectoptions>
+                                                        </apex:selectList> 
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                                </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                        <td>
+                                            <apex:outputLabel value="Postal Code" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.PostalCode}" />  
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                        <td>
+                                            <apex:outputLabel value="Website" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!ReferralLead.Website}" required="true" />  
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                         <td>
+                                             
+                                         </td><td>
+                                                
+                                         </td>
+                                     </tr>
+                                </table>
+                                
+                                
+                            </div>
+                            <div class="submit_container">
+                                <apex:commandButton styleclass="login" value="Submit" action="{!save}"/>
+                            </div>
+                            
+                            
+                           
+                        </apex:pageBlock>
+                        
+                        
+                    </apex:form>
+                   
+                    
+                </div>
+    </apex:outputPanel>
+   
+        
+</apex:page>

@@ -1,0 +1,44 @@
+<apex:page standardController="NOD_Requests__c" extensions="SaasApproval">
+    <apex:form >
+        <apex:detail subject="{!NOD_Requests__c.Id}" relatedList="true" showchatter="true" inlineEdit="true" />
+    </apex:form>
+    
+    <script type="text/javascript">
+
+    window.onload = init1; 
+    
+    function init1(){
+        
+        if ({!showApprovalButton } == false){
+           
+            hideApprovalButton("approve_request");
+            
+        }
+
+     }  
+     
+     
+   function hideApprovalButton(btnName) {
+
+        try{
+
+            var buttons = document.getElementsByName("approve_request");
+
+                  buttons[0].className="btnDisabled";
+
+                  buttons[0].disabled=true;
+                  
+                  buttons[1].className="btnDisabled";
+
+                  buttons[1].disabled=true;                  
+
+                }
+
+        catch(e) {
+
+        }
+
+    }     
+     </script>  
+    
+</apex:page>

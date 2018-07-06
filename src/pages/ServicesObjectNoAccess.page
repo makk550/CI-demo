@@ -1,0 +1,11 @@
+<apex:page standardController="Services_Request__c" sidebar="false" showHeader="false" >
+ <script>
+  var e = '{!Services_Request__c.id}'
+  alert('Save and New button canot be used!');
+  //alert(e);
+  if(e != null && e != '')
+      window.parent.location.href ='/' + e;
+ else
+      window.parent.location.href = window.location.href.replace('apex/ServicesObjectNoAccess?retURL=%2F','').replace('&save_new','?save_new').split('?')[0];
+ </script>  
+</apex:page>

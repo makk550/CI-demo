@@ -1,0 +1,26 @@
+<apex:page showHeader="true" 
+    sidebar="false" 
+    standardStylesheets="true" >
+    <script type="text/javascript">
+  
+  		function recalculateHeight(){
+  			var iframe = document.getElementById('iframe').height;
+  			if(document.addEvenListener){
+  				iframe.height = window.outerHeight;
+  			}else{
+  				iframeHeight = document.documentElement.clientHeight;
+  			}
+  		}  
+    	//if not ie
+		if(document.addEventListener){
+			window.addEventListener('load', recalculateHeight, false);
+    	} else {
+    		//if ie
+        	window.attachEvent('onload', recalculateHeight);
+		}
+    
+    </script>
+    <apex:iframe scrolling="true" id="iframe" frameborder="0"
+        src="{!$Page.PartnerSearch}" width="100%"/>
+
+</apex:page>

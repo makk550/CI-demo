@@ -1,0 +1,190 @@
+<apex:page standardController="Case" extensions="CaseResolveControllerExtension" action="{!checkVDAOnLoad}" >
+<apex:pageMessages escape="false" id="showmsg"/>
+<apex:includeScript value="/support/console/43.0/integration.js"/>
+<script type="text/javascript">
+function setFocusOnLoad(){
+}
+function testSetTabTitle() {
+            sforce.console.setTabTitle('{!case.CaseNumber}');
+        }
+var pageLoad = window.onload;
+  window.onload = function() {
+        if (pageLoad) {
+                pageLoad();
+        }
+          setNextActionDate();
+          testSetTabTitle();
+  }
+  
+function setNextActionDate() {
+var stageVar=document.getElementById('{!$Component.caseResolveForm.CaseInfo.CaseInfoSec.StageSec.StageVal}').value
+    if(stageVar=='7. Closed' || stageVar=='5. Barrier Removed' || stageVar=='6. End Engagement' || stageVar=='7. End Engagement'){
+            document.getElementById('{!$Component.caseResolveForm.CaseInfo.CaseInfoSec.NextActionDueDateSec.NextActionDueDate}').value ='';
+            document.getElementById('{!$Component.caseResolveForm.CaseInfo.CaseInfoSec.NextActionDueDateSec.NextActionDueDate}').disabled = true;
+     }else{
+            document.getElementById('{!$Component.caseResolveForm.CaseInfo.CaseInfoSec.NextActionDueDateSec.NextActionDueDate}').disabled = false;
+     }
+} 
+</script>
+<apex:form id="caseResolveForm">
+<div class="bPageTitle" >
+<div class="ptBody">
+<div class="content">
+<img src="/img/s.gif" alt="Case"  class="pageTitleIcon" title="Case"/>
+<h1 class="noSecondHeader pageType">Resolve Case<span class="icon"></span></h1>
+<p><font size="2" color="black">Please ensure all the data is up-to-date</font></p>
+<div class="blank">&nbsp;</div>
+</div>
+</div>
+</div>
+
+<apex:pageBlock title="Case Information" id="CaseInfo">
+<apex:pageBlockSection columns="1" id="CaseInfoSec" collapsible="true" >
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel id="CaseType_Proactive" value="Case Type"  />
+           <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+           <apex:inputField value="{!objCase.Case_Type__c}" html-disabled="true"/>
+           </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem helpText="   PI: Determine nature of problem 
+                                                KS: Perform Knowledge search 
+                                                CD: Determine probable cause 
+                                                SI Identity potential solutions 
+                                                SP: Provided validated solution 
+                                                SD: Provided deferred solution 
+                                                C: Document solution and close" 
+                                    LabelTitle="Stage" id="StageSec">
+            <apex:outputLabel id="Stage" value="Stage" />
+            <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+           <apex:inputField id="StageVal" value="{!objCase.VDAStage__c}" onchange="setNextActionDate();" />
+           </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem LabelTitle="Next Action Owner" >
+            <apex:outputLabel id="NextActionOwner" value="Next Action Owner" />
+            <apex:inputField value="{!objCase.VDANextActionOwner__c}" required="true" />
+        </apex:pageBlockSectionItem> 
+        <apex:pageBlockSectionItem LabelTitle="Next Action Due Date" id="NextActionDueDateSec">
+            <apex:outputLabel id="NextActionDueDateLbL" value="Next Action Due Date" />
+            <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+            <apex:inputField id="NextActionDueDate" value="{!objCase.Next_Action_Due_Date__c}"   />
+             <!-- <apex:inputField value="{!objCase.Next_Action_Due_Date__c}"/> -->
+             </apex:outputPanel>
+        </apex:pageBlockSectionItem> 
+        
+       <apex:pageBlockSectionItem > 
+           <apex:outputLabel value="CA Product" />
+           <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+           <apex:inputField value="{!objCase.CA_Product_Controller__c}" style="width: 350px"/>
+           </apex:outputPanel>
+       </apex:pageBlockSectionItem>
+     
+       <apex:pageBlockSectionItem > 
+        <apex:outputLabel id="CAComponent" value="CA Product Component" />
+        <apex:outputPanel styleClass="requiredInput" layout="block">
+        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+        <apex:inputField value="{!objCase.CA_Product_Component__c}" style="width: 370px" >
+        <apex:actionSupport event="onchange" action="{!checkVDAOnChange}"/>
+        </apex:inputField>
+        </apex:outputPanel>
+       </apex:pageBlockSectionItem> 
+       
+       <apex:pageBlockSectionItem > 
+           <apex:outputLabel id="ProductCode" value="Product Code" />
+           <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+           <apex:inputField value="{!objCase.Product_Material__c}" style="width: 370px" />
+           </apex:outputPanel>
+       </apex:pageBlockSectionItem>
+       
+       <apex:pageBlockSectionItem helpText="Select the Product and Release to retrieve the CA Product, Product Material Id and Product Release." LabelTitle="Product Release"> 
+        <apex:outputLabel id="ProductRelease" value="Product Release Selection" />
+        <apex:outputPanel styleClass="requiredInput" layout="block">
+        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+        <apex:inputField value="{!objCase.Product_Release_Selection__c}" style="width: 370px" />
+        </apex:outputPanel>
+       </apex:pageBlockSectionItem> 
+               
+       <apex:pageBlockSectionItem helpText="Enter how the case was resolved" LabelTitle="Resolution">
+            <apex:outputLabel id="Resolution" value="Resolution" />
+            <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+            <apex:inputField value="{!objCase.Resolution__c}"  style="width: 350px" />
+            </apex:outputPanel>
+        </apex:pageBlockSectionItem>  
+       
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel id="Reason" value="Reason" />
+            <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+            <apex:inputField value="{!objCase.Reason}" />
+            </apex:outputPanel>
+        </apex:pageBlockSectionItem>   
+        
+        <apex:pageBlockSectionItem helpText="A required field for VDA products only" LabelTitle="Function" rendered="{!If((isVDA==true && objCase.Case_Type__c!='Proactive'),true,false)}">
+            <apex:outputLabel id="Function" value="Function" />
+           <apex:outputPanel id="FunctionField" styleClass="requiredInput" layout="block">
+           <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                <apex:selectList id="CAFunction" value="{!objCase.Function__c}" size="1" style="width: 200px">
+                    <apex:selectOptions value="{!functionList}"  />
+                      <apex:actionSupport event="onchange" reRender="RootCauseCategoryField_VDA,RootCauseSubCategoryField_VDA"  />
+                </apex:selectList>
+         </apex:outputPanel>
+        </apex:pageBlockSectionItem>    
+        
+        <apex:pageBlockSectionItem helpText="Please select the Root Cause Category for this Case" LabelTitle="Root Cause Category" rendered="{!If((isVDA==true && objCase.Case_Type__c!='Proactive'),true,false)}">
+           <apex:outputLabel id="RootCauseCategory" value="Root Cause Category" />
+           <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                <apex:selectList id="RootCauseCategoryField_VDA" value="{!objCase.Root_Cause_Category_vda__c}" size="1" style="width: 200px" >
+                    <apex:selectOptions value="{!rootCauseCategoryList}" />
+                    <apex:actionSupport event="onchange" reRender="RootCauseSubCategoryField_VDA" />
+                </apex:selectList>
+                </apex:outputPanel>
+        </apex:pageBlockSectionItem>   
+        
+        <apex:pageBlockSectionItem helpText="Please select the Root Cause SubCategory for the selected Root Cause Category" LabelTitle="Root Cause SubCategory" rendered="{!If((isVDA==true && objCase.Case_Type__c!='Proactive'),true,false)}">
+           <apex:outputLabel id="RootCauseSubCategory" value="Root Cause SubCategory" />
+           <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                <apex:selectList id="RootCauseSubCategoryField_VDA" value="{!objCase.Root_Cause_Sub_Category__c}" size="1" style="width: 200px" >
+                    <apex:selectOptions value="{!rootCauseSubCategoryList}" />
+                </apex:selectList>
+            </apex:outputPanel> 
+        </apex:pageBlockSectionItem>      
+        
+        
+        <apex:pageBlockSectionItem helpText="Please select the Root Cause Category for this Case" LabelTitle="Root Cause Category" rendered="{!If((isVDA==false || objCase.Case_Type__c=='Proactive'),true,false)}">
+           <apex:outputLabel id="RootCauseCategory" value="Root Cause Category" />
+           <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+           <apex:inputField value="{!objCase.Category__c}" style="width: 200px"/>
+           </apex:outputPanel>
+        </apex:pageBlockSectionItem>   
+        
+        <apex:pageBlockSectionItem helpText="Please select the Root Cause SubCategory for the selected Root Cause Category" LabelTitle="Root Cause SubCategory" rendered="{!If((isVDA==false || objCase.Case_Type__c=='Proactive'),true,false)}">
+           <apex:outputLabel id="RootCauseSubCategory" value="Root Cause SubCategory" />
+           <apex:outputPanel styleClass="requiredInput" layout="block">
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+           <apex:inputField value="{!objCase.Subcategory__c}" style="width: 200px"/>
+           </apex:outputPanel>
+        </apex:pageBlockSectionItem>      
+        
+        <apex:pageBlockSectionItem helpText="Enter the Additional Info when closing the case" LabelTitle="Additional Info">
+            <apex:outputLabel id="AdditionalInfo" value="Additional Info" />
+            <apex:outputPanel id="AdditionalInfoPanel">
+            <apex:inputField value="{!objCase.Additional_Info__c}" style="width: 200px" />
+            <apex:inputHidden value="{!objCase.CaseResolvePageHidden__c}" id="CaseResolvePageInput"/>
+            </apex:outputPanel>
+        </apex:pageBlockSectionItem>  
+ </apex:pageBlockSection>
+ <apex:pageBlockButtons location="Both">
+          <apex:commandButton action="{!Save}" value="Save"/>
+          <apex:commandButton action="{!Cancel}" value="Cancel" immediate="true"/>
+  </apex:pageBlockButtons>  
+</apex:pageBlock>
+</apex:form>
+</apex:page>

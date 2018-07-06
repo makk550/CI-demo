@@ -1,0 +1,205 @@
+<apex:page standardController="Opportunity" recordSetVar="prodRen" extensions="Renewal_AddOppProduct">
+
+<script language="javascript">
+function ShowOrHide()
+{
+  if(document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility == 'visible' || document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility == '')
+  {
+   document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility = 'hidden';
+     document.getElementById('j_id0:j_id2:pb:j_id36').style.width = 0;
+     document.getElementById('j_id0:j_id2:pb:j_id36').style.height = 0;
+  }
+  else
+  {
+   document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility = 'visible';
+     document.getElementById('j_id0:j_id2:pb:j_id36').style.width = '100%';
+     document.getElementById('j_id0:j_id2:pb:j_id36').style.height = '100%';
+  }
+   return false;
+}
+    //samap01-revrec
+    
+ function checkall(){
+        checkalllineitems();
+    }
+  
+</script>
+<apex:form >
+  <apex:outputLink value="/{!$CurrentPage.parameters.Id}">Go back to opportunity page</apex:outputLink>
+       <apex:actionFunction action="{!checkalllineitems}" name="checkalllineitems" status="msgUF" reRender="lineitemsection"/> <!--samap01 -revrec-->
+  <apex:pageblock id="pb">  
+  
+  <apex:messages style="color:red" />
+      <apex:pageBlockButtons >
+          <apex:commandButton value="Add" action="{!CreatOpportunityProduct}"/>  
+             <apex:commandButton value="Apply Filter" action="{!applyFilter}" />                
+             <apex:commandButton value="Clear Filter" action="{!clearFilter}" />  
+      </apex:pageBlockButtons>
+ <!--      <apex:outputlink OnClick="return ShowOrHide()">Show/Hide Details</apex:outputlink>                 -->
+                       
+                            <apex:pageblocksection columns="3" >               
+                                   <apex:pageblockSectionItem >                            
+                                           <apex:outputLabel value="Contract#" for="contract_No"/>
+                                           <apex:inputText id="contract_No" value="{!Contract_No_Filter}"/>
+                                   </apex:pageblockSectionItem>
+                                    <apex:pageblockSectionItem >                      
+                                           <apex:outputLabel value="Contract Product" for="Contract_Product"/>
+                                           <apex:inputText id="Contract_Product" value="{!Contract_Name_Filter}"/>
+                                    </apex:pageblockSectionItem>                      
+                                    <apex:pageblockSectionItem >
+                                           <apex:outputLabel value="Dismantle Date" for="Dismantle_Date"/>
+                                           <apex:inputText title="{mm/dd/yyyy}" id="Dismantle_Date" value="{!Dismantle_Date_Filter}"/>
+                                       
+                                    </apex:pageblockSectionItem>
+                                                                                                          
+                                  
+                                <apex:pageblockSectionItem > 
+                                         <apex:outputLabel value="GBU2#"/>
+                                         <apex:selectList multiselect="false" value="{!gb2Value}" size="1">
+                                               <apex:selectOptions value="{!GBU2Values}"></apex:selectOptions>
+                                         </apex:selectList>
+                                   </apex:pageblockSectionItem>
+                                 <apex:pageblockSectionItem >                      
+                                           <apex:outputLabel value="Product Instance Id"/>
+                                           <apex:inputText id="product_InstanceId" value="{!productInstanceId}"/>
+                                    </apex:pageblockSectionItem>   
+                                <apex:pageblockSectionItem > 
+                                         <apex:outputLabel value="Attached to an Opp?"/>
+                                         <apex:selectList multiselect="false" value="{!AttachOppvalue}" size="1">
+                                               <apex:selectOptions value="{!AttachOpps}"></apex:selectOptions>
+                                         </apex:selectList>
+                                   </apex:pageblockSectionItem>
+                              </apex:pageblocksection>
+      
+                   <apex:pageblocksection >               
+                                   
+                     </apex:pageblocksection>                
+      
+      
+      
+   <apex:pageBlockSection id="pbs" columns="1">
+            <!-- <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                 <tr height="50">
+                 <td width="8%" align="right"><apex:commandButton value="Previous" style="font-weight:bold" rerender="pbs" rendered="{!hasPrevious}" action="{!previous}"/></td>
+                 <td width="8%"><apex:commandButton value="Next" style="font-weight:bold" rerender="pbs" rendered="{!hasNext}" action="{!next}"/></td>
+                 <td width="84%">World</td>
+                 </tr> 
+                  </table>-->
+                  
+                      <apex:pageBlockSection columns="3">
+                     <apex:pageBlockSectionItem >
+                     <apex:commandButton value="Previous" style="font-weight:bold" rerender="pbs" rendered="{!hasPrevious}" action="{!previous}"/></apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem ><apex:commandButton value="Next" style="font-weight:bold" rerender="pbs" rendered="{!hasNext}" action="{!next}"/> </apex:pageBlockSectionItem>                  
+                      </apex:pageBlockSection>
+    <apex:pageBlockTable value="{!RenewalProductList}" rows="{!pages}" var="prodList"  id="lineitemsection">
+				<!--samap01  revrec
+              <apex:column >
+                 <apex:inputCheckbox rendered="{!Not(prodList.activeContractProd.Converted_To_Opportunity__c)}" value="{!prodList.selected}"/>
+             </apex:column>
+				-->
+				  <apex:column >
+                        <apex:facet name="header">
+                            <apex:inputCheckBox id="main" value="{!allchecked}" rendered="{!Not(prodList.activeContractProd.Converted_To_Opportunity__c)}" onclick="checkall(); "/>
+                        </apex:facet>
+                        <apex:inputCheckBox rendered="{!Not(prodList.activeContractProd.Converted_To_Opportunity__c)}" value="{!prodList.selected}">
+                            
+                        </apex:inputCheckBox>
+                    </apex:column>
+               <apex:column >       
+                 <apex:facet name="header">   
+                  <apex:commandLink action="{!ViewData}" value="Contract#{!IF(sortExpression=='a.Active_Contract__r.name',IF(sortDirection='ASC','▼','▲'),'')}" id="nameSort"> 
+                    <apex:param value="a.Active_Contract__r.name" name="column" assignTo="{!sortExpression}" ></apex:param>
+                    </apex:commandLink>       
+                   </apex:facet>      
+                 <apex:outputField value="{!prodList.activeContractProd.Active_Contract__r.name}"/>
+                </apex:column>      
+             
+                 <apex:column >       
+                 <apex:facet name="header">   
+                  <apex:commandLink action="{!ViewData}" value="Contract Product{!IF(sortExpression=='a.Name',IF(sortDirection='ASC','▼','▲'),'')}" id="productSort"> 
+                    <apex:param value="a.Name" name="column" assignTo="{!sortExpression}" ></apex:param>
+                    </apex:commandLink>       
+                   </apex:facet>      
+                  <apex:outputLink value="/{!prodList.activeContractProd.Id}">{!prodList.activeContractProd.name}</apex:outputLink>
+                </apex:column>
+               <apex:column >       
+                 <apex:facet name="header">   
+                  <apex:commandLink action="{!ViewData}" value="Product Instance ID{!IF(sortExpression=='a.Instance_Id__c',IF(sortDirection='ASC','▼','▲'),'')}" id="InstanceIdSort"> 
+                    <apex:param value="a.Instance_Id__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                    </apex:commandLink>       
+                   </apex:facet>      
+                  <apex:outputField value="{!prodList.activeContractProd.Instance_Id__c}"/>
+                </apex:column>
+              
+                <apex:column >       
+                 <apex:facet name="header">   
+                  <apex:commandLink action="{!ViewData}" value="Dismantle Date{!IF(sortExpression=='dismantle_date__c',IF(sortDirection='ASC','▼','▲'),'')}" id="DismantledateSort"> 
+                    <apex:param value="dismantle_date__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                    </apex:commandLink>       
+                   </apex:facet>      
+                  <apex:outputField value="{!prodList.activeContractProd.Dismantle_Date__c}"/>
+                </apex:column>
+
+                <apex:column >       
+                 <apex:facet name="header">   
+                  <apex:commandLink action="{!ViewData}" value="OCV{!IF(sortExpression=='a.OCV__c',IF(sortDirection='ASC','▼','▲'),'')}" id="OCVSort"> 
+                    <apex:param value="a.OCV__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                    </apex:commandLink>       
+                   </apex:facet>      
+                  <apex:outputField value="{!prodList.activeContractProd.OCV__c}"/>
+                </apex:column>
+
+               <apex:column >       
+                 <apex:facet name="header">   
+                  <apex:commandLink action="{!ViewData}" value="TRR{!IF(sortExpression=='a.AOCV__c',IF(sortDirection='ASC','▼','▲'),'')}" id="TRRSort"> 
+                    <apex:param value="a.AOCV__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                    </apex:commandLink>       
+                   </apex:facet>      
+                  <apex:outputField value="{!prodList.activeContractProd.AOCV__c}"/>
+                </apex:column>
+
+               <apex:column >       
+                 <apex:facet name="header">   
+                  <apex:commandLink action="{!ViewData}" value="Opportunity Name{!IF(sortExpression=='a.Opportunity__r.Name',IF(sortDirection='ASC','▼','▲'),'')}" id="OpportunityNameSort"> 
+                    <apex:param value="a.Opportunity__r.Name" name="column" assignTo="{!sortExpression}" ></apex:param>
+                    </apex:commandLink>       
+                   </apex:facet>      
+                 <!--<apex:outputfield value="{!prodList.activeContractProd.Opportunity__r.Name}"/> -->
+                 <apex:outputLink value="/{!prodList.activeContractProd.Opportunity__r.id}">{!prodList.activeContractProd.Opportunity__r.Name}</apex:outputLink>
+                </apex:column>
+
+               <apex:column >       
+                 <apex:facet name="header">   
+                  <apex:commandLink action="{!ViewData}" value="Opportunity Number{!IF(sortExpression=='a.Opportunity__r.Opportunity_Number__c',IF(sortDirection='ASC','▼','▲'),'')}" id="OpportunityNumberSort"> 
+                    <apex:param value="a.Opportunity__r.Opportunity_Number__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                    </apex:commandLink>       
+                   </apex:facet>      
+                  <apex:outputField value="{!prodList.activeContractProd.Opportunity__r.Opportunity_Number__c}"/>
+                </apex:column>
+
+          </apex:pageBlockTable>
+          <apex:pageBlockSection columns="7" >
+         <apex:actionRegion >
+                             <apex:outputText value=" Display Records per page: "></apex:outputText>
+                             <apex:selectList value="{!pages}" size="1">
+                                 <apex:selectOptions value="{!Pageno}"/>
+                                 <apex:actionSupport event="onchange" rerender="pbs" action="{!check}" status="procesingstatus1" />
+                             </apex:selectList>&nbsp;&nbsp;
+                             <apex:actionStatus id="procesingstatus1" startstyle="color:#15428B;" >
+                                 <apex:facet name="start"><apex:outputlabel >Please wait...</apex:outputlabel><apex:image url="{!URLFOR($Resource.process)}"/>
+                                 </apex:facet>
+                             </apex:actionStatus>
+                          
+                     </apex:actionRegion><apex:outputText value="                        "/><apex:actionRegion > <apex:outputPanel id="test2"> <div align="right">   
+                     Page #:&nbsp;<apex:inputtext id="inputpage" size="3"  value="{!acpage}"/> of {!npages}
+                 <!-- <apex:actionSupport event="onchange" rerender="pbs" action="{!check}" status="procesingstatus2" /> -->
+                  &nbsp;&nbsp;<apex:commandButton value="Go" status="procesingstatus2" action="{!check}" reRender="pbs"/>
+                  <apex:actionStatus id="procesingstatus2" startstyle="color:#15428B;" >
+                      <apex:facet name="start"><apex:outputlabel >Please wait...</apex:outputlabel><apex:image url="{!URLFOR($Resource.process)}"/>
+                  </apex:facet>
+                    </apex:actionStatus></div></apex:outputPanel></apex:actionRegion>
+            </apex:pageBlockSection>           
+      </apex:pageBlockSection>
+  </apex:pageblock>
+  </apex:form>
+</apex:page>

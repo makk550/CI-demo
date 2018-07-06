@@ -1,0 +1,101 @@
+<apex:page standardController="Opportunity" extensions="OpportunitySummary">
+
+<apex:form >   
+
+<apex:pageBlock >
+    
+    <table border="1" cellpadding="4" width="80%">
+        <tr style="background:#E5C130">
+            <!-- <apex:repeat value="{!headerRow}" var="h">
+                <td ><font color="WHITE"> <b>{!h}</b> </font> </td> 
+            </apex:repeat>-->
+            <td width="20%">Business Unit</td>
+            <td width="10%">PNCV</td>
+            <td width="10%">SRVC NCV</td>
+            <td width="10%">EDU NCV</td>
+            <td width="10%">SPPT NCV</td>
+            <td width="1%"></td>
+            <td width="10%">NCV</td>
+            <td width="10%">Renewal</td>
+            <td width="10%">CV</td>
+            
+        </tr>   
+        
+        <apex:repeat value="{!matrix}" var="r">
+            <tr>
+                 <apex:repeat value="{!r}" var="c">
+                   <td>{!c} </td> 
+                 </apex:repeat>
+            </tr>
+        </apex:repeat>
+        
+        <tr style="background:#E5C130">
+            <apex:repeat value="{!footerRow}" var="f">
+                <td><font color="WHITE"> <b>{!f}</b> </font> </td> 
+            </apex:repeat>
+        </tr>
+        
+    </table>
+    
+    
+</apex:pageBlock>
+
+<apex:pageBlock >
+   <apex:pageBlockTable value="{!lineItemDetailsByFamilyList}" var="oliByFamily" styleClass="list1" >
+
+        <apex:column >   
+        <b> <apex:outputLabel > {!oliByFamily.productFamily}</apex:outputLabel> </b>
+            
+            <apex:pageBlockTable value="{!oliByFamily.opptyLineItemList}" var="oliUnitPrice">   
+                <apex:column >
+                <apex:outputLabel > &nbsp;&nbsp;&nbsp;<b>Fiscal period</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{!oliUnitPrice.Description} </apex:outputLabel>
+                <BR/>
+                <apex:outputLabel > &nbsp;&nbsp;&nbsp;<b>Sales Milestone</b>&nbsp;&nbsp;&nbsp;{!oliUnitPrice.Sales_Milestone__c} </apex:outputLabel>
+                <BR/>
+                <BR/>
+                </apex:column>
+            </apex:pageBlockTable>
+            
+        </apex:column>  
+        
+        
+    
+        
+    </apex:pageBlockTable>
+</apex:pageBlock>
+
+<apex:pageBlock >
+   
+         
+         
+        <b> <apex:outputLabel > Offerings Summary </apex:outputLabel> </b>
+            
+            <!-- <table border="1" cellpadding="6">
+                <apex:repeat value="{!lineItemDetailsByQuarterList}" var="oliByQuarter">
+                    <tr>
+                          <td> {!oliByQuarter.quarter} </td> 
+                          <td> {!oliByQuarter.UnitPrice} </td> 
+                    </tr>
+                </apex:repeat>
+            </table>-->
+            <table border="1" cellpadding="6">
+            <tr>
+                <td><apex:outputLabel value="Fiscal Quarter" /></td>
+                <apex:repeat value="{!lineItemDetailsByQuarterList}" var="oliByQuarter">
+                <td> {!oliByQuarter.quarter} </td>
+                </apex:repeat>
+            </tr>
+            <tr>
+                <td><apex:outputLabel value="Sales Price" /></td>
+                <apex:repeat value="{!lineItemDetailsByQuarterList}" var="oliByQuarter">
+                <td> {!oliByQuarter.UnitPrice} </td>
+                </apex:repeat>
+            </tr>    
+            </table>
+                
+</apex:pageBlock>
+
+</apex:form>  
+
+
+</apex:page>

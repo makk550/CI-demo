@@ -1,0 +1,287 @@
+<apex:page id="page" showHeader="false" sidebar="false" controller="SSPController" action="{!initSSP}">
+     <!-- custom styles used within the application -->
+     <style>
+        .activeTab {background-color: #236FBD; color:white; background-image:none}
+        .inactiveTab {background-color: lightgrey; color:black; background-image:none}
+        .attAccount {background-color:#F3F781; color:red; background-image:none}
+        .headerStyle{background-color:green;color:#FFFFFF}
+        .headerRow .headerStyle{background-color:#638658;color:#FFFFFF}
+        .alignStyle{text-align:right;vertical-align:center}
+        .accTableStyle{vertical-align:top}
+        .theRow {background-color:lightgreen;}
+        .theHead{color:white;font-size:medium;font-weight:bold;}
+        .theHeadRow{color:white;font-weight:bold;border-bottom:solid;border-bottom-width: thin;}
+        .row{border-bottom:solid;border-bottom-width: thin;border-bottom-color:white;}
+        .hiddenSpan {display: none;}
+        .visibleSpan {display: block;}
+    </style>        
+    <script language="JavaScript">
+        function hideDetail(spanId){    
+            document.getElementById(spanId).className='hiddenSpan';     
+        }
+        function showDetail(spanId){    
+            document.getElementById(spanId).className='visibleSpan';        
+        }
+        function calcHeight()
+        {
+          //find the height of the internal page
+          alert(document.getElementById('the_iframe'));
+          var the_height=document.getElementById('the_iframe').contentWindow.
+              document.body.scrollHeight;
+              alert(the_height);
+        
+          //change the height of the iframe
+          document.getElementById('the_iframe').height=the_height;
+        }
+        
+        // function to set values for the hidden variables 
+        function showProductView(id1,id2,mfaName,prodView)
+        {
+            document.getElementById(id1).value = mfaName;
+            document.getElementById(id2).value = 'prodView';
+        }
+        
+        //function to open the popup window
+        function openPopUp(accId,oppsType)
+        {
+            //alert('here '+oppId);
+            window.open('/apex/OpportunityPopUp?pageState=popsUp&accId='+accId+'&oppsType='+oppsType,'OpportunityDetails','menubar=1,resizable=no,scrollbars=yes,width=600,height=300,top=250,left=345,status=no');
+        }
+
+        //function to open the popup window 2
+        function openPopUp2()
+        {
+            //alert('here '+oppId);
+            window.open('/apex/OpenOpportunitiesPopUp?pageState=popsUp2','NewOpenOpportunities','menubar=1,resizable=yes,scrollbars=yes,width=600,height=300,top=250,left=345,status=no');
+        }
+               
+    </script>
+    <apex:form id="homeForm"> 
+        <apex:inputHidden id="mfaName"/>
+        <apex:inputHidden id="view"/>
+        <apex:inputHidden id="mfaName_QT"/>
+        <apex:inputHidden id="view_QT"/>
+    <apex:pageBlock >
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">   
+        <tr>            
+            <td><b>All amounts are displayed in your preferred currency: </b>{!userCurrency}</td>        
+            <td align="right">               
+ 
+                          
+            </td>                       
+        </tr>        
+    </table>
+    <table width="100%" border="0" cellspacing="0">
+        <tr>
+            <th class="headerRow  headerStyle">&nbsp;</th>
+            <th colspan="9" class="headerRow  headerStyle"><font size="4">Current Quarter</font></th>
+            <th colspan="4" width="20%" class="headerRow  headerStyle"><font size="4">Fiscal Year to Date</font></th>
+        </tr>
+        <tr class="theRow">
+            <td Class="theHead" width="20%">&nbsp;</td>
+            <td colspan="3" width="20%" Class="theHead" style="background-color:lavender;border-right-style: dashed;border-right-width: thin" align="center">Inside</td>
+            <td colspan="3" width="20%" Class="theHead" style="background-color:lavender;border-right-style: dashed;border-right-width: thin" align="center">Outside</td>
+            <td colspan="3" width="20%" Class="theHead" style="background-color:lavender" align="center">Won</td>
+            <td Class="theHead">&nbsp;</td>
+            <td Class="theHead">&nbsp;</td>
+            <td Class="theHead">&nbsp;</td>
+            <td Class="theHead">&nbsp;</td>
+        </tr>
+        <tr class="theRow">
+            <td Class="theHeadRow">Account Name</td>
+            <td Class="theHeadRow" style="background-color:lavender" align="right">PNCV</td>
+            <td Class="theHeadRow" style="background-color:lavender" align="right">Offering</td>
+            <td Class="theHeadRow" style="background-color:lavender;border-right-style: dashed;border-right-width: thin" align="right">Renewal</td>
+            <td Class="theHeadRow" style="background-color:lavender" align="right">PNCV</td>
+            <td Class="theHeadRow" style="background-color:lavender" align="right">Offering</td>
+            <td Class="theHeadRow" style="background-color:lavender;border-right-style: dashed;border-right-width: thin" align="right">Renewal</td>
+            <td Class="theHeadRow" style="background-color:lavender" align="right">PNCV</td>
+            <td Class="theHeadRow" style="background-color:lavender" align="right">Offering</td>
+            <td Class="theHeadRow" style="background-color:lavender" align="right">Renewal</td>
+            <td Class="theHeadRow" align="right">Pipeline</td>
+            <td Class="theHeadRow" align="right">Won</td>
+            <td Class="theHeadRow" align="right">Lost</td>
+            <td Class="theHeadRow" align="right">% Success</td>
+        </tr>
+        <apex:repeat value="{!sspData}" var="acc" id="accountTable">
+        <tr class="theRow">
+            <td class="row">
+                <apex:outputLink rendered="{!acc.isEnterpriseAccount}" value="/apex/OpportunityPlan?AccId={!acc.AccountId}" style="text-decoration:none" target="_blank"><b>{!acc.AccountName}</b></apex:outputLink>
+                <apex:outputLink rendered="{!!acc.isEnterpriseAccount}" value="/{!acc.AccountId}" style="text-decoration:none" target="_blank">{!acc.AccountName}</apex:outputLink>
+                <apex:outPutPanel rendered="false">
+                <a title='Line Items' href="#;" onclick="showDetail('sn_{!acc.AccountId}');"  style="text-decoration:none">
+                    ...
+                </a>
+                <br></br></apex:outPutPanel>
+                <span class="hiddenSpan" id="sn_{!acc.AccountId}" style="position: absolute;background-color: lavender;border: thin solid black" >
+                <a href="#;" onclick="hideDetail('sn_{!acc.AccountId}');">close</a>
+                <table>
+                    <tr class="theRow">
+                        <th>Opportunity</th>
+                        <th>Product</th>
+                        <th>BU</th>
+                        <th>Family</th>
+                        <th>Unitprice</th>
+                        
+                        <th>Close Date</th>
+                    </tr>
+                    <apex:repeat value="{!acc.ssplineitems}" var="lineItem">
+                        <tr>
+                            <td><a href="/{!lineItem.OpportunityId}" target="_blank">{!lineItem.Opportunity.Name}</a></td>
+                            <td>{!lineItem.PricebookEntry.Product2.Name}</td>
+                            <td>{!lineItem.PricebookEntry.Product2.Solution_Sets__c}</td>
+                            <td>{!lineItem.PricebookEntry.Product2.Family}</td>
+                            <td>{!lineItem.UnitPrice}</td>
+                            
+                            <td>
+                                <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                    <apex:param value="{!lineItem.Opportunity.CloseDate}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+                </span>
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                    {!IF(acc.iPNCV>=1000,TEXT(Round(acc.iPNCV/1000,2)) + 'M',TEXT(Round(acc.iPNCV,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(acc.iOffering>=1000,TEXT(Round(acc.iOffering/1000,2)) + 'M',TEXT(Round(acc.iOffering,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;border-right-style: dashed;border-right-width: thin">
+                {!IF(acc.iRenewal>=1000,TEXT(Round(acc.iRenewal/1000,2)) + 'M',TEXT(Round(acc.iRenewal,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(acc.oPNCV>=1000,TEXT(Round(acc.oPNCV/1000,2)) + 'M',TEXT(Round(acc.oPNCV,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(acc.oOffering>=1000,TEXT(Round(acc.oOffering/1000,2)) + 'M',TEXT(Round(acc.oOffering,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;border-right-style: dashed;border-right-width: thin">
+                {!IF(acc.oRenewal>=1000,TEXT(Round(acc.oRenewal/1000,2)) + 'M',TEXT(Round(acc.oRenewal,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(acc.wPNCV>=1000,TEXT(Round(acc.wPNCV/1000,2)) + 'M',TEXT(Round(acc.wPNCV,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(acc.wOffering>=1000,TEXT(Round(acc.wOffering/1000,2)) + 'M',TEXT(Round(acc.wOffering,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(acc.wRenewal>=1000,TEXT(Round(acc.wRenewal/1000,2)) + 'M',TEXT(Round(acc.wRenewal,0)) + 'K')}
+            </td>
+            <td class="row" align="right">
+                {!IF(acc.OpenOpps>=1000,TEXT(Round(acc.OpenOpps/1000,2)) + 'M',TEXT(Round(acc.OpenOpps,0)) + 'K')}
+            </td>
+            <td class="row" align="right">
+                {!IF(acc.WonOpps>=1000,TEXT(Round(acc.WonOpps/1000,2)) + 'M',TEXT(Round(acc.WonOpps,0)) + 'K')}
+            </td>
+            <td class="row" align="right">
+                {!IF(acc.LostOpps>=1000,TEXT(Round(acc.LostOpps/1000,2)) + 'M',TEXT(Round(acc.LostOpps,0)) + 'K')}
+            </td>
+            <td class="row" align="right">
+                <apex:outputText value="{0,number,#########0}%">
+                    <apex:param value="{!acc.SuccessRate}" />
+                </apex:outputText>
+            </td>
+        </tr>
+        </apex:repeat>
+        <tr class="theRow" style="font-weight:bold;">
+            <td class="theHead" align="right">Total</td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(totaliPNCV>=1000,TEXT(Round(totaliPNCV/1000,2)) + 'M',TEXT(Round(totaliPNCV,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(totaliOffering>=1000,TEXT(Round(totaliOffering/1000,2)) + 'M',TEXT(Round(totaliOffering,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;border-right-style: dashed;border-right-width: thin">
+                {!IF(totaliRenewal>=1000,TEXT(Round(totaliRenewal/1000,2)) + 'M',TEXT(Round(totaliRenewal,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(totaloPNCV>=1000,TEXT(Round(totaloPNCV/1000,2)) + 'M',TEXT(Round(totaloPNCV,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(totaloOffering>=1000,TEXT(Round(totaloOffering/1000,2)) + 'M',TEXT(Round(totaloOffering,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;border-right-style: dashed;border-right-width: thin">
+                {!IF(totaloRenewal>=1000,TEXT(Round(totaloRenewal/1000,2)) + 'M',TEXT(Round(totaloRenewal,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(totalwPNCV>=1000,TEXT(Round(totalwPNCV/1000,2)) + 'M',TEXT(Round(totalwPNCV,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(totalwOffering>=1000,TEXT(Round(totalwOffering/1000,2)) + 'M',TEXT(Round(totalwOffering,0)) + 'K')}
+            </td>
+            <td align="right" class="row" style="background-color:lavender;">
+                {!IF(totalwRenewal>=1000,TEXT(Round(totalwRenewal/1000,2)) + 'M',TEXT(Round(totalwRenewal,0)) + 'K')}
+            </td>
+            <td class="row" align="right">
+                {!IF(totalOpenOpps>=1000,TEXT(Round(totalOpenOpps/1000,2)) + 'M',TEXT(Round(totalOpenOpps,0)) + 'K')}
+            </td>
+            <td class="row" align="right">
+                {!IF(totalWonOpps>=1000,TEXT(Round(totalWonOpps/1000,2)) + 'M',TEXT(Round(totalWonOpps,0)) + 'K')}
+            </td>
+            <td class="row" align="right">
+                {!IF(totalLostOpps>=1000,TEXT(Round(totalLostOpps/1000,2)) + 'M',TEXT(Round(totalLostOpps,0)) + 'K')}
+            </td>
+            <td class="row" align="right">
+                <apex:outputText value="{0,number,#########0}%">
+                    <apex:param value="{!totalSuccessRate}" />
+                </apex:outputText>
+            </td>
+        </tr>
+        <tr class="theRow">
+            <td>&nbsp;</td>
+            <td colspan="9" align="center" Class="theHead" style="background-color:lavender">&nbsp;</td>
+            <td colspan="4" align="center" Class="theHead">&nbsp;</td>
+        </tr>
+        <tr class="theRow">
+            <td valign="top">
+                <table class="list" width="100%">
+                    <tr>
+                        <th Class="theHead">Top 5 Opportunities</th>
+                        <td Class="theHead" align="right">Price</td>
+                    </tr>
+                    <apex:repeat value="{!top5Opps}" var="opp" rows="5">
+                        <tr>
+                            <td><a href='/{!opp.id}' target='_blank'>{!opp.Name}</a></td>
+                            <td align="right">
+                                {!IF(opp.Amount>=1000000,TEXT(Round(opp.Amount/1000000,2)) + 'M',TEXT(Round(opp.Amount/1000,0)) + 'K')}
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </table> 
+            </td>
+            <td width="300" nowrap="nowrap" valign="top" colspan="6" align="center" Class="theHead" style="background-color:lavender">
+                <apex:outputPanel rendered="{!IF(totalOpenOpps>0 || totalWonOpps>0 || totalLostOpps>0,true,false)}">
+                    <img src="http://chart.apis.google.com/chart?chs=280x200&cht=bvg&chl=Inside|Outside&chco=33CC33,FF5050,333399&chd=t:{!(totaliPNCV/ROUND(MAX(1,totaliPNCV,totaliOffering,totaliRenewal,totaloPNCV,totaloOffering,totaloRenewal),0))*100},{!(totaloPNCV/ROUND(MAX(1,totaliPNCV,totaliOffering,totaliRenewal,totaloPNCV,totaloOffering,totaloRenewal),0))*100}|{!(totaliOffering/ROUND(MAX(1,totaliPNCV,totaliOffering,totaliRenewal,totaloPNCV,totaloOffering,totaloRenewal),0))*100},{!(totaloOffering/ROUND(MAX(1,totaliPNCV,totaliOffering,totaliRenewal,totaloPNCV,totaloOffering,totaloRenewal),0))*100}|{!(totaliRenewal/ROUND(MAX(1,totaliPNCV,totaliOffering,totaliRenewal,totaloPNCV,totaloOffering,totaloRenewal),0))*100},{!(totaloRenewal/ROUND(MAX(1,totaliPNCV,totaliOffering,totaliRenewal,totaloPNCV,totaloOffering,totaloRenewal),0))*100}&chdl=PNCV|Offering|Renewal&chxt=y&chxr=0,0,{!ROUND(MAX(1,totaliPNCV,totaliOffering,totaliRenewal,totaloPNCV,totaloOffering,totaloRenewal),0)},{!IF(ROUND(MAX(1,totaliPNCV,totaliOffering,totaliRenewal,totaloPNCV,totaloOffering,totaloRenewal),0)<=5000,500,1000)}&chf=bg,s,E6E6FA"></img>
+                    <br></br>
+                    ** Bar graph values are in thousands
+                </apex:outputPanel>                
+            </td>
+            <td  width="150" nowrap="nowrap" valign="top" colspan="3" align="center" Class="theHead" style="background-color:lavender">
+                <apex:outputPanel rendered="{!IF(totalOpenOpps>0 || totalWonOpps>0 || totalLostOpps>0,true,false)}">
+                    <img src="http://chart.apis.google.com/chart?chs=200x200&cht=bvg&chl=Won&chco=33CC33,FF5050,333399&chd=t:{!(totalwPNCV/IF(ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0)<=100,100,ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0)))*100}|{!(totalwOffering/IF(ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0)<=100,100,ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0)))*100}|{!(totalwRenewal/IF(ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0)<=100,100,ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0)))*100}&chdl=PNCV|Offering|Renewal&chxt=y&chxr=0,0,{!IF(ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0)<=100,100,ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0))},{!IF(ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0)<=100,20,(IF(ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0)<=100,100,ROUND(MAX(1,totalwPNCV,totalwOffering,totalwRenewal),0)))*10/100)}&chf=bg,s,E6E6FA"></img>
+                    <br></br> 
+                    
+                </apex:outputPanel>                
+            </td>
+            <td valign="top" colspan="4" align="right" Class="theHead">
+                <apex:outputPanel rendered="{!IF(totalOpenOpps>0 || totalWonOpps>0 || totalLostOpps>0,true,false)}">
+                    <img src="http://chart.apis.google.com/chart?chs=250x200&chd=t:{!ROUND(ROUND(totalOpenOpps,0)/totalPWL*100,0)},{!ROUND(ROUND(totalWonOpps,0)/totalPWL*100,0)},{!ROUND(ROUND(totalLostOpps,0)/totalPWL*100,0)}&cht=p&chl={!IF(totalOpenOpps>=1000,TEXT(Round(totalOpenOpps/1000,2)) + 'M',TEXT(Round(totalOpenOpps,0)) + 'K')}|{!IF(totalWonOpps>=1000,TEXT(Round(totalWonOpps/1000,2)) + 'M',TEXT(Round(totalWonOpps,0)) + 'K')}|{!IF(totalLostOpps>=1000,TEXT(Round(totalLostOpps/1000,2)) + 'M',TEXT(Round(totalLostOpps,0)) + 'K')}&chco=FF5050,33CC33,333399&chdl=Pipeline|Won|Lost&chf=bg,s,90EE90&chdlp=bv"></img>
+                    <br></br>
+                    <p align="center">
+                    
+                    </p>
+                </apex:outputPanel>                
+            </td>
+        </tr>
+        
+        
+    </table>
+    <apex:outputPanel rendered="{!!hasData}">
+        <p align="center"><b>Sorry, you do not own any account.</b></p>
+    </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,109 @@
+<apex:page standardController="Active_Contract__c" tabStyle="Active_Contract__c" extensions="Renewal_editContractHeaderInfo">
+<apex:form >
+<apex:pagemessages ></apex:pagemessages>
+<apex:sectionHeader title="Active Contract Header Valuation"   subtitle="{!Active_Contract__c.Name}" />
+<apex:pageBlock >
+<apex:pageBlockButtons >
+<apex:commandButton value="Back" action="{!goback}" />
+<apex:commandButton value="Save" action="{!UpdateContractValues}" />
+</apex:pageBlockButtons>
+<apex:pageBlockSection title="Contract Values">
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.OCV__c.label}" for="OCV"></apex:OutputLabel>
+<apex:inputText id="OCV" value="{!OCVLC}"/>
+</apex:pageBlockSectionItem>
+  <apex:pageBlockSectionItem helpText="OCV - if all products are included in the redistribution (use for pre-finance) or if all products have the same term.  RawMaintenance  - if all products have the same term and if all products are Time or subscription"  >
+            <apex:outputLabel value="OCV Distribution Options" for="DistrubtionOptions"/>
+            <apex:selectList id="chooseOption1" value="{!chkOCV_OCV}" size="1"  title="Distrubtion Options" >
+                <apex:selectOption itemValue="OCV" itemLabel="OCV"/>
+                <apex:selectOption itemValue="RawMaintenance" itemLabel="RawMaintenance"/>
+            </apex:selectList> 
+          </apex:pageBlockSectionItem> 
+
+<apex:pageBlockSectionItem helpText="Uses ATTRF to distribute; only use if all products are included in the redistribution">
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.Adjusted_ATTRF_LC__c.label}" for="TRR"></apex:OutputLabel>
+<apex:inputText id="TRR" value="{!AdjATRRF}"/>
+</apex:pageBlockSectionItem>
+<br/>
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.AOCV__c.label}" for="AnnualOCV"></apex:OutputLabel>
+<apex:inputText id="AnnualOCV" value="{!AOCVLC_Input}"/>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem helpText="TRR - if all products are included in the redistribution (use for pre-finance) or if all products have the same term; RawMaintenance - if all products are Time or subscription" >
+        <apex:outputLabel value="TRR Distribution Options" for="DistrubtionOptions"/>
+        <apex:selectList id="chooseOption1" value="{!chkTRR_TRR}" size="1"  title="Distrubtion Options" >
+            <apex:selectOption itemValue="TRR" itemLabel="TRR"/>
+            <apex:selectOption itemValue="RawMaintenance" itemLabel="RawMaintenance"/>
+        </apex:selectList> 
+</apex:pageBlockSectionItem>
+    
+<!--US388344--><!--MERHA02-->
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.Total_TARR_LC__c.label}" for="TotalTARRLC"></apex:OutputLabel>
+<apex:inputText id="TotalTARRLC" value="{!TARRLC}"/>
+</apex:pageBlockSectionItem>
+<br/>
+
+<apex:pageBlockSectionItem rendered="false" >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.Raw_Maint_Calc_LC__c.label}" for="RawMaintainancecalc"></apex:OutputLabel>
+<apex:inputText id="RawMaintainancecalc" value="{!TotalRawMaintCalc_Input}"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.Financed_OCV__c.label}" ></apex:OutputLabel>
+<apex:inputText value="{!contract.Financed_OCV__c}"/>
+</apex:pageBlockSectionItem>
+<br/>
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.Contracted_Renewal_Amount_LC__c.label})" for="Contractedrenewalamt"></apex:OutputLabel>
+<apex:inputText id="Contractedrenewalamt" value="{!ContractedRenewalAmnt}"/>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem helpText="CurrentExitAnnualAmt -If all products are included in the contracted renewal.RawMaintenance - if all products are included in the contracted renewal and the renewal is based on prior year’s maint.">
+    <apex:outputLabel value="Contracted Renewal Amt Distribution Options" for="DistrubtionOptions"/>
+        <apex:selectList id="chooseOption3" value="{!chkContrRen_RawMaint}" size="1"  title="Distrubtion Options" >
+            <apex:selectOption itemValue="CurrentExistAnnualMaint" itemLabel="Current Exist Annual Maint"/>
+            <apex:selectOption itemValue="RawMaintenance" itemLabel="RawMaintenance"/>
+        </apex:selectList>  
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.Financed_TRR_LC__c.label}" for="FTRR"></apex:OutputLabel>
+<apex:inputText id="FTRR" value="{!contract.Financed_TRR_LC__c}"/>
+</apex:pageBlockSectionItem>
+<br/>
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.Contractual_Cap_Percentage__c.label}" for="contractualcap"></apex:OutputLabel>
+<apex:inputfield id="contractualcap" value="{!contract.Contractual_Cap_Percentage__c}"/>
+</apex:pageBlockSectionItem>
+<br/>
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.Finance_ATTRF__c.label}" for="FOCV"></apex:OutputLabel>
+<apex:inputText id="FOCV" value="{!contract.Finance_ATTRF__c}"/>
+</apex:pageBlockSectionItem>
+<br/>
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.Renewal_Valuation_Type__c.label}" for="type"></apex:OutputLabel>
+<apex:inputfield id="type" value="{!contract.Renewal_Valuation_Type__c}"/>
+</apex:pageBlockSectionItem>
+<br/>
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.CRV_Process_completed__c.label}" for="ValCompleted"></apex:OutputLabel>
+<apex:inputField value="{!contract.CRV_Process_completed__c}"/>
+</apex:pageBlockSectionItem>
+<br/>
+<apex:pageBlockSectionItem >
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.In_Progress__c.label}" ></apex:OutputLabel>
+<apex:inputField value="{!contract.In_Progress__c}"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem rendered="false">
+<apex:OutputLabel Value="{!$ObjectType.Active_Contract__c.fields.Comments__c.label}" ></apex:OutputLabel>
+<apex:inputField value="{!contract.Comments__c}"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+
+</apex:pageBlockSectionItem>
+</apex:pageBlockSection>
+</apex:pageBlock>
+</apex:form>  
+</apex:page>

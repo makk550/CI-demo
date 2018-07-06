@@ -1,0 +1,25 @@
+<apex:page standardcontroller="Account"  extensions="LeadFilterCtrl" sidebar="false">  
+<apex:form id="form1"> 
+    <apex:pageBlock id="pb1"  >  
+    <!--apex:commandButton action="{!save}" value="New Lead" id="theButton"/ --->        
+<apex:pageblockTable value="{!lstLead}" var="lstLeaduu">
+<apex:column >
+      <b> <apex:outputLink target="_blank" value="/{!lstLeaduu.id}/e?retURL=%{!account.id}" >Edit</apex:outputLink> </b>
+</apex:column>
+<apex:column headerValue="Name" >
+    <apex:outputlink target="_blank" value="/{!lstLeaduu.id }"> {!lstLeaduu.Name  }  </apex:outputlink>
+</apex:column>
+
+
+
+<!--apex:column Value="{!lstLeaduu.Name }"/-->
+<apex:column headerValue="Company"  Value="{!lstLeaduu.Company }"/>
+<apex:column headerValue="Phone" Value="{!lstLeaduu.Phone }"/>
+<apex:column headerValue="BU" Value="{!lstLeaduu.MKT_BU_Category__c }"/>  
+<apex:column headerValue="Last Modified Date"  Value="{!lstLeaduu.lastmodifieddate }"/>  
+</apex:pageblockTable>
+   
+                    
+           </apex:pageBlock>              
+          </apex:form>
+   </apex:page>

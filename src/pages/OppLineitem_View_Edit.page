@@ -1,0 +1,898 @@
+<apex:page id="oplieditview" standardcontroller="OpportunityLineItem" extensions="OppLineitem_View_Edit_controller" sidebar="false">   
+    <apex:form id="form1_edit" rendered="{!isEdit}">
+        <apex:actionFunction name="CalcSalesPrice" action="{!CalcSalesPrice}" status="msgUF" rerender="pb1"></apex:actionFunction>
+        <apex:actionFunction name="overideCall" action="{!resetIsOverrideChecked}" status="msgUF" rerender="pb1"></apex:actionFunction>
+        <apex:actionFunction name="calculateUFLicenseFee_action" action="{!calculateUFLicenseFee}"  status="msgUF" rerender="pb1"></apex:actionFunction>
+        <apex:actionFunction name="calculatemonthsbtwn_action" action="{!getMonthsBetween}"  status="msgUF" rerender="pb1,error"></apex:actionFunction>
+        <apex:actionFunction name="getDaysBetweenLineItem_action" action="{!getDaysBetweenLineItem}"  status="msgUF" rerender="mfpbs1,mfpbs2,error"></apex:actionFunction>
+        
+        <apex:sectionHeader subtitle="{!headerrec.Name}" title="{!actiontitle}"/>
+        <!--  //samtu01 - US387241 -->
+        <apex:actionFunction name="CalcStretch_action" action="{!calculateStretch}" status="msgUF" rerender="pb1,mfpbs1,mfpbs2,error"></apex:actionFunction>
+        <apex:actionFunction name="stretchFeeCalculation_action" action="{!StretchFeeCalc}" status="msgUF" rerender="pb1,mfpbs1,mfpbs2,error"></apex:actionFunction>
+        <!--  //samtu01 - US387241 end -->
+        <script>
+        function calculateUFLicenseFee(isOverrideFee)
+        {
+            if(isOverrideFee == 'true') {
+                console.log('came to NO load'+isOverrideFee);
+                return false;
+            }
+            else if('{!isUF}' != 'true')
+            {
+                calculateUFLicenseFee_action();
+            }
+                else
+                    calculateUFLicenseFee_action();
+            
+        }
+        function calculatemonthsbtwn(){
+            calculatemonthsbtwn_action();
+        }
+        function performArrCalculation(){
+            getDaysBetweenLineItem_action();
+        }
+        
+        
+       
+         //samtu01 - US387241
+            function CalcStretch(){
+                CalcStretch_action();
+            }
+            function stretchFeeCalculation(){
+               
+                stretchFeeCalculation_action();
+                
+            }
+             //samtu01 - US387241 -end
+        </script>            
+        <apex:outputLink value="/{!headerrec.Id}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb1">
+            <apex:pageMessages id="error"/> 
+            <apex:pageBlockButtons location="top" >
+                
+                <apex:actionStatus id="msgUF">
+                    <apex:facet name="start">
+                        <apex:outputPanel >
+                            <apex:commandButton value="Processing..." status="myStatus" disabled="true"/>
+                            <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 20px; position: absolute; left:50%;top:50%;"/></div>
+                        </apex:outputPanel>
+                    </apex:facet>
+                    <apex:facet name="stop"> 
+                        <apex:outputPanel >
+                            <apex:commandButton value="Save" action="{!updateproduct}" />
+                            <apex:commandButton value="Cancel" action="{!docancel}" />
+                        </apex:outputPanel>
+                    </apex:facet>
+                </apex:actionStatus>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pbs1" title="{!actionsubtitle}" rendered="{!isRenewal}">                 
+                <apex:inputField value="{!OpportunityLineItem.unitprice}" required="true" onchange="calculatemonthsbtwn()"/>
+                <apex:inputField value="{!OpportunityLineItem.New_Deal_Term_Months__c}" id="newdealterm"/>
+                <apex:inputField value="{!OpportunityLineItem.Stretch__c}"/>
+               
+                <apex:inputField value="{!headerrec.Stretch_Deal_Term_Months__c}" id="stretchterm" />
+                <apex:inputField value="{!OpportunityLineItem.Start_Date__c}" onchange="calculatemonthsbtwn()" required="True" />
+                <apex:inputField value="{!OpportunityLineItem.End_Date__c}" onchange="calculatemonthsbtwn()" required="True" />
+                
+                <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                <apex:pageblocksectionitem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Corporate_ARR__c.label}"/>
+                    <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                        <apex:param value="{!OpportunityLineItem.Corporate_ARR__c}" />
+                    </apex:outputtext>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Corporate_ARR__c.label}"/>
+                    <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                        <apex:param value="{!OpportunityLineItem.Stretch_Corporate_ARR__c}" />
+                    </apex:outputtext>
+                </apex:pageblocksectionitem>
+                <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                
+                <apex:outputField value="{!OpportunityLineItem.Business_Type__c}"  /> 
+                <apex:inputField value="{!headerrec.Stretch_Sales_Price_Gap_Reason__c}" id="stretchgap"/>
+                <apex:inputField value="{!OpportunityLineItem.Quote_Number__c}" id="qtnumber" />     
+                <apex:inputField value="{!OpportunityLineItem.Contract_Number__c}" id="cntrctnumber" />
+                
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" />
+                    <apex:outputPanel StyleClass="requiredInput" layout="block">
+                        <div class="requiredBlock"></div>
+                        <apex:selectList value="{!bustype}" id="renbustype" size="1" >   
+                            <apex:selectOptions value="{!selbustype}"/>
+                        </apex:selectList>
+                    </apex:outputPanel>
+                </apex:pageblocksectionitem>
+				
+                
+                <apex:inputField value="{!OpportunityLineItem.Quote_Number__c}" id="quoteno"/>
+                <apex:inputField value="{!OpportunityLineItem.Business_Partner_ID__c}" id="busspartner"/>
+                <apex:inputField value="{!OpportunityLineItem.Contract_Number__c}" id="contractno" />
+                
+            </apex:pageBlockSection>
+        
+            <apex:pageBlockSection id="pbs2" title="{!actionsubtitle}" rendered="{!NOT(isMainFrame)}" ></apex:pageBlockSection>
+            <table id="t1" width="100%" cellpadding="1" cellspacing="1" border="0" >
+                <tr>
+                    <th><apex:OutputPanel rendered="{!isRenewal}">Product Family</apex:OutputPanel></th>
+                    <th><apex:OutputPanel rendered="{!NOT(isMainFrame)}" >Business </apex:OutputPanel></th>
+                    <th><apex:OutputPanel rendered="{!NOT(isMainFrame)}" >Product</apex:OutputPanel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.License__c.label}" rendered="{!isProduct}" /></th>                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" rendered="{!isProduct}" /></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.License_Classification__c.label}" rendered="{!isProduct}" /></th> <!--samap01-revrec-->
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}" rendered="{!NOT(isMainFrame)}" /></th>                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch__c.label}" rendered="{!NOT(isMainFrame)}" /></th>
+                   
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Start_Date__c.label}" rendered="{!NOT(isMainFrame)}" /></th>                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.End_Date__c.label}" rendered="{!NOT(isMainFrame)}" /></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Term_Month__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <!--SAMTU01-->
+                     <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Duration__c.label}" rendered="{!isProduct}"></apex:outputLabel></th> <!--SAMTU01 -->
+                    <!-- for FY13 requiremnt -139 (Begin) -->
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.UF_License_Fee__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Total_Maintenance__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <!--  //samtu01 - US387241 -->
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_License_Fee__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Total_Maintenance__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <!--  //samtu01 - US387241 -->
+                    <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Corporate_ARR__c.label}" rendered="{!isProduct}"></apex:outputLabel></th> 
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Corporate_ARR__c.label}" rendered="{!isProduct}"></apex:outputLabel></th> 
+                    <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                    <!-- Added for release4 (Begin)-->    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Override_Fees__c.label}" rendered="{!isProduct}" /></th>                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Partner_Added__c.label}" rendered="{!NOT(isMainFrame)}" /></th>                    
+                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Original_Expiration_Date__c.label}" rendered="{!isRenewal}"></apex:outputLabel></th>
+           
+                    <th>
+                        <apex:outputPanel rendered="false">
+                            <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.On_Demand__c.label}"  rendered="{!(isProduct && show_ondemand) }"></apex:outputLabel>
+                        </apex:outputPanel>
+                    </th>                   
+                </tr>
+                <tr> 
+                    
+                    <td>
+                        <apex:OutputPanel rendered="{!isRenewal}">
+                            <apex:OutputText value="{!prdfamily}" />
+                        </apex:OutputPanel>
+                    </td>
+                    <td>
+                        <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                            <apex:OutputText value="{!prdbu}" />
+                        </apex:OutputPanel>
+                    </td> 
+                    <td>
+                        <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                            <apex:OutputText value="{!prdname}" />
+                        </apex:OutputPanel>
+                    </td>
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:inputField value="{!OpportunityLineItem.License__c}" rendered="{!OpportunityLineItem.Override_Fees__c}" id="prd_LicenseFee"/>
+                            <apex:inputField onchange="calculateUFLicenseFee('{!OpportunityLineItem.Override_Fees__c}')" value="{!OpportunityLineItem.License__c}" rendered="{!!OpportunityLineItem.Override_Fees__c}" id="prd_LicenseFee1"/>
+                            <script type="text/javascript">
+                            var inputElem = document.getElementById('{!$Component.prd_LicenseFee}');
+                            inputElem.disabled=true;
+                            </script> 
+                        </apex:outputPanel>
+                    </td>   
+                    
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:selectList value="{!bustype}" id="prd_bustype" size="1" style="width:200px" >   
+                                <apex:selectOptions value="{!selbustype}"/>
+                            </apex:selectList> 
+                        </apex:outputPanel>
+                    </td>
+					
+                     <!--samap01-Revrec -->
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct && If((((OpportunityLineItem.License__c !='Ratable') && prdbu == 'Mainframe') || prdbu != 'Mainframe') ,true,false)}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.License_Classification__c.label}
+                        </apex:facet>
+                        <apex:selectList value="{!licclassification}" id="prd_License_Classification__c" size="1"  >   
+                            <apex:selectOptions value="{!LicenseClassification}"/>
+                        </apex:selectList>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_License_Classification__c}');
+                        inputElem.disabled=true;
+                        </script> 
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{! isProduct && If(((OpportunityLineItem.License__c =='Ratable') && prdbu == 'Mainframe')  ,true,false)}" >
+                        <apex:facet name="header" >
+                            {!$ObjectType.OpportunityLineItem.fields.License_Classification__c.label}
+                        </apex:facet>
+                        <apex:selectList value="{!licclassification}" id="prd_License_Classificationoverride" size="1"  >   
+                            <apex:selectOptions value="{!LicenseClassificationOverride}"/>
+                        </apex:selectList>
+                            
+                      </apex:outputPanel>
+                            	<apex:inputHidden value="{!OpportunityLineItem.Business_Unit__c}" id="strbu" rendered="false"/>
+                    </td>
+             
+                    <!--samap01 -->
+                    <td>
+                        
+                        <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                            <apex:inputField value="{!OpportunityLineItem.UnitPrice}" rendered="{!OpportunityLineItem.Override_Fees__c}" id="prd_unitprice"/>
+                            <apex:inputField onchange="calculateUFLicenseFee('{!OpportunityLineItem.Override_Fees__c}')"  value="{!OpportunityLineItem.UnitPrice}" id="prd_salesprice" rendered="{!!OpportunityLineItem.Override_Fees__c}"/>
+                            <script type="text/javascript">
+                            var inputElem = document.getElementById('{!$Component.prd_unitprice}');
+                            inputElem.disabled=true;
+                            </script>  
+                            <!--<apex:inputField onchange="calculateUFLicenseFee('{!OpportunityLineItem.Override_Fees__c}')" value="{!OpportunityLineItem.UnitPrice}" id="prd_salesprice" />-->
+                        </apex:OutputPanel>
+                    </td>
+                    <!-- SAMTU01 US387241 -->
+                    
+                    <td>
+                        
+                        <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                            <apex:inputField value="{!OpportunityLineItem.Stretch__c}" rendered="{!OpportunityLineItem.Override_Fees__c}" id="prd_stretch"/>
+                            <apex:inputField onchange="calculateUFLicenseFee('{!OpportunityLineItem.Override_Fees__c}')"  value="{!OpportunityLineItem.Stretch__c}" id="prd_stretch2" rendered="{!!OpportunityLineItem.Override_Fees__c}"/>
+                            <script type="text/javascript">
+                            var inputElem = document.getElementById('{!$Component.prd_stretch}');
+                            inputElem.disabled=true;
+                            </script>  
+                            <!--<apex:inputField onchange="calculateUFLicenseFee('{!OpportunityLineItem.Override_Fees__c}')" value="{!OpportunityLineItem.UnitPrice}" id="prd_salesprice" />-->
+                        </apex:OutputPanel>
+                    </td>
+                    <!-- SAMTU01 US387241 end-->
+                    <td>
+                        <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                            <apex:inputField value="{!OpportunityLineItem.Start_Date__c}" onchange="calculatemonthsbtwn()"/>
+                        </apex:OutputPanel>
+                    </td>
+                    
+                    <td>
+                        <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                            <apex:inputField value="{!OpportunityLineItem.End_Date__c}" onchange="calculatemonthsbtwn()"/>
+                        </apex:OutputPanel>
+                    </td>
+                    
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:outputField value="{!OpportunityLineItem.Term_Month__c}" id="prd_term" />
+                        </apex:outputPanel>
+                    </td>
+                    <!-- SAMTU01-->
+                     <TD>
+                
+                         <apex:outputPanel rendered="{!isProduct}">
+                             <apex:inputField value="{!OpportunityLineItem.Stretch_Duration__c}" id="prd_stretchduration" onchange="calculateUFLicenseFee(false)"/>
+                        </apex:outputPanel>                    
+                     
+                    </TD>
+                    
+                    <!--New fields added as per FY13 req 139 (Begin)-->
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:inputField value="{!lineitemrec.UF_License_Fee__c}" id="prd_uflic1" rendered="{!lineitemrec.Override_Fees__c}" onchange="CalcSalesPrice();"/>
+                            <apex:inputField value="{!lineitemrec.UF_License_Fee__c}" id="prd_UFLicenseFee" rendered="{!!lineitemrec.Override_Fees__c}"/> 
+                            <script type="text/javascript">
+                            var inputElem = document.getElementById('{!$Component.prd_UFLicenseFee}');
+                            inputElem.disabled=true;
+                            </script>                                                    
+                        </apex:outputPanel>
+                    </td>
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:inputField value="{!lineitemrec.Total_Maintenance__c}" id="prd_TotMaint1" rendered="{!lineitemrec.Override_Fees__c}" onchange="CalcSalesPrice();"/>
+                            <apex:inputField value="{!lineitemrec.Total_Maintenance__c}" id="prd_TotMaint" rendered="{!!lineitemrec.Override_Fees__c}"/>
+                            <script type="text/javascript">
+                            var inputElem = document.getElementById('{!$Component.prd_TotMaint}');
+                            inputElem.disabled=true;
+                            </script>                             
+                        </apex:outputPanel>
+                    </td>
+                    <!--SAMTU01 US387241 -->
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:inputField value="{!lineitemrec.Stretch_License_Fee__c}" id="prd_slic1" rendered="{!lineitemrec.Override_Fees__c}" onchange="CalcStretch();"/>
+                            <apex:inputField value="{!lineitemrec.Stretch_License_Fee__c}" id="prd_StretchLicenseFee" rendered="{!!lineitemrec.Override_Fees__c}"/> 
+                            <script type="text/javascript">
+                            var inputElem = document.getElementById('{!$Component.prd_StretchLicenseFee}');
+                            inputElem.disabled=true;
+                            </script>                                                    
+                        </apex:outputPanel>
+                    </td>
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:inputField value="{!lineitemrec.Stretch_Total_Maintenance__c}" id="prd_STotMaint1" rendered="{!lineitemrec.Override_Fees__c}" onchange="CalcStretch();"/>
+                            <apex:inputField value="{!lineitemrec.Stretch_Total_Maintenance__c}" id="prd_StretchTotMaint" rendered="{!!lineitemrec.Override_Fees__c}"/>
+                            <script type="text/javascript">
+                            var inputElem = document.getElementById('{!$Component.prd_StretchTotMaint}');
+                            inputElem.disabled=true;
+                            </script>                             
+                        </apex:outputPanel>
+                    </td>
+                    <!--SAMTU01 US387241 end -->
+                    <!--New fields added as per FY13 req 139 (End)-->
+                    <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                                <apex:param value="{!OpportunityLineItem.Corporate_ARR__c}" />
+                            </apex:outputtext>
+                        </apex:outputPanel>
+                    </td>
+                    <td>
+                        <apex:OutputPanel rendered="{!isProduct}">
+                            <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                                <apex:param value="{!OpportunityLineItem.Stretch_Corporate_ARR__c}" />
+                            </apex:outputtext>
+                        </apex:OutputPanel>
+                    </td>
+                    <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                    <td>
+                        <apex:OutputPanel rendered="{!isProduct}">
+                            
+                            <apex:inputField value="{!OpportunityLineItem.Override_Fees__c}" id="prd_overrideFee" rendered="{! If(OpportunityLineItem.id != null && (OpportunityLineItem.License__c =='Subscription'||OpportunityLineItem.License__c =='SAAS' ) ,true,false) }" />
+                            <apex:inputField value="{!OpportunityLineItem.Override_Fees__c}"  rendered="{! If(OpportunityLineItem.id != null && (OpportunityLineItem.License__c =='Upfront'||OpportunityLineItem.License__c =='Ratable')  ,true,false) }" onchange="overideCall();"/>
+                            <script type="text/javascript">
+                            var inputElem = document.getElementById('{!$Component.prd_overrideFee}');
+                            inputElem.disabled=true;
+                            </script>    
+                        </apex:OutputPanel>
+                    </td>
+                    <td>
+                        <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                            <apex:outputField value="{!OpportunityLineItem.Partner_Added__c}" id="part_prd_Added" />
+                        </apex:OutputPanel>
+                    </td>
+                    
+                    
+                    <td>
+                        <apex:outputPanel rendered="{!isRenewal}">
+                            <apex:inputField value="{!OpportunityLineItem.Original_Expiration_Date__c}" />
+                        </apex:outputPanel>
+                        
+                    </td>
+                    
+                    <td>
+                        <apex:outputPanel rendered="false">
+                            <apex:outputPanel rendered="{!(isProduct && show_ondemand) }">
+                                <apex:inputField value="{!OpportunityLineItem.On_Demand__c}" />
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        &nbsp;
+                    </td>
+                </tr>
+            </table>
+            <apex:pageBlockSection id="mfpbs1" title="Opportunity Details" rendered="{!isMainFrame}">
+                <apex:outputField value="{!headerrec.New_Deal_Term_months__c}" id="newdealterm"/>
+                <apex:inputField value="{!headerrec.Stretch_Deal_Term_Months__c}" id="stretchterm" onchange="stretchFeeCalculation()" />
+                <apex:inputField value="{!headerrec.Stretch_Sales_Price_Gap_Reason__c}" id="stretchgap"/>
+                <apex:inputField value="{!headerrec.Reason_duration_is_1_year__c}"/>
+                <apex:inputField value="{!headerrec.Status_at_end_of_term__c}"/>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection id="mfpbs2" title="Mainframe Capacity Details" rendered="{!isMainFrame}">
+                <!-- SAMTU01 - US392086 -->
+                <apex:inputField value="{!OpportunityLineItem.unitprice}" rendered="{!!OpportunityLineItem.Override_Fees__c }" onchange="stretchFeeCalculation()" required="True"/>
+                <apex:inputField value="{!OpportunityLineItem.unitprice}" rendered="{!OpportunityLineItem.Override_Fees__c }" onchange="stretchFeeCalculation()" html-disabled="True"/>
+                
+                <apex:inputField value="{!OpportunityLineItem.Stretch__c}" rendered="{!!OpportunityLineItem.Override_Fees__c }" onchange="stretchFeeCalculation()" />
+                <apex:inputField value="{!OpportunityLineItem.Stretch__c}" rendered="{!OpportunityLineItem.Override_Fees__c }" onchange="stretchFeeCalculation()" html-disabled="True"/>
+                
+                <apex:inputField value="{!OpportunityLineItem.Start_Date__c}" onchange="performArrCalculation()" required="True"/>
+                <apex:inputField value="{!OpportunityLineItem.End_Date__c}" onchange="performArrCalculation()" required="True"/>
+                
+                <apex:inputField value="{!OpportunityLineItem.UF_License_Fee__c}" rendered="{!!OpportunityLineItem.Override_Fees__c || OpportunityLineItem.License__c =='Subscription' }" html-disabled="true" />
+                <apex:inputField value="{!OpportunityLineItem.UF_License_Fee__c}" rendered="{!OpportunityLineItem.Override_Fees__c && OpportunityLineItem.License__c =='Ratable' }" onchange="CalcSalesPrice()" />
+                
+                <apex:inputField value="{!OpportunityLineItem.Stretch_License_Fee__c}" rendered="{!!OpportunityLineItem.Override_Fees__c || OpportunityLineItem.License__c =='Subscription' }" html-disabled="true" />
+                <apex:inputField value="{!OpportunityLineItem.Stretch_License_Fee__c}" rendered="{!OpportunityLineItem.Override_Fees__c && OpportunityLineItem.License__c =='Ratable' }" onchange="CalcStretch()" />                
+                
+                <apex:inputField value="{!OpportunityLineItem.Total_Maintenance__c}" rendered="{!!OpportunityLineItem.Override_Fees__c || OpportunityLineItem.License__c =='Subscription' }" html-disabled="true" />
+                <apex:inputField value="{!OpportunityLineItem.Total_Maintenance__c}" rendered="{!OpportunityLineItem.Override_Fees__c && OpportunityLineItem.License__c =='Ratable' }" onchange="CalcSalesPrice()" />
+                
+                <apex:inputField value="{!OpportunityLineItem.Stretch_Total_Maintenance__c}" rendered="{!!OpportunityLineItem.Override_Fees__c || OpportunityLineItem.License__c =='Subscription' }" html-disabled="true" />
+                <apex:inputField value="{!OpportunityLineItem.Stretch_Total_Maintenance__c}" rendered="{!OpportunityLineItem.Override_Fees__c && OpportunityLineItem.License__c =='Ratable' }" onchange="CalcStretch()" />      
+                
+                 <apex:inputField value="{!OpportunityLineItem.Override_Fees__c}" id="prd_overrideFee" rendered="{! If( (OpportunityLineItem.License__c =='Subscription'||OpportunityLineItem.License__c ==null ) ,true,false) }" html-disabled="true" />
+                 <apex:inputField value="{!OpportunityLineItem.Override_Fees__c}"  rendered="{! If((OpportunityLineItem.License__c =='Ratable')  ,true,false) }" onchange="performArrCalculation()" />
+                <!-- //Added by SAMTU01 - US392086 --ends here -->
+                <apex:outputField value="{!OpportunityLineItem.Term_Month__c}"/> <!-- SAMTU01 - US418864 -->
+                
+                     <!--<apex:outputField value="{!OpportunityLineItem.Business_Type__c}"  /> -->
+                 <!-- SAMTU01 - US398729 -->
+                <apex:pageBlockSectionItem id="bus">                   
+                        <apex:outputLabel value="Business Type"/>                       
+                             <apex:selectList value="{!mfcapbustype}" size="1" >   
+                            <apex:selectOptions value="{!BusinessTypeList}"/>
+                        </apex:selectList>                  
+                   
+                </apex:pageBlockSectionItem>
+                <!-- SAMTU01 - US398729 end-->
+               
+               <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="ARR"/>
+                <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                    <apex:param value="{!OpportunityLineItem.Corporate_ARR__c}" />
+                </apex:outputtext>
+                </apex:pageBlockSectionItem>
+                <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                <!-- //Added by SAMTU01 - US392086 --> 
+                    <apex:pageBlockSectionItem id="lic">                   
+                        <apex:outputLabel value="License Type"/>                       
+                             <apex:selectList value="{!OpportunityLineItem.License__c}" id="prd_Licensetype" size="1" onchange="stretchFeeCalculation()"  >   
+                            <apex:selectOptions value="{!LicenseType}"/>
+                        </apex:selectList>                  
+                   
+                </apex:pageBlockSectionItem>
+                 <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="ARR Stretch"/>
+                    <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                        <apex:param value="{!OpportunityLineItem.Stretch_Corporate_ARR__c}" />
+                    </apex:outputtext>
+                </apex:pageBlockSectionItem> 
+                <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields --> 
+               
+                <!-- //Added by SAMTU01 - US392086 --end -->
+                   <!--samap01-Revrec -->
+                <apex:pageBlockSectionItem id="lictype" rendered="{! IF( isMainFrame && ( isMainFrame && OpportunityLineItem.License__c =='Subscription' ),true,false)}" >
+                     <apex:outputLabel value="License Classification" />   
+                     <apex:OutputPanel >
+                          <apex:selectList value="{!licclassification}" id="prd_License_Classification__c" size="1"  >   
+                            <apex:selectOptions value="{!LicenseClassification}"/>
+                        </apex:selectList>
+                          <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_License_Classification__c}');
+                        inputElem.disabled=true;
+                        </script> 
+                       </apex:OutputPanel>
+                     </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem id="licovertype"  rendered="{! IF(isMainFrame && OpportunityLineItem.License__c =='Ratable',true,false)}">
+                        <apex:outputLabel value="License Classification" />    
+                      <apex:OutputPanel >
+                       <apex:selectList value="{!licclassification}" id="prd_LicenseClassification_override__c" size="1"  >   
+                            <apex:selectOptions value="{!LicenseClassificationOverride}"/>
+                        </apex:selectList>
+                          
+                       </apex:OutputPanel>
+                </apex:pageBlockSectionItem>
+                   	<apex:inputHidden value="{!OpportunityLineItem.Business_Unit__c}" id="strbu" rendered="false"/>
+
+                      <!--samap01-Revrec -->
+               
+                 <apex:inputField value="{!OpportunityLineItem.Quote_Number__c}" id="qtnumber" />
+                <apex:inputField value="{!OpportunityLineItem.Contract_Number__c}" id="cntrctnumber" />
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+    </apex:form>
+    
+    <apex:form id="form1_view" rendered="{!isView}">
+        <apex:sectionHeader subtitle="{!headerrec.Name}" title="{!actiontitle}"/>
+        <apex:outputLink value="/{!headerrec.Id}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb2">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Edit" action="{!edit}" />
+                <apex:commandButton value="Delete" action="{!dodelete}" />
+                <apex:commandButton value="Cancel" action="{!docancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pbs2" title="{!actionsubtitle}" rendered="{!isRenewal}">
+                <apex:outputField value="{!OpportunityLineItem.New_Deal_Term_Months__c}" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Original_CV__c.label}" />
+                    <apex:outputText value="{0, number, 000,000.00}">
+                        <apex:param value="{!OpportunityLineItem.Original_CV__c}" />
+                    </apex:outputText>
+                    <!--<apex:outputText value="{!OpportunityLineItem.Original_CV__c}"  />-->
+                </apex:pageBlockSectionItem>
+                
+                <apex:outputField value="{!OpportunityLineItem.Original_Deal_Term_Months__c}" />
+                <!-- <apex:outputField value="{!OpportunityLineItem.Comfort_Term__c}" /> -->
+                <apex:outputField value="{!OpportunityLineItem.Start_Date__c}"/>
+                <apex:outputField value="{!OpportunityLineItem.End_Date__c}"/>
+               
+                <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Corporate_ARR__c.label}" />
+                    <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                        <apex:param value="{!OpportunityLineItem.Corporate_ARR__c}" />
+                    </apex:outputtext>  
+                </apex:pageBlockSectionItem>
+                <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                <apex:outputField value="{!OpportunityLineItem.Original_Contract_IDs__c}" />
+                <!--<apex:outputField value="{!OpportunityLineItem.Renewal_Gap_Reason_Codes__c}" />-->
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Renewal_Quota_CV__c.label}" />
+                    <apex:outputText value="{!OpportunityLineItem.Renewal_Quota_CV__c}"  />
+                </apex:pageBlockSectionItem>
+                <apex:OutputField value="{!OpportunityLineItem.Business_Type__c}" id="renbustype" />
+                <apex:outputField value="{!OpportunityLineItem.Quote_Number__c}" id="quoteno"/>
+                <apex:outputField value="{!OpportunityLineItem.Business_Partner_ID__c}" id="busspartner"/>
+                <apex:outputField value="{!OpportunityLineItem.Contract_Number__c}" id="contractno" />
+                
+            </apex:pageBlockSection>
+            <!-- </apex:pageBlock>
+<apex:pageBlock id="pb2">-->
+            <apex:pageBlockSection id="pbs3" title="{!actionsubtitle}" rendered="{!NOT(isMainFrame)}" >   </apex:pageBlockSection> 
+            <table id="t2" width="100%" cellpadding="1" cellspacing="1" border="0.5" frame="box">
+                <tr>
+                    <th><apex:OutputPanel rendered="{!isRenewal}">Product Family</apex:OutputPanel></th>
+                    <th><apex:OutputPanel rendered="{!NOT(isMainFrame)}">Business Unit</apex:OutputPanel></th>                    
+                    <th><apex:OutputPanel rendered="{!NOT(isMainFrame)}">Product</apex:OutputPanel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.License__c.label}" rendered="{!isProduct}" /></th> 
+             
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" rendered="{!isProduct}" /></th>
+                    
+                     <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.License_Classification__c.label}" rendered="{!isProduct}" /></th>  <!--samap01-US370554-->
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}" rendered="{!NOT(isMainFrame)}" /></th> 
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch__c.label}" rendered="{!NOT(isMainFrame)}" /></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Start_Date__c.label}" rendered="{!NOT(isMainFrame)}" /></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.End_Date__c.label}" rendered="{!NOT(isMainFrame)}" /></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Term_Month__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <!-- SAMTU01 US377325-->
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Duration__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <!-- for FY13 requiremnt -139 (Begin) -->
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.UF_License_Fee__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Total_Maintenance__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <!-- SAMTU01 US87241--> 
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_License_Fee__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Total_Maintenance__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <!-- SAMTU01 US87241 end-->
+                     <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Corporate_ARR__c.label}" rendered="{!NOT(isMainFrame)}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Corporate_ARR__c.label}" rendered="{!NOT(isMainFrame)}"></apex:outputLabel></th>
+                    <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                    
+                    <!-- for FY13 requiremnt -139 (Begin) -->  
+                   
+                    <!--Release 4 (Begin)-->
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Partner_Added__c.label}" rendered="{!NOT(isMainFrame)}" /></th> 
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Partner_Sales_Price__c.label}" rendered="{!NOT(isMainFrame)}" /></th> 
+                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Partner_Term__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <!-- for FY13 requiremnt -139 (Begin) -->
+                    <!-- for FY13 requiremnt -139 (Begin) -->                                       
+                    <!--Release 4 (End)-->
+                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Original_Expiration_Date__c.label}" rendered="{!isRenewal}"></apex:outputLabel></th>
+                    
+                </tr>
+                <tr> 
+                    
+                    <td>
+                        <apex:OutputPanel rendered="{!isRenewal}">
+                            <apex:outputText value="{!prdfamily}" />
+                        </apex:OutputPanel>
+                    </td>
+                    <td>
+                        <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                            <apex:outputText value="{!prdbu}" />
+                        </apex:OutputPanel> 
+                    </td> 
+                    <td>
+                        <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                            <apex:outputText value="{!prdname}" />
+                        </apex:OutputPanel> 
+                    </td>
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:outputField value="{!OpportunityLineItem.License__c}" />
+                        </apex:outputPanel> 
+                    </td>                    
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:outputField value="{!OpportunityLineItem.Business_Type__c}" />
+                        </apex:outputPanel> 
+                    </td>
+                    <!--samap01-revrec-us370554 -->
+                          <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:outputField value="{!OpportunityLineItem.License_Classification__c}" />
+                        </apex:outputPanel> 
+                    </td>
+                     <!--samap01-revrec-us370554 -->
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" rendered="{!NOT(isMainFrame)}"/>
+                        <apex:outputText value="{0, number, ###,###,##0.00}" rendered="{!NOT(isMainFrame)}">
+                            <apex:param value="{!OpportunityLineItem.UnitPrice}" />
+                        </apex:outputText>
+                        <!-- <apex:outputText value="{!OpportunityLineItem.UnitPrice}" />-->
+                    </td>
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" rendered="{!NOT(isMainFrame)}"/>
+                        <apex:outputText value="{0, number, ###,###,##0.00}" rendered="{!NOT(isMainFrame)}">
+                            <apex:param value="{!OpportunityLineItem.Stretch__c}" />
+                        </apex:outputText>
+                    </td>
+                    
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}" rendered="{!NOT(isMainFrame)}">
+                            <apex:param value="{!OpportunityLineItem.Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}" rendered="{!NOT(isMainFrame)}">
+                            <apex:param value="{!OpportunityLineItem.End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    
+                    
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:outputField value="{!OpportunityLineItem.Term_Month__c}" />
+                        </apex:outputPanel>
+                    </td>
+                    <!-- SAMTU01 - US377325 -->
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:outputField value="{!OpportunityLineItem.Stretch_Duration__c}" />
+                        </apex:outputPanel>
+                    </td>
+                    <!--New fields added as per FY13 req 139 (Begin)-->
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" rendered="{!isProduct}"/>
+                        <apex:outputText value="{0, number, ###,###,##0.00}" rendered="{!isProduct}">
+                            <apex:param value="{!OpportunityLineItem.UF_License_Fee__c}" />
+                        </apex:outputText>                     
+                    </td>
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" rendered="{!isProduct}"/>
+                        <apex:outputText value="{0, number, ###,###,##0.00}" rendered="{!isProduct}">
+                            <apex:param value="{!OpportunityLineItem.Total_Maintenance__c}" />
+                        </apex:outputText>                     
+                    </td>
+                   
+                    <!-- SAMTU01 - US387241 -->
+                     <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" rendered="{!isProduct}"/>
+                        <apex:outputText value="{0, number, ###,###,##0.00}" rendered="{!isProduct}">
+                            <apex:param value="{!OpportunityLineItem.Stretch_License_Fee__c}" />
+                        </apex:outputText>                     
+                    </td>
+                     <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" rendered="{!isProduct}"/>
+                        <apex:outputText value="{0, number, ###,###,##0.00}" rendered="{!isProduct}">
+                            <apex:param value="{!OpportunityLineItem.Stretch_Total_Maintenance__c}" />
+                        </apex:outputText>                     
+                    </td>
+                    <!-- SAMTU01 - US387241 -END -->
+                     <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" rendered="{!NOT(isMainFrame)}"/>
+                        <apex:outputText value="{0, number, ###,###,##0.00}" rendered="{!NOT(isMainFrame)}">
+                           
+                            <apex:param value="{!OpportunityLineItem.Corporate_ARR__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" rendered="{!NOT(isMainFrame)}"/>
+                        <apex:outputText value="{0, number, ###,###,##0.00}" rendered="{!NOT(isMainFrame)}">
+                            
+                            <apex:param value="{!OpportunityLineItem.Stretch_Corporate_ARR__c}" />
+                        </apex:outputText>
+                    </td>
+                     <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                    <!--New fields added as per FY13 req 139 (End)-->
+                    <!--Release 4 (Begin)-->
+                    <td>                    
+                        <apex:outputField value="{!OpportunityLineItem.Partner_Added__c}" />
+                    </td>
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" rendered="{!NOT(isMainFrame)}"/>
+                        <apex:outputText value="{0, number, ###,###,##0.00}" rendered="{!NOT(isMainFrame)}">
+                            <apex:param value="{!OpportunityLineItem.Partner_Sales_Price__c}" />
+                        </apex:outputText>                        
+                    </td>
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                            <apex:outputField value="{!OpportunityLineItem.Partner_Term__c}" />
+                        </apex:outputPanel>
+                    </td>
+                    
+                    <!--Release 4 (End)-->
+                    
+                    <td>
+                        <apex:outputPanel rendered="{!isRenewal}">
+                            <apex:outputField value="{!OpportunityLineItem.Original_Expiration_Date__c}" />
+                        </apex:outputPanel>
+                        
+                    </td>
+                </tr>
+                
+            </table> 
+            
+            <apex:pageBlockSection id="mfpbs1" title="Opportunity Details" rendered="{!isMainFrame}">
+                <apex:outputField value="{!headerrec.New_Deal_Term_months__c}" id="newdealterm"/>
+                <apex:outputField value="{!headerrec.Stretch_Deal_Term_Months__c}" id="stretchterm" />
+                <apex:outputField value="{!headerrec.Stretch_Sales_Price_Gap_Reason__c}" id="stretchgap"/>
+                <apex:outputField value="{!headerrec.Reason_duration_is_1_year__c}" id="res" />
+                <apex:outputField value="{!headerrec.Status_at_end_of_term__c}" id="sts" />
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection id="mfpbs2" title="Mainframe Capacity Details" rendered="{!isMainFrame}">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}" />
+                    <apex:outputText value="{!OpportunityLineItem.UnitPrice}"  />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch__c.label}" />
+                    <apex:outputText value="{!OpportunityLineItem.Stretch__c}"  />
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!OpportunityLineItem.Start_Date__c}"/>
+                <apex:outputField value="{!OpportunityLineItem.End_Date__c}"/>
+                <!-- SAMTU01 - US392086 -->
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.UF_License_Fee__c.label}" />
+                    <apex:outputText value="{!OpportunityLineItem.UF_License_Fee__c}"  />               
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_License_Fee__c.label}" />
+                    <apex:outputText value="{!OpportunityLineItem.Stretch_License_Fee__c}"  />               
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Total_Maintenance__c.label}" />
+                    <apex:outputText value="{!OpportunityLineItem.Total_Maintenance__c}"  />               
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Total_Maintenance__c.label}" />
+                    <apex:outputText value="{!OpportunityLineItem.Stretch_Total_Maintenance__c}"  />               
+                </apex:pageBlockSectionItem>
+                 <apex:outputField value="{!OpportunityLineItem.Override_Fees__c}"  />
+                <!-- SAMTU01 - US392086 end-->
+                 <apex:pageBlockSectionItem >
+                   
+                     <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                     <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Corporate_ARR__c.label}" />
+                     <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                         <apex:param value="{!OpportunityLineItem.Corporate_ARR__c}" />
+                     </apex:outputtext>              
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!OpportunityLineItem.Business_Type__c}"  />
+                <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Corporate_ARR__c.label}" />
+                    <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                        <apex:param value="{!OpportunityLineItem.Stretch_Corporate_ARR__c}" />
+                    </apex:outputtext> 
+                </apex:pageBlockSectionItem>
+                <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                <apex:outputField value="{!OpportunityLineItem.License__c}"  />   
+                      <apex:outputField value="{!OpportunityLineItem.Quote_Number__c}" id="qtnumber" />  
+                <!--samap01 -revrec -->
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.License_Classification__c.label}" />
+                    <apex:outputText value="{!OpportunityLineItem.License_Classification__c}"  />               
+                </apex:pageBlockSectionItem>
+                    <!--samap01 -revrec -->            
+               
+             
+                <apex:outputField value="{!OpportunityLineItem.Contract_Number__c}" id="cntrctnumber" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <apex:form id="form1_view_offerings" rendered="{!isViewOfferings}">
+        <apex:sectionHeader subtitle="{!headerrec.Name}" title="{!actiontitle}"/>
+        <apex:outputLink value="/{!headerrec.Id}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb3">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Edit" action="{!edit}" />
+                <apex:commandButton value="Delete" action="{!dodelete}" />
+                <apex:commandButton value="Cancel" action="{!docancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pbs4" title="{!actionsubtitle}"></apex:pageBlockSection>
+            <table id="t2" width="100%" cellpadding="0" cellspacing="2" border="0" frame="box">
+                <tr>
+                    <th>Business Unit</th>
+                    <th>Offering</th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" rendered="{!isSupport}"></apex:outputLabel></th>
+                    <th>{!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}</th>                    
+                    <th>{!$ObjectType.OpportunityLineItem.fields.Stretch__c.label}</th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Drawdown_from_Prepaid_Funds__c.label}" rendered="{!isServices}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Contract_Length__c.label}" rendered="{!isSupport}"></apex:outputLabel></th>
+                    
+                </tr>
+                <tr> 
+                    <td>
+                        <apex:outputText value="{!prdbu}" />
+                    </td> 
+                    <td>
+                        <apex:outputText value="{!prdname}" />
+                    </td>
+                    <td>
+                        <apex:outputpanel rendered="{!isSupport}">
+                            <apex:outputText value="{!OpportunityLineItem.Business_Type__c}" />
+                        </apex:outputpanel> 
+                    </td>
+                    
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" />                        
+                        <apex:outputText value="{0, number, ###,###,##0.00}">
+                            <apex:param value="{!OpportunityLineItem.UnitPrice}" />
+                        </apex:outputText>
+                        <!-- <apex:outputText value="{!OpportunityLineItem.UnitPrice}" />-->
+                    </td>
+                    
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" />                        
+                        <apex:outputText value="{0, number, ###,###,##0.00}">
+                            <apex:param value="{!OpportunityLineItem.Stretch__c}" />
+                        </apex:outputText>
+                        <!-- <apex:outputText value="{!OpportunityLineItem.UnitPrice}" />-->
+                    </td>
+                    
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.Drawdown_from_Prepaid_Funds__c}" rendered="{!isServices}" />
+                    </td>
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.Contract_Length__c}" rendered="{!isSupport}" />
+                    </td>
+                    
+                    
+                </tr>
+                
+            </table>
+            
+        </apex:pageBlock>
+    </apex:form>
+    <apex:form id="form1_edit_offerings" rendered="{!isEditOfferings}">
+        <apex:sectionHeader subtitle="{!headerrec.Name}" title="{!actiontitle}"/>
+        <apex:outputLink value="/{!headerrec.Id}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb4">
+            <apex:pageMessages /> 
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!updateproduct}" />
+                <apex:commandButton value="Cancel" action="{!docancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pbs5" title="{!actionsubtitle}"></apex:pageBlockSection>
+            <table id="t1" width="50%" cellpadding="1" cellspacing="1" border="0" >
+                <tr>
+                    <th>Business Unit</th>
+                    <th>Offering</th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" rendered="{!isSupport}"></apex:outputLabel></th>
+                    
+                    <th>{!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}</th>
+                    <th>{!$ObjectType.OpportunityLineItem.fields.Stretch__c.label}</th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Drawdown_from_Prepaid_Funds__c.label}" rendered="{!isServices}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Contract_Length__c.label}" rendered="{!isSupport}"></apex:outputLabel></th>
+                </tr>
+                <tr> 
+                    <td>
+                        <apex:outputText value="{!prdbu}" />
+                    </td> 
+                    <td>
+                        <apex:outputText value="{!prdname}" />
+                    </td>
+                    <td>
+                        <apex:outputpanel rendered="{!isSupport}">
+                            
+                            <apex:selectList value="{!bustype}" id="supp_bustype" size="1" style="width:200px">   
+                                <apex:selectOptions value="{!selbustype}"/>
+                            </apex:selectList>
+                        </apex:outputpanel>
+                    </td>
+                    <td>
+                        <apex:inputField value="{!OpportunityLineItem.UnitPrice}" />
+                    </td>
+                    <td>
+                        <apex:inputField value="{!OpportunityLineItem.Stretch__c}" />
+                    </td>
+                    <td>
+                        <apex:inputField value="{!OpportunityLineItem.Drawdown_from_Prepaid_Funds__c}" rendered="{!isServices}" />
+                    </td>
+                    <td>
+                        <apex:inputField value="{!OpportunityLineItem.Contract_Length__c}" rendered="{!isSupport}" />
+                    </td>
+                    
+                </tr>                    
+            </table>
+        </apex:pageBlock>
+    </apex:form>
+    
+</apex:page>

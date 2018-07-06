@@ -1,0 +1,2 @@
+@IsTest
+private class TestObjectPaginator {}

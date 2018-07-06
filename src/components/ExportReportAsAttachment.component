@@ -1,0 +1,9 @@
+<apex:component controller="ReportExportController" access="global">
+    <apex:attribute name="reportId_name" description="Id of the report to be retrieved." type="Id" assignTo="{!reportId}"/>
+    <apex:attribute name="format_name" description="'printable', 'csv' or 'xls'. Corresponds to 'Printable view' or 'Export Details' options." type="String" assignTo="{!format}"/>
+    <apex:attribute name="prettify_name" description="Select if you want to try cutting out headers and footers." type="Boolean" default="true" assignTo="{!prettify}"/>
+    <apex:attribute name="encoding_name" description="Text encoding (UTF-8 etc)." type="String" default="UTF-8" assignTo="{!encoding}" />
+    <apex:attribute name="showDetails_name" description="If 'printable' is used - choose if you want to override report's show/hide details setting. Use 'yes' or 'no'" 
+        type="String" assignTo="{!showDetails}" />
+    <apex:outputText value="{!output}" escape="false" />
+</apex:component>

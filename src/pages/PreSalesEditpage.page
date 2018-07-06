@@ -1,0 +1,126 @@
+<apex:page controller="PreSalesEditController">
+    
+    <script>
+       window.onload = function() {
+         document.getElementById('{!$Component.resorce1_Id}').disabled = true;
+        };
+    
+    </script>
+    <apex:form >
+        <apex:sectionHeader title="Fulfill Presales Request" rendered="{!newpage}"/>
+        <apex:sectionHeader title="Presales Request Add Consultants" rendered="{!addpage}"/>
+        <apex:outputLink value="/{!presale.id}" >Return to Presales Request </apex:outputLink>
+        <apex:pageblock >
+                    <apex:pageMessages ></apex:pageMessages>
+
+             <apex:pageBlockButtons >
+              <apex:commandButton value="Reject" action="{!rejectedRequest}"  style="color:red;"/>
+
+            <apex:commandButton value="Next" action="{!approveResource}" style="color:green;" />
+            
+
+
+        </apex:pageBlockButtons>
+        <apex:pageBlock title="Commission Section" >
+
+                <apex:pageBlockSection columns="2">
+                  
+                     <apex:outputField value="{!presale.PreSales_Commission__r.Presales_Resource1__c}" />
+                     <apex:outputField value="{!presale.PreSales_Commission__r.Commission_Split1__c}" />
+                    <apex:outputField value="{!presale.PreSales_Commission__r.Presales_Resource2__c}" />
+                     <apex:outputField value="{!presale.PreSales_Commission__r.Commission_Split2__c}" />
+                    <apex:outputField value="{!presale.PreSales_Commission__r.Presales_Resource3__c}" />
+                     <apex:outputField value="{!presale.PreSales_Commission__r.Commission_Split3__c}" />
+                  
+
+             
+                </apex:pageBlockSection>
+             
+        
+        </apex:pageBlock>
+         <apex:pageBlock title="Presales Request Information" >
+             <apex:pageBlockSection columns="2">
+                 <apex:outputField value="{!presale.Opportunity__c}"/>
+                 <apex:outputField value="{!presale.Commission_BU__c}"/>
+                 <apex:outputField value="{!presale.Start_Date__c}"/>
+                <apex:outputField value="{!presale.Activity__c}"/>
+                 <apex:outputField value="{!presale.Duration__c}"/>
+                 <apex:outputField value="{!presale.Request_Status__c}"/>
+           </apex:pageBlockSection>            
+       </apex:pageBlock>
+ <!------New Added=------------------------->
+            
+  
+                     
+  <!---New Added End------------------>
+             
+      
+        <apex:pageBlock title="Consultants Section"   >
+            <apex:pageBlockSection >
+                
+                  <apex:selectList label="Number Of Presales Consultants?" multiselect="false" size="1"  value="{!numberofpresal}"  >
+                         <apex:selectOptions value="{!listop}" >
+                               
+                         </apex:selectOptions>
+                           <apex:actionSupport event="onchange" action="{!preSalesResourceInform}"  >
+                             </apex:actionSupport>
+                   </apex:selectList>
+              
+            
+             </apex:pageBlockSection>
+			 </apex:pageBlock>
+			
+          
+                <apex:outputPanel id="resource1_id" rendered="{!resourceSection1}"  >
+                    <apex:pageblockSection columns="4">   
+                    
+                 
+                     <apex:inputField value="{!presale.Presales_Resource1__c}"  rendered="{!resorce_commission_Role_1}"  />
+                      <apex:outputField value="{!presale.Presales_Resource1__c}"  rendered="{!if(AND(resource1Readonly==true,resorce_commission_Role_1==false),true,false)}"  />
+                     <!--<apex:inputField value="{!presale.Commission_Split_1__c}" label="Commission split 1"  rendered="{!resorce_commission_Role_1}" />-->
+                     <apex:inputField value="{!presale.Role1__c}" label="Role1"  rendered="{!resorce_commission_Role_1}"/>
+                            <apex:outputField value="{!presale.Role1__c}" label="Role1"  rendered="{!if(AND(resource1Readonly==true,resorce_commission_Role_1==false),true,false)}"/>
+
+                      <!-- <apex:outputField value="{!presale.Removal_Reason1__c}" label="Reason for Removal"  rendered="{!removalReason1}"/>-->
+
+                        
+                         </apex:pageblockSection>
+                    </apex:outputPanel>
+            <apex:outputPanel id="resource2_id">
+            <apex:outputPanel rendered="{!resourceSection2}" >
+               <apex:pageblocksection columns="4"  >
+                    <apex:inputField value="{!presale.Presales_Resource2__c}"   rendered="{!resorce_commission_Role_2}"/>
+                       <apex:outputField value="{!presale.Presales_Resource2__c}"  rendered="{!if(AND(resource2Readonly==true,resorce_commission_Role_2==false),true,false)}"  />
+
+                    <!-- <apex:inputField value="{!presale.Commission_Split_2__c}" label="Commission split 2"  rendered="{!resorce_commission_Role_2}"/>-->
+                      <apex:inputField value="{!presale.Role2__c}" label="Role2"  rendered="{!resorce_commission_Role_2}"/>
+                            <apex:outputField value="{!presale.Role2__c}" label="Role2"  rendered="{!if(AND(resource2Readonly==true,resorce_commission_Role_2==false),true,false)}"/>
+
+                      <!-- <apex:outputField value="{!presale.Removal_Reason2__c}" label="Reason for Removal"  rendered="{!removalReason2}"/>-->
+
+                </apex:pageblocksection>
+            </apex:outputPanel>
+          </apex:outputPanel>
+            <apex:outputPanel id="resource3_id" >
+                    <apex:outputPanel rendered="{!resourceSection3}" >
+                <apex:pageblocksection columns="4" >
+                    <apex:inputField value="{!presale.Presales_Resource3__c}"   rendered="{!resorce_commission_Role_3}"/>
+                  <apex:outputField value="{!presale.Presales_Resource3__c}"  rendered="{!if(AND(resource3Readonly==true,resorce_commission_Role_3==false),true,false)}"  />
+
+                     <!--<apex:inputField value="{!presale.Commission_Split_3__c}" label="Commission split 3"  rendered="{!resorce_commission_Role_3}"/>-->
+                    <apex:inputField value="{!presale.Role3__c}" label="Role3"  rendered="{!resorce_commission_Role_3}"/>
+                         <apex:outputField value="{!presale.Role3__c}" label="Role3"  rendered="{!if(AND(resource3Readonly==true,resorce_commission_Role_3==false),true,false)}"/>
+
+                  <!-- <apex:outputField value="{!presale.Removal_Reason3__c}" label="Reason for Removal"  rendered="{!removalReason3}"/>-->
+
+                   </apex:pageblocksection>
+            </apex:outputPanel>
+                </apex:outputPanel>
+            
+                 
+       
+      </apex:pageblock>
+    
+    </apex:form>
+    
+</apex:page>

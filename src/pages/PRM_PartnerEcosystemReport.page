@@ -1,0 +1,389 @@
+<apex:page standardController="Product_Alignment__c" extensions="PRM_PartnerEcosystemReport" id="thepage" sidebar="false">
+
+
+<style>
+.sample {
+        font-weight:bold;
+        text-align:center;
+}
+</style>
+<script>
+function fun(){
+//  alert('Account status*******'+document.getElementById("thepage:theform:accstatus").value);
+
+// alert('Secondary Account********'+document.getElementById("thepage:theform:secAcc").value);
+
+var Accstatus = document.getElementById("thepage:theform:accstatus").value ;
+
+var SecAcc = document.getElementById("thepage:theform:secAcc").value ;
+/*
+if(Accstatus == '-- None ---'){
+Accstatus = null ;
+}
+if(SecAcc  == '-- None ---' ){
+SecAcc  = null ;
+}
+*/
+ var date1 = document.getElementById("thepage:theform:datevalfrom").value ;
+ 
+var date2 = document.getElementById("thepage:theform:dateval").value ;
+ var str = date1 ;
+ if(date1 != ''){
+date1  =str.substring(6,10)+'-'+str.substring(0,2)+'-'+str.substring(3,5);
+ }
+ if(date2 != ''){
+date2  =str.substring(6,10)+'-'+str.substring(0,2)+'-'+str.substring(3,5);
+ }
+  if(date1 == ''){
+date1  = null ;
+ }
+ if(date2 == ''){
+date2  = null ;
+ }
+// var str1 = str.substring(0,2)
+ 
+ 
+// alert('date1 ********'+date1); 
+
+
+
+// alert('date1 ********'+date1);
+ 
+ 
+ 
+
+ // alert('date2 ********'+date2 );
+
+ popupWin = window.open('/apex/PRM_PartnerEcosystem?accstatus='+Accstatus+'&SecAcc='+SecAcc+'&dfrom='+date1+'&dto='+date2,'open_window', 'menubar, toolbar, location, directories, status, scrollbars, resizable, dependent, width=640, height=480, left=0, top=0')
+}
+
+
+function fun2(){
+document.getElementById("thepage:theform:TechId").value = document.getElementById("thepage:theform:dateval").value ;
+
+ document.getElementById("thepage:theform:TechIdfrom").value = document.getElementById("thepage:theform:datevalfrom").value ;
+
+var date1 = document.getElementById("thepage:theform:dateval").value ;
+ var date2 = document.getElementById("thepage:theform:datevalfrom").value;
+// check date and print message
+ 
+if(date2 != '' && date1 == ''){
+
+                         if (isDate(date2)) {
+                                             Go();
+                                   }else {
+                                    alert('Invalid date format!');
+                                    document.getElementById("thepage:theform:datevalfrom").value = '';
+                                    document.getElementById("thepage:theform:datevalfrom").focus();
+                                    
+                                }
+ 
+}else if(date1 != '' && date2 == ''){
+
+                         if (isDate(date1)) {
+                                             Go();
+                                   }else {
+                                    alert('Invalid date format!');
+                                    document.getElementById("thepage:theform:dateval").value = '';
+                                    document.getElementById("thepage:theform:dateval").focus();
+                                    
+                                }
+ 
+}else if(date1 != '' && date2 != ''){
+
+                         if (isDate(date1)) {
+                                            
+                                     if (isDate(date2)) {
+                                             Go();
+                                   }else {
+                                    alert('Invalid date format!');
+                                    document.getElementById("thepage:theform:datevalfrom").value = '';
+                                    document.getElementById("thepage:theform:datevalfrom").focus();
+                                    
+                                        }      
+                                            
+                                            
+                                            
+                                            
+                                            
+                                   }else {
+                                    alert('Invalid date format!');
+                                    document.getElementById("thepage:theform:dateval").value = '';
+                                    document.getElementById("thepage:theform:dateval").focus();
+                                    
+                                }
+
+}else if(date2 == '' && date1 == ''){
+
+    Go();
+
+}
+
+ 
+ 
+   
+
+}
+
+function isDate(txtDate) {
+    var objDate,  // date object initialized from the txtDate string
+        mSeconds, // txtDate in milliseconds
+        day,      // day
+        month,    // month
+        year;     // year
+    // date length should be 10 characters (no more no less)
+    if (txtDate.length !== 10) {
+        return false;
+    }
+    // third and sixth character should be '/'
+    if (txtDate.substring(2, 3) !== '/' || txtDate.substring(5, 6) !== '/') {
+        return false;
+    }
+    // extract month, day and year from the txtDate (expected format is mm/dd/yyyy)
+    // subtraction will cast variables to integer implicitly (needed
+    // for !== comparing)
+    month = txtDate.substring(0, 2) - 1; // because months in JS start from 0
+    day = txtDate.substring(3, 5) - 0;
+    year = txtDate.substring(6, 10) - 0;
+    // test year range
+    if (year < 1000 || year > 3000) {
+        return false;
+    }
+    // convert txtDate to milliseconds
+    mSeconds = (new Date(year, month, day)).getTime();
+    // initialize Date() object from calculated milliseconds
+    objDate = new Date();
+    objDate.setTime(mSeconds);
+    // compare input date and parts from Date() object
+    // if difference exists then date isn't valid
+    if (objDate.getFullYear() !== year ||
+        objDate.getMonth() !== month ||
+        objDate.getDate() !== day) {
+        return false;
+    }
+    // otherwise return true
+    return true;
+}
+
+</script>
+
+
+
+    <apex:form id="theform">
+
+
+    <table cellpadding="0" cellspacing="0" border="0" width="50%">
+        <tr>
+            <td width="10%" style="color:#004d91;"><strong>Account Status</strong>
+            </td>
+            <td width="16%">
+            <apex:selectList value="{!SearchAccountStatus}" size="1"  style="width:120px;height:20px;" id="accstatus" >
+                    <apex:selectOptions value="{!AccountStatusList}" />
+            </apex:selectList>
+            </td>
+            <td width="16%" style="color:#004d91;">
+            <strong>Secondary Account Type</strong> 
+            </td>
+            <td width="16%" style="color:#004d91;">
+             <apex:selectList value="{!SearchSecondaryAccountType}" size="1" style="width:120px;height:20px;" id="secAcc" >
+                          <apex:selectOptions value="{!SecondaryAccountType}"  />
+             </apex:selectList>
+            </td>
+            <td width="16%" style="color:#004d91;">
+            <strong>Technology Partner Effective Date</strong>
+            </td>
+            <td width="5%" style="color:#004d91;">
+            <strong>From</strong>
+            </td>
+             <td width="16%" style="color:#004d91;">
+        
+ <apex:inputText value="{!SearchTechnologyPartnerEffectiveDateFrom1}" id="datevalfrom" />
+
+
+        
+          <strong style="color:#004d91;">[mm/dd/yyyy]</strong>
+     
+            </td>
+            
+            <td width="5%" style="color:#004d91;">
+            <strong>To</strong>
+            </td>
+            <td width="16%" style="color:#004d91;">
+        
+             <apex:inputText value="{!SearchTechnologyPartnerEffectiveDate1}" id="dateval"  />
+         <strong style="color:#004d91;">[mm/dd/yyyy]</strong>
+            </td>
+            <td width="16%" >
+           &nbsp;
+            </td>
+            <td  style="color:#004d91;">
+            <input type = "button" value="Go" onclick="fun2();" /> &nbsp;
+<!--                <apex:commandButton onclick="fun2();" value="Go" reRender="theform" id="buttongo"/>&nbsp; -->
+            </td>
+        </tr>
+    </table>
+ 
+ 
+ 
+ 
+ <apex:inputHidden value="{!SearchTechnologyPartnerEffectiveDate}" id="TechId"/>
+<apex:inputHidden value="{!SearchTechnologyPartnerEffectiveDateFrom}" id="TechIdfrom"/>
+ 
+ 
+         <apex:actionFunction name="Go" action="{!Go}"  />                 
+    
+   
+    
+    
+    
+        <apex:pageBlock >
+<!--        <apex:commandButton onclick="fun();" value="Generate in Excel"/> -->
+            <input type = "button" value="Generate in Excel" onclick="fun();" />
+            <apex:pageBlockSection columns="1" title="Patners Ecosystem Report">
+                                                   
+                   <apex:pageBlockTable value="{!wrapperacccon}" var="accon" rules="all">
+                     <apex:column > 
+                        <apex:facet name="header">Partner Name</apex:facet>
+                        <apex:outputText value="{!accon.AccountName}" style="text-align:center;color:blue;" ></apex:outputText>
+                         <apex:facet name="footer">Grand Total</apex:facet>
+                    </apex:column>
+                    <apex:column style="text-align:center" footerClass="sample"> 
+                        <apex:facet name="header">CA Products</apex:facet>
+                        <apex:outputText value="{!accon.CAProducts}"  ></apex:outputText>
+                        <apex:facet name="footer"><apex:outputText value="{!TotalCAProducts}"></apex:outputText></apex:facet>
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Mainframe</apex:facet>
+                        <apex:outputText value="{!accon.MAINFRAME}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalMAINFRAME}</apex:facet>
+                    </apex:column>
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Security</apex:facet>
+                        <apex:outputText value="{!accon.SEC}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalSEC}</apex:facet>
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Virtualization &amp; Automation</apex:facet>
+                        <apex:outputText value="{!accon.VSA}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalVSA}</apex:facet>
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Cloud</apex:facet>
+                        <apex:outputText value="{!accon.Cloud}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalCloud}</apex:facet>
+                    </apex:column>
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Service Assurance</apex:facet>
+                        <apex:outputText value="{!accon.ServiceAssurance}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalServiceAssurance}</apex:facet>
+                    </apex:column>
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Service Portfolio Management</apex:facet>
+                        <apex:outputText value="{!accon.ServicePortfolioManagement}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalServicePortfolioManagement}</apex:facet>
+                    </apex:column>
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Nimsoft</apex:facet>
+                        <apex:outputText value="{!accon.Nimsoft}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalNimsoft}</apex:facet>
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">SaaS</apex:facet>
+                        <apex:outputText value="{!accon.SaaS}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalSaaS}</apex:facet>
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Storage</apex:facet>
+                        <apex:outputText value="{!accon.Storage}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalStorage}</apex:facet>
+                    </apex:column>
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">DLA</apex:facet>
+                        <apex:outputText value="{!accon.DLA}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalDLA}</apex:facet>
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample" >  
+                        <apex:facet name="header">Inbound OEM</apex:facet>
+                        <apex:outputText value="{!accon.InboundOEM}" ></apex:outputText>
+                        <apex:facet name="footer">{!TotalInboundOEM}</apex:facet>
+                    </apex:column>
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Outbound OEM</apex:facet>
+                        <apex:outputText value="{!accon.OutboundOEM}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalOutboundOEM}</apex:facet>
+                    </apex:column>
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Inbound Resale</apex:facet>
+                        <apex:outputText value="{!accon.InboundResale}" ></apex:outputText>
+                        <apex:facet name="footer">{!TotalInboundResale}</apex:facet>
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Outbound Resale</apex:facet>
+                        <apex:outputText value="{!accon.OutboundResale}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalOutboundResale}</apex:facet>
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">CA Tech Partner Program</apex:facet>
+                        <apex:outputText value="{!accon.CATechPartnerProgram}"  ></apex:outputText>
+                        <apex:facet name="footer">{!TotalCATechPartnerProgram}</apex:facet>
+                    </apex:column>
+                   
+                   
+                
+                    
+                    
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Partner's Tech Partner Program</apex:facet>
+                        <apex:outputText value="{!accon.PartnerTechPartnerProgram}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalPartnerTechPartnerProgram}</apex:facet>
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Alliance Agreement</apex:facet>
+                        <apex:outputText value="{!accon.AllianceAgreement}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalAllianceAgreement}</apex:facet>
+                    </apex:column>
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Marketing Agreement</apex:facet>
+                        <apex:outputText value="{!accon.MarketingAgreement}"></apex:outputText>
+                        <apex:facet name="footer">{!TotalMarketingAgreement}</apex:facet>
+                    </apex:column>
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">NDA</apex:facet>
+                        <apex:outputText value="{!accon.NDA}"></apex:outputText>
+                       
+                    </apex:column>
+                    <!--
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Integration Products</apex:facet>
+                        <apex:outputText value="{!accon.ProductName}"></apex:outputText>
+                        
+                    </apex:column>
+                    -->
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Partner Level</apex:facet>
+                        <apex:outputText value="{!accon.PartnerLevel}"></apex:outputText>
+                        
+                    </apex:column>
+                      <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Partner Manager</apex:facet>
+                        <apex:outputText value="{!accon.PartnerManager}"></apex:outputText>
+                       
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Agreement Date</apex:facet>
+                        <apex:outputText value="{!accon.AgreementDate}"></apex:outputText>
+                        
+                    </apex:column>
+                     <apex:column style="text-align:center" footerClass="sample">  
+                        <apex:facet name="header">Renewal Fee</apex:facet>
+                        <apex:outputText value="{!accon.RenewalFee}"></apex:outputText>
+                        
+                    </apex:column>
+                     
+                </apex:pageBlockTable>
+                
+                 
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+     </apex:form> 
+</apex:page>

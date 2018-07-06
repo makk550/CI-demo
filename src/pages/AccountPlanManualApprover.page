@@ -1,0 +1,83 @@
+<apex:page standardController="Account_Plan3__c" extensions="AccountPlanApproverControllerExtension" >
+
+
+
+ <style>
+
+.myCustomMessage .message { 
+    text-align:center;
+    
+}
+
+
+.myCustomMessage2{
+    margin-left:18%;
+
+}
+
+.myCustomMessage3{
+    
+    position: relative;
+    padding: 8px 6px; 
+    text-align:center;
+    margin-top:20px;
+    margin-left: 20%;
+    margin-right: auto;
+    margin-bottom: 15px;
+    width:420px;
+    border: 1px solid #39f;
+    background-color: #ffc;
+}
+
+
+</style> 
+
+ 
+    <apex:sectionHeader title="Approval Request" subtitle="Account Plan:{!Account_Plan3__c.Name}"/>
+    
+    <apex:form id="theform">
+    <apex:pageBlock mode="edit" id="theBlock" title="Approval Request Detail">
+    
+         
+        
+        <div class="myCustomMessage3">
+        
+        <table id="displaymessage" >
+        <tr><td>This record requires additional approval. The name of the next step is</td></tr>
+        <tr><td>Selecting the 1st Manager to approve.</td></tr>
+        <tr><td>Your administrator has specified that you must manually choose who the next approver should be. Specify a user or queue in the box below, then click Send to Next Approver.</td></tr>
+               </table> 
+
+        </div>
+        <apex:pagemessages id="ErrorMsgBlock"></apex:pagemessages>
+        
+        <div class="myCustomMessage2">
+        
+        <apex:pageblockSection columns="2">
+        
+        <apex:outputPanel >
+        <table >
+           
+           <tr>
+                <td><b><apex:outputLabel value="Next Approver" /></b></td>
+                <td><apex:inputField value="{!Account_Plan3__c.Account_Plan_Approver__c}"/></td>
+                
+           </tr>
+           
+        </table></apex:outputPanel>
+        
+        
+        
+        </apex:pageblockSection>
+        </div>
+        
+        <apex:pageBlockButtons style="align:left;" location="bottom">
+            <apex:commandButton value="Send to Next Approver" action="{!saveapprover}" rerender="ErrorMsgBlock" />
+            <apex:commandButton action="{!Cancel}" value="Cancel"/>
+        </apex:pageBlockButtons>
+        
+         </apex:pageBlock>
+     </apex:form>
+   
+
+</apex:page>

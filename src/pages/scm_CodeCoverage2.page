@@ -1,0 +1,19 @@
+<apex:page showHeader="true" sidebar="true" controller="scm_CodeCoverage" tabStyle="Account" action="{!collectTestClasses}">
+        <apex:sectionHeader title="Code Coverage"/>
+        <apex:pagemessages />
+        <apex:form >
+        <apex:pageblock >
+                <apex:pageBlockSection title="Related Test Classes" columns="1">
+                                <apex:pageBlockTable var="coverage" value="{!testClassesList}" id="thereport">
+                                        <apex:column headerValue="Test Classes Name">
+                                           <apex:outputLink value="/{!coverage.ApexTestClassId}" target="_blank">{!coverage.ApexTestClassName}</apex:outputLink>
+                                        </apex:column>
+                                        <apex:column headerValue=" Method Name" value="{!coverage.TestMethodName}" />
+                                        <apex:column headerValue=" Percentage" value="{!coverage.percentage}" />
+                                        
+                                </apex:pageBlockTable>
+                </apex:pageBlockSection>
+                        
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,350 @@
+<apex:page showHeader="true" sidebar="true" controller="RFP_AJAXInterface">
+<a name="top"></a>
+<img src="{!$Resource.RFPForceLogo}"/><br/>
+<h1>RFPForce Getting Started Guide</h1>
+<ul>
+<li><a href="#purpose">RFPForce Overview</a></li>
+<li><a href="#requirements">RFPForce Administrator: RFPForce Requirements</a></li>
+<li><a href="#setup">RFPForce Administrator: Setting up RFPForce</a></li>
+<li><a href="#using">RFPForce Users: Using RFPForce to Answer Questions</a></li>
+<li><a href="#submit">RFPForce Users: Using RFPForce to Submit new Responses</a></li>
+<li><a href="#enhance">Force.com Developers: Enhancing and Further Developing RFPForce</a></li>
+</ul>
+
+<h2><a name="purpose"></a>RFPForce Overview</h2>&nbsp;<a href="#top">top</a>
+<p>
+John Sautter, an employee at Salesforce.com, created RFPForce to solve the problems of finding 
+answers to common questions in RFPs, RFIs, RFQ's, and other commonly asked questions from prospects and customers.
+</p>
+RFPForce is designed specifically to enable anyone who answers RFPs, RFIs, RFQs and other technical 
+documents to do the following:
+<ul>
+<li>Maintain a set of standardized and reviewed responses to common questions, as answered by the experts</li>
+<li>Provide a way for quickly finding responses to common questions that can be used alongside common desktop or web-enabled 
+tools such as Microsoft Office, Apple iWork, or Google Docs</li>
+<li>Provide a simple way to add new responses so that they may be cataloged and reused in 
+future documents</li>
+<li>Capture the questions being asked, and link them to the appropriate responses, so that similar questions
+may be linked with the correct responses</li>
+<li>Insure responses are periodically reviewed by the expert owners to keep them relevant and up to date</li>
+<li>Report, measure, and improve the effectiveness of your responses over time</li>
+</ul>
+<h2><a name="requirements"></a>RFPForce Requirements</h2>&nbsp;<a href="#top">top</a>
+<p>
+RFPForce runs on the Force.com platform.  For a Salesforce.com user to access RFPForce, that user must have one of 
+the following Salesforce.com license types:
+</p>
+<ul>
+<li>Force.com User License</li>
+<li>Enterprise Edition User License</li>
+<li>Unlimited Edition User License</li>
+</ul>
+
+<h2><a name="setup"></a>Setting up RFPForce</h2>&nbsp;<a href="#top">top</a>
+<p>RFPForce is installed from the <a href="http://www.salesforce.com/appexchange" target="new">Salesforce.com AppExchange</a> using 
+the standard installation procedure.  Once RFPForce is installed, there are a couple more steps a Salesforce.com administrator must
+do to complete the installation.
+</p>
+<ol>
+<hr/>
+<li><h3>Load the Stop Words into your instance of RFPForce</h3></li><br/>
+<b>Currently, there are {!StopWordCount} stop words loaded.</b><br/>
+<b>If you made a mistake importing your stop words, you may delete stop words in batches of 150 or less.</b>
+<apex:form >
+<apex:commandButton action="{!deleteStopWords}" value="Delete 150 Stop Words"/>
+</apex:form>
+<p>Stop words are words that don't add context or meaning and otherwise clutter a text-based search.  RFPForce filters out these words to
+make the search more targeted.  These are common words like
+articles and prepositions that are useless in a text-based search.  RFPForce comes packaged with a list of common English stop words 
+in the Documents Folder.  You will need to load these words into RFPForce as follows.</p>
+<ol>
+<li>Click on the Documents tab and select the <b>RFPForce Documents</b> folder.  Select <b>EnglishStopWords.csv</b> and download
+this file to your computer by clicking on the file name, and then clicking View.  Save this file somewhere where you'll easily be
+able to find it, like your desktop.</li>
+<li>Click on your name to get to the Setup menu, then click Setup.  Under <b>Administration Setup</b>, select <b>Data Management</b>, then <b>Import Custom 
+Objects</b></li>
+<li>Click on the <u>Start the Import Wizard!</u> link.</li>
+<li><b>Step 1: Chooose Record</b> - select <u>Stop Word</u> and click Next</li>
+<li><b>Step 2: Prevent Duplicates</b> - Select Yes.  For <u>Which field on Stop Word do you want to use for matching?</u>, select <u>Stop Word</u>, and 
+for <u>If existing records are found, what do you want to do?</u> select <u>Do not update existing records and only insert new records</u> 
+and click Next.</li>
+<li><b>Step 3. Specify Relationships</b> - select <u>None</u></li>
+<li><b>Step 4. File Upload</b> - Click <u>Choose File</u> and navigate to the file <u>EnglishStopWords.csv</u> you saved previously.
+The defaults are acceptable for the remaining options.</li>
+<li><b>Step 5. Field Mapping</b> - for import field <u>NAME (col 0)</u> map it to Salesforce.com field <u>Stop Word</u><br/>
+For import field <u>RFPFORCE__CUSTOM_WORD__C (col 1)</u> map it to Salesforce.com field <u>Custom Word</u> and click Next</li>
+<li><b>Step 6. Verify Import Settings</b> - click <u>Import Now</u></li>
+<li><b>Step 7. Import Initiated</b> - click <u>Finish</u></li>
+</ol><br/>
+<p>
+As you work with your RFPForce instance, you may wish to add your own stop words to improve the search capabilities.  These words may
+be words that occur commonly in your industry and appear very frequently in your Questions or Responses.  For example, words like
+system, capability, solution, company may be added to the stop words list to filter out "noise" responses.
+</p>
+<hr/>
+<li><h3>Configure to work with Salesforce.com Opportunities (Optional for Salesforce Enterprise and Unlimited Editions only)</h3></li>
+<p>The RFP object has a lookup to an Opportunity.  This is very useful if you wish to track RFIs, RFPs, RFQs, and SOWs to opportunities.  
+There's a validation rule on the Opportunity field within the RFP object that ships disabled, but insures that there is an opportunity 
+associated with any RFPs of type RFI, RFP, RFQ, or SOW.  To activate that rule, do the following:</p>
+<ol>
+<li>Click <u>{!$User.FirstName} {!$User.LastName}</u> -> Setup -> Create -> Objects</li>
+<li>Select the <u>RFP</u> custom object</li>
+<li>Select the <u>Opportunity</u> custom field</li>
+<li>Go to Validation Rules</li>
+<li>Edit the <u>Require_Opportunity_for_RFx_Documents</u> validation rule, and click the Active checkbox</li>
+<li>Click Save</li>
+</ol>
+<p>You may wish to go into any Opportunity page layouts in your organization and add the RFP related list as well.</p>
+<hr/>
+<li><h3>Add Users to your Salesforce.com Org</h3></li>
+<p>This is a "non-step" for most organizations, but if you have set up RFPForce on a brand new instance of Salesforce.com or Force.com, you will
+want to have your initial set of users loaded in.  As you load responses in the next step, you will want to assign owners to those
+responses.  A response owner is the authoritative source or expert regarding that response.  An owner can be someone on your product team,
+your legal team, etc.  This person will ultimately be responsible for the content and validity of the response.
+</p>
+<h3><u>Warning about Assigning all Responses to a Single Owner</u></h3>
+<p>
+To keep things simple, you may want to assign all responses to a single user.  Be warned, however, that that user will get ALL of the 
+review alerts for all the responses.  The idea behind periodic response reviews is that they be spread out over time and across a wide
+set of expert users to make sure the information is reviewed and updated by the experts.  This will become more evident as you start
+loading responses.
+</p>
+<hr/>
+<li><h3>Add Your Organization's Existing Responses to RFPForce</h3></li>
+<p>
+In order for RFPForce to be of any use to anyone, you will need to populate it with some Responses.  Responses are basically
+snippets of formatted text that can be used in creating proposals.  Any organization that has been doing proposals or other opportunity
+targeted writing has this information, but the information is buried in existing document files.  
+You will probably find these documents on a shared drive, or in a document management 
+system like SharePoint or Documentum.  The problem is, all these responses require you to hunt around for them in files and you don't know if they
+are up to date, or even correct.<br/><br/>
+Here are some suggested document files that contain already written responses:<br/>
+</p>
+<ul>
+<li>Proposals your organization has already authored</li>
+<li>Frequently Asked Questions, or FAQ Documents</li>
+<li>Proposal Templates or "Master" Proposals that come with a lot of canned responses</li>
+<li>Success Stories and other Marketing Documents</li>
+<li>Online Wikis or Mailing Lists Archives</li>
+</ul>
+<p>
+Once you have rounded up these sources of Responses, you will need to load them into RFPForce.  Follow the steps below to load your
+responses into RFPForce:
+</p>
+<img src="{!$Resource.AddResponse}" align="right" hspace="30" vspace="30"/>
+<ol>
+<li>Click on the RFP tab and Create a new RFP.  Give it a name that correlates with the source it originally came from, such as an FAQ document or RFP Template.  
+In our example, we used Sales Cloud FAQ as the original name of the document. This is mostly just for historical purposes, so people understand where these
+responses originated.</li>
+<li>Select Internal Document or FAQ as the Document Type</li>
+<li>Input a due date.  This really won't matter, as in this case, the RFP document is really just a source of Responses.</li>
+<li>Save the RFP</li>
+<li>Click on the QuickLookup button on the RFP Detail Page.  The QuickLookup view will launch in a separate window.  This mini-view is designed
+to be used alongside standard word processing tools.</li>
+<li>Click on the Add Response Tab at the top of the QuickLookup view.  This tab allows users to quickly add new responses into RFPForce as they are
+authoring RFPs, but in this case, we will use it to bulk load many responses into RFPForce.</li>
+<li>Type a question for the response.  This could be a question out of the RFP or the Question asked from an FAQ.</li>
+<li>Type and Select the owner of the response.  This person must be an active Salesforce/Force.com user within your organization.  The tool will present 
+you with a drop down when you type a few characters of the person's name.</li>
+<li>Give the Response a short but descriptive Title.  The title will appear in a menu when a user is searching for responses.</li>
+<li>Copy and Paste the response from the source document into the text editor.  Note there are some formatting tools you can use as well.</li>
+<li>Click Submit Response and the response will be saved to RFPForce.</li>
+<li>Add more Responses using the QuickLookup tool until all are loaded into RFPForce.</li>
+</ol>
+<hr/>
+<li><h3>Set up the appropriate User Profiles</h3></li>
+<p>In order for your users to access RFPForce, make sure their profiles are updated to include the following permissions:</p>
+<ol>
+<li>RFPForce Users - users who are using RFPForce to author RFPs should have profiles which include the following minimum permissions:</li>
+<ul>
+<li>Salesforce Apps - Make sure the RFPForce App is visible to all User and Administrator Profiles for RFPForce.</li>
+<li>Custom Objects</li>
+<ul>
+<li><b>Stop Words</b> - Read</li>
+<li><b>RFP</b> - Create, Read, Edit</li>
+<li><b>Question</b> - Create, Read</li>
+<li><b>Response</b> - Create, Read, Edit</li>
+</ul>
+<li>Apex Classes</li>
+<ul>
+<li>ILanguageStemmingAlgorithm</li>
+<li>PorterStemmer</li>
+<li>RFP_AJAXInterface</li>
+</ul>
+<li>VisualForce Pages</li>
+<ul>
+<li>RFP_GetRespones</li>
+<li>RFP_GetResponseText</li>
+<li>RFP_QuickLookupTool</li>
+</ul>
+</ul>
+<li>RFPForce Administrators - these are people who maintain the entire set of Responses.  An RFPForce Administrator would have the all the 
+same access as an RFPForce user, but adding the all database actions to the custom objects (all objects have Create/Read/Update/Delete).</li>
+</ol>
+<hr/>
+<li><h3>Remove Unnecessary Tabs</h3>
+<p>RFPForce Users do not need to see the Stop Words tab, so you can remove this tab from the application.  Stop Words should only be 
+added by an RFPForce administrator when a commonly used word is coming up too often in search results.  Also, once your instance is 
+up and running, you can remove the Getting Started tab as well.</p>
+<li><h3>Review RFPForce Reports Folder</h3>
+<p>There's a folder of sample RFPForce reports that's worth having a look at.  Each one of these reports includes a pre-built Chart you
+can add to a Dashboard.  Once you've loaded a few responses into RFPForce,
+these reports may have data in them.  One report we monitor at Salesforce are the <u>Questions Answered by Month</u> reports.  
+Independent of the number of RFPs you are using, this is a way to gauge how many questions are answered using RFPForce.  As your
+Response database matures, you should see steady increase in the number of questions answered where <u>Original Response</u> is false. 
+This is a good indication as to how much reuse you are getting out of your response database.</p>
+</li>
+</li>
+</ol>
+<hr/>
+<img src="{!$Resource.AskQuestion}" align="left" hspace="30" vspace="30"/>
+<h1><a name="using"></a>Using RFPForce to Answer Questions</h1>&nbsp;<a href="#top">top</a>
+<p>Using RFPForce is fairly straightforward.  The key feature of RFPForce that makes it so easy to use is the QuickLookup Tool mini web application.
+The QuickLookup Tool is designed to be used along side whatever authoring tools your organization uses to create RFPs.  To use the 
+QuickLookup tool:
+</p>
+<ol>
+<li>Click on the RFP Tab, and create a new RFP or use an existing RFP in he Open or Review stage.  RFPs in other stages are considered
+closed and the QuickLookup button will not appear.</li>
+<li>While viewing the detail page on an RFP, click the QuickLookup button</li>
+<li>The QuickLookup tool will appear in a separate window.  You can minimize your main Salesforce browser window and use just the 
+QuickLookup tool if you like.</li>
+<li>Make sure the <u>Ask Question</u> tab is selected.</li>
+<li>Copy and paste or type your question in the question field.</li>
+<li>Click <u>Search Questions</u> or <u>Search Responses</u>
+<p>
+<u>Search Questions</u> will search the RFPForce database of existing questions.  These are the questions that other people have
+asked and answered using existing responses.  With a new setup of RFPForce, you will have exactly one question per response, since 
+the only questions entered are ones that were loaded in with the new responses.  For a new installation of RFPForce, searching 
+questions won't work as well as searching responses.  Over time, as more questions are linked to responses, searching questions
+will create a crowd sourcing effect - basically linking similar questions to the best responses.</p>
+<p><u>Search Responses</u> will search the RFPForce database of responses using the text of your question.  Since responses contain
+more text than questions, this search usually takes longer.</p>
+</li>
+<li>Search results will appear in the search results menu box.  If you search questions, a list of similar questions will appear.  If you 
+searched responses, the titles of the responses will appear in the search results.  The first search result will be selected.</li>
+<li>As you click on the search results menu, the text of the response will appear in the editor for you to review.</li>
+<li>Once you have found the best response, select, copy, and paste the response into your document.
+<p>Some helpful standard shortcut keys are useful for copying and pasting responses.  These shortcut keys are standard between
+Windows and Mac OSX Platforms, as well as most Linux variants.
+<br/><br/>
+<u>Ctrl-A (Windows) or Command-A (Mac OSX)</u> selects all text in the QuickLookup editor.
+<br/><br/>
+<u>Ctrl-C (Windows) or Command-C (Mac OSX)</u> copies selected text to the clipboard from within the QuickLookup editor.
+<br/><br/>
+<u>Ctrl-V (Windows) or Command-V (Mac OSX)</u> pastes the clipboard contents to your document.  You paste into your authoring tool 
+(ie Word) by going to your Word window and pasting the text into your document.
+</p>
+The action of copying and pasting the text into your document automatically captures your question and associates it with your 
+RFP in Salesforce.  If you go back to your RFP object (you can click on the title of your RFP in QuickLookup), you will see your
+questions captures in the Questions related list.  RFPForce is constantly capturing your questions and the responses you
+chose.
+</li>
+</ol>
+<br/>
+<hr/>
+<img src="{!$Resource.AddResponse}" align="right" hspace="30" vspace="30"/>
+<h1><a name="submit"></a>Using RFPForce to Submit new Responses</h1>&nbsp;<a href="#top">top</a>
+<p>In the course of writing RFx's, often you will need to add Responses that aren't yet in RFPForce.  You often author these responses
+yourself, often relying on information from your co-workers.  RFPForce is designed to easily capture these new Responses so you and others
+can use them in the future.</p>
+<p>RFPForce also lifecycle manages these Responses.  RFPForce allows you to associate an owner to a Response, and has a review process
+whereby the Response owner is notified via email to review the Response for correctness.  RFPForce will also notify the owner 
+periodically to re-review the Response to make sure it is up to date.  Information about the response, such as its periodic review
+cycle in days, the owner, and the last time it was reviewed can be seen and edited from the Response detail page.</p>
+<p>The QuickLookup tool deliberately includes an easy way to add new Responses.  This is to <i>enable and encourage</i> users to add new
+Responses whenever they can't find an existing answer in RFPForce.  Best practice is to add a response whenever you encounter something
+you weren't able to find in RFPForce.  Your co-workers and your future self will thank you when they or you are able to easily find
+an answer to a question that you added in a previous RFx.  When in doubt, add the response, as this is the true care and feeding of
+RFPForce, as it's only as good as the responses it contains.</p>
+<p>As a general rule, keep responses succinct and concise.  A good response should answer a question completely but not exhaustively.
+While you may reference other related topics, don't wander into explaining other related topics that don't directly pertain to the 
+response topic.  Use other responses to do this.  This also makes it much easier to maintain the responses, since reviewing and updating
+a short, concise reponse takes just a few minutes.  If the response is lengthy, or ties into a number of other product features or
+organizational capabilities, it will require a committee of people to review it and maintain it.</p>
+<h3><u>Warning about Assigning all Responses to a Single Owner</u></h3>
+<p>
+To keep things simple, you may want to assign all responses to a single user.  Be warned, however, that that user will get ALL of the 
+review alerts for all the responses.  The idea behind periodic response reviews is that they be spread out over time and across a wide
+set of expert users to make sure the information is reviewed and updated by the experts.  This will become more evident as you start
+loading responses.
+</p>
+
+<p>To add a new Response into RFPForce:</p>
+<ol>
+<li>Click on the Add Response Tab at the top of the QuickLookup view.  This tab allows users to quickly add new responses into RFPForce as they are
+authoring RFPs.</li>
+<li>Type a question for the response.  This could be a question out of the RFP or the Question asked from an FAQ.</li>
+<li>Type and Select the owner of the response.  This person must be an active Salesforce/Force.com user within your organization.  The tool will present 
+you with a drop down when you type a few characters of the person's name.  This should be the authoritative source of the response.  Even if 
+you wrote the response, this person should ultimately be the owner and periodic reviewer of the response.</li>
+<li>Give the response a short but descriptive Title.  The title will appear in a menu when a user is searching for responses.</li>
+<li>Copy and Paste the response from the source document into the text editor.  Note there are some formatting tools you can use as well.</li>
+<li>Click Submit Response and the response will be saved to RFPForce.  A dialog box will appear with a link to the response detail page.
+</li>
+</ol>
+<h2><a name="enhance"></a>Enhancing and Further Developing RFPForce</h2>&nbsp;<a href="#top">top</a>
+<p>RFPForce is provided in open source format.  You are free to review and make any enhancements to RFPForce to make it better suit
+your organization.  Below are a few notes outlining the overall design of RFPForce.</p>
+<ol>
+<li>Database Design</li>
+<p>The data model for RFPForce is remarkably simple.</p>
+<ol>
+<li>RFP
+<p>The RFP object contains all meta information about the RFx project.  You may add fields to this object.  Be careful about 
+modifying fields, specifically the Stage field, until you understand how they interact with Workflow rules.</p>
+</li>
+<li>Response
+<p>The Response object is for containing the database of commonly used responses.  You may add fields to this object.  Be careful 
+about modifying existing fields, specifically the status field, until you understand how they interact with Workflow rules.
+</p></li>
+<li>Question
+<p>The Question object captures and stores Questions asked in the QuickLookup tool, It has a Master-Detail relationship with both
+RFP and Response objects, and therefore cannot exist without both an RFP and Response.  Question instances link up RFPs with Responses,
+and create a neural-network effect as Responses are reused.  The Search Questions button on the QuickLookup tool searches the 
+Questions database for questions similar to the proposed question.  Question objects are automatically created whenever a user
+either submits a new Response or copies and existing response.
+</p></li>
+<li>Stop Word
+<p>The Stop Word object contains a list of words that don't add any context to a search and are therefore filtered out of a search
+before being fed into the search algorithm.  You loaded a set of English Stop Words as part of the setup process.  English stop words
+are typically articles, preopositions, pronouns, and other commmon words that don't add context to a search.  As you use RFPForce,
+you may want to add your own custom Stop Words to better target your responses.</p>
+<p>Stop Words are just a flat database of words to be scrubbed from searches.  They are not related to any other objects.</p>
+</li>
+</ol>
+<li>Apex Classes</li><br/>
+<ol>
+<li>RFP_AJAXInterface
+<p>This is the "guts" of RFPForce an contains nearly all the language-independent logic for the tool.  This component interacts with
+the QuickLookup tool via AJAX/JSON to implement most of the functional capabilities of RFPForce.</p>
+</li>
+<li>ILanguageStemmingAlgorithm
+<p>This is an interface object that RFPForce uses to abstract the spoken language-specific features of RFPForce.  One of the goals
+of RFPForce was to allow a single instance to support a single spoken language.  If you wish to create a version of RFPForce in a 
+different stemmable language, you can implement this interface and "plug" your stemming algorithm into RFPForce.  This has succesfully
+been done for German using a German language stemming algorithm.</p>
+<p>To learn more about language stemming algorithms, <a href="http://www.lmgtfy.com/?q=language+stemming+algorithm" target="_new">click here.</a></p>
+<p>To "plug" your own implementation of a Stemming Algorithm into RFPForce, change the RFP_AJAXInterface constructor to instantiate
+your own implementation of ILanguageStemmingAlgoritm instead of PorterStemmer.  It's a one-line change to plug in a different language
+stemmer.  Keep in mind, you will need to load a set of language-specific stop words as well.</p>
+</li>
+<li>PorterStemmingAlgorithm
+<p>This is an English implementation of a language stemming algorithm.  It was ported from a Java version, and more information
+may be found about it by reviewing the source code.  It's also a true testimony as to how similar Apex is to Java.</p>
+</li>
+</ol>
+<li>VisualForce Pages</li><br/>
+<ol>
+<li>RFP_QuickLookupTool
+<p>The guts of the QuickLookup tool, this page interacts with the RFP_AJAXInterface Apex class, as well as two other VisualForce pages
+that return data in JSON format.  The QuickLookup tool uses the Yahoo User Interface (YUI), version 2.x as its toolkit.</p>
+</li>
+<li>RFP_GetResponses
+<p>This page performs a search and returns the results in JSON format.</p>
+</li>
+<li>RFP_GetResponseText
+<p>This page returns the text of a response when the user selects the response.</p></li>
+</ol>
+</ol>
+</apex:page>

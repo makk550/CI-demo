@@ -1,0 +1,308 @@
+<apex:page standardController="Account" extensions="Ext_Cill" >
+     <style>
+     .headerClass {
+            background: white url('/img/alohaSkin/grid_headerbg.gif') 0 bottom repeat-x;
+            background-image: url(/img/alohaSkin/grid_headerbg.gif);
+            background-repeat-x: repeat;
+            background-repeat-y: no-repeat;
+            background-attachment: initial;
+            background-position-x: 0px;
+            background-position-y: 100%;
+            background-origin: initial;
+            background-clip: initial;
+            background-color: #cfeef8;
+            border: 1px solid black;
+            border-width: 0 0 1px 1px;
+            border-top-width: 0px;
+            border-right-width: 0px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            color: black;
+            font-size: .9em;
+            font-weight: bold;
+            padding: 5px 2px 4px 5px;
+            padding-top: 5px;
+            padding-right: 2px;
+            padding-bottom: 4px;
+            padding-left: 5px;
+            text-align:left;
+            vertical-align:bottom;
+           }
+           
+       .trBG
+           {
+                    background-color:white;
+                  
+            }
+                
+          .trBG:hover
+            {
+                    background-color:#cfeef8;
+                  //  border: solid black 1px;
+            }
+         .requiredField
+         {
+            background-color: #C00;
+            width: 3px;
+            bottom: 1px;
+         }        
+    </style>
+    <script>
+        function findPos(obj) {
+            var curleft = curtop = 0;
+            if (obj.offsetParent) {
+            curleft = obj.offsetLeft
+            curtop = obj.offsetTop
+            while (obj = obj.offsetParent) {
+            curleft += obj.offsetLeft
+            curtop += obj.offsetTop
+            }
+            }
+            
+            curleft += 190;
+            curtop -= 100;
+            
+            return [curleft,curtop];
+       }
+    
+    
+        function ShowPopup()
+        {
+            hoveritem = document.getElementById("relAccounts"); 
+            hp = document.getElementById("hoverpopup");
+            // Set popup to visible
+            if (hp.style.visibility!= "visible" ) 
+            {
+                var placement = findPos(hoveritem);
+                //...and put the menu there
+                hp.style.left = placement[0] + "px";
+                hp.style.top = placement[1] + "px";
+                hp.style.visibility = "visible";
+            }
+        } 
+    </script>
+    <apex:messages />
+      <apex:sectionHeader title="Customer Intelligence Licensing Landscape (All Values in USD)" subtitle="CILL for {!Account.Name}"  />        
+    <apex:form id="theForm">
+    <div id="hoverpopup" style="visibility:hidden; display:block; position:absolute; background-color:transparent; height:250px; overflow:auto">
+      <table cellpadding="4" cellspacing="0" style="width:100%;  border: solid silver 1px" border="1">
+        <tr>
+            <td colspan="1" style="background-color:white" >
+            <label onclick="javascript:document.getElementById('hoverpopup').style.visibility = 'hidden';"  style="cursor:pointer;cursor:hand; font-size: .9em; font-weight:bold; background-color:white" > Close Window [x]</label> </td>
+            <td style="background-color:white"><apex:outputPanel rendered="{!dispayglobalpg}" >
+            <apex:commandLink action="{!prevglobal}" value="Prev" rendered="{!(pgno_acc > 1)}"/> <apex:outputLabel rendered="{!!(pgno_acc > 1)}" >Prev</apex:outputLabel> | <apex:commandLink action="{!nextglobal}" rendered="{!(totalpagesglobal > pgno_acc)}" value="Next" />
+            <apex:outputLabel rendered="{!!(totalpagesglobal > pgno_acc)}" >Next</apex:outputLabel> 
+            {!pgno_acc} of {!totalpagesglobal}
+            </apex:outputPanel>&nbsp;
+        </td>
+        </tr> 
+        <tr  class="headerClass">
+            <td>Account Name
+            </td>
+            <td>CA Acccount Id
+            </td>
+        </tr> 
+        <apex:repeat var="a" value="{!lstGlobal_paged}"   >
+       
+         <tr class="trBG">
+            <td><a href="/{!a.id}" target="_blank" >{!a.name}</a>
+            </td>
+            <td>{!a.Enterprise_ID__c}
+            </td>
+            
+        </tr> 
+         </apex:repeat>
+         
+        </table> 
+       </div>
+  
+
+    <apex:pageBlock id="thePB">
+        <apex:pageMessages />
+        <apex:pageBlockButtons > 
+            <apex:commandButton value="Save" action="{!saveInfo}" />
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection title="Account Overview" columns="2" >
+            <apex:outputField value="{!Account.Name}" /> 
+             <!--   Removed as per the FY13 defect 56775
+                 <apex:outputPanel ><apex:outputLabel >Global Ultimate Family</apex:outputLabel><apex:outputLabel ></apex:outputLabel></apex:outputPanel>
+              -->
+            <apex:outputField value="{!Account.Enterprise_ID__c}" /><apex:outputField value="{!Account.GU_DUNS_NUMBER__c}" />
+            <apex:outputField value="{!Account.OwnerId}" /> 
+             <apex:outputField value="{!Account.Segment__c}" />
+            <apex:pageBlockSectionItem >
+                <label id="relAccounts" style="cursor:pointer;cursor:hand;padding-left:50px; text-align:right;text-decoration: underline;" class="labelCol first " onmouseover="ShowPopup()" >Related Covered Accounts</label>
+                <label></label>
+            </apex:pageBlockSectionItem>
+           
+            <!-- Removed as per the FY13 defect 56775
+              <apex:outputField value="{!Account.Sales_Volume__c}" /> 
+            
+            <label></label>
+            <apex:outputField value="{!Account.NumberOfEmployees}" /> -->
+
+            
+            
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="Account Environment" columns="2">
+                    <!-- <apex:inputField value="{!Account.Account_Annual_Software_Spend__c}" /> -->
+                     <apex:inputField value="{!Account.Account_Preferred_Procurement__c}" />
+                     <!-- <apex:inputField value="{!Account.Account_Fiscal_Year__c}" /> -->
+                     <apex:inputField value="{!Account.Account_ERP_Environment__c}" />
+        </apex:pageBlockSection>
+         <apex:pageBlockSection title="Competitor Install" columns="1" id="pbs_ci" >
+            <apex:outputPanel style="display:block; width:1200px;overflow:auto" id="pnlACI" >
+             <table cellpadding="4" cellspacing="0" style="width:100%;  border: solid silver 1px" border="1">
+                 <tr >
+                     <!--
+                      <th class="headerClass requiredInput" ></th>   
+                      <th class="headerClass requiredInput" ><span class="requiredField">&nbsp;</span>GBU</th>
+                      <th class="headerClass requiredInput" ><span class="requiredField">&nbsp;</span>GBU Driver</th>    
+                      <th class="headerClass"><span class="requiredField">&nbsp;</span>Competitor</th >
+                      <th class="headerClass"><span class="requiredField">&nbsp;</span>Competitor Product</th>
+                      -->
+                      
+                      <th class="headerClass"></th>   
+                      <th class="headerClass">GBU</th>
+                      <th class="headerClass">GBU Driver</th>    
+                      <th class="headerClass">Competitor</th >
+                      <th class="headerClass">Competitor Product</th>
+                      
+                      <th class="headerClass" >Renewal Date</th>   
+                      <th class="headerClass"># of License</th >
+                      <th class="headerClass">Competitor Product Install Stickiness</th>
+                      <th class="headerClass" colspan="2" >Is there Opportunity to Replace?</th>   
+                      <th class="headerClass">Contact Support for CA</th >
+                      <th class="headerClass">Contact Relationship</th>
+                 </tr>
+                 <apex:repeat value="{!lstWrap_paged}" var="wr">
+                 
+                    <tr class="trBG">
+                        <td>
+                            <apex:commandLink value="Del" rendered="{!(wr.aci.id != null)}"  action="{!delAccInstall}" >
+                                <apex:param id="delid" name="delid" value="{!wr.aci.id}" assignTo="{!delid}" />
+                            </apex:commandLink>
+                        </td>
+                        
+                        <td>
+                        
+                        <!-- <apex:inputField value="{!wr.aci.CSU__c}" style="width:100px" /> -->
+                        <apex:selectList value="{!wr.csu}" size="1" multiselect="false"  >
+                            <apex:selectOptions value="{!wr.lstcsu}"/>
+                            <apex:actionSupport event="onchange" reRender="drivers" status="dstatus"/>
+                        </apex:selectList>
+                        <apex:actionStatus id="dstatus" startText="updating..."/>
+                        </td>
+                        
+                        <td>
+                        <apex:selectList id="drivers" value="{!wr.driver}" size="1" multiselect="false"  >
+                            <apex:selectOptions value="{!wr.lstDriver}"/>
+                        </apex:selectList>
+                        </td>
+                        
+                        <td><apex:inputField value="{!wr.aci.Top_Competitor__c}" /></td>
+                        <td><apex:inputField value="{!wr.aci.Competitor_Product__c}" /></td>
+
+                        <td><apex:inputField value="{!wr.aci.Renewal_Date__c}"/></td>
+                        <td><apex:inputField value="{!wr.aci.Number_of_Licenses__c}"  /></td>
+                        <td><apex:inputField value="{!wr.aci.Competitor_Product_Install_Stickiness__c}"  /></td>
+                        <td style="border-right:0px"><apex:inputField value="{!wr.aci.Is_there_Opportunity_to_Replace__c}"  id="replaceOpp1" /></td>
+                        <td style="border-left:0px">
+                           <apex:inputField value="{!wr.aci.Replace_Reasons__c}" id="replaceOpp2" />
+                        </td>
+                        <td><apex:inputField value="{!wr.aci.Contact_Support_for_CA__c}" /></td>
+                        <td><apex:inputField value="{!wr.aci.Contact_Relationship__c}" /></td>
+                   </tr>
+                 </apex:repeat>
+                <!-- <apex:image url="{!$Resource.greenCircle}" rendered="true"></apex:image>
+                   -->
+               </table>
+            </apex:outputPanel> 
+            <apex:outputPanel >
+                         <apex:commandButton value="Add More" action="{!addNewACIRow}" status="msgAdd" reRender="pnlACI" />
+                         <apex:actionStatus stopText="" startText="Adding Account Competitor Install Row.." id="msgAdd"></apex:actionStatus>
+            </apex:outputPanel>      
+        </apex:pageBlockSection>
+        
+          <apex:pageBlockSection title="CA Install" columns="1" >
+             <apex:outputpanel rendered="{!CSUsize > 1 ||prodgroupsize > 1 ||prodsize > 1 }" id="outFilter">
+                <table cellpadding="5">
+                    <tr>
+                         <td style="vertical-align:top"><apex:pageBlockSectionItem id="sec0" rendered="{!CSUsize > 1}" >
+                                 <apex:outputLabel style="padding-left: 2px;text-align: right;font-size: 91%;font-weight: bold;vertical-align:top">GBU</apex:outputLabel>    <apex:selectList value="{!csu}" size="3" multiselect="true">
+                                    <apex:selectOptions value="{!csus}"/>
+                                   </apex:selectList>
+                            </apex:pageBlockSectionItem> 
+                        </td>
+                        <td style="vertical-align:top"><apex:pageBlockSectionItem rendered="{!driversize > 1}" >
+                                 <apex:outputLabel style="padding-left: 2px;text-align: right;font-size: 91%;font-weight: bold;vertical-align:top">GBU Driver</apex:outputLabel>    <apex:selectList value="{!drivers}" size="3" multiselect="true">
+                                    <apex:selectOptions value="{!driverOptions}"/>
+                                   </apex:selectList>
+                            </apex:pageBlockSectionItem> 
+                        </td>
+                        <td style="vertical-align:top"><apex:pageBlockSectionItem id="sec1" rendered="{!prodgroupsize > 1}" >
+                              <apex:outputLabel style="padding-left: 2px;text-align: right;font-size: 91%;font-weight: bold;vertical-align:top" >Product Group</apex:outputLabel>    <apex:selectList value="{!prodgroup}" size="3" multiselect="true">
+                                    <apex:selectOptions value="{!prodgroups}"/>
+                                </apex:selectList>
+                             </apex:pageBlockSectionItem> 
+                        </td>
+                        <td style="vertical-align:top"><apex:pageBlockSectionItem id="sec2" rendered="{!prodsize > 1}"  >      
+                              <apex:outputLabel style="padding-left: 2px;text-align: right;font-size: 91%;font-weight: bold;vertical-align:top" >Products</apex:outputLabel>  <apex:selectList value="{!prods}" size="3" multiselect="true">
+                                    <apex:selectOptions value="{!products}"/>
+                                </apex:selectList>
+                             </apex:pageBlockSectionItem> 
+                        </td>
+                    </tr>
+                </table>
+                </apex:outputpanel>   
+                 <apex:outputPanel rendered="{!csusize > 1 || prodgroupsize > 1 || prodsize > 1 }">
+                     <apex:commandButton value="Filter" action="{!filteritems}" status="statusFilter" reRender="outLicence" />
+                     <apex:commandButton value="Reset" action="{!resetitems}" status="statusFilter2" reRender="outLicence,outFilter" />
+                     <apex:actionStatus id="statusFilter" startText="Filtering..." stopText="" ></apex:actionStatus>
+                     <apex:actionStatus id="statusFilter2" startText="Reseting..." stopText="" ></apex:actionStatus>
+               
+                 </apex:outputPanel>
+             <apex:outputPanel id="outLicence" >
+             <apex:messages />
+             <table cellpadding="4" cellspacing="0" style="width:100%;  border: solid silver 1px" border="1" id="CA_INSTALL">
+                 <tr >
+                      <th class="headerClass" >GBU</th>
+                      <th class="headerClass" >GBU Driver</th>   
+                      <th class="headerClass">Product Group</th >
+                      <th class="headerClass">Product</th>
+                      <th class="headerClass" >Contact</th>   
+                      <th class="headerClass"><apex:outputLabel title="If this product is across various sites, choose the lesser of both product install statuses" >Product Install Status</apex:outputLabel></th >
+                      <th class="headerClass">Customer Satisfaction</th>
+                      <th class="headerClass" >Cause (if Customer Satisfaction is ‘Not Satisfied’)</th>   
+                 </tr>
+              
+                <apex:repeat value="{!lstWrapACP_paged}" var="WrapAcp">
+                        <tr class="trBG">
+                             <td><apex:outputField value="{!WrapAcp.lstacp[0].Product__r.CSU2__c}"/></td>
+                             <td><apex:outputField value="{!WrapAcp.lstacp[0].Product__r.CSU_Driver__c}"/></td>
+                             <td><apex:outputField value="{!WrapAcp.lstacp[0].Product__r.Product_Group__c}"/></td>
+                             <td><a href="#" onclick="javascript:window.open('/apex/cill_popup?accid={!accid}&acpname={!WrapAcp.lstacp[0].Product__r.Name}&prodid={!WrapAcp.lstacp[0].Product__c}&csuname={!WrapAcp.lstacp[0].Product__r.CSU2__c}&prodgroup={!WrapAcp.lstacp[0].Product__r.Product_Group__c}&prodname={!WrapAcp.lstacp[0].Product__r.Name}');">{!WrapAcp.lstacp[0].Product__r.Name}</a> 
+                             </td>
+                             <td><apex:inputField value="{!WrapAcp.lstacp[0].Contact__c}"/></td>
+                             <td> <apex:outputPanel title="If this product is across various sites, choose the lesser of both product install statuses" > <apex:inputField value="{!WrapAcp.lstacp[0].Product_Install_Status__c}"/></apex:outputPanel></td>                                                                                   
+                             <td><apex:inputField value="{!WrapAcp.lstacp[0].Customer_Satisfaction__c}"/></td>
+                             <td><apex:inputField value="{!WrapAcp.lstacp[0].Cause__c}"/></td>
+                       </tr>
+                  </apex:repeat>
+
+              </table>
+            </apex:outputPanel>   
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:form>
+
+<script>
+   function fixCillWidth()
+   {
+       document.getElementById('{!$Component.theForm.thePB.pbs_ci.pnlACI}').style.width = document.getElementById('CA_INSTALL').offsetWidth + "px";
+   }
+   
+   fixCillWidth();  
+</script>
+  
+</apex:page>

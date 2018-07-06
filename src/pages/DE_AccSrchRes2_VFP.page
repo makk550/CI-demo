@@ -1,0 +1,187 @@
+<apex:page id="pgResWithDuns" sidebar="{!showsidebar}" showHeader="{!showhead}" controller="DE_AccSearch_CLS" action="{!loadheadercont}"> 
+  <apex:pageMessages ></apex:pageMessages>
+  <apex:includeScript value="{!$Resource.JS_JQuery}" />
+  <apex:includeScript value="{!$Resource.JS_JQuery_Block_UI}" /> 
+  <apex:includeScript value="{!$Resource.YUI_ModalLoader}" /> 
+  
+  <apex:stylesheet value="{!URLFOR($Resource.ISTP,'/progress.css')}"/>  
+  
+  
+  <apex:form id="frmSrch1">
+  <apex:actionFunction name="goToFirstSrchScreen" action="{!gotoPrevScreen}" />
+  <apex:actionFunction name="goToNextPage" action="{!nextPage}" />
+  <apex:pageBlock mode="edit">
+  
+  	 <apex:pageBlock >
+        
+            <table height="100%">
+                <tr width="100%" height="30px">
+                    <td  style="align:left;width:75%"><apex:outputText /><b>Account Search Results</b></td>
+                    <td  style="align:right;width:25%"><apex:image rendered="{!bIsPartner}" value="{!URLFOR($Resource.ISTP,'/3.png')}"/></td>
+                </tr>
+            </table>
+        
+        </apex:pageBlock>
+       
+    <apex:PageBlockButtons location="bottom">
+    <div align="right">
+        <apex:commandButton id="prev" value="<Previous" onclick="YUIShowLoading();goToFirstSrchScreen();return false;" oncomplete="YUIHideLoading();" />
+        <apex:commandButton id="next" value="Next>" onclick='return fillIn(event,"{!selAccId1}","{!selAccName}");' oncomplete="YUIHideLoading();" />  
+        <apex:commandButton id="Cancel" value="Cancel"  onclick="YUIShowLoading();ClosePage();return false;" oncomplete="YUIHideLoading();" />
+      </div>
+    </apex:PageBlockButtons>
+    <br/>
+    <div align="center">
+   <apex:outputText style="text-align:right;" value="Please select the CA Account that best matches your search criteria" />
+   </div>
+   <br/>
+    <br/>
+    <apex:actionFunction name="rerenderpgblktable" action="{!displayresults2}" rerender="tblRes1,otpNav2" oncomplete="YUIHideLoading();"/>
+    <apex:outputPanel layout="block" styleClass="pSearchShowMore" id="otpNav2">
+              <div  style="padding-right: 2px;text-align: left;"><b>Total Records Found: &nbsp;&nbsp;<apex:outputText >{!IF(resultset2 <> null, resultset2.size,0)} </apex:outputText></b></div>
+                  <div  style="padding-left: 2px;text-align: right;">
+                  Number of Records <apex:selectList value="{!selectedSize}" size="1" onchange="YUIShowLoading();clickme();"><apex:selectOptions value="{!recordssize}"/>
+                  </apex:selectList>
+                  <apex:image url="/img/search_prevarrow_disabled.gif" styleClass="prevArrow" rendered="{!NOT(hasPrevious)}"/>
+                  <apex:image url="/img/search_prevarrow.gif" title="Previous" styleClass="prevArrow" rendered="{!hasPrevious}"/>
+                  <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(hasPrevious)}">First</apex:outputPanel>
+                  <apex:commandLink action="{!First2}" title="First" value="First" rendered="{!hasPrevious}"/>&nbsp;&lt;&lt;&nbsp;
+                  <apex:commandLink action="{!Previous2}" title="Previous" value="Previous" rendered="{!hasPrevious}"/>
+                  <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(hasPrevious)}">Previous</apex:outputPanel>&nbsp;|&nbsp;
+                  <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(hasNext)}">Next</apex:outputPanel>         
+                  <apex:commandLink title="Next" value="Next" rendered="{!hasNext}" action="{!Next2}"/>&nbsp;&gt;&gt;&nbsp;
+                  <apex:commandLink title="Last" value="Last" rendered="{!hasNext}" action="{!Last2}"/>
+                  <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(hasNext)}">Last</apex:outputPanel>&nbsp;
+                  <apex:image url="/img/search_nextarrow.gif" title="Next" styleClass="nextArrow" rendered="{!hasNext}"/>
+                  <apex:image url="/img/search_nextarrow_disabled.gif" rendered="{!NOT(hasNext )}"/></div>          
+    </apex:outputPanel>
+    
+    <apex:pageblockTable id="tblRes1" value="{!lstWSTenSize}" border="2" var="record">
+      <apex:column >
+      <apex:facet name="header"></apex:facet>
+          <apex:actionSupport action="{!selectAccId}" event="onclick" reRender="next" status="loading">
+            <apex:outputPanel rendered="{!record.hasAccess}"> 
+                <input type="radio" name="group2" id="{!record.accId}" value="{!record.accId}" />
+                <apex:actionStatus id="loading" style="align:center;">       
+                    <apex:facet name="start">
+                     <apex:image value="/img/loading.gif" title="Processing..."  height="30px" width="30px"/>
+                    </apex:facet>
+                    <apex:facet name="stop"></apex:facet>
+                </apex:actionStatus>
+            </apex:outputPanel>  
+            <apex:param name="selectedAcc" value="{!record.accId}" assignTo="{!selAccId1}" />
+            <apex:param name="selectedNam" value="{!record.accName}" assignTo="{!selAccName}" />
+          </apex:actionSupport>
+         </apex:column>        
+      <apex:column headerValue="Account Name" value="{!record.accName}"/> 
+      <apex:column headerValue="CA AccountID" value="{!record.CAAccountId}"/> 
+      <apex:column headerValue="Country Picklist" value="{!record.country}"/> 
+      <apex:column headerValue="Segment" value="{!record.segment}" />
+      <apex:column headerValue="Territory" value="{!record.territory}" rendered="{!!bIsPartner}"/> 
+      <apex:column headerValue="Coverage Model" value="{!record.coverMod}" rendered="{!!bIsPartner}"/> 
+      <apex:column headerValue="Status" value="{!record.accStatus}" rendered="{!!bIsPartner}"/> 
+    </apex:pageblockTable>
+    <br/><br/>
+     <apex:outputlabel id="opAccessLabel" rendered="{!hasNoAccess}">
+     Please Note: Search results may include Accounts that you currently do not have access to, please
+      contact Global Business Operations for access to those Account(s).
+      </apex:outputlabel>
+  </apex:pageBlock>
+  <apex:outputPanel id="outputDisp" />
+  </apex:form>
+  <script>
+    var winMain=window.opener;
+  
+   
+    function ClosePage()   
+         {  
+            
+            var pagered = '{!pagered}';
+            if(pagered!=null && pagered =='StandNew')
+              {
+               setURI('/001/o');                      
+   
+              }
+            else if(pagered !=null && pagered =='TAQButton')
+             {
+                setURI('/a15/o');    
+                
+             }        
+            else {
+          
+             winMain=window.opener;  
+              if (null==winMain) {     
+                winMain=window.parent.opener;       
+             } 
+             winMain.closeLookupPopup();    
+             } 
+
+        }      
+        
+       function setURI(sUri){
+            window.location.href= sUri;
+      }
+    function fillIn(ev,id, name)    { 
+    //alert('begin');
+    //alert(id);
+        //added this piece as the default selection is removed from here
+        var radlist = document.getElementsByName('group2');
+        var nChecked = 0;
+        for(var i=0; i<radlist.length; i++)
+        {
+            if(radlist[i].checked)
+              nChecked++;  
+        }
+        if(nChecked == 0)
+        {
+            alert('Please select at least one Account.');
+            return false;
+        }
+        YUIShowLoading();
+        if(id=='') 
+        {
+            goToNextPage();
+            return true;
+        }
+            
+        if (null==winMain)       
+        {          
+            //alert('winMain == null');
+            winMain=window.parent.opener;       
+        }
+           var pagered = '{!pagered}';
+           // alert(pagered);
+        if(pagered!=null && (pagered =='StandNew' || pagered =='TAQButton'))
+          {
+           setURI('/'+id);                      
+           //alert(id);
+         }
+        else
+        {
+            var ele=winMain.document.getElementById('{!namefield}');      
+            ele.value=name;
+                //alert('after ele.value');
+            if("{!parentPage}" == "Dealxsp"){
+            	ele=winMain.document.getElementById('targetSPName');       
+            	ele.innerHTML=name; 
+            }else{
+                ele=winMain.document.getElementById('targetName');       
+            	ele.innerHTML=name; 
+             }
+            
+            ele=winMain.document.getElementById('{!idfield}');       
+            ele.value=id;
+            setTimeout(ClosePage(),3000);
+
+
+        }
+        return false;
+    }
+            function clickme()
+        {
+            rerenderpgblktable();
+        }
+
+      
+  </script>
+</apex:page>

@@ -1,0 +1,80 @@
+<apex:page showHeader="true" standardStylesheets="false" controller="TermsHandler" action="{!redirectPage}" cache="false" sidebar="true" id="partnerpage">
+<script>
+
+ function ShowPopup()
+        {
+           var txt = new String();
+           txt = document.getElementById("divSamp").innerText;
+           txt=txt.replace("<br>", "<BR>");               
+           document.getElementById("divSamp").innerHTML= txt;
+          //alert(document.getElementById("divSamp").innerHTML);
+           /* hp = document.getElementById("hoverpopup");
+            // Set popup to visible
+            if (hp.style.visibility!= "visible" ) 
+            {
+                hp.style.left = 100 + "px";
+                hp.style.top = 50 + "px";
+                hp.style.visibility = "visible";
+            }*/
+        } 
+  function ValidateLink( valDoc , valProg  )
+  {
+          
+      if (valDoc == null || valDoc == '')
+      {
+          alert('Fund Program Admin \"' + valProg + '\" does not contain any valid document attached to it. Please attach a valid document starting with MDF and then try again.');
+          return false;
+      }
+  
+  }      
+        
+</script>
+<apex:form id="partnerForm">
+<apex:messages />
+  <apex:inputHidden id="SRDs" value="{!SelectedIDs}" immediate="true"/>
+    <table id="hoverpopup" style="width:80%;height=20%;background:white;align:center;margin:0 auto;border-width:2px;border-color:#2191C0;border-style:solid;margin-top:-1px " align="center" >
+        <tr>
+            <td colspan="3" style="font-size: small;background-color:#2191C0;color:white;font">
+                MDF  Terms And Conditions 
+            </td>
+        </tr>
+    <apex:repeat var="md" id="mdfR" value="{!lstMDFs}" >
+        
+        
+        <tr>
+            <td colspan="3"  style="font-size: small;color:blank;display:{!IF(md.iCounter>0,'','none')}" >
+                <br></br><b>{!md.strName}</b> <br></br><br></br>
+                <b>Terms &amp; Conditions </b> <br> </br> <br></br>
+                <div id="divSamp"> {!md.strTCs } </div> <br></br><br></br><br></br><br></br>
+                <a href="{!md.MDFTermUrl}" target="_blank" id="idLnk" onClick="return ValidateLink('{!md.MDFTermUrl}','{!md.strName}');">Show Details</a><br/>
+                <br></br><br></br><br></br><br></br><br></br>
+                <br></br><br></br><br></br><br></br><br></br><br></br><br></br> 
+            </td>
+        </tr>
+                  </apex:repeat>    
+        <tr>
+        <td colspan="3">
+         <div style="background:white;align:center;border-width:2px;border-color:#2191C0;border-style:solid;margin-top:-1px" height="0">
+           </div>
+
+         </td>
+        </tr>
+        <tr align="center" style="width:50%">        
+          <td align="center">
+           <apex:commandButton style="color: #eee; background-color:#0078AE; font-size:1em;font-weight:bolder;text-decoration: none; border-bottom:0.1em solid #555; border-right:0.1em solid #555; border-top:0.1em solid #ccc;border-left:0.1em solid #ccc;margin: 0.2em;" value="Skip All" action="{!skipreject}"/>            
+          </td>  
+          <td align="center">  
+              <apex:commandButton style="color: #eee; background-color:#0078AE; font-size:1em;font-weight:bolder;text-decoration: none; border-bottom:0.1em solid #555; border-right:0.1em solid #555; border-top:0.1em solid #ccc;border-left:0.1em solid #ccc;margin: 0.2em;padding:0.2em; display:block;" value="Reject" action="{!skipreject}"/>
+          </td>  
+          <td align="center">  
+              <apex:commandButton style="color: #eee; background-color:#0078AE; font-size:1em;font-weight:bolder;text-decoration: none; border-bottom:0.1em solid #555; border-right:0.1em solid #555; border-top:0.1em solid #ccc;border-left:0.1em solid #ccc;margin: 0.2em;padding:0.2em; display:block;"  value="Accept"  action="{! MDFHandlerOnly}"/>
+          </td>
+        </tr>
+    </table>
+
+<script>
+    ShowPopup();
+  
+</script>
+</apex:form>
+</apex:page>

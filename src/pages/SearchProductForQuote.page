@@ -1,0 +1,170 @@
+<apex:page id="thePage" standardController="Quote"
+    extensions="Ext_SearchProduct" tabStyle="Opportunity">
+    <apex:pagemessages rendered="{!showErrorMsg}"></apex:pagemessages>
+    <link href="/servlet/servlet.FileDownload?file=01530000001ojYs"
+        rel="stylesheet" type="text/css" />
+    <link href="/servlet/servlet.FileDownload?file=01530000001ojYx"
+        rel="stylesheet" type="text/css" />
+    <link href="/servlet/servlet.FileDownload?file=01530000001ojZ7"
+        rel="stylesheet" type="text/css" />
+    <apex:form id="theForm">
+        <apex:sectionHeader title="Find Products" />
+        <apex:pageBlock id="theBlock" title="Find Products" rendered="false">
+            <table>
+                <tr>
+                    <td><b><apex:outputLabel value="By Keyword" /></b></td>
+                    <td><b><apex:outputLabel value="By Field Filter" /></b></td>
+                </tr>
+                <tr>
+                    <td><apex:inputtext value="{!cusSearchString}" /></td>
+                    <td><apex:selectList size="1">
+
+                    </apex:selectList></td>
+                    <td><apex:selectList size="1">
+
+                    </apex:selectList></td>
+                    <td><apex:inputtext /></td>
+                    <td><apex:outputLink > More Filters>> </apex:outputLink></td>
+                </tr>
+            </table>
+            <apex:outputPanel >
+                <table>
+                    <tr>
+
+                        <td><apex:selectList size="1">
+
+                        </apex:selectList></td>
+                        <td><apex:selectList size="1">
+
+                        </apex:selectList></td>
+                        <td><apex:inputtext /></td>
+                        <td>AND</td>
+                    </tr>
+                    <tr>
+                        <td><apex:selectList size="1">
+
+                        </apex:selectList></td>
+                        <td><apex:selectList size="1">
+
+                        </apex:selectList></td>
+                        <td><apex:inputtext /></td>
+                        <td>AND</td>
+                    </tr>
+                    <tr>
+                        <td><apex:selectList size="1">
+
+                        </apex:selectList></td>
+                        <td><apex:selectList size="1">
+
+                        </apex:selectList></td>
+                        <td><apex:inputtext /></td>
+                        <td>AND</td>
+                    </tr>
+                    <tr>
+                        <td><apex:selectList size="1">
+
+                        </apex:selectList></td>
+                        <td><apex:selectList size="1">
+
+                        </apex:selectList></td>
+                        <td><apex:inputtext /></td>
+                        <td><apex:outputLink > Fewer Filters>> </apex:outputLink></td>
+                    </tr>
+                </table>
+
+            </apex:outputPanel>
+            <apex:commandButton value="Search" />
+        </apex:pageBlock>
+        <apex:pageBlock title="Find Products" id="searchFiletersBlock">
+            <apex:panelGrid columns="6" id="theGrid" width="70%">
+                <apex:outputLabel value="Product Name" />
+                <apex:inputText value="{!selectedProductName}" />
+                <apex:outputLabel value="Business Unit" />
+                <apex:selectList value="{!selectedBU}" size="1">
+                    <apex:selectOptions value="{!businessUnitList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock"
+                        action="{!getSKUList}"  />
+                </apex:selectList>
+                <apex:outputLabel value="Product Group" />
+                <apex:selectList value="{!selectedPG}" size="1">
+                    <apex:selectOptions value="{!productGroupList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock"
+                        action="{!getSKUList}"  />
+                </apex:selectList>
+                
+                <apex:outputLabel value="Currency" />
+                <apex:inputField value="{!prod.CurrencyIsoCode}"></apex:inputField>
+                <apex:outputLabel value="Region" />
+                <apex:selectList value="{!selectedRegion}" size="1">
+                    <apex:selectOptions value="{!regionList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock"
+                        action="{!getSKUList}"  />
+                </apex:selectList>
+                <apex:outputLabel value="Program" />
+                <apex:selectList value="{!selectedProgram}" size="1">
+                    <apex:selectOptions value="{!programList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock"
+                        action="{!getSKUList}"  />
+                </apex:selectList>
+                <apex:outputLabel value="SKU" >
+                    <img src="img/alohaSkin/help_orange.png"  class="helpIcon" alt="Help" title= "Please enter full SKU"/>
+                </apex:outputLabel>
+                <apex:inputText value="{!selectedSKU}" >       
+                </apex:inputText>
+                
+                <apex:outputLabel value="SKU Type" />
+                <apex:selectList size="1" value="{!selectedSKUType}">
+                    <apex:selectOptions value="{!skuTypeList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock"
+                        action="{!getSKUList}"  />
+                </apex:selectList>
+                
+                
+            </apex:panelGrid>
+            <center>
+            <apex:commandButton value="Search" action="{!doSearch}"
+                reRender="ProductSearchResults" />
+            <apex:commandButton value="Clear" action="{!doClear}" />
+            </center>
+        </apex:pageBlock>
+
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{!searchResults}" var="priceBook"
+                id="ProductSearchResults">
+
+                <apex:column >
+                    <apex:inputCheckbox value="{!priceBook.isSelected}" />
+                </apex:column>
+                <apex:column headerValue="Product Name"
+                    value="{!priceBook.cProduct.name}" />
+                <apex:column headerValue="Product Family"
+                    value="{!priceBook.cProduct.family}" />
+                <apex:column headerValue="Product Group"
+                    value="{!priceBook.cProduct.Product_Group__c}" />
+                <apex:column headerValue="Business Unit"
+                    value="{!priceBook.cProduct.Market_Focus_Area__c}" />
+                <apex:column headerValue="SKU" value="{!priceBook.cProduct.SKU__c}" />
+                <apex:column headerValue="SKU Type"
+                    value="{!priceBook.cProduct.SKU_Type__c}" />
+                <apex:column headerValue="Suggested List Price"
+                    value="{!priceBook.suggestedListPrice}" />
+               
+                <apex:column headerValue="Quantity">
+                    <apex:inputText value="{!priceBook.qty}" />
+                </apex:column>
+                <apex:column headerValue="Disti Discount %"  value="{!priceBook.discount}">
+                   
+                </apex:column>
+                <apex:column headerValue="Additional Discount">
+                    <apex:inputText value="{!priceBook.addtDiscount}" />
+                </apex:column>
+
+            </apex:pageBlockTable>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Select" action="{!doSelect}" />
+                <apex:commandButton value="Cancel" action="{!doCancel}" />
+            </apex:pageBlockButtons>
+
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

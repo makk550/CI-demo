@@ -1,0 +1,402 @@
+<apex:page controller="Renewals_Scenario" >
+<apex:sectionHeader title="Renewal Deal Analysis" />
+<apex:form >
+<apex:pageBlock >
+        <apex:pageMessages ></apex:pageMessages>
+    <apex:pageBlockSection columns="1" collapsible="true" title="Renewal Deal Analysis Scenarios" >
+        <apex:outputPanel >
+            <table cellspacing="0px" cellpadding="4px" width="800px" style="border-top: solid 1px; border-bottom: solid 1px; border-left: solid 1px; border-right: solid 1px">
+                <tr style="background: silver">
+                    <td></td>
+                     <apex:repeat var="sc"  value="{!lst}">
+                      <td>Scenario <apex:inputField value="{!sc.name}" style="width:50px"/></td>
+                    </apex:repeat>
+                </tr>
+                <tr><td>Override Actual Old RPD Value</td>
+                 <apex:repeat var="sc" value="{!lst}">
+                 <td><apex:inputField value="{!sc.Override_Actual_Old_RPD__c}"/></td>
+                 </apex:repeat>
+                 </tr>
+                 <tr><td>Override Actual New RPD Value</td>
+                 <apex:repeat var="sc" value="{!lst}">
+                 <td><apex:inputField value="{!sc.Override_Actual_New_RPD__c}"/></td>
+                 </apex:repeat>
+                 </tr>
+                <tr>
+                     <td>Analysis Currency</td>
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td><apex:inputField value="{!sc.currencyisocode}"/></td>
+                    </apex:repeat>
+                </tr>
+                <tr> 
+                     <td title="Click here if the new deal includes new product and/or capacity, and the new deal effective date is before the true expiration of your prior deal(s).">Will Existing Contracts be Respread</td>   
+                    <apex:repeat var="sc"  value="{!lst}" >
+                      <td title="Click here if the new deal includes new product and/or capacity, and the new deal effective date is before the true expiration of your prior deal(s)."><apex:inputField value="{!sc.Will_Existing_Contracts_be_Respread__c}"/>
+                                           </td>
+                    </apex:repeat>  
+                 </tr>
+            
+                <tr> 
+                     <td TITLE="Any billings already invoiced on sap that will be cancelled due to the new deal. Do not include committed payments not yet billed.">Remaining Billing To Be Cancelled / Cred</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td TITLE="Any billings already invoiced on sap that will be cancelled due to the new deal. Do not include committed payments not yet billed."><apex:inputField value="{!sc.Remaining_Billing_To_Be_Cancelled_Cred__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                  <tr> 
+                     <td TITLE="As a rule of thumb - 6 months prior from the current date">FY and FM Start for Old Rev Stream Avg</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td TITLE="As a rule of thumb - 6 months prior from the current date"><apex:inputField value="{!sc.FY_Start_for_Old_Rev_Stream_Avg__c}"/><apex:inputField value="{!sc.FM_Start_for_Old_Rev_Stream_Avg__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                 
+                <tr> 
+                     <td TITLE="Effective date of new deal OR first day of the following month if a respread is needed." >New Deal Revenue Date</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td TITLE="Effective date of new deal OR first day of the following month if a respread is needed." ><apex:inputField value="{!sc.New_Deal_Revenue_Date__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                <tr> 
+                     <td TITLE="Longest term end date in the new deal"  >     New Deal End Date</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td TITLE="Longest term end date in the new deal"><apex:inputField value="{!sc.New_Deal_End_Date__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                 <tr> 
+                     <td>    New Deal Time Amount</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td><apex:inputField value="{!sc.New_Deal_Time_Amount__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                 <tr> 
+                     <td>    New Deal MF Capacity Amount</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td><apex:inputField value="{!sc.New_Deal_NCV_MF_Capacity_Amount__c}"/></td>
+                    </apex:repeat>  
+                 </tr>
+                 <tr> 
+                     <td>     New Deal NCV Amount</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td><apex:inputField value="{!sc.New_Deal_NCV_Amount__c}"/></td>
+                    </apex:repeat>  
+                 </tr>
+                 
+                 <tr> 
+                     <td>     New Deal Services/Educ Amount</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td><apex:inputField value="{!sc.New_Deal_Services_Educ_Amount__c}"/></td>
+                    </apex:repeat>  
+                 </tr>
+                 
+                 <tr> 
+                     <td TITLE="The amount that will be given to the client as part of a pro-rata credit">     Pro Rated Credit Note Amount</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td TITLE="The amount that will be given to the client as part of a pro-rata credit"><apex:inputField value="{!sc.Pro_Rated_Credit_Note_Amount__c}"/></td>
+                    </apex:repeat>  
+                 </tr>
+                 <tr> 
+                     <td> Last Modified By</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td><apex:outputField value="{!sc.LastModifiedBy.Name}"/></td>
+                    </apex:repeat>  
+                 </tr>
+                <tr> 
+                     <td> Comments</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td><apex:inputField style="width:150px" value="{!sc.Comments__c}"/></td>
+                    </apex:repeat>  
+                 </tr>
+                     <tr> 
+                     <td> Analyze this Scenario</td>   
+                    <apex:repeat var="sc"  value="{!lst}">
+                      <td><apex:inputField value="{!sc.Analyze_Scenario__c}"/>
+                      <!--<input type="radio" name="rad" value="{!sc.Analyze_Scenario__c}" id="ScenarioRadio"/>-->
+                       
+                      </td>
+                    </apex:repeat>  
+                 </tr>
+                </table>
+                
+    <br/>
+    
+    <apex:commandButton value="Analyze Scenarios" action="{!submit}" reRender="resultSection" status="Processing" />
+    <apex:actionStatus startText="Processing Results...." stopText="" id="Processing"></apex:actionStatus>
+        </apex:outputPanel>
+    </apex:pageBlockSection>    
+    <apex:pageBlockSection id="resultSection" columns="1" title="Analysis Results" collapsible="true" >
+    <apex:messages />
+        <apex:outputLabel rendered="{!(!(isAnalysed))}" >Please analyze One or more Scenarios to view the Results</apex:outputLabel>
+       
+            <apex:outputPanel >
+        <apex:commandButton value="Submit Scenarios For Finance Approval" action="{!submitFinance}" rendered="{!isAnalysed}" />
+                <apex:commandButton value="Save & Return to Opportunity" action="{!returnToOpp}" />
+                <apex:commandButton value="Export RPD Results" action="{!ExportOLDRPDResult}" />
+                <apex:CommandButton value="Export DealModeling Scenario" action="{!ExportRenewalScenario}"/>
+         </apex:outputPanel>
+          <apex:outputPanel rendered="{!isAnalysed}" >
+
+                  <style>
+            .rowstyle:hover
+            {
+                background: #fafad2;
+            }
+            </style>
+            <table  cellspacing="0px" cellpadding="4px" width="800px" style="border-top: solid 1px; border-bottom: solid 1px; border-left: solid 1px; border-right: solid 1px">
+                <tr style="background: silver">
+                    <td width="200px">&nbsp;</td>
+                     <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td>Scenario <apex:outputField value="{!sc.name}" style="width:50px"/></td>
+                    </apex:repeat>
+                </tr>
+                    <tr class="rowstyle">
+                     <td  >Months</td>
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.Months__c}"/></td>
+                    </apex:repeat>
+                </tr>
+                <tr class="rowstyle">
+                     <td  >Analysis Currency</td>
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td   ><apex:outputField value="{!sc.currencyisocode}"/></td>
+                    </apex:repeat>
+                </tr>
+                <tr class="rowstyle"> 
+                     <td  >Will Existing Contracts be Respread</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td   ><apex:outputField value="{!sc.Will_Existing_Contracts_be_Respread__c}"/></td>
+                    </apex:repeat>  
+                 </tr>
+            
+                <tr class="rowstyle"> 
+                     <td style="  border-bottom:solid 1px">Billing to be Cancelled / Credited</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  style=" border-bottom:solid 1px"><apex:outputField value="{!sc.Remaining_Billing_To_Be_Cancelled_Cred__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                     
+                <tr class="rowstyle"> 
+                     <td >New Deal Revenue Date</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td   ><apex:outputField value="{!sc.New_Deal_Revenue_Date__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                <tr class="rowstyle"> 
+                     <td >     New Deal End Date</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td   ><apex:outputField value="{!sc.New_Deal_End_Date__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                 <tr class="rowstyle"> 
+                     <td >     New Deal Time Amount</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.New_Deal_Time_Amount__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                    
+                 <tr class="rowstyle"> 
+                     <td >     New Deal  MF Capacity Amount</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.New_Deal_NCV_MF_Capacity_Amount__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 <tr class="rowstyle"> 
+                     <td>     New Deal NCV Amount</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td><apex:outputField value="{!sc.New_Deal_NCV_Amount__c}"/></td>
+                    </apex:repeat>  
+                 </tr>
+                   <tr class="rowstyle"> 
+                     <td style="border-bottom:solid 1px;  ">  New Deal Services / Educ Amount</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.New_Deal_Services_Educ_Amount__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                  <tr class="rowstyle"> 
+                     <td >Old Rev Stream Avg Month</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.Old_Rev_Stream_Avg_Month__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                    
+                 <tr class="rowstyle"> 
+                     <td >Old Rev Stream Avg Day</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.Old_Rev_Stream_Avg_Day__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                   <tr class="rowstyle"> 
+                     <td >New Time Rev Stream Avg Month</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.New_Time_Rev_Stream_Avg_Month__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                 
+                  <tr class="rowstyle"> 
+                     <td >New Time Rev Stream Avg Day</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.New_Time_Rev_Stream_Avg_Day__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                    
+                 <tr class="rowstyle"> 
+                     <td >Difference Per Month</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.Difference_Per_Month__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                   <tr class="rowstyle"> 
+                     <td >Difference Per Year</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.Difference_Per_Year__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 <tr class="rowstyle"> 
+                     <td style="border-bottom:solid 1px;  ">Difference for Whole Deal</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.Difference_for_Whole_Deal__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                 
+                   <tr class="rowstyle"> 
+                     <td >Proposed Deal Time Only</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.Proposed_Deal_Time_Only__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                   <tr class="rowstyle"> 
+                     <td style="border-bottom:solid 1px;  ">Revenue Neutral with Time only? GAP?</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.Revenue_Neutral_with_Time_only_GAP__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                   <tr class="rowstyle"> 
+                     <td >New Time/MFC Rev Str Avg Mth</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.New_Time_MFC_Rev_Str_Avg_Mth__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 <tr class="rowstyle"> 
+                     <td >New Time/MFC Rev Str Avg Day</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td ><apex:outputField value="{!sc.New_Time_MFC_Rev_Str_Avg_Day__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                 
+                   <tr class="rowstyle"> 
+                     <td >Proposed Deal Time/MFC</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.Proposed_Deal_Time_MFC__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                   <tr class="rowstyle"> 
+                     <td style="border-bottom:solid 1px;  ">Revenue Neutral w MFC? GAP?</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.Revenue_Neutral_w_MFC_GAP__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                  
+                   <tr class="rowstyle"> 
+                     <td >New Time/MFC/NCV Rev Str Avg Mth</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.New_Time_MFC_NCV_Rev_Str_Avg_Mth__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 <tr class="rowstyle"> 
+                     <td >New Time/MFC/NCV Rev Str Avg Day</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td ><apex:outputField value="{!sc.New_Time_MFC_NCV_Rev_Str_Avg_Day__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                 
+                   <tr class="rowstyle"> 
+                     <td >Proposed Deal Time/MFC/NCV</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.Proposed_Deal_Time_MFC_NCV__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                   <tr class="rowstyle"> 
+                     <td style="border-bottom:solid 1px;  ">Revenue Neutral w MFC/NCV? GAP?</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.Revenue_Neutral_w_MFC_NCV_GAP__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                   <tr class="rowstyle"> 
+                     <td >New Time/MFC/NCV/Svcs Rev Str Avg Mth</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.New_Time_MFC_NCV_Svcs_Rev_Str_Avg_Mth__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 <tr class="rowstyle"> 
+                     <td >New Time/MFC/NCV/Svcs Rev Str Avg Day</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td ><apex:outputField value="{!sc.New_Time_MFC_NCV_Svcs_Rev_Str_Avg_Day__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                 
+                   <tr class="rowstyle"> 
+                     <td >Proposed Deal Time/MFC/NCV/Svcs</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.Proposed_Deal_Time_MFC_NCV_Svcs__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 
+                   <tr class="rowstyle"> 
+                     <td style="border-bottom:solid 1px;  ">Revenue Neutral w MFC/NCV/Svcs? GAP?</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td style="border-bottom:solid 1px; " ><apex:outputField value="{!sc.Revenue_Neutral_w_MFC_NCV_Svcs_GAP__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                 
+                
+                 <tr class="rowstyle"> 
+                     <td >Pro Rated Credit</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td  ><apex:outputField value="{!sc.Pro_Rated_Credit__c}"/></td>
+                    </apex:repeat>  
+                 </tr> 
+                      
+                 <tr class="rowstyle"> 
+                     <td >Additional Committed Billing</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td ><apex:outputField value="{!sc.Additional_Committed_Billing__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                 <tr class="rowstyle"> 
+                     <td >Gross Deal Should Be Rev Neutral at:</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td ><apex:outputField value="{!sc.Gross_Deal_Should_Be_Rev_Neutral_at__c}"/></td>
+                    </apex:repeat>  
+                 </tr>  
+                  <tr class="rowstyle"> 
+                     <td style="  border-top:solid 1px;">Comments</td>   
+                    <apex:repeat var="sc"  value="{!lstAnalyze}">
+                      <td style=" border-top:solid 1px;"><apex:inputField style="width: 200px" value="{!sc.Comments__c}"/></td>
+                    </apex:repeat>  
+                 </tr>
+               </table> 
+        </apex:outputPanel>
+            </apex:pageBlockSection>
+</apex:pageBlock>
+ </apex:form>
+</apex:page>

@@ -1,0 +1,363 @@
+<apex:page standardController="Knowledge__kav" extensions="KBPreviewController" showHeader="false" sidebar="false" standardStyleSheets="false">
+<head>
+<style>
+             
+        @font-face
+        {
+            font-family:'averta-regular';
+            src:url("{!$Resource.CAFonts}/averta/averta-regular-webfont.woff2") format("woff2"),
+                url("{!$Resource.CAFonts}/averta/averta-regular-webfont.woff") format("woff");
+            font-weight:normal;
+            font-style:normal;
+        }
+        @font-face{
+            font-family:'averta-bold';
+            src:url("{!$Resource.CAFonts}/CAFonts/averta/averta-bold-webfont.woff2") format("woff2"),
+                url("{!$Resource.CAFonts}/CAFonts/averta/averta-bold-webfont.woff") format("woff");
+            font-weight:normal;
+            font-style:normal
+        }
+        #Heading
+        {
+                font-family: "averta-bold", sans-serif;
+                font-size: 1.55rem;
+                line-height: 2.125rem;
+                color: #2b3343;
+                margin: 30px 0 5px 0;
+            
+        }
+        .heading
+        {
+                font-family: "averta-bold", sans-serif;
+                font-size: 1.55rem;
+                line-height: 2.125rem;
+                color: #2b3343;
+                margin: 30px 0 5px 0;
+                
+            
+        }
+       
+       .Content
+        {
+                font-size:  0.9rem;
+                font-family: "averta-regular",Arial,sans-serif;
+        }
+        
+        h1
+        {
+                font-size: 2.25rem;
+                line-height: 2.5rem;
+                font-weight: bold;
+                color: #38364d;
+                margin: .67em 0;
+        }  
+        
+        .docDetails
+        {
+                    font-size: 0.95rem;
+                    line-height: 1.5rem;
+                    Font-family: "averta-regular",Arial,sans-serif;
+                    color:#272638;
+        } 
+        .tecDetails
+        {
+                    font-size: 0.9rem;
+                    line-height: 1.5rem;
+                    Font-family: "averta-regular",Arial,sans-serif;
+                    color:#272638;
+                    margin-left: 20px;
+        }       
+        #mainDiv
+        {
+            float: left;
+            
+            padding-left: 3%;
+            padding-top: 2%;
+            padding-bottom:2%;
+            width: 80%;
+        
+        } 
+        
+        .link
+        {
+            
+            color: #34aeff;
+            line-height: 2rem;
+            font-family: "averta-regular",Arial,sans-serif;
+            text-decoration:none;
+        }  
+       </style>
+    </head>
+<script type="text/javascript">
+function toggleElementDisplay(elementID) {
+    var element = document.getElementById(elementID),
+        style = window.getComputedStyle(element),
+        display = style.getPropertyValue("display");
+
+    if (display == "block") {
+        element.style.display = "none";
+        document.getElementById("showDetails").innerHTML = "Show Technical Document Details";
+       } 
+       else {
+       document.getElementById("showDetails").innerHTML = "Hide Technical Document Details";
+        element.style.display = "block";
+    }
+}
+</script>
+<apex:form >
+    <apex:pageMessages escape="false"/>
+
+<div id="mainDiv">
+<apex:dataTable value="{!KBArticles}" var="articles">
+<apex:column >
+<h1>{!articles.Title}</h1>
+</apex:column>
+</apex:dataTable>
+  <apex:dataTable value="{!KBArticles}" rendered="{!(hasTechDetails == true)}" var="articles" styleClass="docDetails">
+  <apex:column > 
+
+  <apex:outputPanel rendered="{!IF(articles.Auto_Article_Number__c!= null, true, false)}">
+  <div><b><apex:outputText value="Document ID: " /></b> <apex:outputText value="{!articles.Auto_Article_Number__c}"/></div>
+  </apex:outputPanel>
+  
+  <apex:outputPanel rendered="{!IF(articles.LastModifiedDate!= null, true, false)}">
+  <div><b><apex:outputText value="Last Modified Date: " /></b><apex:outputText value="{!publishDate}"/></div>
+  </apex:outputPanel>
+  
+  <a href="#/" id="showDetails" onClick="toggleElementDisplay('prodDetails');" style="color: #34aeff;">Show Technical Document Details</a>
+          
+  <div id="prodDetails" style="display:none">
+  <div class="tecDetails">
+       <apex:outputPanel rendered="{!IF(prods == null,false,true)}">
+       <br/>
+       <b><apex:outputText value="Products"  /></b>
+       <apex:repeat value="{!prods}" var="prod">
+               <ul>               
+                   <li><apex:outputText value="{!prod}"/></li>         
+              </ul>
+       </apex:repeat>
+       </apex:outputPanel>
+           
+       <apex:outputPanel rendered="{!IF(releases == null,false,true)}">
+       <b><apex:outputText value="Releases" /></b>
+       <apex:repeat value="{!releases }" var="release">
+              <ul>               
+                   <li><apex:outputText value="{!release}"/></li>         
+              </ul>
+       </apex:repeat>
+       </apex:outputPanel>
+           
+       <apex:outputPanel rendered="{!IF(Components == null,false,true)}">
+       <b><apex:outputText value="Components"  /></b><br />
+       <apex:repeat value="{!components}" var="comp">
+               <ul>               
+                   <li><apex:outputText value="{!comp}"/></li>         
+              </ul>
+       </apex:repeat>  
+       </apex:outputPanel>
+   </div>
+   </div>
+   </apex:column>
+   </apex:dataTable>
+                   
+       
+<div>
+
+<apex:dataTable value="{!KBArticles}" rendered="{!IF(recordTypeVal=='Generic',true,false)}" var="articles">
+    <apex:column >
+    <apex:outputPanel rendered="{!IF(articles.Content4__c== null,false,true)}">
+    <div>
+       <apex:outputText value="{!articles.Content4__c}" escape="false" />
+    </div>   
+    </apex:outputPanel>                
+    </apex:column>
+</apex:dataTable>
+
+<apex:dataTable value="{!KBArticles}" rendered="{!IF(recordTypeVal=='Case / Issue',true,false)}" var="articles">
+       <apex:column >
+       <apex:outputPanel rendered="{!IF(articles.Content1__c == null,false,true)}">
+           <div id="Heading">   
+           <apex:outputText value="Issue:" escape="false"/></div>
+           <div>
+           <apex:outputText styleClass="Content" value="{!articles.Content1__c}" escape="false"/>
+           </div>
+       </apex:outputPanel>
+       
+       <apex:outputPanel rendered="{!IF(articles.Environment__c == null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Environment:" />
+            </div>
+            <div>
+                <apex:outputText value="{!articles.Environment__c}" escape="false" styleClass="Content" />
+            </div>
+       </apex:outputPanel>
+       
+       <apex:outputPanel rendered="{!IF(articles.Cause__c == null,false,true)}">
+        <div id="Heading">
+            <apex:outputText value="Cause:" />
+        </div>
+        <div>
+            <apex:outputText value="{!articles.Cause__c }" styleClass="Content" escape="false" />
+        </div>
+     </apex:outputPanel>
+     
+     <apex:outputPanel >
+        <div id="Heading">
+            <apex:outputText value="Resolution:" rendered="{!IF(articles.Content2__c == null,false,true)}" />
+        </div>
+        <div>
+            <apex:outputText value="{!articles.Content2__c}" escape="false" styleClass="Content" />
+        </div>
+     </apex:outputPanel>
+     
+     <apex:outputPanel rendered="{!IF(articles.Additional_Information__c == null,false,true)}" >
+        <div id="Heading">
+            <apex:outputText value="Additional Information:" />
+        </div>
+        <div>
+            <apex:outputText value="{!articles.Additional_Information__c }" escape="false" styleClass="Content" />
+        </div>
+    </apex:outputPanel>
+   
+   </apex:column>
+</apex:dataTable>
+<apex:dataTable value="{!KBArticles}" rendered="{!IF(recordTypeVal=='Best Practices / How-To',true,false)}" var="articles">
+    <apex:column >
+        <apex:outputPanel rendered="{!IF(articles.Content3__c== null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Introduction:" escape="false" />
+            </div>
+            <div>
+                <apex:outputText styleClass="Content" value="{!articles.Content3__c}" escape="false" />
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!IF(articles.Background__c== null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Background:" />
+            </div>
+            <div>
+                <apex:outputText value="{!articles.Background__c}" escape="false" styleClass="Content" />
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!IF(articles.Environment__c == null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Environment:" />
+            </div>
+            <div>
+                <apex:outputText value="{!articles.Environment__c}" styleClass="Content" escape="false" />
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!IF(articles.Instructions__c == null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Instructions:" />
+            </div>
+            <div>
+                <apex:outputText value="{!articles.Instructions__c}" styleClass="Content" escape="false" />
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!IF(articles.Additional_Information__c == null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Additional Information:"/>
+            </div>
+            <div>
+                <apex:outputText value="{!articles.Additional_Information__c }" escape="false" styleClass="Content" />
+            </div>
+        </apex:outputPanel>
+    </apex:column>
+</apex:dataTable>
+
+<apex:dataTable value="{!KBArticles}" rendered="{!IF(recordTypeVal=='Question / Answer',true,false)}" var="articles">
+    <apex:column >
+        <apex:outputPanel rendered="{!IF(articles.Introduction__c== null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Introduction:" escape="false" />
+            </div>
+            <div>
+                <apex:outputText styleClass="Content" value="{!articles.Introduction__c}" escape="false" />
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!IF(articles.Question__c== null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Question:" escape="false" />
+            </div>
+            <div>
+                <apex:outputText styleClass="Content" value="{!articles.Question__c }" escape="false" />
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!IF(articles.Environment__c== null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Environment:" escape="false" />
+            </div>
+            <div>
+                <apex:outputText styleClass="Content" value="{!articles.Environment__c }" escape="false" />
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!IF(articles.Answer__c== null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Answer:" escape="false" />
+            </div>
+            <div>
+                <apex:outputText styleClass="Content" value="{!articles.Answer__c }" escape="false" />
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!IF(articles.Additional_Information__c== null,false,true)}">
+            <div id="Heading">
+                <apex:outputText value="Additional Information:" escape="false" />
+            </div>
+            <div>
+                <apex:outputText styleClass="Content" value="{!articles.Additional_Information__c }" escape="false" />
+            </div>
+        </apex:outputPanel>
+    </apex:column>
+</apex:dataTable>
+
+</div>
+ <br/>
+  <br/>
+<apex:dataTable value="{!KBArticles}" var="articles">
+         
+        <apex:column >
+        <apex:outputText value="File Attachments: " rendered="{!(hasAttachments == true)}" styleClass="heading" style="line-height: 1.2rem;"/>
+        <apex:outputPanel rendered="{!IF(articles.File_attachment__Name__s== null,false,true)}">
+            <div>
+                <apex:outputLink target="_blank" value="/servlet/fileField?entityId={!articles.Id}&field=File_attachment__Body__s" styleClass="link">
+                    <apex:outputfield value="{!articles.File_attachment__Name__s}" />
+                </apex:outputLink>
+            </div>
+        </apex:outputPanel>
+                 <apex:outputPanel rendered="{!IF(articles.File_attachment2__Name__s== null,false,true)}">
+            <div>
+                <apex:outputLink target="_blank" value="/servlet/fileField?entityId={!articles.Id}&field=File_attachment2__Body__s" styleClass="link">
+                    <apex:outputfield value="{!articles.File_attachment2__Name__s}" />
+                </apex:outputLink>
+            </div>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!IF(articles.File_attachment3__Name__s== null,false,true)}">
+            <div>
+                <apex:outputLink target="_blank" value="/servlet/fileField?entityId={!articles.Id}&field=File_attachment3__Body__s" styleClass="link">
+                    <apex:outputfield value="{!articles.File_attachment3__Name__s}" />
+                </apex:outputLink>
+            </div>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!IF(articles.File_attachment4__Name__s== null,false,true)}">
+            <div>
+                <apex:outputLink target="_blank" value="/servlet/fileField?entityId={!articles.Id}&field=File_attachment4__Body__s" styleClass="link">
+                    <apex:outputfield value="{!articles.File_attachment4__Name__s}" />
+                </apex:outputLink>
+            </div>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!IF(articles.File_attachment5__Name__s== null,false,true)}">
+            <div>
+                <apex:outputLink target="_blank" value="/servlet/fileField?entityId={!articles.Id}&field=File_attachment5__Body__s" styleClass="link">
+                    <apex:outputfield value="{!articles.File_attachment5__Name__s}" />
+                </apex:outputLink>
+            </div>
+        </apex:outputPanel>
+    </apex:column>
+</apex:dataTable>
+</div>
+</apex:form>
+</apex:page>

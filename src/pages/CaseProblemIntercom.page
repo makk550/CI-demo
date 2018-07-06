@@ -1,0 +1,74 @@
+<apex:page standardController="case" extensions="AutomicVersion" showHeader="false" >
+<head>
+         <apex:includeScript value="{!URLFOR($Resource.jQuery_email, '/jquery-1.8.2.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.jQuery_email, '/postmessage/jquery.ba-postmessage.js')}"/>
+    <script type="text/javascript">
+        var j$ = jQuery.noConflict();
+
+        var parent_domain = '{!$CurrentPage.parameters.parent_domain}';
+
+        j$(document).ready(function() {
+            j$('input[id$=btnCloseModalDialog]').click(function(event) {
+                event.preventDefault();
+                closeModalDialogAndRedirect();
+            });
+        });
+        
+        function closeModalDialog() {
+            var cross_result = new Object();
+            cross_result.action = 'close_modal_dialog';
+            //alert('enter 1');
+            j$.postMessage(
+                cross_result,
+                parent_domain,
+                parent
+            );
+        }
+        
+        function closeModalDialogAndRedirect(errorFlag) {
+            if(!errorFlag){
+                var redirectUrl = j$('input[id$=redirectUrl]').val();
+                //alert(redirectUrl);
+                var cross_result = new Object();
+                cross_result.action = 'close_modal_dialog_redirect';
+                cross_result.redirect_url = redirectUrl;
+            
+                j$.postMessage(
+                    cross_result,
+                    parent_domain,
+                    parent
+                );
+            }
+        }
+    </script>
+</head>
+
+  <apex:form id="frm">
+     <apex:sectionHeader subtitle="Case / Problem Intercommunication" title="Comments"/>
+     <apex:pageBlock >
+         <apex:outputLabel style="color:red;">{!errorMessage}</apex:outputLabel>
+       <apex:pageBlockSection columns="1">
+           <!--<apex:pageblockSectionItem >
+                <apex:outputLabel >Comments:</apex:outputLabel>
+                <apex:inputtextarea id="ccomments" rows="10" cols="50" value="{!ccomments}" required="true">
+                </apex:inputtextarea>
+            </apex:pageblockSectionItem>-->
+        
+                 <apex:pageBlockSectionItem >
+                     <apex:outputLabel >Comments:</apex:outputLabel>
+                        <apex:outputPanel layout="block" styleClass="requiredInput">
+                          <div class="requiredBlock"></div>      
+                    <apex:inputTextarea id="ccomments" value="{!ccomments}"  rows="17" cols="70"/>
+                        </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+         
+          </apex:pageBlockSection> 
+         
+         
+         <apex:pageBlockButtons location="bottom">
+             <apex:commandButton action="{!sendProblemComments}" reRender="frm" onclick="this.disabled=true;" value="Save" oncomplete="closeModalDialogAndRedirect({!isError});"/>
+             <input type="button" value="Cancel" onclick="closeModalDialog();" class="btn"/>
+         </apex:pageBlockButtons>
+     </apex:pageBlock>
+  </apex:form>  
+</apex:page>

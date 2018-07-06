@@ -1,0 +1,197 @@
+<apex:page controller="QuoteOrderFormMainPageCtrllr" tabStyle="scpq__SciQuote__c" action="{!PriliminaryCheck}" standardStylesheets="true">
+    <style>
+        body {
+            font-family: Arial Unicode MS;
+        }
+    </style>
+
+    <script type="text/Javascript">
+        function validateDecimal(el){ theNum = el.value.toString(); var regExp = /^\d{0,}\.\d{4}$/; //format .## required //var regExp = /^\d{1,}\.\d{2}$/; //format #.## required var formatLine = theNum.match(regExp); if(!formatLine){ //Test if there was no match alert("ERROR:\n\nThe amount entered: " + theNum + " is not in the correct format of .####"); //Display Error el.focus(); //Force User To Enter Correct Amount } }
+    </script>
+
+    <apex:form >
+        <apex:sectionHeader title="Generate quote template for" subtitle="{!SterlingQuote.Name}" />
+        <apex:pageBlock rendered="{!OR(notApproved,CAEntityError,CommissionableAreaErr)}" title="Error">
+            <apex:pageBlockSection rendered="{!notApproved}" columns="1">
+                <apex:pageMessage detail="The Quote status is not Approved, please generate the template after the Quote is Approved" severity="warning" strength="3"></apex:pageMessage>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection rendered="{!CAEntityError}" columns="1">
+                <apex:pageMessage detail="Please confirm the CPQ Customer tab Sold To information is complete and valid. If yes, the Territory Assignment for this 
+                Opportunity is not eligible for Quick Quote. Please create DDR." severity="warning" strength="3"></apex:pageMessage>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection rendered="{!CommissionableAreaErr}" columns="1">
+                <apex:pageMessage detail="The Commissionable area of this Renewal Quote is not eligible for generating Quick Quote." severity="warning" strength="3" title="Commisionable Area: {!SterlingQuote.CA_Commissionable_Area__c}"></apex:pageMessage>
+            </apex:pageBlockSection>
+            <apex:pageblockButtons >
+                <apex:commandButton action="/apex/SterlingQuoteView?Id={!SterlingQuote.Id}" value="Back" />
+            </apex:pageblockButtons>
+        </apex:pageBlock>
+        <apex:pageBlock >
+            <apex:pageBlock rendered="{!if(notApproved!=true&&CAEntityError!=true&&CommissionableAreaErr!=true,DisplayOptionsBlock,false)}">
+                <apex:pageMessages rendered="true" showDetail="true" />
+                <apex:pageBlockSection title="Please enter the quote order form number here" columns="1" rendered="{!if(QuoteRec.Is_this_an_Agile_Central_Transaction__c=='No'||QuoteRec.Is_this_an_Agile_Central_Transaction__c==null,orderFormNoBol,false)}">
+                    <apex:inputtext style="font-size:10px;" value="{!orderFormNo}" />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Please enter the Territory/Country here" columns="1" rendered="{!if(QuoteRec.Is_this_an_Agile_Central_Transaction__c=='No'||QuoteRec.Is_this_an_Agile_Central_Transaction__c==null,territoryConuntryBol,false)}">
+                    <apex:inputtext style="font-size:10px;" value="{!territoryConuntry}" />
+                </apex:pageBlockSection>
+
+                <!-- Added by Yedra01 AR:2187,1724  -->
+                <apex:pageBlockSection title="Please enter the %Tax (Brazil and Argentina required)" columns="1" rendered="{!if(QuoteRec.Is_this_an_Agile_Central_Transaction__c=='No'||QuoteRec.Is_this_an_Agile_Central_Transaction__c==null,showTax,false)}">
+
+
+                    <apex:inputtext style="font-size:10px;" value="{!taxPercent}" onchange="validateDecimal(this);" />
+
+                </apex:pageBlockSection>
+                
+                
+                <apex:pageBlockSection title="Please enter the Customer’s CNPJ/MF or CPF/MF (Brazil Only)" columns="1" rendered="{!if(QuoteRec.Is_this_an_Agile_Central_Transaction__c=='No'||QuoteRec.Is_this_an_Agile_Central_Transaction__c==null,showTax,false)}">
+
+
+                    <apex:inputtext style="font-size:10px;" value="{!customerCPNJ}" />
+
+                </apex:pageBlockSection>
+                
+                <!-- Added by ALLHA02 SAP ROW  -->
+                <apex:pageBlockSection columns="1"  title="Please Enter the Department Name (Local Language)" rendered="{!if(QuoteRec.Is_this_an_Agile_Central_Transaction__c=='No'||QuoteRec.Is_this_an_Agile_Central_Transaction__c==null,showContactSection,false)}">        
+                
+                    <table >
+                        <tr width="100%" height="100%">
+                         <td width="100%" height="100%"><apex:inputtext style="font-size:10px;" label="Billing Department Name:" value="{!billingDept}" /></td>
+                        </tr>
+                        <tr width="100%" height="100%">
+                         <td width="100%" height="100%"><apex:inputtext label="Shipping Department Name:" style="font-size:10px;" value="{!shippingDept}" /></td>
+                        </tr>
+                         <tr width="100%" height="100%">
+                         <td width="100%" height="100%"><apex:inputtext label="Technical Department Name:" style="font-size:10px;" value="{!technicalDept}" /></td>
+                        </tr>
+                    </table>
+                    <!-- Department Section End -->  
+                                                        
+                </apex:pageBlockSection>
+                </apex:pageBlock>
+                <apex:pageBlockSection title="Please Select a license type" columns="1" rendered="{!if(notApproved!=true&&CAEntityError!=true&&CommissionableAreaErr!=true,true,false)}" >
+                    <apex:selectRadio value="{!LicenseType}" layout="pageDirection">
+                        <apex:selectOptions value="{!LicenseTypes}" />
+                    </apex:selectRadio>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Please enter value in Ship field" rendered="{!if(QuoteRec.Is_this_an_Agile_Central_Transaction__c=='No'||QuoteRec.Is_this_an_Agile_Central_Transaction__c==null,CASWInfoBol,false)}" columns="1">
+                    <apex:outputPanel layout="block" style="overflow:auto;width:100%;height:300px">
+                        <apex:pageblockTable var="qpr" value="{!ShipQuotePdctLnItemList}" width="100%">
+                            <apex:column value="{!qpr.quotePdctLnItem.Product_Name__c}" style="font-size:10px;" />
+                            <apex:column value="{!qpr.quotePdctLnItem.License_Type__c}" style="font-size:10px;" />
+                            <apex:column value="{!qpr.quotePdctLnItem.Operating_System__c}" style="font-size:10px;" />
+                            <apex:column headerValue="Authorized Use Limitation" style="font-size:10px;">
+                                {!qpr.quotePdctLnItem.Total_Quantity__c}&nbsp;{!qpr.quotePdctLnItem.License_Metric__c}
+                            </apex:column>
+                            <apex:column value="{!qpr.quotePdctLnItem.Effective_Date__c}" style="font-size:10px;" />
+                            <apex:column value="{!qpr.quotePdctLnItem.End_Date__c}" style="font-size:10px;" />
+                            <apex:column headerValue="Ship">
+                                <apex:inputtext value="{!qpr.ship_str}" style="font-size:10px;" /></apex:column>
+                            <apex:column headerValue="License Fee" style="font-size:10px;">
+                                {!SterlingQuote.CurrencyIsoCode} &nbsp;
+                                <apex:outputField value="{!qpr.quotePdctLnItem.Proposed_Lic_Sub_Fee__c}" style="text-align:right" />
+                            </apex:column>
+                            <apex:column headerValue="Maintenance Fees" style="font-size:10px;">
+                                {!SterlingQuote.CurrencyIsoCode} &nbsp;
+                                <apex:outputField value="{!qpr.quotePdctLnItem.Proposed_Maint_Fee__c}" style="text-align:right" />
+                            </apex:column>
+                        </apex:pageblockTable>
+                    </apex:outputPanel>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Please enter value in Variables field" rendered="{!if(QuoteRec.Is_this_an_Agile_Central_Transaction__c=='No'||QuoteRec.Is_this_an_Agile_Central_Transaction__c==null,SrvcEduBol,false)}" columns="1">
+                    <apex:outputPanel layout="block" style="overflow:auto;width:100%;height:300px">
+                        <apex:pageblockTable var="qpr" value="{!VariablesQuotePdctLnItemList}" width="100%">
+                            <apex:column value="{!qpr.quotePdctLnItem.Product_Name__c}" style="font-size:10px;" headerValue="CA Consulting Services or Education Description" />
+                            <apex:column headerValue="Quantity" style="font-size:10px;">{!qpr.quotePdctLnItem.Total_Quantity__c}&nbsp;{!qpr.quotePdctLnItem.License_Metric__c}</apex:column>
+                            <apex:column headerValue="Variables" style="font-size:10px;">
+                                <apex:inputtext value="{!qpr.variables_str}" style="font-size:10px;" />
+                            </apex:column>
+                            <apex:column style="font-size:10px;" headerValue="Fees">
+                                {!SterlingQuote.CurrencyIsoCode} &nbsp;
+                                <apex:outputField value="{!qpr.quotePdctLnItem.Proposed_Lic_Sub_Fee__c}" style="text-align:right" />
+                            </apex:column>
+                        </apex:pageblockTable>
+                    </apex:outputPanel>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Please Select a language" columns="1" rendered="{!if(notApproved!=true&&CAEntityError!=true&&CommissionableAreaErr!=true,true,false)}">
+                    <apex:selectRadio value="{!languageOption}" layout="pageDirection">
+                        <apex:selectOptions value="{!languageOptions}" />
+                    </apex:selectRadio>
+                </apex:pageBlockSection>
+           
+
+            <!-- Added by (Mari--ISTP,R1,2014)-->
+
+            <apex:pageBlockSection rendered="{!LicenseNotSelected}">
+                <apex:pageMessage title="Please Select a license for generating the document" severity="warning" strength="2"></apex:pageMessage>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection rendered="{!taxnotfilled}">
+                <apex:pageMessage title="Please enter tax percent" severity="warning" strength="2"></apex:pageMessage>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection rendered="{!isDecimal}">
+                <apex:pageMessage title="Please enter valid(Decimal) tax percent " severity="warning" strength="2"></apex:pageMessage>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection rendered="{!LanguageNotSelected}">
+                <apex:pageMessage title="Please select the Language" severity="warning" strength="2"></apex:pageMessage>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection rendered="{!depDetailsnotSelected}">
+                <apex:pageMessage title="Please Enter Department Details " severity="warning" strength="2" ></apex:pageMessage>
+            </apex:pageBlockSection>
+            
+
+
+
+            <apex:pageBlockSection rendered="{!resellerAgreementNumberNotSelected}">
+                <apex:pageMessage title="Please enter the Reseller Agreement Number" severity="warning" strength="2"></apex:pageMessage>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection rendered="{!agreementEndDateNotSelected}">
+                <apex:pageMessage title="Please enter the Agreement End Date" severity="warning" strength="2"></apex:pageMessage>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection rendered="{!ShipmentAddressNotSelected}">
+                <apex:pageMessage title="Please select the Shipping method" severity="warning" strength="2"></apex:pageMessage>
+            </apex:pageBlockSection>
+
+            <apex:outputPanel id="panel1" rendered="{!hasEligibleSKU}">
+
+                <apex:pageBlockSection title="Please Select a license type" columns="1">
+                    <apex:selectRadio value="{!LicenseType}" layout="pageDirection">
+                        <apex:selectOptions value="{!LicenseTypes}" />
+                    </apex:selectRadio>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="Please Select a language" columns="1">
+                    <apex:selectRadio value="{!languageOption}" layout="pageDirection">
+                        <apex:selectOptions value="{!languageOptions}" />
+                    </apex:selectRadio>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="  Please Enter the Reseller Agreement Number" columns="1" collapsible="false">
+                    <apex:inputtext style="font-size:10px;" value="{!resellerAgreementNumber}" size="50" />
+                </apex:pageBlockSection>
+
+
+                <apex:pageBlockSection title="  Please Enter the Agreement End Date" columns="1" collapsible="false">
+                    <apex:inputtext style="font-size:10px;" value="{!agreementEndDate}" size="50" />
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="  Please Select the Shipping method (Select one)" columns="1" collapsible="false">
+
+                    <apex:selectRadio value="{!shipMethod}" layout="pageDirection">
+                        <apex:selectOptions value="{!shippingMethods}" />
+                    </apex:selectRadio>
+                </apex:pageBlockSection>
+            </apex:outputpanel>
+
+            <apex:pageblockButtons rendered="{!OR(DisplayOptionsBlock,hasEligibleSKU)}">
+                <apex:commandLink action="{!RedirectToTemplate}" styleClass="btn" value="Quick Contract" target="_blank"></apex:commandLink>
+                <apex:commandButton action="/apex/SterlingQuoteView?Id={!SterlingQuote.Id}" value="Back to sterling quote" />
+            </apex:pageblockButtons>
+
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

@@ -1,0 +1,409 @@
+<apex:page id="oplieditview" standardcontroller="OpportunityLineItem" extensions="OppLineitem_View_Edit_controller_PRM" sidebar="false">   
+    <apex:form id="form1_edit" rendered="{!isEdit}">    
+    <apex:sectionHeader subtitle="{!headerrec.Name}" title="{!actiontitle}"/>
+              
+    <apex:outputLink value="/{!headerrec.Id}" >Return to Opportunity </apex:outputLink>
+         <apex:pageBlock id="pb1">
+            <apex:pageMessages /> 
+            <apex:pageBlockButtons location="top" >
+                
+                  <apex:actionStatus id="msgUF">
+                          <apex:facet name="start">
+                               <apex:outputPanel >
+                                     <apex:commandButton value="Processing..." status="myStatus" disabled="true"/>
+                                     <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 20px; position: absolute; left:50%;top:50%;"/></div>
+                                 </apex:outputPanel>
+                             </apex:facet>
+                            <apex:facet name="stop"> 
+                            <apex:outputPanel >
+                                   <apex:commandButton value="Save" action="{!updateproduct}" />
+                                    <apex:commandButton value="Cancel" action="{!docancel}" />
+                            </apex:outputPanel>
+                        </apex:facet>
+                 </apex:actionStatus>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pbs1" title="{!actionsubtitle}" rendered="{!isRenewal}"> 
+                <apex:inputField value="{!OpportunityLineItem.Partner_Sales_Price__c}" required="true"/>
+                <apex:inputField value="{!OpportunityLineItem.New_Deal_Term_Months__c}" id="newdealterm" required="true" />
+                
+                <apex:inputField value="{!headerrec.Stretch_Deal_Term_Months__c}" id="stretchterm" />
+                <apex:outputField value="{!OpportunityLineItem.Business_Type__c}"  />
+                <apex:inputField value="{!headerrec.Stretch_Sales_Price_Gap_Reason__c}" id="stretchgap"/>
+                <apex:inputField value="{!OpportunityLineItem.Quote_Number__c}" id="qtnumber" />     
+                <apex:inputField value="{!OpportunityLineItem.Contract_Number__c}" id="cntrctnumber" />
+                <!--apex:inputField value="{!OpportunityLineItem.Original_Deal_Term_Months__c}" id="origdealterm" />-->
+                <!--apex:inputField value="{!OpportunityLineItem.Comfort_Term__c}" id="comfortterm" />-->
+                <!--apex:inputField value="{!OpportunityLineItem.Original_Contract_IDs__c}" id="origcontractids" />-->
+                <!--apex:inputField value="{!OpportunityLineItem.Renewal_Gap_Reason_Codes__c}" id="renewalgap" />-->
+                
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" />
+                    <apex:outputPanel StyleClass="requiredInput" layout="block">
+                    <div class="requiredBlock"></div>
+                    <apex:selectList value="{!bustype}" id="renbustype" size="1" >   
+                        <apex:selectOptions value="{!selbustype}"/>
+                    </apex:selectList>
+                    </apex:outputPanel>
+                </apex:pageblocksectionitem>
+         
+                <apex:inputField value="{!OpportunityLineItem.Quote_Number__c}" id="quoteno"/>
+                <apex:inputField value="{!OpportunityLineItem.Business_Partner_ID__c}" id="busspartner"/>
+                <apex:inputField value="{!OpportunityLineItem.Contract_Number__c}" id="contractno" />
+                
+            </apex:pageBlockSection>
+        <!-- </apex:pageBlock>
+        <apex:pageBlock id="pb2">-->
+            <apex:pageBlockSection id="pbs2" title="{!actionsubtitle}" rendered="{!NOT(isMainFrame)}" ></apex:pageBlockSection>
+              <table id="t1" width="100%" cellpadding="1" cellspacing="1" border="0" >
+                <tr>
+                    <th><apex:OutputPanel rendered="{!isRenewal}">Product Family</apex:OutputPanel></th>
+                    <th><apex:OutputPanel rendered="{!NOT(isMainFrame)}" >Business </apex:OutputPanel></th>
+                    <th><apex:OutputPanel rendered="{!NOT(isMainFrame)}" >Product</apex:OutputPanel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" rendered="{!isProduct}" /></th>
+                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Partner_Sales_Price__c.label}" rendered="{!NOT(isMainFrame)}" /></th>                    
+                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Partner_Term__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Original_Expiration_Date__c.label}" rendered="{!isRenewal}"></apex:outputLabel></th>
+                   <!-- <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Original_Expiration_Quarter__c.label}" rendered="{!isRenewal}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Original_Expiration_Year__c.label}" rendered="{!isRenewal}"></apex:outputLabel></th>
+                   -->
+                    <th>
+                        <apex:outputPanel rendered="false">
+                        <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.On_Demand__c.label}"  rendered="{!(isProduct && show_ondemand) }"></apex:outputLabel>
+                        </apex:outputPanel>
+                    </th>
+                     
+                    
+                </tr>
+                <tr> 
+             
+                    <td>
+                        <apex:OutputPanel rendered="{!isRenewal}">
+                        <apex:OutputText value="{!prdfamily}" />
+                        </apex:OutputPanel>
+                    </td>
+                    <td>
+                       <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                         <apex:OutputText value="{!prdbu}" />
+                        </apex:OutputPanel>
+                    </td> 
+                    <td>
+                      <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                        <apex:OutputText value="{!prdname}" />
+                      </apex:OutputPanel>
+                    </td>
+                    <td>
+                    <apex:outputPanel rendered="{!isProduct}">
+                        <apex:selectList value="{!bustype}" id="prd_bustype" size="1" style="width:200px" >   
+                            <apex:selectOptions value="{!selbustype}"/>
+                        </apex:selectList> 
+                        </apex:outputPanel>
+                    </td>
+                    
+                    <td>
+                    <apex:outputPanel rendered="{!NOT(isMainFrame)}">
+                        <apex:selectList value="{!cloudplatformuse}" id="prd_cloudplatformuse" size="1" style="width:200px" >   
+                            <apex:selectOptions value="{!selcloudplatformuse}"/>
+                        </apex:selectList> 
+                        </apex:outputPanel>
+                    </td>
+
+                    <td>
+                      <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                        <apex:inputField value="{!OpportunityLineItem.Partner_Sales_Price__c}" id="prd_salesprice" />
+                      </apex:outputPanel>
+                    </td>
+                    
+                     <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                        <apex:inputField value="{!OpportunityLineItem.Partner_Term__c}" id="prd_term" />
+                        </apex:outputPanel>
+                    </td>
+                     
+                    <td>
+                        <apex:outputPanel rendered="{!isRenewal}">
+                            <apex:inputField value="{!OpportunityLineItem.Original_Expiration_Date__c}" />
+                        </apex:outputPanel>
+                        
+                    </td>
+                    <!--<td>
+                        <apex:outputPanel rendered="{!isRenewal}">
+                            <apex:outputField value="{!OpportunityLineItem.Original_Expiration_Quarter__c}" />
+                        </apex:outputPanel>
+                    </td>
+                    
+                    <td>
+                        <apex:outputPanel rendered="{!isRenewal}">
+                            <apex:outputField value="{!OpportunityLineItem.Original_Expiration_Year__c}" />
+                        </apex:outputPanel>    
+                    </td>-->
+                    
+                     <td>
+                         <apex:outputPanel rendered="false">
+                        <apex:outputPanel rendered="{!(isProduct && show_ondemand) }">
+                        <apex:inputField value="{!OpportunityLineItem.On_Demand__c}" />
+                        </apex:outputPanel>
+                        </apex:outputPanel>
+                        &nbsp;
+                    </td>
+                    </tr>
+                </table>
+               <apex:pageBlockSection id="mfPbs1" title="{!actionsubtitle}" rendered="{!isMainFrame}"> 
+                <apex:inputField value="{!OpportunityLineItem.Partner_Sales_Price__c}" required="true"/>
+                <apex:inputField value="{!headerrec.New_Deal_Term_months__c}" id="newdealterm" required="true" />
+                
+                <apex:inputField value="{!headerrec.Stretch_Deal_Term_Months__c}" id="stretchterm" />
+                <apex:outputField value="{!OpportunityLineItem.Business_Type__c}"  />
+                <apex:inputField value="{!headerrec.Stretch_Sales_Price_Gap_Reason__c}" id="stretchgap"/>
+                <apex:inputField value="{!OpportunityLineItem.Quote_Number__c}" id="qtnumber" />     
+                <apex:inputField value="{!OpportunityLineItem.Contract_Number__c}" id="cntrctnumber" />
+
+
+                <!--<apex:outputField value="{!OpportunityLineItem.New_Deal_Term_Months__c}" id="mfNewdealterm" />-->
+                <!--<apex:inputField value="{!OpportunityLineItem.Quote_Number__c}" id="mfOrigcv" /> -->
+                <!--<apex:inputField value="{!OpportunityLineItem.Contract_Number__c}" id="mfComfort"/> -->
+                <!--<apex:inputField value="{!OpportunityLineItem.Partner_Term__c}" id="mfOrigdealterm" /> -->
+              
+                <!--<apex:outputField value="{!OpportunityLineItem.Comfort_Term__c}" id="mfOrigcontractids" /> -->
+                <!--<apex:outputField value="{!OpportunityLineItem.Renewal_Gap_Reason_Codes__c}" id="mfRenewalgap" /> -->
+                <!--<apex:inputField value="{!OpportunityLineItem.Partner_Sales_Price__c}" id="mfRenquota" /> -->
+                <!--<apex:outputField value="{!OpportunityLineItem.Business_Type__c}" /> -->
+
+              </apex:pageBlockSection>
+
+        </apex:pageBlock>
+    </apex:form>
+    
+    <apex:form id="form1_view" rendered="{!isView}">
+    <apex:sectionHeader subtitle="{!headerrec.Name}" title="{!actiontitle}"/>
+    <apex:outputLink value="/{!headerrec.Id}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb2">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Edit" action="{!edit}" />
+                <apex:commandButton value="Delete" action="{!dodelete}" />
+                <apex:commandButton value="Cancel" action="{!docancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pbs2" title="{!actionsubtitle}" rendered="{!isRenewal}">
+                <apex:outputField value="{!OpportunityLineItem.New_Deal_Term_Months__c}" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Original_CV__c.label}" />
+                    <apex:outputText value="{0, number, 000,000.00}">
+                        <apex:param value="{!OpportunityLineItem.Original_CV__c}" />
+                    </apex:outputText>
+                    <!--<apex:outputText value="{!OpportunityLineItem.Original_CV__c}"  />-->
+                </apex:pageBlockSectionItem>
+                
+                <apex:outputField value="{!OpportunityLineItem.Original_Deal_Term_Months__c}" />
+                <!-- <apex:outputField value="{!OpportunityLineItem.Comfort_Term__c}" /> -->
+                <apex:outputField value="{!OpportunityLineItem.Original_Contract_IDs__c}" />
+                <!--<apex:outputField value="{!OpportunityLineItem.Renewal_Gap_Reason_Codes__c}" />-->
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Renewal_Quota_CV__c.label}" />
+                    <apex:outputText value="{!OpportunityLineItem.Renewal_Quota_CV__c}"  />
+                </apex:pageBlockSectionItem>
+                <apex:OutputField value="{!OpportunityLineItem.Business_Type__c}" id="renbustype" />
+                <apex:outputField value="{!OpportunityLineItem.Quote_Number__c}" id="quoteno"/>
+                <apex:outputField value="{!OpportunityLineItem.Business_Partner_ID__c}" id="busspartner"/>
+                <apex:outputField value="{!OpportunityLineItem.Contract_Number__c}" id="contractno" />
+                
+            </apex:pageBlockSection>
+        <!-- </apex:pageBlock>
+        <apex:pageBlock id="pb2">-->
+            <apex:pageBlockSection id="pbs3" title="{!actionsubtitle}" rendered="{!NOT(isMainFrame)}" >   </apex:pageBlockSection> 
+            <table id="t2" width="100%" cellpadding="1" cellspacing="1" border="0.5" frame="box">
+                <tr>
+                    <th><apex:OutputPanel rendered="{!isRenewal}">Product Family</apex:OutputPanel></th>
+                    <th><apex:OutputPanel rendered="{!NOT(isMainFrame)}">Business Unit</apex:OutputPanel></th>                    
+                    <th><apex:OutputPanel rendered="{!NOT(isMainFrame)}">Product</apex:OutputPanel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" rendered="{!isProduct}" /></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Partner_Sales_Price__c.label}" rendered="{!NOT(isMainFrame)}" /></th> 
+                    
+                     <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Partner_Term__c.label}" rendered="{!isProduct}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Original_Expiration_Date__c.label}" rendered="{!isRenewal}"></apex:outputLabel></th>
+                    
+                </tr>
+                <tr> 
+             
+                    <td>
+                        <apex:OutputPanel rendered="{!isRenewal}">
+                        <apex:outputText value="{!prdfamily}" />
+                        </apex:OutputPanel>
+                    </td>
+                    <td>
+                       <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                        <apex:outputText value="{!prdbu}" />
+                       </apex:outputPanel> 
+                    </td> 
+                    <td>
+                       <apex:OutputPanel rendered="{!NOT(isMainFrame)}">
+                        <apex:outputText value="{!prdname}" />
+                       </apex:outputPanel> 
+                    </td>
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                        <apex:outputField value="{!OpportunityLineItem.Business_Type__c}" />
+                        </apex:outputPanel> 
+                    </td>
+ 
+                    <td>
+                    <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" rendered="{!NOT(isMainFrame)}"/>
+                    <apex:outputText value="{0, number, 000,000.00}" rendered="{!NOT(isMainFrame)}">
+                        <apex:param value="{!OpportunityLineItem.Partner_Sales_Price__c}" />
+                    </apex:outputText>
+                        <!-- <apex:outputText value="{!OpportunityLineItem.Partner_Sales_Price__c}" />-->
+                    </td>
+                    
+                    <td>
+                        <apex:outputPanel rendered="{!isProduct}">
+                        <apex:outputField value="{!OpportunityLineItem.Partner_Term__c}" />
+                        </apex:outputPanel>
+                    </td>
+                     <td>
+                        <apex:outputPanel rendered="{!isRenewal}">
+                        <apex:outputField value="{!OpportunityLineItem.Original_Expiration_Date__c}" />
+                        </apex:outputPanel>
+                        
+                    </td>
+                    </tr>
+                    
+            </table> 
+                                    
+         <apex:pageBlockSection id="mfPbs1" title="{!actionsubtitle}" rendered="{!isMainFrame}">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Partner_Sales_Price__c.label}" />
+                     <apex:outputText value="{!OpportunityLineItem.Partner_Sales_Price__c}"  />               
+                </apex:pageBlockSectionItem>                           
+                <apex:outputField value="{!OpportunityLineItem.New_Deal_Term_Months__c}" />
+                <apex:outputField value="{!headerrec.Stretch_Deal_Term_Months__c}" />
+                <apex:outputField value="{!OpportunityLineItem.Business_Type__c}" />
+                <apex:outputField value="{!headerrec.Stretch_Sales_Price_Gap_Reason__c}" />
+                <apex:outputField value="{!OpportunityLineItem.Quote_Number__c}" />
+                <apex:outputField value="{!OpportunityLineItem.Contract_Number__c}" />
+                <!-- <apex:outputField value="{!OpportunityLineItem.Partner_Term__c}" /> -->
+                <!-- <apex:outputField value="{!OpportunityLineItem.Comfort_Term__c}" /> -->
+                <!-- <apex:outputField value="{!OpportunityLineItem.Renewal_Gap_Reason_Codes__c}" /> -->
+           </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <apex:form id="form1_view_offerings" rendered="{!isViewOfferings}">
+    <apex:sectionHeader subtitle="{!headerrec.Name}" title="{!actiontitle}"/>
+    <apex:outputLink value="/{!headerrec.Id}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb3">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Edit" action="{!edit}" />
+                <apex:commandButton value="Delete" action="{!dodelete}" />
+                <apex:commandButton value="Cancel" action="{!docancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pbs4" title="{!actionsubtitle}"></apex:pageBlockSection>
+                <table id="t2" width="100%" cellpadding="0" cellspacing="2" border="0" frame="box">
+                <tr>
+                    <th>Business Unit</th>
+                    <th>Offering</th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" rendered="{!isSupport}"></apex:outputLabel></th>
+                    <th>{!$ObjectType.OpportunityLineItem.fields.Partner_Sales_Price__c.label}</th>                    
+                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Drawdown_from_Prepaid_Funds__c.label}" rendered="{!isServices}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Contract_Length__c.label}" rendered="{!isSupport}"></apex:outputLabel></th>
+                    
+                    
+                </tr>
+                <tr> 
+                    <td>
+                        <apex:outputText value="{!prdbu}" />
+                    </td> 
+                    <td>
+                        <apex:outputText value="{!prdname}" />
+                    </td>
+                    <td>
+                        <apex:outputpanel rendered="{!isSupport}">
+                        <apex:outputText value="{!OpportunityLineItem.Business_Type__c}" />
+                        </apex:outputpanel> 
+                    </td>
+                    
+                    <td>
+                    <apex:outputText value="{!OpportunityLineItem.CurrencyISOCode}" />                        
+                    <apex:outputText value="{0, number, 000,000.00}">
+                        <apex:param value="{!OpportunityLineItem.Partner_Sales_Price__c}" />
+                    </apex:outputText>
+                        <!-- <apex:outputText value="{!OpportunityLineItem.Partner_Sales_Price__c}" />-->
+                    </td>
+
+                    
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.Drawdown_from_Prepaid_Funds__c}" rendered="{!isServices}" />
+                    </td>
+                    <td>
+                        <apex:outputText value="{!OpportunityLineItem.Contract_Length__c}" rendered="{!isSupport}" />
+                    </td>
+                                                            
+
+                    </tr>
+                    
+            </table>
+            
+        </apex:pageBlock>
+    </apex:form>
+    <apex:form id="form1_edit_offerings" rendered="{!isEditOfferings}">
+    <apex:sectionHeader subtitle="{!headerrec.Name}" title="{!actiontitle}"/>
+    <apex:outputLink value="/{!headerrec.Id}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb4">
+            <apex:pageMessages /> 
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!updateproduct}" />
+                <apex:commandButton value="Cancel" action="{!docancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pbs5" title="{!actionsubtitle}"></apex:pageBlockSection>
+            <table id="t1" width="50%" cellpadding="1" cellspacing="1" border="0" >
+                <tr>
+                    <th>Business Unit</th>
+                    <th>Offering</th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}" rendered="{!isSupport}"></apex:outputLabel></th>
+                    <th>{!$ObjectType.OpportunityLineItem.fields.Partner_Sales_Price__c.label}</th>
+                    
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Drawdown_from_Prepaid_Funds__c.label}" rendered="{!isServices}"></apex:outputLabel></th>
+                    <th><apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Contract_Length__c.label}" rendered="{!isSupport}"></apex:outputLabel></th>
+                    
+                    
+                    
+                </tr>
+                <tr> 
+                    <td>
+                        <apex:outputText value="{!prdbu}" />
+                    </td> 
+                    <td>
+                        <apex:outputText value="{!prdname}" />
+                    </td>
+                    <td>
+                        <apex:outputpanel rendered="{!isSupport}">
+                        
+                        <apex:selectList value="{!bustype}" id="supp_bustype" size="1" style="width:200px">   
+                            <apex:selectOptions value="{!selbustype}"/>
+                        </apex:selectList>
+                        </apex:outputpanel>
+                    </td>
+                    <td>
+                        <apex:inputField value="{!OpportunityLineItem.Partner_Sales_Price__c}" />
+                    </td>
+                    <td>
+                        <apex:inputField value="{!OpportunityLineItem.Drawdown_from_Prepaid_Funds__c}" rendered="{!isServices}" />
+                    </td>
+                    <td>
+                        <apex:inputField value="{!OpportunityLineItem.Contract_Length__c}" rendered="{!isSupport}" />
+                    </td>
+                    
+                                        
+
+                    
+                    
+                    
+                    </tr>
+                    
+            </table>
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

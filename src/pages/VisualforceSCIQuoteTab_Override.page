@@ -1,0 +1,13 @@
+<apex:page >
+<SPAN style="FONT-FAMILY: 'Verdana','sans-serif'; COLOR: #333333; FONT-SIZE: 8.5pt; mso-fareast-font-family: SimSun; mso-fareast-theme-font: minor-fareast; mso-bidi-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: ZH-TW; mso-bidi-language: AR-SA"><STRONG></STRONG></SPAN><SPAN style="FONT-FAMILY: 'Verdana','sans-serif'; COLOR: #333333; FONT-SIZE: 8.5pt; mso-fareast-font-family: SimSun; mso-fareast-theme-font: minor-fareast; mso-bidi-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: ZH-TW; mso-bidi-language: AR-SA"> </SPAN>
+<BR> </BR>
+<TABLE>
+<TBODY>
+<TR>
+<TD><apex:image value="/servlet/servlet.FileDownload?file=01530000001fLrM" height="94px" width="183px" style="valign:middle"/></TD>
+<TD><SPAN style="FONT-FAMILY: 'Verdana','sans-serif'; COLOR: #333333; FONT-SIZE: 8.5pt; mso-fareast-font-family: SimSun; mso-fareast-theme-font: minor-fareast; mso-bidi-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: ZH-TW; mso-bidi-language: AR-SA"><br><STRONG>Searching for a Quote?</STRONG></br><br></br>
+In order to search for a CPQ Quote, use the standard Salesforce search box at the top of the page (to the right of the company logo), or navigate to the quote through your Salesforce opportunity.</SPAN>
+</TD></TR>
+</TBODY></TABLE>
+
+</apex:page>

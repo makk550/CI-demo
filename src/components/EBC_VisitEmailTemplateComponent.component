@@ -1,0 +1,19 @@
+<apex:component access="global" controller="EBC_Visit_EmailTemplateController">
+    <apex:attribute name="ebcAccountId" id="Id" type="Id" description="EBC Visit " assignTo="{!ebcAccId}"/>
+<table width="600">
+                <tr style="background-color:#5E5EBA;color:white">
+                    <th align="left" colspan="5">Account Team</th>
+                </tr>
+                <tr>
+                    <th align="left">User Name</th>
+                    <th align="left">{!$ObjectType.AccountTeamMember.fields.TeamMemberRole.label}</th>
+                </tr>
+                <apex:repeat id="actTeama" value="{!accountTeammembers}" var="at">
+                <tr>
+                    <td>{!at.User.Name}</td>
+                    <td>{!at.TeamMemberRole}</td>
+                </tr>
+               </apex:repeat>
+</table>
+   
+</apex:component>

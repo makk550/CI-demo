@@ -1,0 +1,12 @@
+<apex:page standardController="case" extensions="redirectCaseController" action="{!redirectCase}">
+    <apex:pageMessage rendered="{!!showDetail}" severity="error" summary="You are not allowed to see this record."></apex:pageMessage>
+    <apex:detail subject="{!case.Id}" rendered="{!showDetail}" relatedList="true"/>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script>
+        var caseStatus = "{!case.status}";
+        if(caseStatus  =='Closed'){
+           $('input[name="tpc_close_case"]').hide();
+        }
+    </script>
+</apex:page>

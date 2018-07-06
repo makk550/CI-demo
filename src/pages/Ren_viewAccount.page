@@ -1,0 +1,150 @@
+<apex:page controller="Renewal_ViewAccounts"  tabStyle="Account" >
+     
+    <apex:form >
+    <apex:pageMessages />
+    <apex:pageMessage severity="INFO" id="SuccessMsg" summary="Accounts have been updated Successfully" rendered="{!SuccessMsg}"></apex:pageMessage>
+  <apex:pageblock id="pb">
+   <apex:sectionHeader title="Aggregate Accounts by OCV/AOCV" />
+      <apex:pageBlockSection >
+         <apex:pageblockSectionItem >
+          <b>Account Name</b><apex:inputText id="accountName" value="{!accountName}" />
+         </apex:pageblockSectionItem>
+          <apex:pageblockSectionItem >
+            <b>OCV(>)</b><apex:inputText id="OCV" value="{!OCV_Greater_than}" />  
+          </apex:pageblockSectionItem>
+          <apex:pageblockSectionItem >
+            <b>AOCV(>)</b><apex:inputText id="AOCV" value="{!AOCV_Greater_than}" />  
+          </apex:pageblockSectionItem> 
+           <apex:pageblockSectionItem >
+            <b>Region</b><apex:inputText id="region" value="{!region}" />  
+          </apex:pageblockSectionItem>
+           <apex:pageblockSectionItem >
+            <b>Area</b><apex:inputText id="area" value="{!area}" />  
+          </apex:pageblockSectionItem>
+           <apex:pageblockSectionItem >
+            <b>Territory/Country</b><apex:inputText id="territory" value="{!territory}" />  
+          </apex:pageblockSectionItem>
+          
+         <!-- <apex:pageblockSectionItem >
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <apex:commandButton action="{!searchAccount}" value="Go!" styleClass="buttonStyle"  status="loadStatus" />          
+          </apex:pageblockSectionItem> -->
+          
+          <apex:pageblockSectionItem >
+          <apex:actionStatus id="mySaveStatus1">
+          <apex:facet name="stop">
+          <apex:commandButton action="{!searchAccount}" status="mySaveStatus1" value="Search"   disabled="false" />
+          </apex:facet>
+          <apex:facet name="start">
+          <apex:commandButton action="{!searchAccount}" status="mySaveStatus1" value="Processing..." disabled="true"/> </apex:facet>
+          </apex:actionStatus>
+          </apex:pageblockSectionItem>
+      </apex:pageBlockSection>
+    
+      
+      <apex:pageBlockSection id="pbs">
+       <apex:outputPanel id="resultblock">
+                <apex:actionStatus id="loadStatus" startText="Loading..." />
+                 <div align="right" style="display:{!IF(NOT(ISNULL(displaySearchResult)),'block','none')}">
+                    <br/>
+                        <font size="1pt">Page #:&nbsp;<apex:outputLabel value="{!currentPage }"/>&nbsp;out of&nbsp;<apex:outputLabel value="{!totalPageNumber}"/>&nbsp;&nbsp;&nbsp;&nbsp;</font>
+                          <apex:commandButton value="Previous" action="{!OnClickPrevious}" reRender="resultblock" disabled="{!NOT(ifprevious)}" status="loadStatus"></apex:commandButton>
+                          <apex:commandButton value="Next" action="{!OnClickNext}" reRender="resultblock" disabled="{!NOT(ifnext)}" status="loadStatus"></apex:commandButton>
+                          
+                  </div>
+             
+       
+           <apex:pageBlockTable id="searchTable" value="{!displaySearchResult}" var="searchResult" rendered="{!AND(NOT(displaySearchResult.size<=0),NOT(ISNULL(displaySearchResult)))}">
+                 <apex:column id="searchCol">
+                      <apex:facet name="header">Select</apex:facet>
+                        <apex:inputCheckbox id="prodCheck" value="{!searchResult.isActive}"  onclick="deselectOther(this)" >                         
+                        </apex:inputCheckBox>
+                   </apex:column>             
+                <apex:column >
+                       <apex:facet name="header">  
+                          <apex:commandLink action="{!searchAccount}" value="Account Name{!IF(sortExpression=='name',IF(sortName == 'DESC','▼','▲'),'')}" id="cmdSort"
+                           rerender="resultblock,done" status="loadStatus" reRender="resultblock">
+                             <apex:param value="name" name="column" assignTo="{!sortExpression}" ></apex:param>
+                          </apex:commandLink>
+                       </apex:facet>
+                       <apex:outputLink value="/{!searchResult.pd.Id}">{!searchResult.pd.Name}</apex:outputLink> 
+                 </apex:column>
+                 <apex:column >
+                       <apex:facet name="header">   
+                          <apex:commandLink action="{!searchAccount}" value="OCV (USD){!IF(sortExpression=='ocv__c',IF(sortOCV =='DESC','▼','▲'),'')}" id="cmdSort2"
+                           rerender="pbs" status="loadStatus">
+                             <apex:param value="OCV__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                          </apex:commandLink>
+                       </apex:facet>
+                       <apex:outputfield value="{!searchResult.pd.OCV__c}"></apex:outputfield> 
+                 </apex:column>
+                 <apex:column style="width:400px" >
+                       <apex:facet name="header">   
+                          <apex:commandLink action="{!searchAccount}" value="AOCV (USD){!IF(sortExpression=='aocv__c',IF(sortAOCV =='DESC','▼','▲'),'')}" id="cmdSort3"
+                           rerender="pbs" status="loadStatus">
+                             <apex:param value="AOCV__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                          </apex:commandLink>
+                       </apex:facet>
+                       <apex:outputfield value="{!searchResult.pd.AOCV__c}"></apex:outputfield> 
+                 </apex:column>                 
+                 <apex:column >
+                       <apex:facet name="header">   
+                          <apex:commandLink action="{!searchAccount}" value="Region{!IF(sortExpression=='GEO__c',IF(sortAOCV =='DESC','▼','▲'),'')}" id="cmdSort4"
+                           rerender="pbs" status="loadStatus">
+                             <apex:param value="GEO__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                          </apex:commandLink>
+                       </apex:facet>
+                       <apex:outputfield value="{!searchResult.pd.GEO__c}"></apex:outputfield> 
+                 </apex:column>
+                 <apex:column >
+                       <apex:facet name="header">   
+                          <apex:commandLink action="{!searchAccount}" value="Area{!IF(sortExpression=='Sales_Area__c',IF(sortAOCV =='DESC','▼','▲'),'')}" id="cmdSort5"
+                           rerender="pbs" status="loadStatus">
+                             <apex:param value="Sales_Area__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                          </apex:commandLink>
+                       </apex:facet>
+                       <apex:outputfield value="{!searchResult.pd.Sales_Area__c}"></apex:outputfield> 
+                 </apex:column>
+                  <apex:column >
+                       <apex:facet name="header">   
+                          <apex:commandLink action="{!searchAccount}" value="Territory/Country{!IF(sortExpression=='Sales_Region__c',IF(sortAOCV =='DESC','▼','▲'),'')}" id="cmdSort6"
+                           rerender="pbs" status="loadStatus">
+                             <apex:param value="Sales_Region__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                          </apex:commandLink>
+                       </apex:facet>
+                       <apex:outputfield value="{!searchResult.pd.Sales_Region__c}"></apex:outputfield> 
+                 </apex:column>
+                 <apex:column >
+                       <apex:facet name="header">   
+                          <apex:commandLink action="{!searchAccount}" value="Finance Owner{!IF(sortExpression=='Finance_Owner__c',IF(sortAOCV =='DESC','▼','▲'),'')}" id="cmdSort7"
+                           rerender="pbs" status="loadStatus">
+                             <apex:param value="Finance_Owner__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                          </apex:commandLink>
+                       </apex:facet>
+                       <apex:outputfield value="{!searchResult.pd.Finance_Owner__c}"></apex:outputfield> 
+                 </apex:column>
+                 <apex:column >
+                       <apex:facet name="header">   
+                          <apex:commandLink action="{!searchAccount}" value="Valuation tier{!IF(sortExpression=='Valuation_tier__c',IF(sortAOCV =='DESC','▼','▲'),'')}" id="cmdSort8"
+                           rerender="pbs" status="loadStatus">
+                             <apex:param value="Valuation_tier__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                          </apex:commandLink>
+                       </apex:facet>
+                       <apex:outputfield value="{!searchResult.pd.Valuation_tier__c}"></apex:outputfield> 
+                 </apex:column>
+                 
+             </apex:pageBlockTable>
+          <div align="right" style="display:{!IF(NOT(ISNULL(displaySearchResult)),'block','none')}">
+                  <font size="1pt">Page #:&nbsp;<apex:outputLabel value="{!currentPage }"/>&nbsp;out of&nbsp;<apex:outputLabel value="{!totalPageNumber}"/>&nbsp;&nbsp;&nbsp;&nbsp;</font>
+                  <apex:commandButton value="Previous" action="{!OnClickPrevious}" disabled="{!NOT(ifprevious)}"  reRender="resultblock"></apex:commandButton>
+                  <apex:commandButton value="Next" action="{!OnClickNext}" disabled="{!NOT(ifnext)}" reRender="resultblock" ></apex:commandButton>
+               </div>
+          </apex:outputPanel> 
+          
+      </apex:pageBlockSection>
+      
+              <apex:commandButton action="{!changeFinanceOwner}" Value="Change Finance Owner" styleClass="buttonStyle" rendered="{!AND(NOT(displaySearchResult.size<=0),NOT(ISNULL(displaySearchResult)))}" />
+       
+  </apex:pageblock>
+  </apex:form>
+</apex:page>

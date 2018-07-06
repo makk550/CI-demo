@@ -1,0 +1,40 @@
+<apex:component controller="MultiSelectComponentController">
+    <apex:attribute name="AvailableList" type="selectOption[]" description="Available List from the Page" assignTo="{!options}" required="True"/>
+    <apex:attribute name="AvailableListName" type="string" description="Available List Name on the Page" assignTo="{!availableListName}" required="False"/>
+    <apex:attribute name="ChosenList" type="selectOption[]" description="Chosen List from the Page" assignTo="{!selectedOptions}" required="True"/>
+    <apex:attribute name="ChosenListName" type="string" description="Chosen List Name on the Page" assignTo="{!chosenListName}" required="False"/>
+    <script type="text/javascript">
+        function selection() {
+            selection();
+        }
+        function deselection() {
+            deselection();
+        }
+    </script>
+<!-- Apex function called to move the selected values from available list to chosen list and vice versa -->
+    <apex:actionFunction name="selection" action="{!selecting}" reRender="multiselect"/>
+    <apex:actionFunction name="deselection" action="{!deselecting}" reRender="multiselect"/>
+    <apex:outputPanel id="panel">
+    <apex:pageBlockSection columns="2" >
+    <apex:outputLabel value="{!availableListName}" escape="false"/>
+    <apex:outputLabel value="{!chosenListName}" escape="false"/>
+    </apex:pageBlockSection>
+    <apex:pageBlockSection columns="3" >
+    <!-- apex:actionStatus id="waitingStatus" startText="Please wait..." stopText=""/-->
+        <apex:selectList multiselect="true" size="5" value="{!selected}"  style="width: 250px">
+            <apex:selectOptions value="{!options}" />
+            <apex:actionSupport event="ondblclick" action="{!selecting}" rerender="panel" />
+        </apex:selectList>
+            <apex:pageBlockSection columns="1">
+            <apex:commandButton reRender="panel" id="select" action="{!selecting}" value=">>"/>
+            <apex:commandButton reRender="panel" id="deselect" action="{!deselecting}" value="<<"/>
+            </apex:pageBlockSection>
+   <!-- An action status to show that the operation of moving between the lists is in progress--->
+            
+        <apex:selectList multiselect="true" size="5" value="{!deselected}"  style="width: 250px">
+            <apex:selectOptions value="{!selectedOptions}" />
+            <apex:actionSupport event="ondblclick" action="{!deselecting}" rerender="panel" />
+        </apex:selectList>
+    </apex:pageBlockSection>
+    </apex:outputPanel>
+</apex:component>

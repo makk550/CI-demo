@@ -1,0 +1,118 @@
+<apex:page controller="ctrlChecklist_lookup" sidebar="false" showHeader="false" standardStylesheets="true" tabStyle="Profile" >
+
+     <apex:form >
+         <script>
+             var checkCount = 0;
+             var checkedValues = '';
+             function checkSelected(chk)
+             {
+                 tcheckedValues = '';
+                 var txtval = chk.nextSibling.innerHTML;
+                 var tablesection = chk.parentNode.parentNode.parentNode;
+                 var i = 0
+                 while(tablesection.childNodes[i] != null)
+                 {
+                    if(tablesection.childNodes[i].childNodes[0]) // td exists
+                       {  
+                                if(document.all)
+                                {
+                                       var vcheckbox = tablesection.childNodes[i].childNodes[0].childNodes[0];
+                                       var vlabel = tablesection.childNodes[i].childNodes[0].childNodes[1];
+                                       var vtext = vlabel.innerText.substring(1,vlabel.innerHTML.length);
+                                }
+                                else
+                                {
+                                       var vcheckbox = tablesection.childNodes[i].childNodes[0].nextSibling.childNodes[1];
+                                       var vlabel = tablesection.childNodes[i].childNodes[0].nextSibling.childNodes[2];
+                                       var vtext = vlabel.innerHTML.substring(1,vlabel.innerHTML.length);
+                                }
+                                if(vcheckbox != null && vcheckbox != null)
+                                        if(vcheckbox.checked)
+                                            if(tcheckedValues  != '')
+                                                  tcheckedValues  += ','+ vtext;
+                                             else     
+                                                  tcheckedValues  = vtext ;
+                       }
+                 
+                  i++;
+                 }
+                if(tcheckedValues.length <= 255)
+                    {
+                        checkedValues = tcheckedValues.replace('&amp;','&');
+                    }
+                else if(chk.checked)
+                    { 
+                         alert('You cannot select this profile as it will exceed the limit! \n Please uncheck some profile if you wish to select this!');
+                         chk.checked = false;
+                    }
+             
+             }
+             
+             function fnclose()
+             {
+                 
+               var ctrlOpener = window.parent.opener.document.getElementById('j_id0:j_id2:j_id3:j_id5:j_id9:txtprofile');
+               ctrlOpener.value = checkedValues;  
+               window.parent.close();             
+             
+             }
+          </script>   
+          <apex:pageBlock >
+              <apex:sectionHeader title="Lookup" />
+              <apex:pageBlockSection columns="1" >
+                       <apex:selectCheckboxes id="lstProfiles" value="{!profiles}"  layout="pageDirection" onclick="checkSelected(this)">
+                            <apex:selectOptions value="{!items}" />
+                       </apex:selectCheckboxes>
+               </apex:pageBlockSection>
+               <apex:pageBlockButtons >
+                        <input type="button" value="Submit" class="btn"  onclick="fnclose()" /> 
+               </apex:pageBlockButtons>
+            </apex:pageBlock>    
+            <script>
+             var loaded = 0;
+             function fnchk()
+              {
+                 var ctrlOpener = window.parent.opener.document.getElementById('j_id0:j_id2:j_id3:j_id5:j_id9:txtprofile');
+                 checkedValues = ctrlOpener.value; 
+                 var vtbl = document.getElementById('j_id0:j_id1:j_id3:j_id5:lstProfiles');
+                 if(document.all)
+                     var tablesection  =   vtbl.childNodes[0];
+                 else
+                     var tablesection = vtbl.childNodes[1];
+                     
+                 var i = 0;
+                 while(tablesection.childNodes[i] != null)
+                 {
+                    if(tablesection.childNodes[i].childNodes[0]) // td exists
+                       {
+                       
+                                if(document.all)
+                                {
+                                       var vcheckbox = tablesection.childNodes[i].childNodes[0].childNodes[0];
+                                       var vlabel = tablesection.childNodes[i].childNodes[0].childNodes[1];
+                                       var vtext = vlabel.innerText.substring(1,vlabel.innerHTML.length);
+                                }
+                                else
+                                {
+                                       var vcheckbox = tablesection.childNodes[i].childNodes[0].nextSibling.childNodes[1];
+                                       var vlabel = tablesection.childNodes[i].childNodes[0].nextSibling.childNodes[2];
+                                       var vtext = vlabel.innerHTML.substring(1,vlabel.innerHTML.length);
+                                }
+                                 vtext = vtext.replace('&amp;','&');
+                               
+                                if(vtext ==  checkedValues || checkedValues.indexOf(vtext +',') == 0 || checkedValues.indexOf(',' + vtext + ',') > -1 || checkedValues.indexOf(',' + vtext ) == (checkedValues.length - vtext.length -1))
+                                       vcheckbox.checked = true;
+                       
+                       
+                       }        
+                  i++;
+                  }     
+              }   
+             
+             if(loaded == 0)
+               {   fnchk();
+                   loaded = 1;
+               }   
+            </script>
+      </apex:form>      
+</apex:page>

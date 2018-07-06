@@ -1,0 +1,40 @@
+<apex:page standardController="CA_Product_Component__c" tabstyle="CA_Product_Component__c" extensions="productComponentCon">
+      
+      <apex:form >
+          <apex:sectionHeader title="Inquiry Edit" subtitle="{!if(CA_Product_Component__c.Id==null,'New CA Product Component',CA_Product_Component__c.Name)}"/>
+              <apex:pageBlock title="CA Product Component Edit" mode="edit" id="prodPB">
+              
+              <apex:pageBlockButtons >
+                  <apex:commandButton value="Save" action="{!saveComp}" rendered="{!isEnabled}"/>
+                  <apex:commandButton value="Continue" action="{!save}" rendered="{!!isEnabled}"/>
+                  <apex:commandButton value="Cancel" action="{!cancel}"/>
+              </apex:pageBlockButtons>
+              <apex:pagemessages ></apex:pagemessages>
+                <apex:pageBlockSection title="Information" id="componentInformationPBS">
+                
+                 <apex:inputField value="{!CA_Product_Component__c.Name}" required="true"/>
+                 <apex:inputField value="{!CA_Product_Component__c.Default_Component_for_this_CA_Product__c}">
+                 <!--<apex:actionSupport event="onclick" action="{!defaultcomponent}" />-->
+                 </apex:inputField>
+                 <apex:inputField value="{!CA_Product_Component__c.CA_Product_Controller__c}"/>
+                 <apex:inputField value="{!CA_Product_Component__c.Default_Component_for_CA_Product__c}"/>
+                 <apex:inputField value="{!CA_Product_Component__c.Component_Text__c}"/>
+                 <apex:inputField value="{!CA_Product_Component__c.CurrencyIsoCode}"/>
+               <!-- <apex:selectList id="countries" value="{!CA_Product_Component__c.CurrencyIsoCode}" size="1" required="true">
+                  <apex:selectOptions value="{!CurrencyValues}"/>
+                </apex:selectList>
+                -->
+                
+                 <apex:inputField value="{!CA_Product_Component__c.CA_Product_Text__c}"/>
+                 <apex:inputField value="{!CA_Product_Component__c.Component_Code__c}"/>
+                 <apex:inputField value="{!CA_Product_Component__c.SFDC_Support_System__c}"/><br/>
+                 <apex:inputField value="{!CA_Product_Component__c.CA_Product_Component_Ext_ID__c}"/><br/>
+                 <apex:inputField value="{!CA_Product_Component__c.component_expiration_date__c}"/><br/>
+                 <apex:inputField value="{!CA_Product_Component__c.Internal_Presentation_Only__c}"/><br/>
+                 <apex:inputField value="{!CA_Product_Component__c.VDA_Product_Component__c}"/><br/>
+                
+                </apex:pageBlockSection>
+              </apex:pageBlock>
+         
+     </apex:form>
+</apex:page>

@@ -1,0 +1,20 @@
+<apex:page standardController="FlowInterview"  recordSetVar="xyz" showHeader="false" sidebar="false">
+    
+    <apex:pageBlock title="Flow List">
+        <apex:pageBlockTable value="{! xyz }" var="flow">
+            
+            <apex:column headerValue="Pause Label" value="{! flow.PauseLabel }"/>
+            <apex:column headerValue="Flow Name" value="{! flow.InterviewLabel }"/>            
+            <apex:column headervalue="Action">
+                <a href="#" onClick="javascript: window.open('/apex/Customer_Registration?interviewId={! flow.id}');">Resume</a>&nbsp;
+                <!-- <a href="/apex/Customer_Registration?interviewId={! flow.id}&isdtp=vw&retURL='/apex/paused_flow'" >Resume</a>&nbsp; -->
+                <!-- <a href="/setup/own/deleteredirect.jsp?delID={! flow.id}&retURL=%2Fapex%2FPaused_Flow">Delete</a> -->
+            </apex:column>
+            <!--apex:commandLink action="{!removeMember}">
+<apex:param name="removeMemberId" value="{!flow.id}" assignTo="{!selectedMemberId}" />
+</apex:commandLink-->
+        </apex:pageBlockTable>
+        
+    </apex:pageBlock>
+    
+</apex:page>

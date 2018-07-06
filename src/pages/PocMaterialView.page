@@ -1,0 +1,193 @@
+<apex:page doctype="html-5.0" extensions="PocMaterialController" standardcontroller="Trial_Request__c">
+    <head>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+        <style>
+            .pocMaterial th, .pocMaterial td {
+        text-align: center;
+       }
+       .pocMaterial input[type="number"] {
+        width: 75px;
+       }
+        </style>
+    </head>
+    <div style="width: 100%" align="center">
+        <apex:outputpanel id="MaterialPanel">
+                    <apex:pagemessages >
+        </apex:pagemessages>
+            <apex:outputpanel id="MaterialSelectionPanel" rendered="{! !IsViewMode}">
+                   
+                <apex:form >
+                    <apex:actionStatus id="msgUF">
+                        <apex:facet name="start">
+                            <apex:outputPanel >
+                                <apex:commandButton value="Processing..." status="myStatus" disabled="true"/>
+                                <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;">
+                                    <apex:image value="/img/loading32.gif" style="height: 20px; position: absolute; left:50%;top:50%;"/></div>
+                            </apex:outputPanel>
+                        </apex:facet>
+                        <apex:facet name="stop"> 
+                        </apex:facet>
+                    </apex:actionStatus>
+                  <!--samap01-->
+                 <!--   <apex:pageblock >
+                      <apex:pageBlockSection columns="1">
+                        <apex:pageMessage rendered="{!showallrt}"  detail="Please Note:POC Request Type will be changed to  POC MultiType Request 
+                                                  if products belonging to more than one request type are selected." severity="INFO" strength="0"></apex:pageMessage>
+                        <apex:pageMessage rendered="{!isSaaSstdtype}"  detail="POC fulfillment will fail if SaaS Type selection is incorrect.  If you are not sure of the SaaS Type, 
+                                                                                contact the Product Analyst or Product Manager for the product requested before submitting the POC." severity="INFO" strength="0"></apex:pageMessage>
+                  </apex:pageBlockSection>
+                        </apex:pageblock>  -->
+                    <div style="width: 100%; max-width: 900px;" >
+                        <table>
+                            <tr>
+                            <td><apex:outputLabel > Show All Business Units </apex:outputLabel>&nbsp;&nbsp;&nbsp;&nbsp;
+                                </td>
+                                <td><apex:inputCheckbox id="showscbu" value="{!showallscbu}"   >
+                                    <apex:actionSupport event="onchange" action="{!refreshmaterials}"  rerender="MaterialPanel" status="msgUF" />
+                                    </apex:inputCheckbox></td>
+                                
+                           <td> &nbsp;</td><td>&nbsp;</td>
+                         <!--   <td><apex:outputLabel > Show All Request Type  </apex:outputLabel>&nbsp;&nbsp;&nbsp;&nbsp;
+                                </td>
+                                <td>  <apex:inputCheckbox id="showsrt" value="{!showallrt}" >
+                                            <apex:actionSupport event="onchange" action="{!refreshmaterials}"  rerender="MaterialPanel" status="msgUF" />
+                                    </apex:inputCheckbox></td> -->
+                                
+                            </tr>
+                        </table>
+                          
+                      
+                        <p class="text-center">
+                           
+                            <apex:actionstatus id="saveStatus">
+                                <apex:facet name="stop">
+                                    <apex:commandbutton action="{!saveMaterialSelection}" rerender="MaterialPanel" status="saveStatus" value="Save Product Selection">
+                                    </apex:commandbutton>
+                                </apex:facet>
+                                <apex:facet name="start">
+                                    <apex:commandbutton disabled="true" status="saveStatus" value="Saving...">
+                                    </apex:commandbutton>
+                                </apex:facet>
+                            </apex:actionstatus>
+                            <apex:commandbutton action="{!cancel}" rerender="MaterialPanel" value="Cancel">
+                            </apex:commandbutton>
+                        </p>
+                         <apex:outputpanel id="materials" rendered="{!ifNoError}">
+                        <table class="pocMaterial table table-hover table-condensed">
+                            <tr>
+                               
+                                 <th>
+                                    Sales Coverage Business Unit
+                                </th>
+                                 <th>
+                                    Platform Category
+                                </th>
+                                <th>
+                                    Product
+                                </th>
+                                <th>
+                                    Material
+                                </th>
+                                <th>
+                                    SAP ID
+                                </th>
+                              <!--  <th>
+                                    Quantity
+                                </th> -->
+                                <th>
+                                    Selection
+                                </th>
+                            </tr>
+                            <apex:repeat value="{!CkProductList}" var="ckproditem">
+                                <apex:repeat value="{!ckproditem.pms}" var="ckprodmaterialitem">
+                                    <tr>
+                                        
+                                        <td>
+                                             <apex:outputtext value="{!ckprodmaterialitem.scbu}"></apex:outputtext>
+                                        </td>
+                                         <td>
+                                        	<apex:outputtext value="{!ckprodmaterialitem.platformcategory}"></apex:outputtext>
+                                        </td>
+                                        <td>
+                                        	<apex:outputtext value="{! ckproditem.product.Name}"></apex:outputtext>
+                                        </td>
+                                        <td>
+                                            <apex:outputtext value="{!ckprodmaterialitem.materialName}"></apex:outputtext>
+                                        </td>
+                                        <td>
+                                            <apex:outputtext value="{!ckprodmaterialitem.saptopsid}"></apex:outputtext>
+                                        </td>
+                                       <!-- <td>
+                                            <apex:input type="number" value="{! ckprodmaterialitem.qty}"></apex:input>
+                                        </td> -->
+                                        <td>
+                                            <apex:inputcheckbox value="{!ckprodmaterialitem.selected}"></apex:inputcheckbox>
+                                        </td>
+                                    </tr>
+                                </apex:repeat>
+                            </apex:repeat>
+                        </table>
+                          </apex:outputpanel>
+                    </div>
+                </apex:form>
+            </apex:outputpanel>
+            <apex:outputpanel id="MaterialViewPanel" rendered="{! IsViewMode}">
+                <apex:form >
+                <div style="width: 100%; max-width: 900px;">
+                        <p class="text-center">
+                            <apex:commandbutton action="{! editMaterialSelection}" rerender="MaterialPanel" value="Edit Product Selection"  rendered="{! !isCancelled}">
+                            </apex:commandbutton>
+                        </p>
+                        <table class="pocMaterial table table-hover table-condensed">
+                            <tr>
+                                    <th>
+                                    Sales Coverage Business Unit
+                                </th>
+                                  <th>
+                                    Platform Category
+                                </th>
+                                <th>
+                                    Product
+                                </th>
+                                <th>
+                                    Material
+                                </th>
+                                <th>
+                                    SAP ID
+                                </th>
+                          <!--      <th>
+                                    Quantity
+                                </th>-->
+                            </tr>
+                            <apex:repeat value="{!currentPocProductMaterials}" var="ckproditem">
+                                <apex:repeat value="{!ckproditem.pms}" var="ckprodmaterialitem">
+                                    <tr>
+                                             <td>
+                                        <apex:outputtext value="{!ckprodmaterialitem.scbu}"></apex:outputtext>
+                                        </td>
+                                             <td>
+                                        <apex:outputtext value="{!ckprodmaterialitem.platformcategory}"></apex:outputtext>
+                                        </td>
+                                        <td>
+                                        	<apex:outputtext value="{!ckproditem.product.Name}"></apex:outputtext>
+                                        </td>
+                                        <td>
+                                            <apex:outputtext value="{!ckprodmaterialitem.materialName}"></apex:outputtext>
+                                        </td>
+                                        <td>
+                                            <apex:outputtext value="{!ckprodmaterialitem.saptopsid}"></apex:outputtext>
+                                        </td>
+                                   <!--     <td>
+                                            <apex:outputtext value="{! ckprodmaterialitem.qty}"></apex:outputtext>
+                                        </td> -->
+                                    </tr>
+                                </apex:repeat>
+                            </apex:repeat>
+                        </table>
+                    </div>
+                </apex:form>
+            </apex:outputpanel>
+        </apex:outputpanel>
+
+    </div>
+</apex:page>

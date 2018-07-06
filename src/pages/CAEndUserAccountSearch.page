@@ -1,0 +1,261 @@
+<apex:page sidebar="false" controller="CAEndUserAccountSearch" id="thePage"  showHeader="false" > 
+    <apex:pagemessages ></apex:pagemessages>
+    <script>
+    var winMain=window.opener;
+    window.onload=function()
+    {
+        var accname = "{!createaccountName}";
+         if(accname != null && accname != "")
+             document.getElementById('{!$Component.theForm.theCreate.AccountName}').value = accname;
+        var phystreet = "{!physicalState}"; 
+         if(phystreet != null && phystreet != "")
+             document.getElementById('{!$Component.theForm.theCreate.PhysicalStreet}').value = phystreet;
+        var phycity = "{!physicalCity}";
+         if(phycity != null && phycity != "")
+             document.getElementById('{!$Component.theForm.theCreate.PhysicalCity}').value = phycity;
+        var phystate = "{!physicalState}"
+         if(country != null && country != "")
+             document.getElementById('{!$Component.theForm.theCreate.PhysicalState}').value = phystate;
+        var country = "{!newCountry}";
+         if(country != null && country != "")
+             document.getElementById('{!$Component.theForm.theCreate.newCountry}').value = country;
+        var zippostalcode = "{!ZipPostalCode}";
+         if(zippostalcode != null && zippostalcode != "")
+             document.getElementById('{!$Component.theForm.theCreate.ZipPostalCode}').value = zippostalcode;
+        //alert('Hi.........');
+        
+    }   
+    function fillIn(ev,id)    {
+
+        if (document.all && document.querySelector && !document.addEventListener)//added for IE8
+        {
+            var name = ev.srcElement.innerText.replace("'","\'");
+        }
+        else
+        {
+            var src = ev.target.textContent || ev.srcElement.innerText;
+            var name = src.replace("'","\'");
+        }
+
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener;       
+        }    
+        var ele=winMain.document.getElementById('{!$CurrentPage.parameters.namefield}');       
+        ele.value=name;
+        ele=winMain.document.getElementById('targetName');       
+        ele.innerHTML=name;       
+        ele=winMain.document.getElementById('{!$CurrentPage.parameters.idfield}');       
+        ele.value=id;          
+        CloseWindow();   
+
+    }      
+    function CloseWindow()    {       
+        winMain=window.opener;       
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener;       
+        }       
+    winMain.closeLookupPopup();    
+    }
+
+    function ValidateEndUserAccount()  
+     {
+        if(document.getElementById('thePage:theForm:theSearch:endUserAccountName').value.length <2){
+            alert("Please enter atleast 2 characters for EndUser AccountName");
+            return false;
+        }
+        else if(document.getElementById('thePage:theForm:theSearch:selCountry').value == '--Select--'){
+            alert("Please select a country");
+            return false;
+        }
+        else
+            return true; 
+    }
+    
+    function ValidateUnnamedAccount()
+    {
+        if(document.getElementById('thePage:theForm:theCreate:AccountName').value.length <= 0)
+        {
+            alert('Account Name cannot be blank');
+            return false;
+        }
+        //Anitha from here for Marketo on 08/03/2013
+        else if(document.getElementById('thePage:theForm:theCreate:PhysicalStreet').value.length <= 0)
+        {
+            alert('Please enter physical street');
+            return false;
+        }
+        else if(document.getElementById('thePage:theForm:theCreate:PhysicalCity').value.length <= 0)
+        {
+            alert('Please enter physical city');
+            return false;
+        }
+        //Anitha till here for Marketo on 08/03/2013
+        else if(document.getElementById('thePage:theForm:theCreate:newCountry').value == '--Select--')
+        {
+            alert('Please select a country');
+            return false;
+        }
+        else
+            return true;
+    }                                     
+    
+    </script>
+    <apex:form id="theForm" styleClass="hasMotif lookupTab  LookupSearchFrame"> 
+    
+           <div class="lookup">
+ <div class="bPageTitle">
+  <div class="ptBody secondaryPalette">
+    <div class="content">
+      <img title="" class="pageTitleIcon" alt="" src="/s.gif"/>     
+      <h1> Account Search</h1>
+    </div></div></div></div>  
+    <apex:pageBlock id="theSearch" rendered="{!showSearch}">
+          <table>
+              <tr>
+                  <td>
+                      <apex:outputLabel value="What end-user account are you working with?"></apex:outputLabel>    
+                  </td>
+                  <td>
+                    <apex:outputPanel styleClass="requiredInput" layout="block" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                      <apex:inputText value="{!accountName}" id="endUserAccountName"/>
+                     </apex:outputPanel> 
+                  </td>
+              </tr>
+              <tr>    
+                  <td>
+                      <apex:outputLabel value="What is the country location for this end-user account?"></apex:outputLabel>
+                  </td>
+                  <td>
+                    <apex:outputPanel styleClass="requiredInput" layout="block" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                      <apex:selectList value="{!selectedCountry}" size="1" id="selCountry">
+                          <apex:selectoptions value="{!countries}"></apex:selectoptions>
+                      </apex:selectList>    
+                     </apex:outputPanel>
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      <apex:outputLabel value="What is the state/region for this account? (Use abbreviation)"></apex:outputLabel>    
+                  </td>
+                  <td>
+                      <apex:inputText value="{!stateRegion}" id="stateRegion"/>
+                  </td>
+              </tr>    
+              <tr>
+                  <td colspan="2" align="center">
+                      <apex:commandButton id="btnSearch" styleClass="btn" title="Search" value="Search" action="{!SearchAccounts}" onclick="return ValidateEndUserAccount()"/>                        
+                  </td>
+              </tr>
+          </table>  
+      </apex:pageBlock>     
+      <apex:pageBlock id="theCreate" rendered="{!showCreateBlock}">
+                <table>
+                   <tr>
+                       <td>
+                           <apex:outputLabel value="End User Account "></apex:outputLabel>                         
+                       </td>
+                       <td>
+                            <apex:outputPanel styleClass="requiredInput" layout="block" >
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:inputtext id="AccountName" value="{!createaccountName}"/>
+                            </apex:outputPanel>
+                       </td>
+                   </tr>
+                   <tr>
+                       <!-- Anitha modified for Marketo on 08/03/2013 from here-->
+                       <td>
+                           <apex:outputLabel value="Physical Street"></apex:outputLabel>                         
+                       </td>
+                       <td>
+                            <apex:outputPanel styleClass="requiredInput" layout="block" >
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:inputtext id="PhysicalStreet" value="{!physicalStreet}"/>
+                            </apex:outputPanel>    
+                       </td>
+                   </tr>
+                    <tr>
+                       <td>
+                           <apex:outputLabel value="Physical City"></apex:outputLabel>                       
+                       </td>
+                       <td>
+                            <apex:outputPanel styleClass="requiredInput" layout="block" >
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:inputtext id="PhysicalCity" value="{!physicalCity}"/>  
+                            </apex:outputPanel>    
+                       </td>
+                       <!-- Anitha modified for Marketo on 08/03/2013 till here-->
+                   </tr>
+                   <tr>
+                       <td>
+                           <apex:outputLabel value="State/Region"></apex:outputLabel>                       
+                       </td>
+                       <td>
+                            <apex:inputtext id="PhysicalState" value="{!physicalState}"/>  
+                       </td>
+                   </tr>
+                    <tr>
+                       <td>
+                           <apex:outputLabel value="Country"></apex:outputLabel>                       
+                       </td>
+                       <td>
+                            <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:selectList value="{!newCountry}" size="1" id="newCountry" onchange="validatezippostalcode">
+                                    <apex:selectoptions value="{!countries}"></apex:selectoptions>
+                                </apex:selectList> 
+                            </apex:outputPanel>   
+                        </td>
+                   </tr>
+                   
+                   <!-- CAM-PRM5 Start-->
+                   <tr>
+                       <td>
+                               <apex:outputLabel value="Zip/Postal Code"></apex:outputLabel>
+                       </td>
+                       <td>
+                           <apex:inputtext id="ZipPostalCode" value="{!ZipPostalCode}"/>
+                       </td>
+                   </tr>
+                   <!-- CAM-PRM5 End--> 
+                   <tr>
+                        <td colspan="2">&nbsp;</td>
+                   </tr>          
+                   <tr>
+                       <td colspan="2" align="center">
+                           <apex:commandButton id="createUnnamedAccount" value="CreateAccount" onclick="return ValidateUnnamedAccount()" action="{!CreateAccount}"/>
+                       </td>
+                   </tr>
+                   <tr>
+                        <td>
+                            Click <apex:commandLink id="createLink" action="{!showSearchScreen}" value="here"/> to go back to search.
+                        </td>
+                   </tr>
+               </table>
+       </apex:pageBlock>
+      <apex:pageBlock rendered="{!showResults}" id="theBlock">
+                <apex:pageblockSection title="Results" id="resultBlock" showHeader="false">
+                <apex:dataTable value="{!results}" headerClass="headerRow" styleClass="list" var="acc" width="100%">
+                    <apex:column headerValue="Account Name" width="50px">
+                        <apex:outputLink value="#" onclick="fillIn(event,'{!acc.id}')">{!acc.Name}</apex:outputLink>
+                    </apex:Column>
+                    <apex:column headerValue="Street" width="50px">
+                        <apex:outputText value="{!acc.BillingStreet}"/>
+                    </apex:Column>
+                     <apex:column headerValue="City" width="50px">
+                        <apex:outputText value="{!acc.BillingCity}"/>
+                    </apex:Column>
+                    <apex:column headerValue="State" width="50px">
+                        <apex:outputText value="{!acc.BillingState}"/>
+                    </apex:Column>
+                </apex:dataTable>
+            </apex:pageblockSection>
+         </apex:pageBlock>   
+         <apex:pageBlock id="createLinkBlock" rendered="{!showCreate}">
+            Click <apex:commandLink id="createLink" action="{!showCreateAccount}" value="here"></apex:commandLink> to create a New Account.
+        </apex:pageBlock>      
+    </apex:form>
+</apex:page>

@@ -1,0 +1,28 @@
+<apex:page controller="VOppPipelineMainHelper" title="Pipeline Reports">
+    <apex:tabPanel switchType="client" selectedTab="{!selectedTabName}" value="{!selectedTabName}" id="theTabPanel">
+        <apex:tab label="1.0 Core" name="Core" id="tabOne">
+               <apex:include pageName="VOppPipelIneReportVF_1_0Core"/>
+         </apex:tab>
+        <apex:tab label="2.0 Adoption" name="Adoption" id="tabTwo">
+            <apex:include pageName="VOppPipelIneReportVF_2_0Adoption"/>
+        </apex:tab>
+        <apex:tab label="3.0 Health" name="Health" id="tabThree">
+            <apex:include pageName="OppPipelineReportVF_3_0"/>
+        </apex:tab>
+        <apex:tab label="3.0 Health Aging" name="Health Aging" id="tabFour">
+            <apex:include pageName="OppPipelineReportVF_3_0Aging"/>
+        </apex:tab>
+        <apex:tab label="3.0 Health Qtr" name="Health Qtr" id="tabFive">
+            <apex:include pageName="OppPipelineReportVF_3_0HQ"/>
+        </apex:tab>
+        <apex:tab label="3.0 Health Qtr Aging" name="Health Qtr Aging" id="tabSix">
+            <apex:include pageName="OppPipelineReportVF_3_0HQAging"/>
+        </apex:tab>
+        <apex:tab label="4.0 Momentum" name="Momentum4" id="tabSeven">
+             <apex:include pageName="VOppPipelIneReportVF_4_0Momentum"/>
+        </apex:tab>
+        <apex:tab label="4.7 Momentum" name="Momentum7" id="tabEight">
+			<apex:include pageName="VOppPipelIneReportVF_4_7Momentum"/>
+        </apex:tab>
+    </apex:tabPanel>
+</apex:page>

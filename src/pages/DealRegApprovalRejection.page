@@ -1,0 +1,42 @@
+<apex:page showHeader="true" sidebar="true" controller="DealRegApprovalRejectionController">
+<style>
+.ptBreadcrumb a {
+    color: #015ba7;
+    text-decoration: none;
+    font-family: 'Verdana','Geneva',sans-serif;
+    font-size: 100%;
+}
+</style>
+    <apex:form >
+        <apex:sectionHeader title="Approval Request" subtitle="Opportunity: {!opportunity.Name}"/>
+        <div class="ptBreadcrumb"><apex:outputLink value="/{!opportunity.id}">« Back to Opportunity: {!opportunity.Name}</apex:outputLink></div>
+        <br/>
+        <apex:pageBlock title="Approve/Reject Approval Request">
+           <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Approve" action="{!approve}"/>
+                <apex:commandButton value="Reject" action="{!reject}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>  
+            <apex:pageBlockSection columns="1">
+                <apex:pageBlockSectionItem >
+                 <apex:pageMessages id="showmsg"></apex:pageMessages>
+                 </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                Opportunity Name <apex:outputField value="{!opportunity.Name}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                Opportunity Owner <apex:outputLink value="/{!opportunity.Owner.Id}">{!opportunity.Owner.Name}</apex:outputLink>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                Rejection Reason <apex:inputField value="{!opportunity.Deal_Rejection_Reason__c}"/>
+                </apex:pageBlockSectionItem>
+                 <apex:pageBlockSectionItem >
+                Rejection Reason Details <apex:inputTextArea value="{!opportunity.Deal_Registration_Rejection_Reason_Other__c}" rows="5" cols="100"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                Comments <apex:inputTextArea value="{!opportunity.Comments__c}" rows="5" cols="100"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

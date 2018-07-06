@@ -1,0 +1,7 @@
+<apex:page >
+    <apex:form >
+        
+        There is no ISP Record Associated with the given entitlement.
+        
+    </apex:form>
+</apex:page>

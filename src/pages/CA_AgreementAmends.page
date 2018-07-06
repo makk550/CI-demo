@@ -1,0 +1,2 @@
+<apex:page controller="CA_AgreementAmends_Controller" action="{!unlockAgreementRecord}">
+</apex:page>

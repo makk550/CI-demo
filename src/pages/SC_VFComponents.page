@@ -1,0 +1,130 @@
+<apex:page standardController="Case" showHeader="true" tabStyle="Case" extensions="SC_Ext" >
+ <apex:includeScript value="/support/console/22.0/integration.js"/>
+    
+    <script type="text/javascript">             
+        ﻿window.onload = function() {
+            if('{!$CurrentPage.parameters.blkRender}' == 'SC') sforce.console.setTabTitle('Special Conditions');
+            if('{!$CurrentPage.parameters.blkRender}' == 'CTS') sforce.console.setTabTitle('Cases with same Site');
+            if('{!$CurrentPage.parameters.blkRender}' == 'CTC') sforce.console.setTabTitle('Cases with same Contact');
+            if('{!$CurrentPage.parameters.blkRender}' == 'CTSP') sforce.console.setTabTitle('Cases with same Site/Product');
+            if('{!$CurrentPage.parameters.blkRender}' == 'EOS') sforce.console.setTabTitle('EOS and EOL Calendar');
+        }       
+    </script> 
+    
+    <apex:form >
+      
+   <apex:inputHidden value="{!case.Site_Association__c}" />
+   <apex:inputHidden value="{!Case.ContactID}"/>
+   <apex:inputHidden value="{!case.Product__c}"/>
+   <apex:inputHidden value="{!case.Product_Code__c}"/>
+   
+        <apex:pageBlock title="{!titleHeader}" id="pgBlock">
+            <apex:pageMessages ></apex:pageMessages>
+            
+            <apex:pageBlockTable value="{!specialConditions}" var="rec" width="100%" headerClass="activeTab" rendered="{!blkRender=='SC'}">       
+                <apex:column value="{!rec.Site_Association__c}" headerValue="Site Association"  />
+                <apex:column value="{!rec.Active__c}" headerValue="Active" />
+                <apex:column value="{!rec.Start_Date__c}" headerValue="Start Date" />
+                <apex:column value="{!rec.End_Date__c}" headerValue="End Date" />
+                <apex:column value="{!rec.Special_Condition__c}" headerValue="Special Condition" />
+                <apex:column value="{!rec.SPC_Description__c}" headerValue="Special condition Details"/>
+                <apex:column value="{!rec.SPC_Details__c}" headerValue="Special conditon Description"/>
+            </apex:pageBlockTable>
+                
+            <apex:pageBlockTable value="{!casesTiedToSite}" var="rec" width="100%" headerClass="activeTab" rendered="{!blkRender=='CTS'}">
+                
+                <apex:column value="{!rec.CreatedDate}" headerValue="Date/Time Opened" />
+                <apex:column >
+                    <apex:facet name="header">Case Number</apex:facet>
+                    <apex:outputLink value="{!rec.id}">{!rec.CaseNumber}</apex:outputLink>
+                </apex:column>  
+                <apex:column value="{!rec.Status}" headerValue="Status" />
+                <apex:column value="{!rec.CA_Product_Controller__c}" headerValue="CA Product" />
+                <apex:column value="{!rec.Component_Code__c}" headerValue="Component Code" />
+                <apex:column value="{!rec.Product_Release__c}" headerValue="Product Release" />
+                <apex:column value="{!rec.Product_Service_Pack__c}" headerValue="Product Service Pack" />
+                <apex:column value="{!rec.Age_of_a_case__c}" headerValue="Age" />
+                <apex:column value="{!rec.Severity__c}" headerValue="Severity" />
+                <apex:column value="{!rec.Subject}" headerValue="Subject" />
+                <apex:column value="{!rec.Business_Impact__c}" headerValue="Business Impact" />
+                <apex:column value="{!rec.Owner.Name}" headerValue="Case Owner" />
+                <apex:column value="{!rec.ClosedDate}" headerValue="Date/Time Closed" />
+                <apex:column value="{!rec.Contact.name}" headerValue="Contact Name" />
+                            
+             </apex:pageBlockTable>             
+             
+             <apex:pageBlockTable value="{!casesTiedToContact}" var="rec" width="100%" headerClass="activeTab" rendered="{!blkRender=='CTC'}">
+                
+                <apex:column value="{!rec.CreatedDate}" headerValue="Date/Time Opened" />
+                <apex:column >
+                    <apex:facet name="header">Case Number</apex:facet>
+                    <apex:outputLink value="{!rec.id}">{!rec.CaseNumber}</apex:outputLink>
+                </apex:column>  
+                <apex:column value="{!rec.Status}" headerValue="Status" />
+                <apex:column value="{!rec.CA_Product_Controller__c}" headerValue="CA Product" />
+                <apex:column value="{!rec.Component_Code__c}" headerValue="Component Code" />
+                <apex:column value="{!rec.Product_Release__c}" headerValue="Product Release" />
+                <apex:column value="{!rec.Product_Service_Pack__c}" headerValue="Product Service Pack" />
+                <apex:column value="{!rec.Age_of_a_case__c}" headerValue="Age" />
+                <apex:column value="{!rec.Severity__c}" headerValue="Severity" />
+                <apex:column value="{!rec.Subject}" headerValue="Subject" />
+                <apex:column value="{!rec.Business_Impact__c}" headerValue="Business Impact" />
+                <apex:column value="{!rec.Owner.Name}" headerValue="Case Owner" />
+                <apex:column value="{!rec.ClosedDate}" headerValue="Date/Time Closed" />
+                <apex:column value="{!rec.Contact.name}" headerValue="Contact Name" />
+                 
+            </apex:pageBlockTable>
+            
+            <apex:pageBlockTable value="{!CasesTiedToSiteNdPrd}" var="rec" width="100%" headerClass="activeTab" rendered="{!blkRender=='CTSP'}">
+   
+                <apex:column value="{!rec.CreatedDate}" headerValue="Date/Time Opened" />
+                <apex:column >
+                    <apex:facet name="header">Case Number</apex:facet>
+                    <apex:outputLink value="{!rec.id}">{!rec.CaseNumber}</apex:outputLink>
+                </apex:column>  
+                <apex:column value="{!rec.Status}" headerValue="Status" />
+                <apex:column value="{!rec.CA_Product_Controller__c}" headerValue="CA Product" />
+                <apex:column value="{!rec.Component_Code__c}" headerValue="Component Code" />
+                <apex:column value="{!rec.Product_Release__c}" headerValue="Product Release" />
+                <apex:column value="{!rec.Product_Service_Pack__c}" headerValue="Product Service Pack" />
+                <apex:column value="{!rec.Age_of_a_case__c}" headerValue="Age" />
+                <apex:column value="{!rec.Severity__c}" headerValue="Severity" />
+                <apex:column value="{!rec.Subject}" headerValue="Subject" />
+                <apex:column value="{!rec.Business_Impact__c}" headerValue="Business Impact" />
+                <apex:column value="{!rec.Owner.Name}" headerValue="Case Owner" />
+                <apex:column value="{!rec.ClosedDate}" headerValue="Date/Time Closed" />
+                <apex:column value="{!rec.Contact.name}" headerValue="Contact Name" />
+                
+            </apex:pageBlockTable>
+            
+            <apex:pageBlockTable value="{!EosNdEol}" var="rec" width="100%" headerClass="activeTab" rendered="{!blkRender=='EOS'}">
+              <apex:column >
+                    <apex:facet name="header">Product Name #</apex:facet>
+                    <apex:outputLink value="{!rec.id}">{!rec.Product_Name__c}</apex:outputLink>
+                </apex:column>                
+                <apex:column value="{!rec.Release__c}" headerValue="Release" />
+                <apex:column value="{!rec.Event_Type__c}" headerValue="Event Type" />
+                <apex:column value="{!rec.Name}" headerValue="Tops Codes" />
+                <apex:column value="{!rec.SAP_ID__c}" headerValue="SAP Id's" />
+                <apex:column value="{!rec.Notice_Date__c}" headerValue="Notice Date"/>
+                <apex:column value="{!rec.Drop_Support_Date_or_Stabilization_Date__c}" headerValue="Drop Support Date or Stabilization Date"/>
+                <apex:column value="{!rec.New_Release__c}" headerValue="New Release"/>
+                <apex:column value="{!rec.New_Release_GA_Date__c}" headerValue="New Release GA Date"/>
+                <apex:column value="{!rec.Special_Notes__c}" headerValue="Special Notes"/>
+                <apex:column value="{!rec.Notice_Link__c}" headerValue="Notice Link"/>
+                <apex:column value="{!rec.Product_Analyst__c}" headerValue="Product Analyst"/>
+                <apex:column value="{!rec.Support_Contacts_Level_1_Manager__c}" headerValue="Support Contacts (Level 1 Manager)"/>
+                <apex:column value="{!rec.Support_Contact_Level_2_Manager__c}" headerValue="Support Contacts (Level 2 Manager)"/>                                                
+            </apex:pageBlockTable>
+                
+             <apex:pageBlockButtons >
+                <apex:commandButton value="First Page" rerender="pgBlock" action="{!FirstPage}" status="status" disabled="{!DisablePrevious}"/>
+                <apex:commandButton value="Previous" action="{!Previous}" rerender="pgBlock" disabled="{!DisablePrevious}"/>
+                <apex:commandButton value="Next" action="{!Next}" reRender="pgBlock" status="status" disabled="{!DisableNext}" />
+                <apex:commandButton value="Last Page" rerender="pgBlock" action="{!LastPage}" status="status" disabled="{!DisableNext}"/>
+                <apex:actionStatus id="status" startText="Please Wait..."/>
+             </apex:pageBlockButtons>
+            
+        </apex:pageBlock>     
+    </apex:form> 
+</apex:page>

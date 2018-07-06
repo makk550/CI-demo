@@ -1,0 +1,547 @@
+<apex:page controller="ProductInstanceUIController" sidebar="false" id="pg">
+
+<!--
+
+    <style>
+        .sign-class{
+        font-size: 12px;
+        font-weight: 700;
+        padding: 0px 5px;
+        margin-right: 10px;
+        margin-bottom:10px;
+        cursor:pointer;
+        }
+        .pbBody table.list tr.dataRow td {
+        font-family: verdana;
+        font-weight: normal;
+        }
+        .wrapper{
+        width:100%;
+        min-width:1500px;
+        margin: 0 auto;
+        }
+        .container{
+        width: 40%;
+        min-width:500px;
+        float: left;
+        margin-left: 25%;        
+        }
+        
+        .instdetails{
+        padding-left:10px;
+        margin: 0 auto;
+        z-index: 9999;
+        top: 30px;
+        width: 90%;
+        min-width: 900px;
+        //float: left;
+        }
+        
+        .legenddetails{
+        padding:10px;
+        margin-left:10%;
+        top: 30px;
+        height: 125px;
+        width: 200px;
+        min-width: 200px;
+        float:left;
+        border-style:inset;
+        margin-top:25px;
+        background: #fefefe;
+        }
+        
+        .box{
+        height:15px;
+        width:10px;
+        margin-top:10px;
+        margin-bottom:10px;
+        
+        }
+        
+        .red{
+        background:#FF0000;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        }
+        .black{
+        background:#000000;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        }
+        .blue{
+        background:#015ba7;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        }
+        
+        
+        .dataCell {
+        padding: 20px;
+        height: 30px;
+        }
+        .child-dun,.gu-dun,.gp-dun{
+        color: #000;
+        font-size: 13px;
+        font-family:verdana;
+        }
+
+        .ui-state-highlight{
+        font-weight: bold;
+        color : #015ba7;
+        background-color:#FFFFFF;
+        border-style:none;
+        }
+        
+        
+        #arrow-text {
+        
+        margin-left:10px;
+        font-size: 15px;
+        font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+        font-weight: bold;
+        opacity: 1;
+        
+        }
+
+        
+        
+        
+        /* The Modal (background) */
+        .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 99999; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        
+        /* Modal Content/Box */
+        .modal-content {
+        //background-color: #fefefe;
+        margin: 10% auto; /* 10% from the top and centered */
+        padding: 20px;
+        
+        //border: 1px solid #888;
+        width: 90%; /* Could be more or less, depending on screen size */
+        height: 60%;
+        }
+        
+        /* The Close Button */
+        .close {
+        color: #015ba7;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        }
+        
+        .close:hover,
+        .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+        }
+        
+        .norecordclass{
+        color : #FF0000;
+        font-size: 13px;
+        font-family:verdana;
+        }
+        
+        /* pb1 - tree box */
+        #pb1{
+        background-color: #ffffff;
+        border-style:none;
+        }
+        
+        body .pbBody table.list tr td {
+        border-style: none;
+        }
+        .homeTab .bPageBlock {
+        border-style: none;
+        }
+        body .secondaryPalette.bPageBlock {
+        background-color: #ffffff;
+        border-style: none;
+        }
+        
+        body .pbBody table.list tr.headerRow th {
+        background: #1798c1;
+        }
+        
+        /*no entitlement error block */
+        .NoRecorderrorMsg{
+        height:100px;
+        text-align:center;
+        line-height: 100px;
+        vertical-align:middle;
+        font-size:15px;
+        color:#1798c1;
+        }
+                
+    </style>
+    
+    <div id="overlay_div" class="waiting" style="position:fixed; top:0; left:0; height:100%; width:100%; z-index:2000; background-color:#999; opacity:.6; display:none;" />
+    <div style="position:fixed; top:35%; left:45%; width:150px; height:115px; background-color:#FFF; border:#FF0000 thin solid; z-index:2001; display:none;" align="center" class="ui-corner-all waiting">
+        <div align="center" style="margin-top:17px;">
+            <img src="{!$Resource.loadingGif}" />
+        </div>
+        <div align="center" id="waiting_msg">Fetching Data...</div>
+    </div>
+    
+    <apex:actionStatus id="clickStatus" onstart="$('.waiting').show();" onstop="$('.waiting').hide();" />
+    
+    <apex:form >
+    <div id="backarrowdiv" style="width:100px;min-width:100px;">
+            <apex:commandLink id="backarrow" action="{!redirectHelper}" style="text-decoration:none;">
+                <apex:image id="back" url="{!$Resource.ProdInstBackArrow}" height="25" width="25" />
+                <span id="arrow-text">
+                Back    
+                </span>
+                <p>
+                    
+                </p>
+            </apex:commandLink>
+     </div>
+    <apex:pageMessages id="msg"></apex:pageMessages>
+    </apex:form>
+    <div class="wrapper">
+    
+        
+    <apex:form id="frm" rendered="{!!NoEntitlementRecord}">
+        <apex:actionFunction name="FetchDetails" action="{!fetchDetails}"  reRender="instancedetails" oncomplete="modalclickfunction()" status="clickStatus">
+            <apex:param value="" name="accNameToUsage"/>
+        </apex:actionFunction>    
+        <apex:actionFunction name="UpdateISP" action="{!updateisp}"/>
+        <apex:actionFunction name="FetchRecord" action="{!fetchrecords}" />
+        
+        
+        
+        
+
+
+        
+        
+        <div class="container">
+            
+            <apex:pageBlock id="pb1" rendered="{!treesolutionexists}">
+                <h1 style="font-size: 16px;">Customer Hierarchy</h1>
+                <apex:variable value="{!0}" var="dateIndex"/>
+                <apex:pageBlockTable value="{!dunsHierarchyTree}" var="dateKey" id="dateTable">
+                    <apex:column >
+                        <apex:repeat value="{!renderGUchildornot[dateKey]}" var="val">
+                            <apex:outputPanel rendered="{!if(val!=0,true,false)}"><span id="date-sign-{!dateIndex}" class="sign-class" onclick="toggleDateTable('{!dateIndex}');">+</span></apex:outputPanel>
+                            
+                        </apex:repeat>
+                        
+                        <apex:commandLink onclick="return fetchdunsdetails('{!JSENCODE(dateKey)}','gp');" style="text-decoration:none" reRender="instancedetails">
+                        
+                              
+                         <apex:outputPanel rendered="{!!NoRecordUnderAcc}"><span class="gp-dun" onclick="highlightText(this)"> {!dateKey}</span></apex:outputPanel>
+                        
+                        </apex:commandLink>
+                        
+                        <apex:variable value="{!0}" var="stageIndex"/>
+                        <apex:dataTable value="{!dunsHierarchyTree[dateKey]}" var="stageKey" id="stageTable" style="display:none;margin-top:10px;margin-left:20px;width:98%;" >
+                            <apex:column style="color: #000;font-size: 11px;font-family:verdana;">
+                                <apex:repeat value="{!renderchildornot[stageKey]}" var="val">
+                                    <apex:outputPanel rendered="{!if(val!=0,true,false)}"><span id="stage-sign-{!dateIndex}-{!stageIndex}" class="sign-class" onclick="toggleStagesTable('{!dateIndex}','{!stageIndex}');">+</span></apex:outputPanel>
+                                    <apex:outputPanel rendered="{!if(val==0,true,false)}"><span id="blank-stage-sign-{!dateIndex}-{!stageIndex}" class="sign-class" >&nbsp;&nbsp;</span></apex:outputPanel>
+                                </apex:repeat>
+                                <apex:commandLink onclick="return fetchdunsdetails('{!stageKey.gudunsno}','gu','{!JSENCODE(stageKey.gubusinessname)}','({!stageKey.state}, {!stageKey.country})');" style="text-decoration:none" reRender="instancedetails">
+                                    <span class="gu-dun" onclick="highlightText(this)">{!stageKey.gubusinessname} ({!stageKey.state}, {!stageKey.country},{!stageKey.gudunsno})</span>
+                                </apex:commandLink>
+                                <apex:variable value="{!0}" var="recordIndex"/>
+                                <apex:dataTable value="{!dunsHierarchyTree[dateKey][stageKey]}" var="dunRecord" id="dunTable" style="margin-top:10px;margin-left:20px;width:98%;display:none;">
+                                    <apex:column >
+                                        <apex:commandLink onclick="return fetchdunsdetails('{!dunRecord.dunsnumber}','duns','{!JSENCODE(dunRecord.businessname)}','({!dunRecord.physicalcity}, {!dunRecord.physiclstate})');" style="text-decoration:none" reRender="instancedetails">
+                                                <span class="child-dun" onclick="highlightText(this)">&nbsp;&nbsp;&nbsp;&nbsp;   {!dunRecord.businessname} ({!dunRecord.physicalcity}, {!dunRecord.physiclstate},{!dunRecord.dunsnumber})</span>
+                                        </apex:commandLink>
+                                    </apex:column>   
+                                </apex:dataTable>
+                                <apex:variable value="{!stageIndex+1}" var="stageIndex"/>
+                            </apex:column>
+                        </apex:dataTable>
+                        <apex:variable value="{!dateIndex+1}" var="dateIndex"/>
+                    </apex:column>    
+                </apex:pageBlockTable>  
+                <apex:inputHidden id="duns" value="{!dunsnofrompage}"/>
+                <apex:inputHidden id="type" value="{!type}"/>
+                <apex:inputHidden id="busdetails" value="{!nametodisplay}"/>
+                <apex:inputHidden id="ispno" value="{!ispnumber}"/>
+            </apex:pageBlock>     
+        </div>
+        
+        <div class="legenddetails">
+           <span style="width:150px;">
+               <p></p>
+            <h1 style="font-size:110%;">Legend</h1>
+               <p></p>
+               <div style="font-size:13px;">
+                   <p></p>
+                
+                <span style="float:left;margin-left:15px;">Row has Entitlement</span> <div class="box black"></div>
+                   <p></p><p></p>
+                <span style="float:left;margin-left:15px;">Selected Row with Entitlement</span> <div class="box blue"></div> 
+               </div>
+                
+              
+           </span>
+        </div>
+        
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">x</span>
+        
+
+        <div class="instdetails" >
+            <apex:outputPanel id="instancedetails">
+            <apex:pageBlock id="details" >
+                
+                <apex:outputText rendered="{!NoEntitlementRecord}">
+                    <div class="NoRecorderrorMsg" >
+                       <span><strong>Info:</strong>&nbsp;{!NoEntitlementRecordsMessage}</span> 
+                    </div>    
+                </apex:outputText>
+                <div style="padding-top:10px;">
+                <apex:pageblockSection id="resultBlock" showHeader="TRUE" columns="1" rendered="{!solutionexists}">
+                    
+                    <apex:pageBlockSectionItem >
+                        
+                        <h1 style="font-size: 130%;">Instance Details for:  {!accNameToUsage} {!nametodisplay}</h1>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputpanel >
+                            <apex:inputText id="search" value="{!valToSearch}" style="width: 400px;border: 2px solid #dce4ec;border-radius: 4px;" html-placeholder="Search Products...."/>
+    
+                            <apex:commandButton title="Search" value="Search" action="{!fetchdunsdetailsonSearch}" onclick="removehighlight(this)" reRender="details,msg" status="clickStatus"/>
+                        </apex:outputpanel>
+                    </apex:pageBlockSectionItem>
+                    
+                    
+                    <apex:outputPanel id="results">
+                        
+                        <apex:variable var="rowIndex" value="{!0}"/>
+                        
+                        <apex:pageBlockTable value="{!dunsdetailstodisplay}" id="Solutions"  headerClass="ct" columnClasses="lt" styleClass="list" var="soln" >
+                            
+                            <apex:column headerValue="Product Instance Id">
+                                <apex:outputLink value="/apex/Usage_Data?instance={!soln.instance_id__c}&prod_instance={!soln.product_instance_id__c}{!usageredirectString}&accName={!accNameToUsage}">{!soln.product_instance_id__c}</apex:outputLink>
+                                
+                                
+                            </apex:column>
+                            
+                            <apex:column headerValue="Product Description">
+                                <apex:outputText value="{!soln.name__c}" />
+                            </apex:column>
+                            
+                            <apex:column headerValue="Start Date" >
+                                <apex:outputText value="{0,date,yyyy/MM/dd}">
+                                    <apex:param value="{!soln.entitlement_start_date__c}" />
+                                </apex:outputText> 
+                            </apex:column>
+                            
+                            <apex:column headerValue="End Date">
+                                <apex:outputText value="{0,date,yyyy/MM/dd}">
+                                    <apex:param value="{!soln.entitlement_end_date__c}" />
+                                </apex:outputText>
+                            </apex:column>
+                            
+                            <apex:column headerValue="Total Seats">
+                                <apex:outputText value="{!soln.quantity__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="Edition">
+                                <apex:outputText value="{!soln.edition__c}"/>
+                            </apex:column>
+                             <apex:column headerValue="Subscription Type">
+                                <apex:outputText value="{!soln.metric__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="Hosting Type">
+                                <apex:outputText value="{!soln.software_type__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="Edit ISP" style="width:65px;" >
+                                <apex:variable var="rowIndex" value="{!rowIndex+1}"/>
+                                <apex:commandLink action="{!updateisp}" target="_blank">
+                                    <apex:param name="ISPvalue" value="{!soln.ca_site_id__c}" assignTo="{!ispnumber}" />
+                                <span id="isplink{!rowIndex}">Edit ISP</span>
+                                    <span id="textisp{!rowIndex}" style="display:none;">
+                                        Edit ISP for {!soln.product_instance_id__c}
+                                    </span>
+                                </apex:commandLink> 
+                            </apex:column>
+                            
+                        </apex:pageBlockTable>
+                    </apex:outputPanel>
+                </apex:pageblockSection>
+                </div>
+                <div style="padding-top:10px;">
+                    
+                <apex:pageBlockSection id="gpdetailBlock" showHeader="TRUE" columns="1" rendered="{!doesgpdetailexist}" >
+                <h1 style="font-size: 130%;">Aggregate Values for this Customer</h1>
+                    <apex:outputPanel id="gpresults" >
+                        <apex:pageBlockTable value="{!gpdetail}" id="GPSolutions"  headerClass="ct" columnClasses="lt" styleClass="list" var="sol" >
+                            
+
+                            
+                            <apex:column headerValue="Total Seats">
+                                <apex:outputText value="{!sol.totalseats}" />
+                            </apex:column>
+                            
+                            <apex:column headerValue="Total Paid Seats">
+                                <apex:outputText value="{!sol.totalpaid}" />
+                            </apex:column>
+                            
+                            <apex:column headerValue="Total Unpaid Seats">
+                                <apex:outputText value="{!sol.totalunpaid}" />
+                            </apex:column>
+                            
+                            <apex:column headerValue="Total ISP">
+                                <apex:outputText value="{!FLOOR(sol.ispvalue)}" />
+                            </apex:column>
+                            
+                        </apex:pageBlockTable>
+                    </apex:outputPanel>
+                
+                </apex:pageBlockSection>
+                
+                </div>
+            </apex:pageBlock>
+           </apex:outputPanel> 
+            
+        </div>
+        
+       
+       </div>
+        </div>
+            
+    </apex:form>
+        
+  </div>
+    
+    
+    <script src="//code.jquery.com/jquery-1.10.2.min.js"/>
+    
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"/>
+    
+    <script>
+        
+    function highlightText(elem){
+        $('span').each(function(index,val){
+            
+            if($(val).not($(elem))){
+              if($(val).hasClass('ui-state-highlight')){
+                $(val).removeClass('ui-state-highlight');
+              } 
+            }    
+        });
+        $(elem).addClass('ui-state-highlight');
+    }
+    
+    function removehighlight(elem){
+        $('span').each(function(index,val){
+            
+            if($(val).not($(elem))){
+              if($(val).hasClass('ui-state-highlight')){
+                $(val).removeClass('ui-state-highlight');
+              }   
+            }    
+        });
+
+    }
+    
+    
+    function toggleDateTable(index){
+        var signtext = $("#date-sign-"+index).text();
+        var tableId = 'pg:frm:pb1:dateTable:'+index+':stageTable';
+        if(signtext == '+'){
+            $("#date-sign-"+index).text('-').css("padding", " 0px 7px");
+            $(esc(tableId)).show();
+        }
+        else{
+            $("#date-sign-"+index).text('+').css("padding", " 0px 5px");
+            $(esc(tableId)).hide();
+        }
+    }
+    
+    function toggleStagesTable(rootindex, childindex){
+        var signtext = $("#stage-sign-"+rootindex+"-"+childindex).text(); //address-sign-index-addIndex
+        var tableId = 'pg:frm:pb1:dateTable:'+rootindex+':stageTable:'+childindex+':dunTable';
+        if(signtext == '+'){
+            $("#stage-sign-"+rootindex+"-"+childindex).text('-').css("padding", " 0px 7px");
+            $(esc(tableId)).show();
+        }
+        else{
+            $("#stage-sign-"+rootindex+"-"+childindex).text('+').css("padding", " 0px 5px");
+            $(esc(tableId)).hide();
+        }
+    }
+    
+    function esc(myid) {
+        return '#' + myid.replace(/(:|\.)/g,'\\\$1');
+    }
+    
+    function fetchdunsdetails(dunindex,dunstype,businessname,businessdetail){
+        console.log('Entered here');
+        document.getElementById('{!$Component.pg.frm.pb1.duns}').value = dunindex;
+        document.getElementById('{!$Component.pg.frm.pb1.type}').value = dunstype;
+        document.getElementById('{!$Component.pg.frm.pb1.busdetails}').value = businessdetail;
+        console.log('duns value'+document.getElementById('{!$Component.pg.frm.pb1.duns}').value);
+        FetchDetails(businessname);    
+    }
+    
+    
+    // Get the modal
+    var modal = document.getElementById('myModal');
+    
+    // Get the button that opens the modal
+    //var btn = document.getElementByClassName("gu-dun")[0];
+    
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+    
+    // When the user clicks on the button, open the modal 
+    function modalclickfunction() {
+        console.log('entered here');
+        modal.style.display = "block";
+    }
+    
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    
+    $(function(){
+         $( ".isplink" ).mouseover(function() {
+              $( "#textisp" ).show();
+            });      
+    });
+   
+    $(document).ready(function(){
+              
+         $(esc('pg:frm:pb1:dateTable:tb')+" > tr").attr("onmouseover","");
+        //$("[id$='stageTable:tb'] > tr").attr("onmouseover","");
+        //$(esc('pg:frm:pb1:dateTable:tb')+" > tr > td").hover(function(){$(this).css("background-color","white");}, function(){$(this).css("background-color","white");});
+        //$("[id$='stageTable:tb'] > tr > td").hover(function(){$(this).css("background-color","white");}, function(){$(this).css("background-color","white");});
+        //$("[id$='stageTable'] > thead .headerRow").css("background-color","white");
+        
+        
+    });
+    
+   
+    
+
+    </script>       
+    -->
+</apex:page>

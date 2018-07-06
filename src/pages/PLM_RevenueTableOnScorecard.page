@@ -1,0 +1,66 @@
+<apex:page standardController="Scorecard__c" extensions="PLM_RevenueTableOnScorecard">
+<apex:pageBlock >
+
+<apex:pageBlockTable value="{!revenues}" var="rev">
+
+<apex:column headerValue="BU/Month">
+<b><apex:outputText value="{!rev.bu}"/></b>
+</apex:column>
+
+<apex:column headerValue="April">
+<apex:outputText value="{!rev.apr}"/>
+</apex:column>
+
+<apex:column headerValue="May">
+<apex:outputText value="{!rev.may}"/>
+</apex:column>
+
+<apex:column headerValue="June">
+<apex:outputText value="{!rev.jun}"/>
+</apex:column>
+
+<apex:column headerValue="July">
+<apex:outputText value="{!rev.jul}"/>
+</apex:column>
+
+<apex:column headerValue="August">
+<apex:outputText value="{!rev.aug}"/>
+</apex:column>
+
+<apex:column headerValue="September">
+<apex:outputText value="{!rev.sep}"/>
+</apex:column>
+
+<apex:column headerValue="October">
+<apex:outputText value="{!rev.oct}"/>
+</apex:column>
+
+<apex:column headerValue="November">
+<apex:outputText value="{!rev.nov}"/>
+</apex:column>
+
+<apex:column headerValue="December">
+<apex:outputText value="{!rev.dec}"/>
+</apex:column>
+
+<apex:column headerValue="January">
+<apex:outputText value="{!rev.jan}"/>
+</apex:column>
+
+<apex:column headerValue="February">
+<apex:outputText value="{!rev.feb}"/>
+</apex:column>
+
+<apex:column headerValue="March">
+<apex:outputText value="{!rev.mar}"/>
+</apex:column>
+
+<!-- Added by Siddharth for PRM R2- to show the revenue totaled by BU -->
+<apex:column headerValue="BU Total">
+<apex:outputText value="{!rev.YrTotal}"/>
+</apex:column>
+
+</apex:pageBlockTable>
+
+</apex:pageBlock>
+</apex:page>

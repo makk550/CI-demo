@@ -1,0 +1,18 @@
+<apex:component controller="getQuotePaymentPlan" access="global">
+    <apex:attribute name="quote" type="String" description="Quote Id" assignTo="{!QuoteID}"  />
+    <apex:dataTable cellpadding="10" border="1" value="{!Options}" var="option">
+        <apex:column >
+            <apex:facet name="header">Date</apex:facet>
+            <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                <apex:param value="{!option.Date__c}" /> 
+            </apex:outputText>
+        </apex:column>
+        <apex:column ><apex:facet name="header">License</apex:facet>{!option.License_Amount_Formatted__c }</apex:column>
+        <apex:column ><apex:facet name="header">Maintenance</apex:facet>{!option.Maintenance_Amount_Formatted__c}</apex:column>
+        <apex:column ><apex:facet name="header">Subscription</apex:facet>{!option.Subscription_Amount_Formatted__c}</apex:column>
+        <apex:column ><apex:facet name="header">Total</apex:facet>{!option.Amount_Formatted__c}</apex:column>                
+    </apex:dataTable>
+    
+    
+    
+</apex:component>

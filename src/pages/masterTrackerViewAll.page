@@ -1,0 +1,120 @@
+<apex:page controller="masterTrackerViewAllController" sidebar="false" standardStylesheets="true">
+
+  <head>
+    <apex:includeScript value="{!URLFOR($Resource.MasterTrackerSortFilter, '/masterTrackerSortFilter/js/jquery-1.9.1.js')}"  />
+    <apex:includeScript value="{!URLFOR($Resource.MasterTrackerSortFilter, '/masterTrackerSortFilter/js/advancedtable_v2.js')}"  />
+    
+    <apex:stylesheet value="{!URLFOR($Resource.MasterTrackerSortFilter, '/masterTrackerSortFilter/css/advancedtable.css')}"  />
+  </head>
+  <apex:form >
+    <apex:pageBlock title="Master Tracker Components" id="qPeopleSection" rendered="true">
+        <script language="javascript" type="text/javascript">
+            $().ready(function() {
+                $("#searchtable").show();
+                $("#table1").advancedtable({searchField: "#search", loadElement: "#loader",sorting: true,rowsPerPage: 50, searchCaseSensitive: false, ascImage: "{!URLFOR($Resource.MasterTrackerSortFilter, '/masterTrackerSortFilter/images/up.png')}", descImage: "{!URLFOR($Resource.MasterTrackerSortFilter, '/masterTrackerSortFilter/images/down.png')}", searchOnField: "#searchOn"});
+            });
+        </script>
+        <table width="100%" class="normal" id="searchtable" border="0" cellspacing="4" cellpadding="0" style="display:none;">
+            <tr>
+                <td width="37%">Search / Filter:  <select id="searchOn" name="searchOn" style="display:none;"/>&nbsp;&nbsp;<input name="search" type="text" id="search" style="display:none;" /></td>
+                <td width="63%"><div id="loader" style="display:none;"><img src="{!URLFOR($Resource.MasterTrackerSortFilter, '/masterTrackerSortFilter/images/loader.gif')}" alt="Loader" /></div></td>
+            </tr>
+        </table>
+        <table  width="100%" id="table1" class="advancedtable" border="0" cellspacing="0" cellpadding="0">
+            <thead>
+            <tr>
+                <th style="text-align:left;">Type of Change</th>
+                <th style="text-align:left;">Release Name</th>
+                <th style="text-align:left;">Release Date</th>
+                <th style="text-align:left;">UserStory/CR/Req #</th>
+                <th style="text-align:left;">DevBox Name</th>
+                <th style="text-align:left;">Date Added to Tracker</th>
+                <th style="text-align:left;">In FSB1?</th>
+                <th style="text-align:left;">In FSB2?</th>
+				<th style="text-align:left;">In FSB3?</th>
+                <th style="text-align:left;">In FSB4?</th>
+				<th style="text-align:left;">In FSB5?</th>
+                <th style="text-align:left;">New/Existing?</th>
+                <th style="text-align:left;">Type</th>
+				<th style="text-align:left;">Component Name</th>
+                <th style="text-align:left;">Component API Name</th>
+                <th style="text-align:left;">Object/Folder Name</th>
+                <th style="text-align:left;">BSA</th>
+				<th style="text-align:left;">Developer</th>
+                <th style="text-align:left;">Change Set</th>
+                <th style="text-align:left;">Conflict?</th>
+               </tr>
+            </thead>
+            <tbody>            
+                <apex:repeat var="tracker" value="{!trackerRecordList}">
+                    <tr>
+                       
+                        <td style="text-align:center;">
+							<apex:outputField value="{!tracker.Type_of_Change__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.ReleaseName__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.Release_Date__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.Story_Req_SD__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.DevBoxName__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.DateAddedtoTracker__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.InFSB1__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.InFSB2__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.InFSB3__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.InFSB4__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.InFSB5__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.NeworExisting__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.Type__c}"/>
+						</td>
+						<td style="text-align:center;padding-left:5px;padding-right:5px;">
+							<apex:outputField value="{!tracker.ComponentLabelName__c}"/>
+						</td>
+						<td style="text-align:center;padding-left:5px;padding-right:5px;">
+							<apex:outputField value="{!tracker.ComponentAPIName__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.ObjectName__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.BSA__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.Developer__c}"/>
+						</td>
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.ChangeSet_Name__c}"/>
+						</td>
+						
+						<td style="text-align:center;">
+							<apex:outputField value="{!tracker.Conflict__c}"/>
+						</td>
+                    </tr>
+                </apex:repeat> 
+            </tbody>
+        </table>
+    </apex:pageBlock>
+  </apex:form>
+
+</apex:page>

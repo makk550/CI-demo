@@ -1,0 +1,297 @@
+<apex:page standardController="Case" recordSetVar="Cases" extensions="TestListViewController" >
+    <apex:includeScript value="js/bootstrap.min.js" />
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" />
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" />
+    <apex:includeScript value="/support/console/42.0/integration.js"/>
+    <apex:includeScript value="/soap/ajax/32.0/connection.js"/>
+    <apex:includeScript value="/support/console/29.0/integration.js"/>  
+    <apex:includeScript value="/soap/ajax/32.0/apex.js"/>
+    
+  
+
+    <style>
+        .dialogTitle  .ui-dialog-titlebar{  background-color: #ffffff; border : none; text-align:right; }
+        .ui-widget.ui-widget-content{border:1px solid #999;}
+         #edt {
+            height: 250px;
+            width: 400px;  
+            } 
+    </style>
+
+  
+  <script>  
+    
+  var primaryTabIDs  ='';
+  var testVar1       =''; 
+  var decodedURL     ='';
+  var subStrURL      ='';
+  var ias            ='';
+  var finalURL;
+  var json;
+  var decodedJsonURL = '';
+  var subTabs;
+  var jsonURL = '';
+  var clickedText = '';
+    
+    function performCustomActions(){
+        //console.log('In performCustomActions');
+        var updatableFieldsInJSStr = '{!updatableFields}';
+        updatableFieldsInJSStr = updatableFieldsInJSStr.replace('[','');
+        updatableFieldsInJSStr = updatableFieldsInJSStr.replace(']','');
+        var updatableFieldsInJS = updatableFieldsInJSStr.split(', '); 
+        var caseFieldIDNameMap =  JSON.parse('{!jsonFieldIdNameMap}'); 
+        //console.log('updatableFieldsInJS:', updatableFieldsInJS);
+        //console.log('caseFieldIDNameMap:',caseFieldIDNameMap);     
+         
+        /////////////////////////////////////////////////////////////////DUPLICATE PRIMARY TAB CODE STARTS HERE////////////////////////////////////////////////////////////////////
+        
+                    ListViewport.prototype.extHandler.click = function(a) 
+                    {
+                        //alert('HI from click event');
+                            //GET HREF OF CLICKED LINK//
+                               ias='';finalURL='';decodedJsonURL='';testVar1=''; clickedText='';                           
+                               ias= a.target['href'];
+                               if( typeof ias === 'undefined' || ias === null ){
+                                    ias=a.target.parentElement['href'];
+                                }
+                                clickedText = a.target.innerText;
+                                if(ias){
+                                	subStrURL = ias.substring(ias.lastIndexOf("(")+1,ias.lastIndexOf(")"));
+                                }
+                                //console.log('SubStr: ' + subStrURL);
+                                if(subStrURL){
+                                decodedURL = unescape(subStrURL);
+                                }
+                                //debugger;
+                                //console.log('User clicked : Decoded URL IAS is: ' + decodedURL);    
+                                // Sample is https://ca--FSB1.cs79.my.salesforce.com/5000c00001VOkTl?isdtp=vw //
+                                var finalURLWithQuote = decodedURL.substring(0, decodedURL.indexOf('?'));
+                                finalURL = finalURLWithQuote.substr(1);  
+                                console.log('Href of Link when User clicked is: ' +finalURL);   
+                                sforce.console.getPrimaryTabIds(showTabId); 
+                              
+                    }
+                        
+                    var showTabId = function showTabId(result) { 
+                        //Display the primary tab IDs 
+                        testVar1=result.ids; 
+                        //console.log('Result in showTabId is : ' + testVar1); 
+                         testGetSubtabIds(finalURL);   
+                        //Get Sub Tab IDs from Primary tab ID
+                                 
+                    };
+                   
+                    function testGetSubtabIds(finalURL) 
+                    { 
+                        //console.log('2 entered testGetSubtabIds');
+                        //debugger;
+                        if(testVar1)
+                        {
+                            //debugger;
+                           if(testVar1.length > 0)
+                            {
+                                for (var i = 0; i < testVar1.length; i++) { 
+                                   sforce.console.getSubtabIds(testVar1[i] , showSubTabId); 
+                                }
+                                //sforce.console.getSubtabIds(testVar1 , showTabId);      
+                            }
+                        }
+                        //arc commented for further coding--> below line can be uncommented to test for one Tab //
+                        //sforce.console.getSubtabIds(testVar1[0] , showSubTabId); 
+                    }
+                    var showSubTabId = function showSubTabId(result) { 
+                        //console.log('3 showSubTabId ')
+                        //Display the primary tab IDs 
+                        subTabs=result.ids; 
+                        for (var i = 0; i < subTabs.length; i++) { 
+                            testGetPageInfo(subTabs[i]);                            
+                         }                      
+                    };
+                    function testGetPageInfo(subTabsID) 
+                    { 
+                            
+                            //debugger;
+                           //console.log('4 ... Entered Page Info and now subTabsID is :  '+subTabsID);
+                            sforce.console.getPageInfo(subTabsID, function showPageInfo(result) 
+                            { 
+                                //console.log('5 ... Entered showPageInfo getting json here:  ');
+                        		json = JSON.parse(result.pageInfo);                                 
+                                if(json)
+                                {
+                                   //debugger;
+                                   //console.log("TAb id JSON Value: " + json);
+                                   console.log('JSON Value is: ' +json);
+                                   if(json["url"] != null)
+                                   {
+                                      jsonURL = json["url"];                                     
+                                      decodedJsonURL = jsonURL.split('?')[0]
+                                      var checkLast3Char = decodedJsonURL.substr(decodedJsonURL.lastIndexOf('/') + 1);
+                                      var lenOfObjID = checkLast3Char.length;
+                                      if(lenOfObjID > 15)
+                                      {
+                                         decodedJsonURL = decodedJsonURL.slice(0, -3);                                          
+                                      }
+                                   }
+                                   console.log('decoded json URL Here is : '+decodedJsonURL);
+                                   console.log('final URL Here is: '+finalURL);
+                                   if(decodedJsonURL)
+                                   {
+                                      if(decodedJsonURL.includes('https'))
+                                   	  {
+                                           if(decodedJsonURL.toLowerCase().trim() == finalURL.toLowerCase().trim())
+                                           {
+                                               console.log('yes');
+                                               sforce.console.focusSubtabById(subTabsID);
+                                               
+                                               
+                                           }
+                                           else if(finalURL.includes(json['objectId']))
+                                           {
+                                               console.log('yes');
+                                               sforce.console.focusSubtabById(subTabsID);
+                                                                                 
+                                               
+                                           }
+                                           else if(json['objectName'])
+                                           {
+                                              if(json['objectName'] == clickedText)
+                                              {
+                                                    console.log('yes');
+                                                    sforce.console.focusSubtabById(subTabsID);
+                                              }                                               
+                                           }
+                                           else 
+                                           {
+                                               console.log('no');
+                                               console.log('decodedJsonURL after NO:  ' + decodedJsonURL);
+                                               console.log('final URL after No: ' + finalURL);                                 
+                                               
+                                           }
+                                         } 
+                                   }                                  
+                                }
+                                });
+                            
+                    } 
+                  
+         /////////////////////////////////////////////////////////////////DUPLICATE PRIMARY TAB CODE ENDS HERE////////////////////////////////////////////////////////////////////
+        
+                    ListViewport.prototype.extHandler.columnMove = function(a,b) {
+                        //alert('{!$Label.CaseList_InlineEdit_ColumnMove}');
+                        window.location.reload();
+                    }
+                   
+       
+        
+        ListViewport.prototype.extHandler.cellMouseOver = function(a,b,c,d) {     //console.log('***cellMouseOver***');            
+          
+                    var cellId = d.target.id;
+                    var rid = cellId.substring(0, cellId.indexOf('_') );
+                    var fid = this.filter.shownColumns[c-3].fieldId;
+                    //console.log('In cellMouseOver, rid:'+rid + 'fid:'+fid);   
+                    if(fid && rid)
+                     {
+                        var fname = caseFieldIDNameMap[fid];
+                        //console.log('fname:',fname , '--type:',typeof(fname));
+                        if( $.inArray(fname,updatableFieldsInJS) != -1 ){  //  updatableFieldsInJS.includes(fname)
+                            //console.log('cellMouseOver, includes:', fname);
+                             a = 'inlineEditWrite';                 
+                         } else{
+                             //  console.log('cellMouseOver, does not include:', fname);
+                             a = 'inlineEditLock';
+                         }     
+                        Ext.fly(this.grid.getView().getCell(b, c)).replaceClass(a + "Hidden", a + "Visible"); 
+                   }
+               
+         }
+        
+        ListViewport.prototype.extHandler.cellMouseOut = function(a,b,c,d) {    
+            //console.log('***cellMouseOut***');
+       
+                var cellId = d.target.id;
+                var rid = cellId.substring(0, cellId.indexOf('_') );
+                var fid = this.filter.shownColumns[c-3].fieldId;
+                //console.log('In cellMouseOut, rid:'+rid + 'fid:'+fid);            
+                if(fid && rid)
+                {
+                    var fname = caseFieldIDNameMap[fid];
+                    //console.log('fname:',fname , '--type:',typeof(fname));
+                    //console.log('updatableFieldsInJS.indexOf(fname):', $.inArray(fname,updatableFieldsInJS) );
+                    if(  $.inArray(fname,updatableFieldsInJS)  != -1 ){ //if( updatableFieldsInJS.includes(fname) ){
+                        // console.log('cellMouseOut, includes:', fname);
+                          a = 'inlineEditWrite';                 
+                     } else{
+                         //console.log('cellMouseOut, does not include:', fname);
+                         a = 'inlineEditLock';
+                     }     
+                   Ext.fly(this.grid.getView().getCell(b, c)).replaceClass(a + "Visible", a + "Hidden"); 
+                 }
+               }
+                   
+        
+        ListViewport.prototype.extHandler.cellDblClick = function(a,b,c,d) {
+       
+                    //console.log('***cellDblClick***');
+                    //ListViewport.instances['j_id0:j_id5'].refreshList();
+                    var cellId = d.target.id;
+                    var rid = cellId.substring(0, cellId.indexOf('_') );
+                    var fid = this.filter.shownColumns[c-3].fieldId;
+                    //console.log('rid:'+rid + ';fid:'+fid);
+                    //inlineEditFn();
+                    //openSubTab(rid,fid);
+                    if(fid && rid)
+                    {
+                        var fname = caseFieldIDNameMap[fid];
+                        //console.log('fname:',fname , '--type:',typeof(fname));
+                        //console.log('updatableFieldsInJS.indexOf(fname):', $.inArray(fname,updatableFieldsInJS) );
+                        if(  $.inArray(fname,updatableFieldsInJS)  != -1 ){ //if( updatableFieldsInJS.includes(fname) ){
+                            $("#edt").attr("src", 'TestEditCase?rid=' + rid + '&fid='+ fid);        
+                            $("#dialog").dialog('open');             
+                        } 
+                    }
+                    // $('.btn.refreshListButton').click();
+                    //ListViewport.instances['j_id0:j_id5'].refreshList();            
+                } 
+            
+    }
+       
+    $( document ).ready(function() {
+               $("#dialog").dialog({
+            'autoOpen': false, 
+            'dialogClass': 'dialogTitle',
+            'closeText': 'X',
+            'width': '400'           
+                //' position': '{ my: "top", at: "bottom"}'            
+        });
+        performCustomActions();
+        Resizer();  
+        
+        //***********        
+    }); 
+    
+      
+    function Resizer() {
+        //console.log('test1234');
+        var iName='';
+        for (let key of Object.keys(ListViewport.instances)) {  
+            iName = key;
+            if (iName.indexOf('customListDiv') >=0) {
+                break;    
+            }    
+        }
+        var wh=window.innerHeight;
+        // alert('size : '+ wh);
+        ListViewport.instances[iName]['height']=wh-9;
+    }
+    window.addEventListener("resize", Resizer);
+    </script>
+    
+    <apex:enhancedList type="Case" height="675" id="customListDiv" rowsPerPage="100"/>    
+    <div id='dialog'  style="height: 100%; width: 400px" >
+        <iframe id='edt' width="100%" style="display:'none'" frameBorder="0">            
+        </iframe>
+    </div>    
+    
+    
+    
+</apex:page>

@@ -1,0 +1,35 @@
+<apex:page standardController="Defect_Comment__c" extensions="DefectCommentController">
+<apex:sectionHeader title="New Defect Comment"/>
+     <script>
+         
+         function disableOnSubmit(input) {
+            var btn = document.getElementById('{!$Component.formId.pageBlockId.pageBlockButtons.saveBtnId}'); 
+            var btn2 = document.getElementById('{!$Component.formId.pageBlockId.pageBlockButtons.continueBtnId}');
+            setTimeout(function(){ 
+                btn.disabled = 'disabled';
+                // Use the Salesforce CSS style to make the button appear disabled
+                btn.className = 'btnDisabled';
+                btn.value = "Saving..."; 
+                btn2.disabled = 'disabled';
+                // Use the Salesforce CSS style to make the button appear disabled
+                btn2.className = 'btnDisabled';
+      
+            }, 50);
+        }
+    </script>
+    <apex:form id="formId">
+    <apex:pageMessages escape="false"/>
+    <apex:pageBlock title="Defect Comment Edit" mode="edit" id="pageBlockId">
+     <apex:pageBlockButtons location="top" id="pageBlockButtons">
+          <apex:commandButton value="Save" action="{!saveComment}" onclick="disableOnSubmit(this);" id="saveBtnId" rendered="{!saveDefectComment}"/>
+          <apex:commandButton value="Continue" action="{!continueUpdateComment}" rendered="{!continueDefectComment}"/>
+          <apex:commandButton value="Cancel" action="{!cancel}" rendered="{!saveDefectComment}"  id="continueBtnId"/>
+     </apex:pageBlockButtons>         
+      <apex:pageBlockSection title="Information" columns="1" >
+          <apex:inputTextarea cols="25" rows="8" label="Comments" value="{!defectComments}" rendered="{!saveDefectComment}"/>
+          <apex:outputText label="Comments" value="{!defectComments}" rendered="{!continueDefectComment}"/>
+          <apex:outputField label="Defect" value="{!Defect_Comment__c.Defect__c}"/>
+      </apex:pageBlockSection>  
+   </apex:pageBlock>
+   </apex:form>
+</apex:page>

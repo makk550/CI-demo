@@ -1,0 +1,6 @@
+<apex:page controller="ReferralPortalPaginationController" contentType="text/csv#ReferralLead.csv" cache="true" showHeader="false" sidebar="false">Client Name,Company,Status,Registered,Lead Expiration Date,Partner Comments
+
+<apex:repeat value="{!ExportCurrentLeadList}" var="x">
+"{!x.Name}","{!x.Company}","{!IF(x.Status == 'Sales Accepted',$Label.Referral_Sales_Accepted_Not_yet_converted,IF(x.Status == 'Rejected',$Label.Referral_Portal_SalesAccepted_label + x.No_Interest_Reason__c,$Label.Referral_submit_pending))}",<apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!x.Referral_Date__c}" /> </apex:outputText> ,<apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!x.Referral_Expiration_Date__c}" /> </apex:outputText> ,"{!x.Comments_Field__c}"
+  </apex:repeat>
+</apex:page>

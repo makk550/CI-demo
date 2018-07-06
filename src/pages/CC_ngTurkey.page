@@ -1,0 +1,205 @@
+<apex:page controller="CC_ngTurkeyController" showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false" docType="html-5.0" action="{!redirect}">
+<link REL="SHORTCUT ICON" HREF="{!URLFOR($Resource.CC_favicon)}" />
+    <script>   
+      var pageUrl = document.URL;
+      if(urlEndsWith(pageUrl,"#!/"))
+      {
+          pageUrl = pageUrl.replace('#!/','');
+      }
+      pageUrl = pageUrl.replace('#!',''); 
+      var regEx = new RegExp('cc_ngturkey',"ig"); 
+        // for IE10 ,Edge and other browsers  
+      if(!!(window.history && history.pushState))
+      {   
+          pageUrl=pageUrl.replace(regEx,'CaseManagement');
+          window.location.href = pageUrl;
+      }
+        //for IE9
+      else
+      {
+            //redirecting to the page specified
+            pageUrl=pageUrl.replace(regEx,'CaseManagement#!');
+              window.location.href = pageUrl;
+      }   
+        // IE does not support string function endsWith()
+       function urlEndsWith(str, suffix) {
+           return str.match(suffix+"$")==suffix;  
+       } 
+  </script> 
+
+<!--[if lte IE 8]>
+
+    <div>
+    <h3>Your web browser is out-of-date (or in an outdated compatibility mode). Update your browser for more security, comfort and the best experience on this site. </h3><br>
+    
+    </div>
+    
+<![endif]-->
+    <html class="no-js">
+ <style> 
+    @font-face{font-family:"Averta";font-style:normal;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-bold-webfont.woff')})format("woff")}
+    @font-face{font-family:"Averta";font-style:normal;font-weight:bold;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-bold-webfont.woff2')}) format("woff2")}
+    @font-face{font-family:"Averta";font-style:normal;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-regular-webfont.woff')}) format("woff")}
+    @font-face{font-family:"Averta";font-style:italic;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-regular-webfont.woff2')} format("woff2")}
+      
+    </style>
+
+<head>
+  <!--<base href="/">-->
+  <meta charset="utf-8"></meta>
+  <meta http-equiv="X-UA-Compatible" content="IE=9"> </meta>
+  <title>CA Case Management</title>
+  <meta name="description" content=""></meta>
+  <meta name="viewport" content="width=device-width"></meta>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"></link>
+  <link rel="stylesheet" href="{! URLFOR( $Resource.ngTurkey, 'styles/css/styles.css' ) }"></link>
+  <script>
+    /*
+      IE 11 Doesn't have a .startsWith?
+    */
+    if (!String.prototype.startsWith) {
+      String.prototype.startsWith = function (str){
+        return this.lastIndexOf(str, 0) === 0;
+      };
+    }
+  </script>
+
+    <c:jQuery />  
+    
+    <apex:outputPanel rendered="{!isQA}">
+        <script src="//assets.adobedtm.com/9ea9efbec56f628f901349bf8d38781775b99754/satelliteLib-be4f15694911edde0225f3876d50dd4cda0444b9-staging.js"></script>
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!isProd}">
+        <script src="//assets.adobedtm.com/9ea9efbec56f628f901349bf8d38781775b99754/satelliteLib-be4f15694911edde0225f3876d50dd4cda0444b9.js"></script>
+    </apex:outputPanel>            
+
+
+  
+</head>
+
+<body>
+<apex:outputPanel rendered="{!$CurrentPage.parameters.showheader}">
+      <script src="{!$Label.Support_Header_Base_URL}aem-header.js" id="aemSupportHeader"></script>
+</apex:outputPanel>
+  <toast></toast>
+  <div class="pg-loading-screen">
+    <div class="pg-loading-inner">
+      <div class="pg-loading-center-outer">
+        <div class="pg-loading-center-top">
+          <h2 class="pg-loading-logo-header">
+        <span class="glyphicon glyphicon-refresh fa-spin"></span>
+      </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app></app>
+  <hr />
+  <span data-iframe-height="">&nbsp;</span>
+        
+
+  <script type="text/javascript" src="{! URLFOR( $Resource.JiveTurkey, 'js/iframe-resizer/iframeResizer.contentWindow.min.js' ) }"></script>
+  <script>
+    window.appContext = {
+      userContext: JSON.parse('{!JSENCODE(userContext)}'),
+      CMO: '{! cnValues}',
+      pendingcases: '{!pendingCaseNumber}',      
+      showheader:  {!IF($CurrentPage.parameters.showheader!='',$CurrentPage.parameters.showheader,true)},
+      isProd: {!isProd},
+      debugEnabled: {! debugEnabled },
+      csoBaseUrl: '{! csoBaseUrl }',
+      showSolURL: '{! showSolURL}',
+      ftpServer: '{!$Label.CC_FTP_Info}',
+      careURL: '{! careURL }',
+      casf: '00D1h0000008jLh',
+      caagentdeplyment: '{!$Label.SF_Live_Agent_Deployment_ID }',
+      srcUrl: "{! URLFOR($Resource.ngTurkey, '') }",
+      helptext: JSON.parse('{!fetchHelpTextLinks}'),
+      pageSettings: {
+        newCase: {
+          title: {
+            maxlength: 100
+          },
+          description: {
+            maxlength: 5000
+          },
+          businessImpact: {
+            maxlength: 500
+          },
+          release: {
+            maxlength: 20
+          },
+          servicePack: {
+            maxlength: 20
+          },
+          operatingSystem: {
+            maxlength: 20
+          }
+        }
+      }
+    };
+
+
+    if (window.appContext.debugEnabled) {
+      loadSourcesLocalhost().fail(loadSourcesSfdc);
+    } else {
+      loadSourcesSfdc();
+    }
+
+    function loadSourcesLocalhost() {
+      return j$.ajax({url: '//localhost:3000/vendor.js', dataType: 'script', timeout: 1000})
+        .done(function () {
+          console.log("using localhost");
+          var src = {
+            styles: "//localhost:3000/styles.css",
+            app: "//localhost:3000/app.js"
+          };
+          return loadSource(src);
+        });
+    }
+
+    function loadSourcesSfdc() {
+      console.log("using salesforce");
+      var src = {
+        app: "{! URLFOR( $Resource.ngTurkey, 'js/app.js' ) }"
+      };
+      return j$.getScript("{! URLFOR( $Resource.ngTurkey, 'js/vendor.js' ) }")
+       .then(function() {
+        return loadSource(src);
+       });
+    }
+
+    function loadSource(src) {
+      if (src.styles) {
+        j$('head').append(createStylesheet(src.styles));
+      }
+      return j$.getScript(src.app)
+      .then(function(){
+        angular.bootstrap(document, ['app']);  
+      });
+    }
+
+    function createStylesheet(src) {
+      var style = document.createElement("link");
+      style.rel = "stylesheet";
+      style.href = src;
+      return style;
+    }
+    
+  </script>
+
+<script type="text/javascript">
+__user_id__ = {!userLDAPID};
+_satellite.pageBottom();
+</script>
+ 
+<apex:outputPanel rendered="{!$CurrentPage.parameters.showheader}">
+      <script src="{!$Label.Support_Header_Base_URL}aem-footer.js" id="aemSupportFooter"></script>
+</apex:outputPanel>   
+</body>
+
+</html>
+    
+</apex:page>

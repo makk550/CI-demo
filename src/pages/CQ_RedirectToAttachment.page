@@ -1,0 +1,2 @@
+<apex:page controller="CQ_RedirectToAttachment" action="{!redirectURL}" >
+</apex:page>

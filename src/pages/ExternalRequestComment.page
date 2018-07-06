@@ -1,0 +1,21 @@
+<apex:page standardController="External_Request_Comments__c" extensions="ExternalRequestCommentExtension">
+  
+   <apex:sectionHeader title="Comment Edit" subtitle="New Comment"/>
+    <apex:form >
+    <apex:pageMessages />
+    <apex:pageBlock title="Comment Edit" mode="edit">
+     <apex:pageBlockButtons location="top"  >
+                    <apex:commandButton value="Save" action="{!save}" />
+                    <apex:commandButton value="Cancel" action="{!cancel}" />
+      </apex:pageBlockButtons>         
+      <apex:pageBlockSection title="Information" columns="1">
+ 
+                     <apex:inputField value="{!External_Request_Comments__c.Comments__c}"/>   
+                    <apex:outPutField value="{!External_Request_Comments__c.ParentId__c}" /> 
+        
+               
+       </apex:pageBlockSection>  
+   </apex:pageBlock>
+   </apex:form>
+  
+</apex:page>

@@ -1,0 +1,3 @@
+<apex:page standardController="CA_Product_Renewal__c" extensions="renewal_viewCAProduct" action="{!goToEdit}" >
+  
+</apex:page>

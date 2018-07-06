@@ -1,0 +1,291 @@
+<apex:page controller="QuoteOrderFormController" renderAs="PDF">
+   <apex:stylesheet value="{!$Resource.FooterHeaderStyle}"/>
+
+<html >
+<head>
+<title></title>
+<style type="text/css" media="print">
+body{font-family: Arial Unicode MS;}
+table {page-break-inside:avoid;}
+/* Content of Header and Footer */
+
+ @page{ 
+ margin : 70pt 10px 10px 1px;             
+    @top-center{   
+        content:element(header);        
+    }
+    @bottom-left{
+        font-family: Arial Unicode MS;
+        font-size: 9px;
+        content:"Anything";
+    }
+    @bottom-center{
+        font-family: Arial Unicode MS;
+        font-size: 9px;
+        content:"Page"  counter(page) " of " counter(pages);
+    }
+   
+} 
+div.header {
+    position : running(header) ;
+    display: block; page-break-before:avoid;page-break-inside:avoid;
+}
+
+.divbreak {
+    display: block; page-break-before:auto; page-break-inside: auto; page-break-after: avoid;
+    }
+                   
+</style>
+</head>
+<div class="footer">
+      <div style="color:#9D9D9D;font-family: Arial,Helvetica Neue,Helvetica,sans-serif; font-size:small;">
+         <table width="100%">
+            <tr>
+               <td align="left">Quote Number:{!QuoteRec.CA_CPQ_Quote_Number__c}</td>
+               <td align="right">Page <span class="pagenumber"/> of <span class="pagecount"/></td>
+            </tr>
+         </table>
+      </div>
+   </div>
+<apex:form >
+<body>
+<div class="header" id="header"> 
+<table width="100%">
+       <tr  width="100%">
+           <td style="align:Left;" width="70%"> 
+               <table>
+                   <tr>
+                       <td style="align:center;">
+                       <!-- <apex:image url="http://farm4.static.flickr.com/3221/2658147888%5F826edc8465.jpg" width="70" height="60">-->
+                        <apex:image url="{!$Resource.CALogoGrey}" width="50" height="50">
+                        </apex:image>
+                       </td>
+                   </tr>
+                    <tr>
+                       <td style="font-size:10px;align:left;width:20%;color:#808080;" >{!CAEntityName}<br/>{!CAEntityAddress}</td>
+                   </tr>
+                  
+               </table>            
+           </td>
+           <td width="30%" style="font-size:10px;align:right;color:#808080" valign='bottom'> 
+               CA Agile Central New Order Form (Quick-Quote )
+           </td>     
+           <td></td> 
+       </tr>
+    </table>   
+   
+</div>
+
+<div class="divbreak">
+
+
+<table width="100%" style="border:1px solid black;border-collapse:collapse">    
+    <tr width="100%">
+       <td  colspan="3" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;padding:3px">{!$Label.Effective_Date_of_this_Order_Form}:&nbsp;&nbsp;{!QuoteRec.Effective_Date_Text__c}</td>  
+       <!-- <td colspan="2" width="30%" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;padding:3px">{!$Label.Order_Form_Quick_Quote}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>  -->  
+    </tr>
+    <tr width="100%">  
+        <td  colspan="2" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.Customer_Name}: &nbsp;&nbsp;{!QuoteRec.CA_Customer_Name_Sold_To__c} </td>  
+        <td width="30%" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.Customer_Id_No} &nbsp;&nbsp;{!QuoteRec.CA_Sold_To_ID__c} </td>       
+    </tr>
+    <tr width="100%">
+        <td colspan="3" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.Customer_Address}:&nbsp;&nbsp;{!QuoteRec.Sold_To_Address__c}</td>
+    </tr>
+     <tr width="100%">
+        <td colspan="3" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.Billing_Address}:&nbsp;&nbsp;{!QuoteRec.Bill_To_Address__c}</td>
+     </tr>
+    <tr width="100%" rowspan="2">
+        <td width="40%" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.Billing_Contact}:&nbsp;&nbsp;{!QuoteRec.CA_Billing_Contact_Name__c}</td>  
+        <td width="15%" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.Phone}:&nbsp;&nbsp;{!QuoteRec.Bill_To_Phone__c}</td>
+        <td width="45%" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.E_mail}:&nbsp;&nbsp;{!QuoteRec.Bill_To_Email_Address__c}</td>     
+    </tr>
+    <tr width="100%">    
+        <td colspan="3" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.Shipment_Address}:&nbsp;&nbsp;{!QuoteRec.Ship_To_Address__c}</td>            
+    </tr>
+    <tr width="100%">        
+       <td colspan="2" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.Shipping_Contact}:&nbsp;&nbsp;{!QuoteRec.CA_Shipping_Contact_Name__c}</td>  
+        <td width="30%" align="left"  style="border:1px solid black;font-size:13.8px;padding-left:3px;">{!$Label.Territory_Blank}&nbsp;&nbsp;</td> 
+    </tr>
+    <tr width="100%" align="center"  rowspan="2">
+        <td width="30%" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.TContact}:&nbsp;&nbsp;{!QuoteRec.CA_Technical_Contact_Name__c} </td>  
+        <td width="30%" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.Phone}:&nbsp;&nbsp;{!QuoteRec.Technical_Contact_Phone__c}</td>
+        <td width="40%" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;">{!$Label.E_mail}:&nbsp;&nbsp;{!QuoteRec.Technical_Contact_Email_Address__c}</td>      
+    </tr>
+
+    <tr width="40%" align="center" rowspan="2">
+       <td  colspan="2" align="left" style="border:1px solid black;font-size:13.8px;padding-left:3px;"><bold>Name of Governing Contract:</bold>
+       <p>Online Foundation Agreement and the Module Name located at<br/>
+
+       <a href="http://www.ca.com/us/collateral/licensing/na/ca-online-modular-agreement-pack---north-america.aspx">http://www.ca.com/us/collateral/licensing/na/ca-online-modular-agreement-pack</a><br>
+       <a href="http://www.ca.com/us/collateral/licensing/na/ca-online-modular-agreement-pack---north-america.aspx">---north-america.aspx</a></br>
+
+       </p>
+       </td>    
+        
+   <!-- <td rowspan="2" width="20%" align="left"  style="border:1px solid black;font-size:12px;padding-left:3px;" >
+        <p>{!$Label.For_Customer}</p>
+</td>-->
+        <td rowspan="2" width="20%" align="left"  style="border:1px solid black;font-size:14px;padding-left:3px;" ><p>For Customer<br/>
+            Administrative Purposes Only:<br/>
+            PO Required?<br/>
+            If Yes, PO #:</p>
+    </td>
+
+
+  </tr>
+  <tr>
+      <td  colspan="2" align="left"  style="border:1px solid black;font-size:13.8px;padding-left:3px;">AND Applicable supplementary terms:
+       <p>SaaS, is provided pursuant to the SaaS Listings located at:
+       <a href="http://www.ca.com/content/dam/ca/us/files/data-sheet/ca-agile-central-saas.pdf">http://www.ca.com/content/dam/ca/us/files/data-sheet/ca-agile-central-saas.pdf</a> or as attached hereto.
+        
+       
+       </p>
+       </td>
+  </tr>
+
+
+ </table>   
+
+</div>
+   <h4>{!$Label.PaymentDetail}</h4>
+<div>
+   <table  style="border:1px solid black;border-collapse:collapse;Width:100%">
+  <tr>
+    <th  style="font-size:14px;border:1px solid black; border-collapse:collapse;Width:20%">{!$Label.DueDate}</th>
+   <!-- <th  style="font-size:14px;border:1px solid black; border-collapse:collapse;Width:5%">&nbsp;&nbsp;</th>-->
+    <th  style="font-size:14px;border:1px solid black; border-collapse: collapse;Width:25%">{!$Label.Subscription}</th>
+   <!-- <th  style="font-size:14px;border:1px solid black; border-collapse:collapse;width:5%">&nbsp;&nbsp;</th>-->
+   <!-- <th  style="font-size:14px;border:1px solid black; border-collapse:collapse;width:20%">{!$Label.Education_Fee}</th> -->
+    <th  style="font-size:14px;border:1px solid black; border-collapse: collapse;width:25%">{!$Label.Total_Fee_Dues}</th>
+  </tr>
+  
+           <apex:repeat value="{!paymentProfileList}" var="pL">
+             <tr width="100%"> 
+               <td style="font-size:12px;border:1px solid black; border-collapse: collapse;width:20%;text-align:right">                
+                  {!pL.Date_Text__c}
+               </td>
+               <!-- <td  style="font-size:12px;border:1px solid black; border-collapse: collapse;Width:5%">
+                    &nbsp;&nbsp;
+                 </td>-->
+             <td  style="font-size:12px;border:1px solid black; border-collapse: collapse;Width:25%;text-align:right">                
+                   {!pL.Subscription_Payment__c}&nbsp;{!IF(pL.Subscription_Payment__c != null,QuoteRec.CurrencyIsoCode,"" )}                 
+              </td >  
+                 <!--<td  style="font-size:12px;border:1px solid black; border-collapse: collapse;width:5%">
+                    &nbsp;&nbsp;
+                 </td>-->
+             <!-- <td  style="font-size:12px;border:1px solid black; border-collapse: collapse;width:20%;text-align:right">  
+                   {!pL.Services_Payment__c}&nbsp;{!IF(pL.Services_Payment__c != null,QuoteRec.CurrencyIsoCode,"" )}
+     
+              </td>-->
+            <td style="font-size:12px;border:1px solid black;border-collapse:collapse;width:25%;text-align:right">                
+               {!pL.Payment_Total__c}&nbsp;{!IF(pL.Payment_Total__c != null,QuoteRec.CurrencyIsoCode,"" )}
+             </td>   
+            </tr>              
+       </apex:repeat> 
+    <!--<tr>
+      <td>&nbsp;&nbsp;</td>
+       <td>&nbsp;&nbsp;</td>
+       <td>&nbsp;&nbsp;</td>
+        <td>&nbsp;&nbsp;</td>
+      </tr> -->  
+  </table>
+ <!--<p style="border:1px;color:#808080;">{!$Label.GEN_EN_Product_Deliveries}</p>-->
+ </div>
+<apex:outputPanel rendered="{!saaSRender}">
+<h4>{!$Label.SaaS_Heading}</h4>
+<div>
+ <table style="border:1px solid black;border-collapse:collapse;Width:100%">
+  <tr>
+    <th style="vertical-align:Top;font-size:14px;border:1px solid black; border-collapse:collapse;Width:30%">{!$Label.SaaSOffering}</th>
+    <th style="vertical-align:Top;font-size:14px;border:1px solid black; border-collapse:collapse;Width:10%">{!$Label.Product_Instance_ID}</th>
+    <th style="vertical-align:Top;font-size:14px;border:1px solid black; border-collapse: collapse;Width:10%">{!$Label.SubscriptionStart_Date}</th>
+    <th style="vertical-align:Top;font-size:14px;border:1px solid black; border-collapse: collapse;Width:10%">{!$Label.SubscriptionEnd_Date}</th>
+    <th style="vertical-align:Top;font-size:14px;border:1px solid black; border-collapse: collapse;Width:10%">{!$Label.AuthorizedUse_Limitation}</th>
+    <th style="vertical-align:Top;font-size:14px;border:1px solid black; border-collapse: collapse;Width:15%">{!$Label.MonthlyFeePer_Unit}</th>
+    <th style="vertical-align:Top;font-size:14px;border:1px solid black; border-collapse: collapse;Width:15%">{!$Label.Totalfeefor_Term}</th>
+
+  </tr>
+  <apex:repeat value="{!SaasQuoteProducts}" var="QpL">
+  <tr Width="100%">
+    <!--<td style="border:1px solid black; border-collapse:collapse;Width:30%">{!QuoteRec.Education_Contract__c}</td>-->
+    <td style="font-size:12px;border:1px solid black; border-collapse:collapse;Width:30%">{!QpL.Product_Name__c}</td>
+    <td style="font-size:12px;border:1px solid black; border-collapse:collapse;Width:10%;text-align:right">{!QpL.Product_Instance_ID__c}</td>
+    <td style="font-size:12px;border:1px solid black; border-collapse:collapse;Width:10%;text-align:right">{!QpL.Effective_Date_Text__c}</td>
+    <td style="font-size:12px;border:1px solid black; border-collapse:collapse;Width:10%;text-align:right">{!QpL.End_Date_Text__c}</td>
+    <td style="font-size:12px;border:1px solid black; border-collapse:collapse;Width:10%;text-align:right">{!QpL.Total_Quantity__c}&nbsp;{!QpL.License_Metric__c}</td>
+    <td style="font-size:12px;border:1px solid black; border-collapse:collapse;Width:15%;text-align:right"> 
+                <apex:outputText rendered="{!isSuppressDecimal}" value="{0, number,#,##0}" style="text-align:right"><apex:param value="{!MonthlyProductionFeePerUnit[QpL.Id]}"/></apex:outputText>
+                <apex:outputText rendered="{!!isSuppressDecimal}" value="{0, number,#,##0.00}" style="text-align:right"><apex:param value="{!MonthlyProductionFeePerUnit[QpL.Id]}"/></apex:outputText>
+        {!IF(MonthlyProductionFeePerUnit[QpL.Id] != null,QuoteRec.CurrencyIsoCode,"" )}
+        </td>
+    <td style="font-size:12px;border:1px solid black; border-collapse:collapse;Width:15%;text-align:right">{!QpL.Proposed_Lic_Sub_Fee__c}
+        {!IF(QpL.Proposed_Lic_Sub_Fee__c != null,QuoteRec.CurrencyIsoCode,"" )}</td>
+  </tr>
+ </apex:repeat>
+  </table>
+ <p style="font-weight: bold">{!$Label.SaaS_Description}</p>
+ </div>
+ </apex:outputPanel>
+ <p >This Order Form and the fees payable hereunder are non-cancellable, except as otherwise expressly set forth in the Terms. All fees shall be due net {!QuoteRec.Net_Payment_Terms__c} days from the date of the applicable invoice and are exclusive of applicable taxes. Payments shall be made to CA at:  Wells Fargo Bank, NA, ABA# 121000248; Account Name: CA, Inc. Lockbox; Account# 2000028313816</p>
+  <!--<p style="border:1px;color:#808080;"><apex:outputLabel escape="false" value="{!$Label.GEN_EN_New_Product_Clause_Exclusion}"/></p>-->
+<div>
+    <p><h3>{!$Label.EntireAgreement}</h3></p>
+    <p >
+ {!$Label.EntireAgreement_Description_SAAS}
+    </p>
+<p><center><h4>CA</h4></center></p>
+<div>
+ <table width="90%"> 
+    <tr>
+    </tr>
+    <tr>
+        <td style="font-size:14px;width:20%;">{!$Label.Signature}</td>
+        <td style="font-size:10px;width:40%;"><font style="color:White;size:2px;">\s1\</font>________________________________________</td>
+        <td style="font-size:14px;width:20%;">&nbsp;&nbsp;{!$Label.Signature}</td>
+        <td style="font-size:10px;width:40%;">________________________________________</td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+    </tr>
+    <tr>
+        <td style="font-size:14px;width:20%;">{!$Label.Name}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:White;size:2px;">\n1\</font>________________________________________</td>
+        <td style="font-size:14px;width:20%;">&nbsp;&nbsp;{!$Label.Name}:</td>
+        <td style="font-size:10px;width:40%;">________________________________________</td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+    </tr>
+    <tr>
+        <td style="font-size:14px;width:20%;">{!$Label.Title}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:White;size:2px;">\t1\</font>________________________________________</td>
+        <td style="font-size:14px;width:20%;">&nbsp;&nbsp;{!$Label.Title}:</td>
+        <td style="font-size:10px;width:40%;">________________________________________</td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+    </tr>
+    <tr>
+        <td style="font-size:14px;width:20%;">{!$Label.Date}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:White;size:2px;">\d1\</font>________________________________________</td>
+        <td style="font-size:14px;width:20%;">&nbsp;&nbsp;{!$Label.Date}:</td>
+        <td style="font-size:10px;width:40%;">________________________________________</td>
+    </tr>
+    </table>
+ </div>
+</div>
+
+</body>
+
+</apex:form>
+</html>
+</apex:page>

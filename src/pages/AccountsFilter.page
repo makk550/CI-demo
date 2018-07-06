@@ -1,0 +1,339 @@
+<apex:page id="pgAcc" tabStyle="Account" sidebar="true" StandardController="Account" Extensions="ctrlAccountFilter"   >
+    <apex:form id="frmAcc" >
+        <apex:sectionHeader title="Account Filter" />
+        <apex:includeScript value="/soap/ajax/15.0/connection.js"/>
+        <apex:includeScript value="/soap/ajax/15.0/apex.js"/>
+        <script>
+            function isDependentValueValidForSelectedParent(parentSelIndex, depValue)
+            {
+                var b64 = new sforce.Base64Binary("");
+                var validFor = depValue.validFor;
+                var decodedVF = b64.decode(validFor);
+                var bits = decodedVF.charCodeAt(parentSelIndex >> 3);
+                if((bits & (0x80 >> (parentSelIndex%8))) != 0)
+                {
+                    return true;
+                }
+                return false;
+           }
+            
+            // obj : Name of the object where both the master and dependent picklist or attributes.
+            // controllerFieldName : Name of the master picklist field in the Object
+            // selIndex : Index of the selected option in the master picklist
+            // depFieldName : Name of the dependent picklist field in the Object
+            // depElementId : Id of the dependent picklist element in the page
+        
+            sforce.connection.sessionId = '{!$Api.Session_ID}';
+            
+            function loadDependentPicklist(obj, controllerFieldName,depFieldName, controllerFieldIdOnPage, depFieldIdOnPage, controllerCorrespFieldId,depCorrespFieldId, childComboId, childFieldId)
+            {
+               if(controllerCorrespFieldId == '')
+                   selIndex  =document.getElementById(controllerFieldIdOnPage).selectedIndex -1;
+               else
+               {
+               ctrl = document.getElementById(controllerCorrespFieldId);
+               selIndex = 0;
+               for(index =0; index < ctrl.options.length; index ++)
+                   if(ctrl.options[index].value == document.getElementById(controllerFieldIdOnPage).value)
+                       {
+                           selIndex  = index;
+                           break;    
+                       }
+                  
+                  ctrl.selectedIndex = selIndex  ;     
+                  selIndex = index -1;
+                        
+               }
+               
+               
+               
+               var objDescribe = sforce.connection.describeSObject(obj);
+               var depField = null;
+                   for (var i=0; i<objDescribe.fields.length; i++)
+                   {
+                        if (objDescribe.fields[i].type == "picklist" && objDescribe.fields[i].name == depFieldName && objDescribe.fields[i].controllerName == controllerFieldName)
+                        {
+                            depField = objDescribe.fields[i];
+                            break;
+                        } 
+                   }
+                if (depField != null)
+                {
+                    var values = depField.picklistValues;
+                    cmb = document.getElementById(depFieldIdOnPage);
+                    cmb.disabled = false;
+                    cmb.options.length =1;
+                    
+                    for (var i=0; i<values.length; i++)
+                    {
+                        var label = values[i].label;
+                        var value = values[i].value;
+                        if (isDependentValueValidForSelectedParent(selIndex, values[i]) == true)
+                        {
+                          cmb.options.add(new Option(value, label));
+                        }
+                    }
+                }
+                
+                if(childComboId != null)
+                    if( document.getElementById(childComboId) != null)
+                        {
+                            document.getElementById(childComboId).options.length = 1;
+                            document.getElementById(childComboId).selectedIndex = 0;
+                            document.getElementById(childComboId).disabled = true;
+                         }
+               
+               if(childFieldId != null && document.getElementById(childFieldId) != null)             
+                            document.getElementById(childFieldId).selectedIndex = 0;
+                        
+               if(depCorrespFieldId != null && document.getElementById(depCorrespFieldId ) != null)
+                       document.getElementById(depCorrespFieldId ).selectedIndex = 0;
+                
+                if(selIndex < 0)
+                    {
+                        document.getElementById(depFieldIdOnPage).selectedIndex = 0;
+                        document.getElementById(depFieldIdOnPage).disabled = true;           
+                    }                 
+                       
+       
+            }
+            
+            function assignCorrespondingValuesToAccount(controllerFieldIdOnPage, controllerCorrespFieldId)
+            {
+               ctrl = document.getElementById(controllerCorrespFieldId);
+               selIndex = 0;
+               //alert(document.getElementById(controllerFieldIdOnPage).value);
+               for(index =0; index < ctrl.options.length; index ++)
+                  { 
+                      if(ctrl.options[index].value == document.getElementById(controllerFieldIdOnPage).value)
+                       {
+                           selIndex = index;
+                           break;    
+                       }
+                  }
+                ctrl.selectedIndex = selIndex;
+            }       
+            function selAccType(ctrl)
+            {
+                if(document.all) // for IE
+                    {
+                        if(ctrl.options[ctrl.selectedIndex].innerText == 'Commercial Account')
+                            {
+                                cmb2 = document.getElementById('{!$Component.pgAcc.frmAcc.pbAcc.pbsAcc2.pbsiAT.cmbCustCat}');
+                                selIndex = 0;
+                                for(index =0; index < cmb2.options.length; index ++)
+                                  { 
+                                      if(cmb2.options[index].innerText == 'Commercial')
+                                       {
+                                           selIndex = index;
+                                           break;    
+                                       }
+                                  }
+                                cmb2.selectedIndex = selIndex;
+                            }
+                    }
+                 else
+                    {
+                     
+                        if(ctrl.options[ctrl.selectedIndex].innerHTML == 'Commercial Account')
+                            {
+                                
+                                cmb2 = document.getElementById('{!$Component.pgAcc.frmAcc.pbAcc.pbsAcc2.pbsiAT.cmbCustCat}');
+                                selIndex = 0;
+                                for(index =0; index < cmb2.options.length; index ++)
+                                  { 
+                                      if(cmb2.options[index].innerHTML == 'Commercial')
+                                       {
+                                           selIndex = index;
+                                           break;    
+                                       }
+                                  }
+                                  cmb2.selectedIndex = selIndex;
+                            }
+                    }   
+            }
+                
+        </script>
+         &nbsp;<apex:outputLink style="font-family:verdana; font-size: 11px"  value="/home/home.jsp" title="Back to the List of Accounts">Back to the List of Accounts</apex:outputLink>
+        <apex:pageBlock id="pbAcc">
+            
+            <apex:pageBlockSection id="pbsAcc" columns="1" >
+                <apex:outputPanel >
+                    <label class="labelCol" >Search {!$ObjectType.Account.Fields.Name.Label}</label>
+                    <apex:inputText value="{!accname}" />
+                    <apex:commandButton value="Search" action="{!Search}" status="msgStatus" />
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Filters" id="pbsAcc2" >
+                  <apex:pageBlockSectionItem >
+                      <apex:outputlabel >{!$ObjectType.Account.Fields.GU_DUNS_NUMBER__c.Label}</apex:outputlabel>
+                      <apex:inputText value="{!gu_duns_number}" />
+                  </apex:pageBlockSectionItem>    
+                 <apex:pageBlockSectionItem >     
+                     <apex:outputlabel >{!$ObjectType.Account.Fields.DUNS_Number__c.Label}</apex:outputlabel>
+                     <apex:inputText value="{!duns_number}" />
+                  </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem >
+                     <apex:outputlabel >{!$ObjectType.Account.Fields.GU_NAME__c.Label}</apex:outputlabel>
+                     <apex:inputText value="{!gu_duns_name}" />
+                  </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem >   
+                      <apex:outputlabel >{!$ObjectType.Account.Fields.Business_Name__c.Label}</apex:outputlabel>
+                      <apex:inputText value="{!duns_name}" />   
+                 </apex:pageBlockSectionItem>    
+                <apex:pageBlockSectionItem >
+                         <apex:outputLabel >Record Type</apex:outputLabel>
+                         <apex:selectList value="{!recType}" onchange="selAccType(this)" multiselect="false" size="1">
+                             <apex:selectOptions value="{!recTypes}"/>
+                         </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                     <label>Parent Account</label>
+                    <apex:outputPanel id="fldparent">
+                        <apex:inputField value="{!acc.ParentId}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>    
+              
+                <apex:pageBlockSectionItem >
+                    <apex:outputlabel >{!$ObjectType.Account.Fields.BillingStreet.Label}</apex:outputlabel>
+                    <apex:inputText value="{!street}"  />
+                </apex:pageBlockSectionItem>
+                  
+                
+                <apex:pageBlockSectionItem id="pbsiAT" >
+                    <apex:outputlabel >{!$ObjectType.Account.Fields.Customer_Category__c.Label}</apex:outputlabel>
+                   <apex:selectList id="cmbCustCat" value="{!custCat}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!custCats}" />
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+            
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputlabel >{!$ObjectType.Account.Fields.BillingCity.Label}</apex:outputlabel>
+                    <apex:inputText value="{!city}"  />
+                </apex:pageBlockSectionItem>
+                <!--
+                <apex:pageBlockSectionItem >
+                    <apex:outputlabel >{!$ObjectType.Account.Fields.Commercial_Account_Name__c.Label}</apex:outputlabel>
+                    <apex:inputText value="{!commAccName}"  />
+                </apex:pageBlockSectionItem>
+                -->
+                <apex:pageBlockSectionItem >
+                    <apex:outputlabel >{!$ObjectType.Account.Fields.BillingState.Label}</apex:outputlabel>
+                    <apex:inputText value="{!state}"  />
+                </apex:pageBlockSectionItem>
+                <!--  
+                <apex:pageBlockSectionItem >
+                    <apex:outputlabel >{!$ObjectType.Account.Fields.Commercial_ID__c.Label}</apex:outputlabel>
+                    <apex:inputText value="{!commID}"  />
+                </apex:pageBlockSectionItem>
+                -->
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >{!$ObjectType.Account.Fields.Country_Picklist__c.Label}</apex:outputLabel>
+                    <apex:selectList value="{!countryPick}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!countryPicks}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                
+              <!--  <apex:pageBlockSectionItem >
+                    <apex:outputlabel >{!$ObjectType.Account.Fields.HQ__c.Label}</apex:outputlabel>
+                    <apex:inputCheckbox value="{!hq}"  />
+                </apex:pageBlockSectionItem> -->
+                <label></label>
+                
+               <!-- <apex:pageBlockSectionItem >
+                    <apex:outputlabel >{!$ObjectType.Account.Fields.Is_Primary_Account__c.Label}</apex:outputlabel>
+                    <apex:inputCheckbox value="{!isPrimary}"  />
+                </apex:pageBlockSectionItem> -->
+                
+                <apex:inputfield value="{!geoOnPage.GEO__c}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputfield value="{!geoOnPage.Sales_Area__c}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputfield value="{!geoOnPage.Sales_Region__c}"/>
+                
+          <!--      <apex:pageBlockSectionItem id="itmGeo">
+                    <apex:outputLabel >{!$ObjectType.Account.Fields.GEO__c.Label}</apex:outputLabel>
+                    <apex:selectList value="{!geo}" id="GEO" multiselect="false" size="1" onchange="loadDependentPicklist('Account', 'GEO__c', 'Sales_Area__c', '{!$Component.pgAcc.frmAcc.pbAcc.pbsAcc2.itmGeo.GEO}', 'Sales_Area__c','','{!$Component.pgAcc.frmAcc.pbAcc.pbsAcc2.sa}' ,'Sales_Region__c','{!$Component.pgAcc.frmAcc.pbAcc.pbsAcc2.sr}')">
+                        <apex:selectOptions value="{!geos}" />
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                
+                 <label></label>          
+                <apex:pageBlockSectionItem id="Sales_Area__c">
+                    <apex:outputlabel >{!$ObjectType.Account.Fields.Sales_Area__c.Label}</apex:outputlabel>
+                    <select id="Sales_Area__c" disabled = '{!acc.GEO__c == null}' onchange="loadDependentPicklist('Account', 'Sales_Area__c', 'Sales_Region__c', 'Sales_Area__c', 'Sales_Region__c','{!$Component.pgAcc.frmAcc.pbAcc.pbsAcc2.sa}')"  >
+                           <option value="">--None--</option>
+                    </select>
+                 </apex:pageBlockSectionItem>
+                 <apex:outputPanel >
+                    <apex:selectList value="{!salesArea}" id="sa" style="visibility:hidden" multiselect="false" size="1">
+                        <apex:selectOptions value="{!salesAreas}" />
+                    </apex:selectList>
+                 </apex:outputPanel>    
+                 <apex:pageBlockSectionItem id="Sales_Region__c">
+                    <apex:outputlabel >{!$ObjectType.Account.Fields.Sales_Region__c.Label}</apex:outputlabel>
+                    <select id="Sales_Region__c" disabled = '{!acc.Sales_Area__c == null}' onchange="assignCorrespondingValuesToAccount('Sales_Region__c','{!$Component.pgAcc.frmAcc.pbAcc.pbsAcc2.sr}')" >
+                           <option value="null">--None--</option>
+                     </select>
+                 </apex:pageBlockSectionItem>
+                 <apex:outputPanel >
+                    <apex:selectList value="{!salesRegion}" id="sr" style="visibility:hidden" multiselect="false" size="1">
+                        <apex:selectOptions value="{!salesRegions}" />
+                    </apex:selectList>
+                    <apex:inputField value="{!acc.Sales_Region__c}" id="sr_old" style="visibility:hidden"  />
+                 </apex:outputPanel> 
+                 -->
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Accounts" id="block2" columns="1">
+                <apex:actionStatus startText="Refreshing Results..."
+                    stopText="Search Results" id="msgStatus"/>
+                 <apex:pageBlockTable value="{!lstAccount}" var="a" id="table">
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.Name.Label}">
+                        <apex:outputLink value="/{!a.id}" >{!a.name}</apex:outputLink>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.GU_NAME__c.Label}">
+                        <apex:outputField value="{!a.GU_NAME__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.Customer_Category__c.Label}">
+                        <apex:outputField value="{!a.Customer_Category__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="Parent Account">
+                        <apex:outputField value="{!a.parentId}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.Enterprise_ID__c.Label}">
+                        <apex:outputField value="{!a.Enterprise_ID__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.Commercial_Account_Name__c.Label}">
+                        <apex:outputField value="{!a.Commercial_Account_Name__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.Commercial_ID__c.Label}">
+                        <apex:outputField value="{!a.Commercial_ID__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.GEO__c.Label}">
+                        <apex:outputField value="{!a.GEO__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.Sales_Area__c.Label}">
+                        <apex:outputField value="{!a.Sales_Area__c}" >
+                         </apex:outputField>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.Country_Picklist__c.Label}">
+                        <apex:outputField value="{!a.Country_Picklist__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.Sales_Region__c.Label}">
+                        <apex:outputField value="{!a.Sales_Region__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.BillingState.Label}">
+                        <apex:outputField value="{!a.BillingState}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.BillingCity.Label}">
+                        <apex:outputField value="{!a.BillingCity}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Account.Fields.Is_Primary_Account__c.Label}">
+                        <apex:outputField value="{!a.Is_Primary_Account__c}"/>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

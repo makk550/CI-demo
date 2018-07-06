@@ -1,0 +1,50 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+     <head>
+            <meta charset="UTF-8" />
+            <title>Chat Window</title>
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css" />
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    </head>
+    
+    <body>
+        <div class="container">
+            <div class="bs-example" >
+                <div class="alert alert-success">
+                    <a href="#" class="close" data-dismiss="alert">&times;</a>
+                    <strong>Thanks for contacting us</strong>
+                    <!--<br/>Please note down chat key for future reference : <apex:outputText value="{!$CurrentPage.parameters.chatKey}" />--><br />
+                       <center><button type="button" class="btn btn-default" onclick="closeWindow();" >
+                        Close
+                    </button></center>
+                </div>
+             
+            </div>
+            
+            <div class="alert alert-danger no-agent">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                <strong><apex:outputText value="{!$CurrentPage.parameters.error}" /></strong>      
+                   <center><button type="button" class="btn btn-default" onclick="closeWindow();" >
+                    Close
+                </button></center>
+            </div>
+         
+        </div>
+    </body>
+    <script>
+        var errorMessage  = "{!$CurrentPage.parameters.error}";
+        //console.log(errorMessage);
+        if(errorMessage !=undefined && errorMessage.trim().length > 0 ){
+            //console.log(errorMessage.length);
+            $(".alert-success").css('display','none');
+            $('.no-agent').css('display','block');            
+        }else{
+            $(".alert-success").css('display','block');
+            $('.no-agent').css('display','none'); 
+        }
+        function closeWindow(){
+            window.close();    
+        }
+    </script>
+</apex:page>

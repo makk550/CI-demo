@@ -1,0 +1,321 @@
+<apex:page standardcontroller="Lead" extensions="LeadViewOverride_extension,PLD_AcceptRejectCntrllr">
+    
+    
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+    <link rel="stylesheet" href="/resources/demos/style.css"/>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <apex:includeScript value="/soap/ajax/35.0/connection.js" />
+    <script>
+       
+    $( function() {
+        var buttonval = $( "[id*='xxxif2']" ).val();
+        $( "[id*='xxxpbs1']" ).hide();
+        $( "#dialog-message" ).dialog({
+            autoOpen: false,
+            modal: true,
+            
+        });
+        
+    } );
+    
+    function opendail()
+    {
+        $( "#dialog-message" ).dialog( "open" );
+        return false;
+    }
+    
+    function changereject(){
+        
+        var buttonval = $( "[id*='xxxif1']" ).val();
+        if (buttonval=="Reject"){
+            $( "[id*='xxxpbs1']" ).show();
+        }
+        else
+        {
+            $( "[id*='xxxpbs1']" ).hide();
+            $( "[id*='xxxif2']" ).val("");  
+        }
+        
+        
+    }
+    
+    function closedail()
+    {
+        console.log('ha ha ha');
+        var buttonval = $( "[id*='xxxif1']" ).val();
+        var buttonval1 = $( "[id*='xxxif2']" ).val();
+        if (buttonval=="" )
+        {
+            alert("Please Accept or Reject lead");
+            return false;
+        }
+        if (buttonval=="Reject"&& buttonval1=="" )
+        {
+            alert("Please provide reason for rejection");
+            return false;
+        }
+        else{
+            console.log(buttonval);
+            // console.log(document.getElementById("xxxif1"));
+            
+            var hoo= document.getElementById("j_id0:mn:j_id5:xxxpb1:j_id37:j_id38:xxxif1").value;
+            var reason= document.getElementById("j_id0:mn:j_id5:xxxpb1:xxxpbs1:xxxif2").value;
+           var acceptrej =  $( "[id*='ih1']" ).val();
+            // console.log('hoo: '+hoo);
+            // document.getElementById("xxxif1").val(buttonval);
+            console.log(document.getElementById("xxxif1"));
+            acceptrej=hoo;
+            //alert(acceptrej);
+             callsave(hoo,reason);
+            $( "#dialog-message" ).dialog( "close" );
+            // window.reload(); 
+            //  window.top.location.href='/partner/00Q/o'
+        }
+    }
+    
+    </script>
+    
+    <style type="text/css">
+        .custPopup{
+        background-color: white;
+        border-width: 2px;
+        border-style: solid;
+        z-index: 9999;
+        left: 50%;
+        padding:10px;
+        position: absolute;
+        /* These are the 3 css properties you will need to change so the popup 
+        displays in the center of the screen. First set the width. Then set 
+        margin-left to negative half of what the width is. You can add 
+        the height property for a fixed size pop up if you want.*/
+        width: 500px;
+        margin-left: -250px;
+        top:100px;
+        }
+        .popupBackground{
+        background-color:black;
+        opacity: 0.20;
+        filter: alpha(opacity = 20);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 9998;
+        }
+        .closeButton {
+        
+        float: right;
+        
+        }
+        
+        
+    </style>
+   <!-- <apex:detail subject="{!Lead.Id}" relatedList="true" title="true" inlineEdit="true" showChatter="true" rendered="{!If(OR(!partnerProfile,fedResultsRole,!PartnerLeadProcess),true,false)}">
+    </apex:detail> -->
+    <apex:detail subject="{!Lead.Id}" relatedList="true" title="true" inlineEdit="true" showChatter="true" rendered="{!if(OR(!PartnerLeadProcess,!partnerProfile),true,false)}">  
+    </apex:detail> 
+    
+    <!--
+<apex:form >
+<apex:outputPanel id="mnPopup">
+<apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+<apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}" >
+<apex:outputLabel value="Status Reason"/><br/><br/><br/>               
+<apex:SelectList value="{!selectedStatusReason}" size="5">
+<apex:selectOptions value="{!SatusReason}"></apex:selectOptions>
+</apex:SelectList>
+<br/><br/><br/>
+<apex:commandButton value="Save" action="{!Marketing_Nurture}" rerender="mnPopup" id="saveMarketingNurture"/>
+<apex:commandButton value="Close" action="{!closePopup}" rerender="mnPopup" id="closeMarketingNurture"/>
+</apex:outputPanel>
+</apex:outputPanel>
+</apex:form> -->
+    
+    <apex:pageBlock title="Lead Detail" mode="maindetail" id="mn" rendered="{!If(AND(partnerProfile,PartnerLeadProcess),true,false)}">
+        <apex:form >
+            
+            
+            
+            
+            
+            <apex:pageMessages ></apex:pageMessages>
+            
+            <!-- Nihal/Likhitha popup starts -->
+            <apex:actionRegion >
+                <apex:inputHidden id="ih1" value="{!currentlead.AcceptReject__c}"/>
+       <!-- <apex:actionFunction name="callsave" action="{!submit}"  status="myStatus"/> -->
+                <apex:actionFunction name="callsave" action="{!submit}" rerender="refresh" status="progress" oncomplete="javascript:window.top.location.href='/partner/00Q/o'">
+                  <apex:param id="aname" name="paar" value="" assignTo="{!AccptRejStr}" />
+                  <apex:param id="aname2" name="reason" value="" assignTo="{!AccptRejReason}" />
+                </apex:actionFunction>
+<div id="dialog-message" title="Accept or Reject Lead" style="height:500px;width:500px;">
+    
+    <apex:outputPanel id="tstpopup1"/>
+  <apex:outputPanel id="tstpopup">
+      
+        <apex:outputPanel />
+            <apex:outputPanel >
+                
+                <apex:pageBlock id="xxxpb1">
+                
+                <apex:pageBlockSection >
+                <apex:pageblocksectionitem >
+                    <apex:outputLabel value="Accept/Reject" for="xxxif1"  style="font-weight:bold"/> 
+                     <apex:inputField id="xxxif1" value="{!currentlead.AcceptReject__c}" onchange="changereject();"  />
+                </apex:pageblocksectionitem>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection id="xxxpbs1" rendered="true" >
+
+              <apex:inputField id="xxxif2" value="{!currentlead.Rejection_Reason__c }"  />
+
+            </apex:pageBlockSection>
+                </apex:pageBlock>
+                <br/><br/><br/>
+                
+                <apex:commandButton id="button" onclick="closedail();" value="Submit" action="{!submit}" />
+
+            </apex:outputPanel>
+        </apex:outputPanel>
+     </div>
+         </apex:actionRegion>
+            <!-- popup ends -->
+        
+            <div align="center" draggable="false" >
+                <apex:commandButton id="opener" onclick="opendail();" value="Accept/Reject" reRender="tstpopup1" rendered="{!IF(AND(currentlead.AcceptReject__c!='Accept',partnerProfile), TRUE, FALSE)}"/>
+               <!-- <apex:commandButton action="{!showPopup}" id="editButton" value="Accept/Reject" rendered="{!IF(AND(Lead.AcceptReject__c!='Accept',partnerProfile), TRUE, FALSE)}"/>-->
+                <apex:commandButton action="{!Marketing_Nurture}" onclick="if(!confirm('Are you sure you want to send this lead back to CA for further marketing nurture? By continuing this lead will be returned to CA and be removed from your leads?')){return false};" id="MarketingNurture" value="Marketing Nurture"/> 
+                <!--<apex:commandButton action="{!showPopup}" rerender="mnPopup" value="Marketing Nurture"/>-->
+                <apex:commandButton action="{!covertIndirect}" value="Convert" rendered="{!IF(AND(currentlead.AcceptReject__c='Accept',partnerProfile), TRUE, FALSE)}"/>
+                
+            </div>
+        </apex:form>
+        
+        <apex:pageBlockSection columns="2">
+            
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Lead Owner"/>
+                <apex:outputField value="{!Lead.OwnerId}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Meeting Set"/>
+                <apex:outputField value="{!Lead.Purchase_Time_Frame__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Name"/>
+                <apex:outputField value="{!Lead.Name}"/>
+            </apex:pageBlockSectionItem> 
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Held Date"/>
+                <apex:outputField value="{!Lead.Meeting_Held_Date__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Company"/>
+                <apex:outputField value="{!Lead.Company}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Meeting Request"/>
+                <apex:outputField value="{!Lead.Meeting_Request__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Address"/>                 
+                <apex:outputField value="{!Lead.Street}"/>                     
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Lead Source"/>
+                <apex:outputField value="{!Lead.LeadSource}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Phone"/>
+                <apex:outputField value="{!Lead.Phone}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Sales Coverage Business Unit"/>
+                <apex:outputField value="{!Lead.MKT_BU_Category__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Mobile"/>
+                <apex:outputField value="{!Lead.MobilePhone}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Sales Coverage BU Driver"/>
+                <apex:outputField value="{!Lead.MKT_Solution_Set__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Fax"/>
+                <apex:outputField value="{!Lead.Fax}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Product"/>
+                <apex:outputField value="{!Lead.CSU_Driver__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Email"/>
+                <apex:outputField value="{!Lead.Email}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Geo"/>
+                <apex:outputField value="{!Lead.GEO__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Website"/>
+                <apex:outputField value="{!Lead.Website}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Operating Area"/>
+                <apex:outputField value="{!Lead.MKT_Territory__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Related Contact"/>
+                <apex:outputField value="{!Lead.Related_Contact__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Country Picklist"/>
+                <apex:outputField value="{!Lead.Country_Picklist__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Sales Region"/>
+                <apex:outputField value="{!Lead.Sales_Territory__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Territory"/>
+                <apex:outputField value="{!Lead.Country__c}"/>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection title="Marketing Qualification Lead Summary">
+            <!--<apex:detail relatedList="false"/> -->
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Description of Opportunity"/>
+                <apex:outputField value="{!Lead.Description_of_Opportunity__c}"/>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="System Information"  columns="2">
+            <!-- <apex:detail relatedList="false"/> -->
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Created By"/>
+                <apex:outputField value="{!Lead.CreatedById}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Last Modified By"/>
+                <apex:outputField value="{!Lead.LastModifiedById}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Lead Record Type"/>
+                <apex:outputField value="{!Lead.RecordTypeId}"/>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        
+        <br/>
+        <br/>
+        <apex:relatedList id="openActivityList" list="OpenActivities" title="Open Activities"/>
+        <apex:relatedList id="activityHistoryList" list="ActivityHistories" title="Activity History"/>        
+        <apex:relatedList id="notesList" list="CombinedAttachments" title="Notes & Attachments"/>
+        
+    </apex:pageBlock>    
+</apex:page>

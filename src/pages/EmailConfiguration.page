@@ -1,0 +1,141 @@
+<apex:page standardController="Email_Rule__c" Extensions="Email_Rule_Ext" >
+  
+    <apex:form >
+        
+          <apex:sectionHeader title="Configure Email Rule" subtitle="{!Email_Rule__c.Name}" />  
+          
+            <apex:actionFunction name="refreshTemplate" reRender="pnl" />
+            <apex:actionFunction name="refreshPage" reRender="pnl2,pnl" />
+             <apex:messages />
+          <apex:pageBlock >
+             <apex:pageBlockButtons >
+                 <apex:commandButton value="Save" action="{!SaveRule}" />
+             </apex:pageBlockButtons>
+          
+              <apex:pageBlockSection title="Rule Information" id="pnl" >
+                  <apex:inputField required="true"  value="{!Email_Rule__c.Email_Capability__c}" onchange="refreshPage()" />
+                
+                  <apex:selectList value="{!Email_Rule__c.Email_Template__c}" onchange="refreshTemplate()" multiselect="false" size="1" >
+                             <apex:selectOptions value="{!myPersonalTemplateOptions}"/>
+                  </apex:selectList>
+                  <apex:inputField value="{!Email_Rule__c.Language__c}" />
+                   <apex:pageBlockSectionItem >
+                       <apex:outputLabel ></apex:outputLabel>
+                       <apex:outputPanel rendered="{!Email_Rule__c.Email_Template__c != ''}" >
+                          <a href="/{!Email_Rule__c.Email_Template__c}" target="_blank" >View Template Details</a> 
+                      </apex:outputPanel>
+                  </apex:pageBlockSectionItem>
+                  <apex:inputField value="{!Email_Rule__c.Action__c}" />
+            
+              </apex:pageBlockSection>
+
+             <apex:actionFunction name="addValues" action="{!addValues}" />
+             <apex:actionFunction name="removeValues" action="{!removeValues}" />
+             <input type="hidden" id="hdRecipientType" value="{!eri.Recipient_Type__c}" />
+             <input type="hidden" id="hdObject" value="{!Email_Rule__c.Object__c}" />
+            
+             <apex:actionFunction name="removeRecipents" action="{!removeRecipents}" reRender="fieldList"/>   
+            
+              <script>
+                function changerecType(obj, hdid)
+                {
+                    document.getElementById(hdid).value= (obj.value);
+                    if(hdid == "hdObject")
+                        removeRecipents();
+                    
+                
+                }
+                
+                function checkit()
+                {
+                    
+                    rectype = document.getElementById("hdRecipientType").value;
+                    if(rectype == '' || rectype == null)
+                    {
+                        alert('Please Select the Recipient Type');
+                        return false;
+                    }
+                    else if(rectype.indexOf('CAM') > -1)
+                    {
+                        alert('CAMs need to be configured on the TAQ Account');
+                        return null;
+                    }
+                   
+                    rectype = document.getElementById("hdObject").value;
+                    
+                    if( (rectype == '' || rectype == null))
+                    {
+                        alert('Please Select the Object');
+                        return false;
+                    }
+                    
+                    
+                    
+                    return true;   
+                }
+            </script>
+            <apex:pageBlockSection title="Recipient Information" columns="2" >
+                <apex:inputField value="{!Email_Rule__c.Object__c}" onchange="changerecType(this,'hdObject');" /> <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!eri.Recipient_Type__c}" onchange="changerecType(this,'hdRecipientType');" /> <apex:outputLabel ></apex:outputLabel>
+          
+                <apex:pageBlockSectionItem >
+                   <apex:outputText >Recipients</apex:outputText>
+                    <apex:outputPanel > 
+                            <apex:inputText value="{!findstring }" />
+                            <apex:commandButton value="Find" onclick="return checkit();" action="{!showFields}" />
+                   </apex:outputPanel>         
+             </apex:pageBlockSectionItem> 
+             <apex:outputLabel ></apex:outputLabel>   
+                <apex:outputPanel id="fieldList" >
+                   <table width="100%">
+                       <tr>
+                           <td width="40%" align="center">
+                               <apex:selectList value="{!recipientString}" multiselect="true" size="6" >
+                                             <apex:selectOption itemValue="" itemDisabled="true" itemLabel="--None--" rendered="{!size1 == 0}" />  
+                                             <apex:selectOptions value="{!recipientList}" />
+                                </apex:selectList>    
+                           </td>
+                           <td class="multiSelectPicklistCell"  align="center" >
+                                <br/>   
+                                <img class="picklistArrowRight" onclick="addValues()" src="/s.gif" /><br/><br/>
+                                <img class="picklistArrowLeft" onclick="removeValues()"  src="/s.gif" />
+                            </td>
+                           <td width="40%" align="center">
+                               <apex:selectList value="{!recipientSelectedString}" multiselect="true" size="6" >
+                                           <apex:selectOption itemValue="" itemDisabled="true" itemLabel="--None--"  rendered="{!size2 == 0}" />
+                                           <apex:selectOptions value="{!recipientSelectedList}"/>
+                                </apex:selectList>
+                           </td>
+                       </tr>
+                   </table>    
+              </apex:outputPanel>
+       
+            <!-- <apex:inputField value="{!Email_Rule__c.Additional_Recipient__c}" /> -->
+              
+        </apex:pageblocksection>
+            
+             <apex:outputPanel id="pnl2"  >
+              <apex:pageBlockSection title="Deal Registration Information" id="pnl22"  rendered="{! (Email_Rule__c.Email_Capability__c =='Deal Registration' ) }" >
+               <apex:inputField value="{!Email_Rule__c.Deal_Registration_Program__c}" />
+               <apex:inputField value="{!Email_Rule__c.Region__c}" />
+               <apex:inputField value="{!Email_Rule__c.Partner_Program_Level__c}" />
+               <apex:inputField value="{!Email_Rule__c.Promo_Code__c}" />
+               <apex:inputField value="{!Email_Rule__c.Certificate__c}"  />
+               <apex:inputField value="{!Email_Rule__c.Created_Date__c}" />
+               <apex:inputField value="{!Email_Rule__c.Show_Deal_Program__c}" />
+               <apex:inputField value="{!Email_Rule__c.Deal_Registration_Name__c}" />
+               <apex:inputField value="{!Email_Rule__c.Partner_Name__c}" />
+               <apex:inputField value="{!Email_Rule__c.End_User__c}" />
+               <apex:inputField value="{!Email_Rule__c.Estimated_Value__c}" />
+               <apex:inputField value="{!Email_Rule__c.Submission_Date__c}" />
+               <apex:inputField value="{!Email_Rule__c.Expiration_Date__c}" />
+               <apex:inputField value="{!Email_Rule__c.Products__c}" />
+               <apex:inputField value="{!Email_Rule__c.Certificate_Submission_Text__c}" />
+               <apex:inputField value="{!Email_Rule__c.Certificate_Account_Manager_Text__c}" />
+               <apex:inputField value="{!Email_Rule__c.Certificate_Heading_Text__c}" />
+               <apex:inputField value="{!Email_Rule__c.Certificate_Details_Text__c}" />
+             </apex:pageBlockSection>
+             </apex:outputPanel> 
+          </apex:pageBlock>
+    </apex:form>      
+</apex:page>

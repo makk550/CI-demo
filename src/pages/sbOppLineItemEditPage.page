@@ -1,0 +1,281 @@
+<apex:page standardController="OpportunityLineItem" extensions="sbOppLineItemEditController">
+    
+    <script>
+    
+    function onStretchChange(){
+        stretchChange_action();
+    }
+    
+    function onStretchDurationChange(){
+        stretchDuration_action();
+    }
+    
+    function arrStretchChange(){
+        arrStretch_action();
+    }
+    
+    </script>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">
+    </script>
+    
+    <div id="overlay_div" class="waiting" style="position:fixed; top:0; left:0; height:100%; width:100%; z-index:2000; background-color:#999; opacity:.6; display:none;" />
+    <div style="position:fixed; top:35%; left:45%; width:150px; height:115px; background-color:#FFF; border:#FF0000 thin solid; z-index:2001; display:none;" align="center" class="ui-corner-all waiting">
+        <div align="center" style="margin-top:17px;">
+            <img src="{!$Resource.loadingGif}"/>
+        </div>
+        <div align="center" id="waiting_msg">Working...</div>
+    </div>
+    <apex:actionStatus id="overlayStatus" onstart="$('.waiting').show();" onstop="$('.waiting').hide();"/>
+    
+    <apex:form id="form1_view" rendered="{!isView}">
+        <apex:sectionHeader subtitle="{!oppName}" title="View Opportunity Product"/>
+        <apex:inputHidden value="{!OpportunityLineItem.OpportunityId}"/>
+        <apex:inputHidden value="{!OpportunityLineItem.Product2Id}"/>
+        <apex:outputLink value="/{!oppId}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb2" mode="maindetail" >
+            <apex:pageMessages />
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Edit" action="{!edit}"/>
+                <apex:commandButton value="Cancel" action="{!onCancel}"/>
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlockSection id="pbs4" title="Product Details"> 
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Product Name"/>
+                    <apex:outputText value="{!productName}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem />
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.License__c.label}"/>
+                    <apex:outputText value="{!OpportunityLineItem.License__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}"/>
+                    <apex:outputText value="{!OpportunityLineItem.Business_Type__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.UnitPrice}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Quantity.label}"/>
+                    <apex:outputText value="{!OpportunityLineItem.Quantity}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.TotalPrice.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.TotalPrice}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Stretch__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                 <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Start_Date__c.label}"/>
+                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                         <apex:param value="{!OpportunityLineItem.Start_Date__c}" />
+                     </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                 <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.End_Date__c.label}"/>
+                     <apex:outputText value="{0,date,MM/dd/yyyy}">
+                         <apex:param value="{!OpportunityLineItem.End_Date__c}" />
+                     </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Term_Month__c.label}"/>
+                    <apex:outputText value="{!OpportunityLineItem.Term_Month__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Duration__c.label}"/>
+                    <apex:outputText value="{!OpportunityLineItem.Stretch_Duration__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Corporate_ARR__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Corporate_ARR__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Corporate_ARR__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Stretch_Corporate_ARR__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.UF_License_Fee__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.UF_License_Fee__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Total_Maintenance__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Total_Maintenance__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_License_Fee__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Stretch_License_Fee__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Total_Maintenance__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Stretch_Total_Maintenance__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+    </apex:form>
+    
+    <apex:form id="form1_edit" rendered="{!isEdit}">
+        <apex:actionFunction name="stretchChange_action" action="{!stretchChangeMethod}" status="overlayStatus" rerender="pbs1,error"></apex:actionFunction>
+        <apex:actionFunction name="stretchDuration_action" action="{!stretchDurationChangeMethod}" status="overlayStatus" rerender="pbs1,error"></apex:actionFunction>
+        <!--<apex:actionFunction name="arrStretch_action" action="{!arrStretchChangeMethod}" status="overlayStatus" rerender="pbs1,error"></apex:actionFunction>-->
+        <apex:inputHidden value="{!OpportunityLineItem.OpportunityId}"/>
+        <apex:inputHidden value="{!OpportunityLineItem.Product2Id}"/>
+        <apex:sectionHeader subtitle="{!oppName}" title="Edit Opportunity Product"/>
+        <apex:outputLink value="/{!oppId}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb1" mode="maindetail">
+            <apex:pageMessages id="error"/> 
+            
+            <apex:pageBlockButtons location="top" >               
+                
+                <apex:commandButton value="Save" action="{!onSave}" status="overlayStatus" reRender="pbs1,error"/>
+                <apex:commandButton value="Cancel" action="{!onCancel}" status="overlayStatus"/>
+                
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlockSection id="pbs1" title="Product Details" > 
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Product Details"/>
+                    <apex:outputText value="{!productName}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem />
+                
+                <apex:outputField value="{!OpportunityLineItem.License__c}" />
+                <apex:outputField value="{!OpportunityLineItem.Business_Type__c}"/>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.UnitPrice}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                
+                <apex:outputField value="{!OpportunityLineItem.Quantity}"/>
+                
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.TotalPrice.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" id="totalPrice_id">
+                        <apex:param value="{!OpportunityLineItem.TotalPrice}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch__c.label}" />
+                    <apex:inputField value="{!OpportunityLineItem.Stretch__c}" id="totalStretch_id" onchange="onStretchChange()" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Start_Date__c.label}"/>
+                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                        <apex:param value="{!OpportunityLineItem.Start_Date__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.End_Date__c.label}"/>
+                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                        <apex:param value="{!OpportunityLineItem.End_Date__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:outputField value="{!OpportunityLineItem.Term_Month__c}"/>
+                <apex:inputField value="{!OpportunityLineItem.Stretch_Duration__c}" onchange="onStretchDurationChange()"/>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Corporate_ARR__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Corporate_ARR__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                 <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Corporate_ARR__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Stretch_Corporate_ARR__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+
+                
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.UF_License_Fee__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.UF_License_Fee__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Total_Maintenance__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Total_Maintenance__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_License_Fee__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Stretch_License_Fee__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Stretch_Total_Maintenance__c.label}"/>
+                    <apex:outputText value="({!OpportunityLineItem.CurrencyISOCode}) {0, number, ###,###,##0.00}" >
+                        <apex:param value="{!OpportunityLineItem.Stretch_Total_Maintenance__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            
+        </apex:pageBlock>
+    </apex:form>
+    
+    
+</apex:page>

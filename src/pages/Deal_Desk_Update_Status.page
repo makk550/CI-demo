@@ -1,0 +1,46 @@
+<apex:page standardController="Deal_Desk_Review__c">
+  
+    <script src="/soap/ajax/9.0/connection.js" type="text/javascript"></script> 
+    <script type="text/javascript" src="/js/functions.js"></script> 
+    <script type="text/javascript">
+    function initPage() 
+    { 
+        sforce.connection.init("{!$API.Session_ID}", "{!$API.Partner_Server_URL_90}"); 
+        updateStatus(); 
+    } 
+    
+    function updateStatus() 
+    { 
+        var dealDeskReview = new sforce.SObject("Deal_Desk_Review__c"); 
+        dealDeskReview.Id = "{!Deal_Desk_Review__c.Id}"; 
+        dealDeskReview.Deal_Desk_Status__c = "Request Review -- DD"; 
+        
+        var result = sforce.connection.update([dealDeskReview]); 
+        
+        if (result[0].getBoolean("success")) { 
+            newDDId = result[0].id; 
+            
+        } else { 
+            alert("failed to update Deal Desk" + result[0]); 
+            
+        } 
+        var returl = "/{!Deal_Desk_Review__c.Id}"; 
+        parent.location.href = returl; 
+        
+    } 
+    
+    
+    function Trim(str) 
+    { 
+        if(isEmpty(str) == true) 
+        { 
+            return ""; 
+        } 
+        return str.replace(/^\s*|\s*$/g, ""); 
+    } 
+    
+    window.onload = new function(){
+        initPage();
+    }    
+  </script>
+</apex:page>

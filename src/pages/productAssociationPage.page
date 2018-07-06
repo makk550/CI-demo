@@ -1,0 +1,627 @@
+<apex:page docType="html-5.0" standardStylesheets="false" showHeader="true" sidebar="false" controller="ProductAssociationController" id="pageId" >
+    <script src="{!$Resource.knowledge}/Jquery/jquery-1.12.4.js"></script>
+    <script src="{!$Resource.knowledge}/Jquery/jquery-ui.js"></script>
+    <!--apex:stylesheet value="{!URLFOR($Resource.bpstyles, 'styles.min.css')}" /--> 
+    <apex:stylesheet value="{!$Resource.knowledge}/Jquery/jquery-ui.css"/>
+    <apex:pageMessages id="successMsg" escape="false"/>
+    <apex:form id="formId" rendered="{!IF(errorFlag,false,true)}">
+        <!--apex:commandButton action="{!updateKbArticle}" value="Test"/-->
+        <span id="errorMessage" style="font-size:14px;color:red;"/>
+        
+        <apex:actionStatus id="loadingStatus">
+            <!-- loading message -->
+            <apex:facet name="start">
+                <apex:outputPanel >
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.70; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                        <div style="display: inline-block; padding: 2px; width: 125px;">
+                            <apex:image value="/img/loading32.gif" style="float: left; margin: 8px;"/>
+                            <span style="display: inline-block; padding: 10px 0px;color:#3366ff;font-size:140%;font-family:Arial, Helvetica, sans-serif;">Please Wait...</span>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+            </apex:facet>
+            <apex:facet name="stop"> </apex:facet>
+        </apex:actionStatus>
+        
+        <apex:pageBlock title="Knowledge Article Product Selection Page" id="pageBlockTable" rendered="{!IF(showBlock,true,false)}">
+            <b>Article:</b> &nbsp;&nbsp;<input type="text" id="inputTagId" readonly="true" value="{!articleId}"/><br/><br/>
+            <apex:outputPanel id="fuckId" style="display:none;">
+                <apex:outputPanel id="pId">
+                    <apex:outputLabel ><b>Product Details</b></apex:outputLabel><br/><br/>
+                    <apex:pageBlockTable value="{!listOfWrapperProductDetails}" var="productDetail">
+                        <apex:column headerValue="Action">
+                            <a id="editId_{!productDetail.productIdVal}" onclick="editAssociation(this.id,'{!productDetail.productId}','{!productDetail.primaryProduct}');return false;"> Edit</a><label id="spanId_{!productDetail.primaryProduct}_{!productDetail.productIdVal}">&nbsp;|&nbsp;<a id="removeId_{!productDetail.productIdVal}" onclick="removeProduct(this.id,'{!productDetail.primaryProduct}','{!productDetail.componentIds}','{!productDetail.releaseIds}');return false;">Remove</a></label>
+                            <script>
+                                var listSize = {!wrapperSize};
+                                var hidePrimary = document.getElementById('spanId_{!productDetail.primaryProduct}_{!productDetail.productIdVal}').id;
+                                var splitHidePrimary = hidePrimary.split('_');
+                                var flagVal = splitHidePrimary[1];//hidePrimary.substr('spanId_'.length,hidePrimary.length);
+                                if(flagVal == 'true' && listSize!=1 && '{!productDetail.articlePreviousStatus}'!='Rejected'){
+                                    document.getElementById(hidePrimary).style.display = 'none';    
+                                }
+                                if(flagVal == 'true' && '{!productDetail.articlePreviousStatus}'=='Rejected'){
+                                    document.getElementById('editId_{!productDetail.productIdVal}').style.display = 'none';
+                                    document.getElementById(hidePrimary).style.display = 'none'; 
+                                }
+                            
+                                if('{!listOfProcessInstance}'.length>2){
+                                    document.getElementById('editId_{!productDetail.productIdVal}').style.display = 'none';
+                                    document.getElementById('spanId_{!productDetail.primaryProduct}_{!productDetail.productIdVal}').style.display = 'none';
+                                }
+                            </script>
+                        </apex:column>
+                        <apex:column headerValue="Primary">
+                            <apex:inputCheckbox value="{!productDetail.primaryProduct}" disabled="true"/>
+                        </apex:column>
+                        <apex:column headerValue="Product(s)" value="{!productDetail.productId}"/>
+                        <apex:column headerValue="Product Component(s)">
+                            <apex:outputText escape="false" value="{!productDetail.componentNames}"/>
+                        </apex:column>
+                        <apex:column headerValue="Product Release(s)">
+                            <apex:outputText escape="false" value="{!productDetail.releaseNames}"/>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    <br/>
+                </apex:outputPanel><br/>
+            </apex:outputPanel>
+            <div id="productNameId" style="display:block;">
+                <b>Add Product:</b> &nbsp;&nbsp;<input type="text" id="productTagId" size="30" onfocus="productNameAndIdMap();return false;"/><br/><br/> 
+            </div>
+            <apex:outputPanel id="panelCompId" style="display:none;">
+                <apex:outputPanel id="componentId">
+                    <apex:outputLabel value="CA Product Component:" rendered="{!IF(showComp,true,false)}" style="font-weight:bold;"/>&nbsp;<br/><br/>
+                    <apex:outputLabel rendered="{!IF(showComp,true,false)}">
+                        <table id="errorTableComp" style="display:none;">
+                            <tr id="errorTableFirstRowComp"></tr>
+                        </table>
+                        <table id="normalTableComp" style="display:none;">
+                            <tr>
+                                <th>Available Component(s)</th>
+                                <th></th>
+                                <th>Selected Component(s)</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <apex:outputPanel id="avaiableComp">
+                                        <apex:selectList value="{!componentName}" size="8" multiselect="true" id="componentLeftId">
+                                            <apex:selectOptions value="{!ProductComponent}"/>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </td>
+                                <td>
+                                    <b>&nbsp;&nbsp;&nbsp;Add</b><br/>
+                                    &nbsp;&nbsp;<img src="/img/s.gif" alt="Add" class="rightArrowIcon" title="Add" onclick="addComponents('{!$component.componentLeftId}','{!$component.componentRightId}');return false;"/><br/>
+                                    &nbsp;&nbsp;<img src="/img/s.gif" alt="Remove" class="leftArrowIcon" title="Remove" onclick="removeComponents('{!$component.componentLeftId}','{!$component.componentRightId}');return false;"/><br/>
+                                    <b>Remove</b>
+                                </td>
+                                <td>
+                                    <apex:outputPanel id="selectedComp">
+                                       <apex:selectList value="{!selectedComponentName}" size="8" multiselect="true" id="componentRightId">
+                                            <apex:selectOptions value="{!SelectedComponents}"/>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                        </table>
+                    </apex:outputLabel>
+                </apex:outputPanel><br/><br/>
+                <apex:outputPanel id="releaseId">
+                    <apex:outputLabel value="CA Product Release:" rendered="{!IF(showComp,true,false)}" style="font-weight:bold;"/>&nbsp;<br/><br/>
+                    <apex:outputLabel rendered="{!IF(showComp,true,false)}">
+                        <table id="errorTable" style="display:none;">
+                            <tr id="errorTableFirstRow"></tr>
+                        </table>
+                        <table id="normalTable" style="display:none;">
+                            <tr>
+                                <th>Available Release(s)</th>
+                                <th></th>
+                                <th>Selected Release(s)</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <apex:outputPanel id="avaiableRelease">
+                                        <apex:selectList value="{!releaseName}" size="8" multiselect="true" id="ReleaseLeftId">
+                                            <apex:selectOptions value="{!Release}"/>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </td>
+                                <td>
+                                    <b>&nbsp;&nbsp;&nbsp;Add</b><br/>
+                                    &nbsp;&nbsp;<img src="/img/s.gif" alt="Add" class="rightArrowIcon" title="Add" onclick="addRelease('{!$component.ReleaseLeftId}','{!$component.ReleaseRightId}');return false;"/><br/>
+                                    &nbsp;&nbsp;<img src="/img/s.gif" alt="Remove" class="leftArrowIcon" title="Remove" onclick="removeRelease('{!$component.ReleaseLeftId}','{!$component.ReleaseRightId}');return false;"/><br/>
+                                    <b>Remove</b>
+                                </td>
+                                <td>
+                                    <apex:outputPanel id="selectedRelease">
+                                       <apex:selectList value="{!selectedReleaseName}" size="8" multiselect="true" id="ReleaseRightId">
+                                            <apex:selectOptions value="{!SelectedReleases}"/>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                        </table>
+                    </apex:outputLabel>
+                </apex:outputPanel>
+            </apex:outputPanel>    
+        </apex:pageBlock>
+        <apex:outputPanel id="renderNewList">
+            <div id="divId" style="display:none;">{!listOfProductWrapperClass1}</div>
+            <input type="hidden" id="newStringId" value="{!listOfProductWrapperClass1}"/>
+            <input type="hidden" id="sizeOfList" value="{!wrapperSize}"/>
+        </apex:outputPanel>
+        <apex:outputPanel id="renderKCSList">
+            <div id="divsId" style="display:none;">{!showFlag}</div>
+            <input type="hidden" id="newStrisngId" value="{!showFlag}"/>
+        </apex:outputPanel>
+        <apex:outputPanel id="continueId" style="display:none;">
+            <apex:commandButton id="continueButtonId" value="Continue" onclick="continueToNext('{!$Component.pageBlockTable.componentRightId}','{!$Component.pageBlockTable.ReleaseRightId}');return false;"/>
+        </apex:outputPanel>
+        <apex:outputPanel id="canclePageId" style="display:none;">
+            <apex:commandButton id="cancelButtonId" value="Cancel" onclick="navigateToNewWindow();return false;"/>
+        </apex:outputPanel>
+        <apex:outputPanel id="refreshId" style="display:none;">
+            <apex:commandButton id="refreshButtonId" value="Refresh" onclick="refreshFunc(this.id);return false;"/>
+        </apex:outputPanel>
+        <apex:outputPanel id="buttonsId" style="display:none;">
+            <apex:commandButton value="+Add Another Product" id="saveAssociation" onclick="showAnotherAssociation();return false;"/><!--continueToNext('{!$Component.pageBlockTable.componentRightId}','{!$Component.pageBlockTable.ReleaseRightId}');return false;"/-->
+            <!--apex:commandButton value="Save Association" id="saveButton" onclick="submitDetails('saveButton');return false;"/-->
+            <apex:commandButton value="Save and Close" id="saveAndCloseButton" onclick="submitDetails('saveAndCloseButton');return false;"/><br/>
+            <span id="errorMessage" style="font-size:14px;color:black;font-style: italic;font-family: Times New Roman, Times, serif;">**Please use <b>Save and Close</b> button to save your product selection(s) and return to your article.  Otherwise, your selections may not be saved.</span>
+        </apex:outputPanel>
+        <apex:outputPanel id="saveButtonId" style="display:none;">
+            <apex:commandButton value="Update Association" id="updateAssociation" onclick="continueToNext('{!$Component.pageBlockTable.componentRightId}','{!$Component.pageBlockTable.ReleaseRightId}');return false;"/>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="panelId">
+            <apex:actionFunction name="componentFun" action="{!productComponent}" reRender="componentId,releaseId,successMsg" status="loadingStatus" oncomplete="displaySelectionSection('{!mapOfComponent}','{!mapOfRelease}');return false;">
+                <apex:param name="productName" value=""/>
+            </apex:actionFunction>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="removePanelId">
+            <apex:actionFunction name="callRemoveProduct" action="{!callRemoveProduct}" reRender="removePanelId,pId,productNameId,successMsg,componentId,releaseId,renderNewList" status="loadingStatus">
+                <apex:param name="productId" value=""/>
+                <apex:param name="productFlag" value=""/>
+                <apex:param name="productComponent" value=""/>
+                <apex:param name="productRelease" value=""/>
+                <apex:param name="artNum" value=""/>
+            </apex:actionFunction>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="editPanelId">
+            <apex:actionFunction name="fetchValuesForEdit" action="{!fetchValuesForEdit}" reRender="editPanelId,pId,componentId,successMsg,releaseId" status="loadingStatus" oncomplete="showEditDetails();return false;">
+                <apex:param name="productRecordId" value=""/>
+            </apex:actionFunction>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="productAssociationId">
+            <apex:outputPanel id="productAssociatId">
+                <apex:actionFunction name="createPrimaryProductAssociation" action="{!createPrimaryProductAssociation}" reRender="productAssociatId,successMsg,pId,productNameId,componentId,releaseId,renderNewList" status="loadingStatus">
+                    <apex:param name="productId" value=""/>
+                    <apex:param name="articleNum" value=""/>
+                    <apex:param name="prepareCompString" value=""/>
+                    <apex:param name="prepareReleaseString" value=""/>
+                </apex:actionFunction>
+            </apex:outputPanel>
+        </apex:outputPanel> 
+        
+        <apex:outputPanel id="saveAssociationId">
+            <apex:actionFunction name="submitProductAssociation" action="{!submitProductAssociation}" reRender="saveAssociationId,successMsg" status="loadingStatus" oncomplete="navigateToNewWindow();return false;">
+                <apex:param name="buttonId" value=""/>
+            </apex:actionFunction>
+        </apex:outputPanel> 
+    </apex:form>
+     <script>
+        var listOfComp = [];
+        var productId='';
+        var articleNum='';
+        var existingValue = '';
+        var primaryFlag = '';
+    
+        function onloadFunc(){
+            if({!showFlag}){
+                document.getElementById('{!$Component.pageId.formId.pageBlockTable.fuckId}').style.display = 'block';
+            }
+            document.getElementById('{!$Component.pageId.formId.canclePageId}').style.display='block';
+            if('{!listOfProcessInstance}'.length>2){
+                document.getElementById('productNameId').style.display = 'none';    
+            }
+        }
+        onloadFunc();
+    
+        function productNameAndIdMap(){
+            if(document.getElementById('newStringId').value!=''){
+                var hiddenFieldValue = document.getElementById('divId').innerHTML;
+                callAutoComplete(JSON.parse(hiddenFieldValue));
+            }else{
+                var productNameValues = [{!listOfProductWrapperClass}];
+                callAutoComplete(productNameValues);
+            }
+        }
+    
+        function displaySelectionSection(mapOfComp, mapOfRelease){
+            if(mapOfComp=='' && mapOfRelease=='' && existingValue!=''){
+                document.getElementById('errorTableFirstRowComp').innerHTML = 'No component(s) associated with product <b>'+existingValue+'</b>. Please use refresh button to select different product.';
+                document.getElementById('errorTableComp').style.display='block';
+                document.getElementById('errorTableFirstRow').innerHTML = 'No release(s) associated with product <b>'+existingValue+'</b>. Please use refresh button to select different product.';
+                document.getElementById('errorTable').style.display='block';
+                document.getElementById('errorMessage').innerHTML = '';
+                document.getElementById('{!$Component.pageId.formId.continueId}').style.display = 'none';
+                document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='none';
+                document.getElementById('{!$Component.pageId.formId.refreshId}').style.display = 'block';
+            }else if(mapOfComp=='' && existingValue!=''){
+                document.getElementById('errorMessage').innerHTML = '';
+                document.getElementById('{!$Component.pageId.formId.continueId}').style.display = 'none';
+                document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='none';
+                document.getElementById('errorTableFirstRowComp').innerHTML = 'No component(s) associated with product <b>'+existingValue+'</b>. Please use refresh button to select different product.';
+                document.getElementById('errorTableComp').style.display='block';
+                document.getElementById('normalTableComp').style.display='none';
+                document.getElementById('normalTable').style.display='block';
+                document.getElementById('{!$Component.pageId.formId.refreshId}').style.display = 'block';
+            }else if(mapOfRelease=='' && existingValue!=''){
+                document.getElementById('errorTable').style.display='block';
+                document.getElementById('normalTable').style.display='none';
+                document.getElementById('normalTableComp').style.display='block';
+                /*if(document.getElementById('{!$Component.pageId.formId.pageBlockTable.fuckId}').style.display=='none'){
+                    document.getElementById('{!$Component.pageId.formId.continueId}').style.display = 'none';
+                    document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='none';
+                    document.getElementById('{!$Component.pageId.formId.refreshId}').style.display = 'block';
+                    document.getElementById('errorTableFirstRow').innerHTML = 'No release(s) associated with product <b>'+existingValue+'</b>. Please use refresh button to select different product.';
+                }else{*/
+                    document.getElementById('{!$Component.pageId.formId.continueId}').style.display = 'block';
+                    document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='none';
+                    document.getElementById('{!$Component.pageId.formId.refreshId}').style.display = 'none';
+                    document.getElementById('errorTableFirstRow').innerHTML = 'No release(s) associated with product <b>'+existingValue+'</b> but you can proceed with product association process.';
+                //}
+            }else{
+                document.getElementById('errorMessage').innerHTML = '';
+                document.getElementById('normalTable').style.display='block';
+                document.getElementById('normalTableComp').style.display='block';
+                document.getElementById('errorTableFirstRowComp').innerHTML = '';
+                document.getElementById('errorTableComp').style.display='none';
+                document.getElementById('errorTableFirstRow').innerHTML = '';
+                document.getElementById('errorTable').style.display='none';
+                document.getElementById('{!$Component.pageId.formId.continueId}').style.display = 'block';
+                document.getElementById('{!$Component.pageId.formId.pageBlockTable.panelCompId}').style.display = 'block';
+                document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='none';
+                document.getElementById('{!$Component.pageId.formId.refreshId}').style.display = 'none';
+            }
+        }
+    
+        function callAutoComplete(productNameValues){
+            $('#productTagId').autocomplete({
+              source: productNameValues,
+              select: function(event,ui){
+                if(ui.item.value!='' && ui.item.label!=''){
+                    passProductId(ui.item.Id);
+                    existingValue = ui.item.label;
+                }         
+              }
+            });
+        }
+        
+        function passProductId(Val){
+            if(Val!='-None-'){
+                productId = Val;
+                componentFun(Val);
+                document.getElementById('{!$Component.pageId.formId.continueId}').style.display = 'block';
+                document.getElementById('{!$Component.pageId.formId.pageBlockTable.panelCompId}').style.display = 'block';
+                document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='none';
+                document.getElementById('{!$Component.pageId.formId.canclePageId}').style.display='none';
+                document.getElementById('errorMessage').innerHTML = '';
+            }else{
+                document.getElementById('errorMessage').innerHTML = 'Please select the valid product name.';
+            }
+        }
+    
+        function continueToNext(componentVal, releaseVal){
+            saveAndAddAssociation(componentVal, releaseVal);
+            if(document.getElementById('errorMessage').innerHTML == ''){
+                document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='block';    
+                document.getElementById('productNameId').style.display ='none';
+            }
+        }
+    
+        function showAnotherAssociation(){
+            document.getElementById('{!$Component.pageId.formId.continueId}').style.display = 'none';
+            document.getElementById('{!$Component.pageId.formId.canclePageId}').style.display='block';
+            //document.getElementById('{!$Component.pageId.formId.pageBlockTable.panelCompId}').style.display = 'block';
+            document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='none';
+            document.getElementById('errorMessage').innerHTML = '';
+            document.getElementById('productNameId').style.display ='block';
+            
+        }
+    
+        function addComponents(leftCompId,rightCompId){
+            var removeArray = [];
+            var selectedComp = document.getElementById(leftCompId);
+            var newAddedComp = document.getElementById(rightCompId);
+            var count = 0;
+            if(selectedComp.length>=1 && newAddedComp.length>=1){
+                for(var k=0;k<selectedComp.options.length;k++){
+                    if(selectedComp.options[k].selected && selectedComp.options[k].text!='All components are selected' && selectedComp.options[k].text!='No Component Found'){
+                        if(newAddedComp.options[0].text == 'No Component Selected'){
+                            newAddedComp.remove(0);
+                        }
+                        newAddedComp.options[newAddedComp.length] = new Option(selectedComp.options[k].text, selectedComp.options[k].value);
+                        removeArray[count] = selectedComp.options[k].value;
+                        count++;
+                    }
+                }
+                
+                if(removeArray.length>0){
+                    for(var i=0;i<removeArray.length;i++){
+                        for(var j=0;j<selectedComp.length;j++){
+                            if(selectedComp.options[j].value == removeArray[i]){
+                                selectedComp.remove(j);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if(selectedComp.length==0){
+                        selectedComp.options[0] = new Option('All components are selected', 'All'); 
+                    }
+                }
+            }else{
+                document.getElementById('errorMessage').innerHTML = 'No component found.';
+            }
+            
+        }
+    
+        function removeComponents(leftCompId,rightCompId){
+            var addArray = [];
+            var selectedComp = document.getElementById(rightCompId);
+            var newAddedComp = document.getElementById(leftCompId);
+            var count = 0;
+            
+            if(selectedComp.length>=1 && newAddedComp.length>=1){
+                for(var l=0;l<selectedComp.options.length;l++){
+                    if(selectedComp.options[l].selected && selectedComp.options[l].text!='No Component Selected'){
+                        if(newAddedComp.options[0].text == 'All components are selected'){
+                            newAddedComp.remove(0);
+                        }
+                        newAddedComp.options[newAddedComp.length] = new Option(selectedComp.options[l].text, selectedComp.options[l].value);
+                        addArray[count] = selectedComp.options[l].value;
+                        count++;
+                    }
+                }
+                
+                if(addArray.length>0){
+                    for(var i=0;i<addArray.length;i++){
+                        for(var j=0;j<selectedComp.length;j++){
+                            if(selectedComp.options[j].value == addArray[i]){
+                                selectedComp.remove(j);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if(selectedComp.length==0){
+                        selectedComp.options[0] = new Option('No Component Selected', '-None-');   
+                    }
+                }
+            }
+        }
+    
+        function addRelease(leftReleaseId,rightReleaseId){
+            var removeArray = [];
+            var selectedComp = document.getElementById(leftReleaseId);
+            var newAddedComp = document.getElementById(rightReleaseId);
+            var count = 0;
+            if(selectedComp.length>=1 && newAddedComp.length>=1){
+                for(var k=0;k<selectedComp.options.length;k++){
+                    if(selectedComp.options[k].selected && selectedComp.options[k].text!='All Releases are selected' && selectedComp.options[k].text!='No Release Found'){
+                        if(newAddedComp.options[0].text == 'No Release Selected'){
+                            newAddedComp.remove(0);
+                        }
+                        newAddedComp.options[newAddedComp.length] = new Option(selectedComp.options[k].text, selectedComp.options[k].value);
+                        removeArray[count] = selectedComp.options[k].value;
+                        count++;
+                    }
+                }
+                if(removeArray.length>0){
+                    for(var i=0;i<removeArray.length;i++){
+                        for(var j=0;j<selectedComp.length;j++){
+                            if(selectedComp.options[j].value == removeArray[i]){
+                                selectedComp.remove(j);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if(selectedComp.length==0){
+                        selectedComp.options[0] = new Option('All Releases are selected', 'All'); 
+                    }
+                }
+            }else{
+                document.getElementById('errorMessage').innerHTML = 'No Release found.';
+            }
+            
+        }
+    
+        function removeRelease(leftReleaseId,rightReleaseId){
+            var addArray = [];
+            var selectedComp = document.getElementById(rightReleaseId);
+            var newAddedComp = document.getElementById(leftReleaseId);
+            var count = 0;
+            
+            if(selectedComp.length>=1 && newAddedComp.length>=1){
+                for(var l=0;l<selectedComp.options.length;l++){
+                    if(selectedComp.options[l].selected && selectedComp.options[l].text!='No Release Selected'){
+                        if(newAddedComp.options[0].text == 'All Releases are selected'){
+                            newAddedComp.remove(0);
+                        }
+                        newAddedComp.options[newAddedComp.length] = new Option(selectedComp.options[l].text, selectedComp.options[l].value);
+                        addArray[count] = selectedComp.options[l].value;
+                        count++;
+                    }
+                }
+                
+                if(addArray.length>0){
+                    for(var i=0;i<addArray.length;i++){
+                        for(var j=0;j<selectedComp.length;j++){
+                            if(selectedComp.options[j].value == addArray[i]){
+                                selectedComp.remove(j);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if(selectedComp.length==0){
+                        selectedComp.options[0] = new Option('No Release Selected', 'All');   
+                    }
+                }
+            }
+        }
+
+        function saveAndAddAssociation(componentVal,releaseVal){
+            var selectedComponentVal = document.getElementById(componentVal);
+            var selectedReleaseVal = document.getElementById(releaseVal);
+            var articleNum = document.getElementById('inputTagId').value;
+            var prepareCompString = '';
+            var prepareReleaseString = '';
+            if(productId!='' && selectedReleaseVal!='' && selectedComponentVal!='' && articleNum!=''){
+                var k = document.getElementById('sizeOfList').value;
+                //if((k=='0' && (primaryFlag==true || primaryFlag=='') && selectedComponentVal.options[0].value!='-None-' && selectedReleaseVal.options[0].value!='-None-' && selectedReleaseVal.options[0].value!='All')|| ((primaryFlag=='false' || primaryFlag=='') && k!='0' && selectedComponentVal.options[0].value!='-None-') || (primaryFlag=='true' && k!='0' && selectedComponentVal.options[0].value!='-None-' && selectedReleaseVal.options[0].value!='-None-' && selectedReleaseVal.options[0].value!='All')){
+                if(selectedComponentVal.options[0].value!='-None-'){    
+                    for(var k=0;k<selectedComponentVal.length;k++){
+                        prepareCompString = prepareCompString +selectedComponentVal.options[k].value+';';
+                    }
+                    
+                    for(var j=0;j<selectedReleaseVal.length;j++){
+                        prepareReleaseString = prepareReleaseString +selectedReleaseVal.options[j].value+';';
+                    }
+                    document.getElementById('errorMessage').innerHTML = '';
+                    createPrimaryProductAssociation(productId, articleNum, prepareCompString, prepareReleaseString);
+                    document.getElementById('{!$Component.pageId.formId.pageBlockTable.fuckId}').style.display = 'block';
+                    document.getElementById('{!$Component.pageId.formId.pageBlockTable.panelCompId}').style.display = 'none';
+                    document.getElementById('productTagId').value = '';
+                    $("#productTagId").removeAttr('readonly');
+                    document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='block';
+                    document.getElementById('{!$Component.pageId.formId.continueId}').style.display ='none';
+                    document.getElementById('{!$Component.pageId.formId.saveButtonId}').style.display = 'none';
+                }else{
+                    document.getElementById('errorMessage').innerHTML = 'Please select the valid component(s).';
+                }
+            }else{
+                document.getElementById('errorMessage').innerHTML = 'Please select the valid combination.';
+            }
+        }
+    
+        function removeProduct(productId,productFlag,productComponent,productRelease){
+            primaryFlag = '';
+            var artNum = document.getElementById('inputTagId').value;
+            var responseResult = '';
+            if(productFlag=='true'){
+                responseResult = confirm('If you delete the primary product then current selections on the screen will be gone. Are you sure?');
+            }else{
+                responseResult = confirm('Are you sure?');
+            }
+            
+            if(responseResult){
+                callRemoveProduct(productId,productFlag,productComponent,productRelease,artNum);
+                document.getElementById('productTagId').value = '';
+                document.getElementById('productNameId').style.display = 'block';
+            }
+            if(responseResult && productFlag=='true'){
+                document.getElementById('{!$Component.pageId.formId.pageBlockTable.fuckId}').style.display = 'none';
+                document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='none';
+                document.getElementById('{!$Component.pageId.formId.continueId}').style.display ='none';
+            }
+        }
+    
+        function editAssociation(productRecordId, productName, primaryFlagVal){
+            primaryFlag = primaryFlagVal;
+            document.getElementById('productTagId').value=productName;
+            $("#productTagId").attr('readonly', 'true');
+            document.getElementById('{!$Component.pageId.formId.pageBlockTable.fuckId}').style.display = 'none';
+            document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='none';
+            document.getElementById('{!$Component.pageId.formId.pageBlockTable.panelCompId}').style.display = 'block';
+            document.getElementById('{!$Component.pageId.formId.saveButtonId}').style.display = 'block';
+            document.getElementById('{!$Component.pageId.formId.continueId}').style.display ='none';
+            document.getElementById('{!$Component.pageId.formId.refreshId}').style.display = 'none';
+            document.getElementById('{!$Component.pageId.formId.canclePageId}').style.display='none';
+            var splitProductId = productRecordId.substr('editId_'.length,productRecordId.length);
+            productId = splitProductId;
+            fetchValuesForEdit(splitProductId);
+        }
+    
+        function showEditDetails(){
+            if(document.getElementById('{!$Component.pageId.formId.pageBlockTable.ReleaseLeftId}').options[0].value == 'All' && document.getElementById('{!$Component.pageId.formId.pageBlockTable.ReleaseRightId}').options[0].value=='-None-'){
+                document.getElementById('errorTableFirstRow').innerHTML = 'No release(s) associated with product <b>'+document.getElementById('productTagId').value+'</b> but you can proceed with product association process.';
+                document.getElementById('errorTable').style.display='block';
+                document.getElementById('normalTable').style.display='none';
+            }else{
+                document.getElementById('errorTableFirstRow').innerHTML = '';
+                document.getElementById('errorTable').style.display='none';
+                document.getElementById('normalTable').style.display='block';
+            }
+            document.getElementById('errorTableComp').style.display='none';
+            document.getElementById('normalTableComp').style.display='block';
+        }
+    
+        function submitDetails(buttonId){
+            submitProductAssociation(buttonId);
+        }
+    
+        function callDisplayTable(flagVal,wrapperDetails){
+            if(flagVal == true){
+                document.getElementById('{!$Component.pageId.formId.pageBlockTable.fuckId}').style.display = 'block';
+                document.getElementById('newStringId').value= wrapperDetails;
+                document.getElementById('divId').innerHTML= wrapperDetails;
+            }
+        }
+    
+        function refreshFunc(tagId){
+            if(document.getElementById('{!$Component.pageId.formId.pageBlockTable.fuckId}').style.display == 'none'){
+                document.getElementById('{!$Component.pageId.formId.pageBlockTable.fuckId}').style.display = 'none';
+                document.getElementById('productTagId').value='';
+                $("#productTagId").removeAttr('readonly');
+                document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='none';
+                document.getElementById('{!$Component.pageId.formId.pageBlockTable.panelCompId}').style.display = 'none';
+                document.getElementById('{!$Component.pageId.formId.saveButtonId}').style.display = 'none';
+                document.getElementById('{!$Component.pageId.formId.continueId}').style.display ='none';
+                document.getElementById('{!$Component.pageId.formId.refreshId}').style.display = 'none';
+            }else{
+                document.getElementById('{!$Component.pageId.formId.pageBlockTable.fuckId}').style.display = 'block';
+                document.getElementById('productTagId').value='';
+                $("#productTagId").removeAttr('readonly');
+                document.getElementById('productNameId').style.display = 'none';
+                document.getElementById('{!$Component.pageId.formId.buttonsId}').style.display ='block';
+                document.getElementById('{!$Component.pageId.formId.pageBlockTable.panelCompId}').style.display = 'none';
+                document.getElementById('{!$Component.pageId.formId.saveButtonId}').style.display = 'none';
+                document.getElementById('{!$Component.pageId.formId.continueId}').style.display ='none';
+                document.getElementById('{!$Component.pageId.formId.refreshId}').style.display = 'none';
+            }
+        }
+    
+        function navigateToNewWindow(){
+            var currentLoc = window.location.hostname;
+            var splitByDot = currentLoc.split('.');
+            if(splitByDot[0]!='' && splitByDot[1]!=''){
+                var splitByHypen = splitByDot[0].split('--');
+                if(splitByHypen[2]!='' && splitByHypen[2]!=undefined){
+                    if('{!listOfProcessInstance}'.length>2){
+                        var newURL = window.location.protocol+'//'+splitByHypen[0]+'--'+splitByHypen[1]+'.'+splitByDot[1]+'.my.salesforce.com/knowledge/publishing/articleDraftDetail.apexp?id={!knowledgeArticleIdVal}';
+                        window.location = newURL;
+                    }else{
+                        var newURL = window.location.protocol+'//'+splitByHypen[0]+'--'+splitByHypen[1]+'.'+splitByDot[1]+'.my.salesforce.com/knowledge/publishing/articleEdit.apexp?id={!knowledgeArticleIdVal}';
+                        window.location = newURL;
+                    }
+                }else{
+                    if('{!listOfProcessInstance}'.length>2){
+                        var newURL = window.location.protocol+'//ca.my.salesforce.com/knowledge/publishing/articleDraftDetail.apexp?id={!knowledgeArticleIdVal}';
+                        window.location = newURL;
+                    }else{
+                        var newURL = window.location.protocol+'//ca.my.salesforce.com/knowledge/publishing/articleEdit.apexp?id={!knowledgeArticleIdVal}';
+                        window.location = newURL;
+                    }
+                }
+            }
+        }
+    </script>
+</apex:page>

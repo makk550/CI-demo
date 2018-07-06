@@ -1,0 +1,12 @@
+<apex:page showHeader="false" sidebar="false" Controller="Impersonation" action="{!impersonate}" >
+        <script>
+            function closewindow(){
+                window.close();
+            }
+        </script>
+
+
+        <apex:messages />
+
+        
+</apex:page>

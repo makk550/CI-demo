@@ -1,0 +1,80 @@
+<apex:page standardController="RFP__c" extensions="EXT_RFP_OppLineItem" tabStyle="Account" showHeader="false">
+  <apex:sectionHeader /> 
+  <style>
+  .headerClass {
+            background: white url('/img/alohaSkin/grid_headerbg.gif') 0 bottom repeat-x;
+            background-image: url(https://cs12.salesforce.com/img/alohaSkin/grid_headerbg.gif);
+            background-repeat-x: repeat;
+            background-repeat-y: no-repeat;
+            background-attachment: initial;
+            background-position-x: 0px;
+            background-position-y: 100%;
+            background-origin: initial;
+            background-clip: initial;
+            background-color: #cfeef8;
+            border: 1px solid black;
+            border-width: 0 0 1px 1px;
+            border-top-width: 0px;
+            border-right-width: 0px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            color: black;
+            font-size: .9em;
+            font-weight: bold;
+            padding: 5px 2px 4px 5px;
+            padding-top: 5px;
+            padding-right: 2px;
+            padding-bottom: 4px;
+            padding-left: 5px;
+            text-align:left;
+            vertical-align:bottom;
+           }
+           
+           .tdBG
+           {
+                  border: 1px solid black;
+                  border-width: 0 0 1px 1px;
+                  border-top-width: 1px;
+                  border-right-width: 0px;
+                  border-bottom-width: 0px;
+                  border-left-width: 1px;
+                  padding-left: 4px;
+                  padding-right: 4px;
+                  text-align:center;
+           }
+           .greyBG
+           {
+                  border: 1px solid black; border-width: 0 0 1px 1px; border-top-width: 1px;
+                  border-right-width: 0px; border-bottom-width: 0px; border-left-width: 1px;
+                  padding-left: 4px; padding-right: 4px; text-align:center;
+                  background-color:#efefef;text-align:right; font-size: .9em;  font-weight: bold;
+           }
+           
+           .trBG
+           {
+                    background-color:white;
+                    border: solid black 1px
+                 
+            }
+  </style>
+  <apex:form >
+      <apex:pageBlock >  
+         <apex:pageBlockSection columns="1"  id="prodBlock" title="Products Associated with Opportunity" >
+          <apex:outputPanel id="busUnitRefresh" >
+             <table cellpadding="0" cellspacing="0" style="width:100%;  border: solid silver 1px">
+                 <tr >
+                      <th class="headerClass">Product</th >
+                      <th class="headerClass">Product Business Unit</th >
+                 </tr>
+                 <apex:repeat value="{!lst_opli}" var="oppProduct" >
+                  <tr class="trBG">
+                      <td>{!oppProduct.productName}</td>
+                      <td>{!oppProduct.busUnit}</td>
+                  </tr>  
+                 </apex:repeat>
+             </table>
+          </apex:outputPanel>
+       </apex:pageBlockSection>
+     </apex:pageBlock>   
+  </apex:form>
+</apex:page>

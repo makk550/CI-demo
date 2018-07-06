@@ -1,0 +1,35 @@
+<apex:page >
+<style>
+ol {
+    background: #ff9999;
+    padding: 20px;
+}
+
+ul {
+    background: #3399ff;
+    padding: 20px;
+}
+
+ol li {
+    background: #ffe5e5;
+    padding: 5px;
+    margin-left: 35px;
+}
+
+ul li {
+    background: #cce5ff;
+    margin: 5px;
+}
+</style>
+ <apex:sectionHeader title="Site Association Help Field Information" subtitle="Help for Selecting an Account " />
+<ol >
+    <li>Put in the Account name or partial Account name</li>
+    <li>Add in either the two digit country code (e.g. “US”) or country name (e.g. “United States”)</li>
+    <li>Click on the magnifying glass </li>
+    <li>Select “All Fields” </li>
+    <li>Search again by clicking “Go” </li>
+    <li>Choose an exact name match if you see one</li>
+    <li>If the choice is still ambiguous, choose the Account with a CA Account ID that starts with “W097”, “NR”, “ER”, “AR”, “LR”, “JR” </li>
+    <li>If there is still a choice, select Coverage Model “Named” over “Territory” </li>
+</ol>
+</apex:page>

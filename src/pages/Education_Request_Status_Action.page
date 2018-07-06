@@ -1,0 +1,8 @@
+<apex:page standardController="Education_Request__c" extensions="EducationRequestControllerExtension" action="{!updateStatus}">
+  <apex:pageMessages />
+  Current Status: {!Education_Request__c.Education_Request_Status__c}
+  <br/>
+  <br/>
+  <br/>
+  Click <apex:outputLink value="{!URLFOR($Action.Education_Request__c.View, Education_Request__c.id)}"> here</apex:outputLink> to return to Education Request: <apex:outputField value="{!Education_Request__c.name}"/>
+</apex:page>

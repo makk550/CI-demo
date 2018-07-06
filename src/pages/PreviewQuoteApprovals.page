@@ -1,0 +1,17 @@
+<!--<apex:page standardController="SBQQ__Quote__c" extensions="QuoteExtController"  action="{!onPreview}">
+<apex:pageMessages />
+<sbaa:approvalPreview approvals="{!approvals}"/>
+</apex:page>-->
+<apex:page standardController="SBQQ__Quote__c" extensions="QuoteExtController,SecQuoteExtController"  action="{!onPreview}">
+	<apex:form >
+        <apex:pageBlock title="Quote Approval">
+            <apex:pageBlockButtons location="top" html-align="left" >
+                <apex:commandButton action="{!returnToQuote}" value="Return to Quote" id="theButton" style="margin-left: 23%;"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="{!SBQQ__Quote__c.Name} Approval Preview" columns="1" collapsible="false">
+                <apex:pageMessages />
+                <sbaa:approvalPreview approvals="{!approvals}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+	</apex:form>
+</apex:page>

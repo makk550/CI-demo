@@ -1,0 +1,8 @@
+<apex:page standardController="Presales_Request__c" extensions="PresalesEditOverrideExtenssion" action="{!redirectEdit}">
+    <apex:form >
+    	<!--<apex:pageMessage summary="You cannot edit a presales request using this link" strength="1" severity="Info"/>
+       -->
+
+    </apex:form>
+    
+</apex:page>

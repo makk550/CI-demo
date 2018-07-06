@@ -1,0 +1,624 @@
+<apex:page id="ccpage" standardStylesheets="true" showHeader="false" sidebar="false" controller="CC_CustomerCareFormController">
+
+    <style> 
+    @font-face{font-family:"Averta";font-style:normal;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-bold-webfont.woff')})format("woff")}
+    @font-face{font-family:"Averta";font-style:normal;font-weight:bold;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-bold-webfont.woff2')}) format("woff2")}
+    @font-face{font-family:"Averta";font-style:normal;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-regular-webfont.woff')}) format("woff")}
+    @font-face{font-family:"Averta";font-style:italic;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-regular-webfont.woff2')} format("woff2")}
+
+    </style>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <title>Customercare Form</title>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <apex:stylesheet value="{!URLFOR($Resource.CustomerCareForm, 'bootstrap.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.CustomerCareForm, 'styles.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.CustomerCareForm, 'jquery.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.CustomerCareForm, 'bootstrap.min.js')}" />
+
+
+    <head>
+        <script>
+            //Conditionally render details
+
+            window.onload = function(){
+                var reqType = document.getElementById('ccpage:ccform:requestType_id').value;
+                if(reqType == '') {
+                    document.getElementById('ccpage:ccform:licensing_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:generalQuest_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:casupportportal_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:capartnerrequest_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:caedusupport_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:attachment_id').style.display = 'none';
+                    document.getElementById('ccpage:ccform:captcha_id').style.display = 'none';             
+                    document.getElementById('ccpage:ccform:buttons_id').style.display = 'none';
+                } else {
+                    renderDetails(); // Aded for submit scenario
+                }
+            };
+            
+    function setHidden(){
+        //alert('setHidden');
+        document.getElementById('ccpage:ccform:countryName_id').value = document.getElementById('ccpage:ccform:country_id').options[document.getElementById('ccpage:ccform:country_id').selectedIndex].text;
+    }
+           function renderDetails() {
+                var lkfield2 = document.getElementById('ccpage:ccform:requestType_id').value;      
+                //document.getElementById('ccpage:ccform:captcha_id').style.display = 'block'; 
+                if(lkfield2 == '{!$Label.CCF_CA_Licensing}') {
+                    document.getElementById('ccpage:ccform:licensing_details').style.display = 'block';
+                    document.getElementById('ccpage:ccform:generalQuest_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:casupportportal_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:capartnerrequest_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:caedusupport_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:attachment_id').style.display = 'block';
+                    document.getElementById('ccpage:ccform:captcha_id').style.display = 'block';             
+                    document.getElementById('ccpage:ccform:buttons_id').style.display = 'block';
+                }
+                else if(lkfield2 == '{!$Label.CCF_General_Questions}') {
+                    document.getElementById('ccpage:ccform:licensing_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:generalQuest_details').style.display = 'block';
+                    document.getElementById('ccpage:ccform:casupportportal_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:capartnerrequest_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:caedusupport_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:attachment_id').style.display = 'block';
+                    document.getElementById('ccpage:ccform:captcha_id').style.display = 'block';             
+                    document.getElementById('ccpage:ccform:buttons_id').style.display = 'block';
+                }
+                else if(lkfield2 == '{!$Label.CCF_CA_Support_Portal}') {
+                    document.getElementById('ccpage:ccform:licensing_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:generalQuest_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:casupportportal_details').style.display = 'block';  
+                    document.getElementById('ccpage:ccform:capartnerrequest_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:caedusupport_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:attachment_id').style.display = 'block';
+                    document.getElementById('ccpage:ccform:captcha_id').style.display = 'block';             
+                    document.getElementById('ccpage:ccform:buttons_id').style.display = 'block';
+                }
+                else if(lkfield2 == '{!$Label.CCF_CA_Partner_Request}') {
+                    document.getElementById('ccpage:ccform:licensing_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:generalQuest_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:casupportportal_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:capartnerrequest_details').style.display = 'block';  
+                    document.getElementById('ccpage:ccform:caedusupport_details').style.display = 'none'
+                    document.getElementById('ccpage:ccform:attachment_id').style.display = 'block';
+                    document.getElementById('ccpage:ccform:captcha_id').style.display = 'block';             
+                    document.getElementById('ccpage:ccform:buttons_id').style.display = 'block';
+                }
+                else if(lkfield2 == '{!$Label.CCF_CA_Education_Support}') {
+                    document.getElementById('ccpage:ccform:licensing_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:generalQuest_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:casupportportal_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:capartnerrequest_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:caedusupport_details').style.display = 'block';
+                    document.getElementById('ccpage:ccform:attachment_id').style.display = 'block';
+                    document.getElementById('ccpage:ccform:captcha_id').style.display = 'block';             
+                    document.getElementById('ccpage:ccform:buttons_id').style.display = 'block';
+                }
+                else {
+                    document.getElementById('ccpage:ccform:licensing_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:generalQuest_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:casupportportal_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:capartnerrequest_details').style.display = 'none';  
+                    document.getElementById('ccpage:ccform:caedusupport_details').style.display = 'none';
+                    document.getElementById('ccpage:ccform:attachment_id').style.display = 'none';
+                    document.getElementById('ccpage:ccform:captcha_id').style.display = 'none';             
+                    document.getElementById('ccpage:ccform:buttons_id').style.display = 'none';
+               }
+        }
+
+        </script>
+    </head>
+    <!-- apex:outputPanel >
+        <script src="https://support-qa.ca.com/etc/designs/digital-experience/external/support/test/aem-header.js" id="aemSupportHeader"/>
+    </apex:outputPanel -->
+
+    <apex:form id="ccform" styleClass="submit-bg">
+
+        <div > <!-- class="conatiner" -->
+            
+            <!-- Help Links -->
+            <div class="dropdown">
+               <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"> Help
+                   <span class="caret"></span>
+                   <span class="caret caret-reversed"></span>
+               </button>
+                <ul class="dropdown-menu">
+                <apex:repeat value="{!helpTextForCCF}" var="helptext" >
+                   	<li > <a href="{! helptext.url__c }" target="new">  {! helptext.title_eng__c } </a> </li> <!-- class="dropdown-menu" -->
+                </apex:repeat>
+                    </ul>
+           </div>
+			<!-- Help Links -->
+            
+            <h2 class="submitform-text">Submit a Question</h2>			
+            
+        </div> 
+       <!-- apex:actionRegion -->
+        <apex:pageMessages id="errors" />
+            <!-- /apex:actionRegion -->
+        
+        <apex:outputPanel id="formPanel">
+
+            <apex:outputPanel id="account_info" >
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h3> {! $Label.CCF_Account_Information } </h3>
+                        <div class="content-bg">
+                            <p class="error-msg"> {! $Label.CCF_Required } </p>
+                            <div class="row">
+                                <div class=" col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <!-- Site ID -->
+                                            <div class="col-md-4">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_Site_Id }"/>
+                                                    <apex:inputText id="siteid" styleClass="form-control" value="{!siteId}"  maxlength="10" />
+                                                    <apex:outputPanel rendered="{!LEN(siteIdError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!siteIdError}</div>
+                                                    </apex:outputPanel>
+                                                </div>                                                
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group ">
+                                                    <label>
+                                                        <p></p>
+                                                    </label>
+                                                    <p class="site-txt">{! $Label.CCF_Site_Information }
+                                                        <a href="{! $Label.CCF_Site_Information_Url }">{! $Label.CCF_Site_Information_Url }</a>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="col-md-4">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_First_Name }" />
+                                                    <apex:inputText id="firstname" styleClass="form-control" value="{!firstName}"  maxlength="30" />
+                                                    <apex:outputPanel rendered="{!LEN(firstNameError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!firstNameError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_Last_Name }" />
+                                                    <apex:inputText id="lastname" styleClass="form-control" value="{!lastName}" maxlength="30" />
+                                                    <apex:outputPanel rendered="{!LEN(lastNameError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!lastNameError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_Company }" />
+                                                    <apex:inputText id="Company" styleClass="form-control" value="{!company}" maxlength="40" />
+                                                    <apex:outputPanel rendered="{!LEN(companyError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!companyError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Address -->
+                                    <div class="col-md-12">
+                                        <div class="form-group req-field">
+                                            <apex:outputLabel value="{! $Label.CCF_Address }" />
+                                            <apex:inputText id="address" styleClass="form-control" value="{!addressText}"  maxlength="200" />
+                                            <apex:outputPanel rendered="{!LEN(addressError)!=0}">
+                                                <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!addressError}</div>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </div>
+                                <!-- apex:actionRegion immediate="true" id="states_id2" renderRegionOnly="false" -->
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <!-- COUNTRY -->
+                                            <div class="col-md-4">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_Country }" />
+                                                    <apex:selectList value="{! country}" size="1" styleClass="form-control" id="country_id">
+                                                        <apex:selectOptions value="{!Countries}"/>
+                                                        <apex:actionSupport event="onchange" onComplete="setHidden()"  rerender="states_id" > <!-- action="{!doSetCountryDetails}"  -->
+                                                            <apex:param name="countryId" value="{!country}" assignTo="{!countryId}" />                                                               
+                                                         </apex:actionSupport>
+                                                    </apex:selectList>
+                                                    <apex:outputPanel rendered="{!LEN(countryError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!countryError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                            <apex:inputHidden value="{!countryName}" id="countryName_id"/>            
+                                            <!-- CITY -->
+                                            <div class="col-md-4">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_City }" />
+                                                    <apex:inputText id="city" styleClass="form-control" value="{!city}"  maxlength="30" />
+                                                    <apex:outputPanel rendered="{!LEN(cityError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!cityError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                            <!-- STATE/PROVINCE -->
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <apex:outputLabel value="{! $Label.CCF_Sate_Province }" />
+                                                        <apex:outputPanel id="states_id" >
+                                                    <apex:selectList value="{! state_province}" size="1" styleClass="form-control" >
+                                                        <apex:selectOptions value="{!States}"/>
+                                                    </apex:selectList>
+                                                        </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <!-- /apex:actionRegion -->
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <!-- COUNTRY -->
+                                            <div class="col-md-4">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_Postal_Zip_Code }" />
+                                                    <apex:inputText id="postal" styleClass="form-control" value="{!postal_zip_code}"  maxlength="10" />
+                                                    <apex:outputPanel rendered="{!LEN(zipCodeError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!zipCodeError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                            <!-- CITY -->
+                                            <div class="col-md-4">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_Telephone_Number }" />
+                                                    <apex:inputText id="telePhNo" styleClass="form-control" value="{!telePhNo}"  maxlength="20" />
+                                                    <apex:outputPanel rendered="{!LEN(telephError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!telephError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                            <!-- STATE/PROVINCE -->
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <apex:outputLabel value="{! $Label.CCF_Extension }" />
+                                                    <apex:inputText id="extension" styleClass="form-control" value="{!extension}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <!-- Email -->
+                                        <div class="col-md-12">
+                                            <div class="col-md-8">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_Email_Address }" />
+                                                    <apex:inputText id="email" styleClass="form-control" value="{!email_address}"  maxlength="80"   />
+                                                    <apex:outputPanel rendered="{!LEN(emailAddressError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!emailAddressError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <hr class="light" />
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="col-md-8">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_Request_Type }" />
+
+                                                    <apex:selectList id="requestType_id" value="{!request_type}" size="1" styleClass="form-control" onChange="renderDetails();">
+                                                        <apex:selectOptions value="{!RequestTypes}"/>
+                                                    </apex:selectList>
+                                                    <apex:outputPanel rendered="{!LEN(requestTypeError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!requestTypeError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </apex:outputPanel>
+            <!-- DETAILS -->
+
+            <div class="panel panel-default details-section">
+                <div class="panel-body">
+                    <apex:outputPanel id="licensing_details">  <!-- rendered="{! isLicensing}"  -->
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3> {! $Label.CCF_Details } </h3>
+                                <div class="content-bg">
+                                    <ul>
+                                        <li> {! $Label.CCF_Licensing_Info_1A } <a href= "{! $Label.CCF_LicensingPage_Url }"> {! $Label.CCF_Licensing_Info_1B } </a> {! $Label.CCF_Licensing_Info_1C } <a href="{! $Label.CCF_GoldKeys_Url }"> {! $Label.CCF_Licensing_Info_1D } </a>
+{! $Label.CCF_Licensing_Info_1E } </li>
+                                        <li> {! $Label.CCF_Licensing_Info_2 } </li>
+                                        <li> {! $Label.CCF_Licensing_Info_3 } </li>
+                                    </ul>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group req-field">
+                                            <apex:outputLabel value="{! $Label.CCF_Your_Question }" />
+                                            <apex:inputTextarea id="lic_your_question" rows="5" styleClass="form-control"  value="{!lic_your_question}" html-maxlength="2500" html-placeholder="{! questionText }" />
+                                            <div class="caption text-muted">(0 to 2500 max characters)</div>
+                                            <apex:outputPanel rendered="{!LEN(licyqError)!=0}">
+                                                <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!licyqError}</div>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <!-- COUNTRY -->
+                                            <div class="col-md-6">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_Product_Name }" />
+                                                    <apex:inputText id="procuctname" styleClass="form-control" value="{!product_name}" maxlength="200"/>
+                                                    <apex:outputPanel rendered="{!LEN(prodNameError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!prodNameError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                            <!-- CITY -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <apex:outputLabel value="{! $Label.CCF_Release }" />
+                                                    <apex:inputText id="release" styleClass="form-control" value="{!release}" maxlength="100"/>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="col-md-6">
+                                                <div class="form-group req-field">
+                                                    <apex:outputLabel value="{! $Label.CCF_Type_of_Licensing }" />
+                                                    <apex:selectList value="{!licensing_type}" size="1" styleClass="form-control">
+                                                        <apex:selectOptions value="{!LicensingTypes}"/>
+                                                    </apex:selectList>
+                                                    <apex:outputPanel rendered="{!LEN(licTypeError)!=0}">
+                                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!licTypeError}</div>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                    
+
+                    </apex:outputPanel>
+
+
+                    <apex:outputPanel id="generalQuest_details"> <!--  rendered="{! isGeneralQuestions}" -->
+                        <h3> {! $Label.CCF_Details } </h3>
+                        <div class="content-bg">
+                            <div class="col-md-12">
+                                <div class="form-group req-field">
+                                    <apex:outputLabel value="{! $Label.CCF_Your_Question }" />
+                                    <apex:inputTextarea id="general_your_question" rows="5" styleClass="form-control"  html-maxlength="2500" value="{!general_your_question}" html-placeholder="{!questionText}"/>
+                                    <div class="caption text-muted">(0 to 2500 max characters)</div>
+                                    <apex:outputPanel rendered="{!LEN(genyqError)!=0}">
+                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!genyqError}</div>
+                                    </apex:outputPanel>
+                                </div>
+                            </div>
+                        </div>
+
+                    </apex:outputPanel>
+
+                    <apex:outputPanel id="casupportportal_details"> <!--  rendered="{! isCASupportPortal}" -->
+                        <h3> {! $Label.CCF_Details } </h3>
+                        <div class="content-bg">
+                            <div class="col-md-12">
+                                <div class="form-group req-field">
+                                    <apex:outputLabel value="{! $Label.CCF_Your_Question }" />
+                                    <apex:inputTextarea id="portal_your_question" rows="5" styleClass="form-control"  html-maxlength="2500" value="{!portal_your_question}" html-placeholder="{!questionText}"/>
+                                    <div class="caption text-muted">(0 to 2500 max characters)</div>
+                                    <apex:outputPanel rendered="{!LEN(caspyqError)!=0}">
+                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!caspyqError}</div>
+                                    </apex:outputPanel>
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+
+                    <!-- Partner Request -->
+                    <apex:outputPanel id="capartnerrequest_details" styleClass="capartner-req" > <!-- rendered="{! isCAPartnerRequest}" -->
+                        <h3> {! $Label.CCF_Details } </h3>
+                        <div class="content-bg">
+                            <div class="col-md-12">
+                                <div class="form-group req-field">
+                                    <apex:outputLabel value="{! $Label.CCF_Your_Question }" />
+                                    <apex:inputTextarea id="caPartReq_your_question" rows="5" styleClass="form-control"  html-maxlength="2500" value="{!caPartReq_your_question}" html-placeholder="{!questionText}"/>
+                                    <div class="caption text-muted">(0 to 2500 max characters)</div>
+                                    <apex:outputPanel rendered="{!LEN(capryqError)!=0}">
+                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!capryqError}</div>
+                                    </apex:outputPanel>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group radio-btn req-field">
+                                    <apex:outputLabel value="{! $Label.CCF_Partner_Reg_Completed}" /> 
+                                    <apex:selectRadio value="{! is_partner_registered }">
+                                        <apex:selectOptions value="{! YesNoOptions }"/>
+                                    </apex:selectRadio>
+                                    <apex:outputPanel rendered="{!LEN(ispartnerRegError)!=0}">
+                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!ispartnerRegError}</div>
+                                    </apex:outputPanel>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <apex:outputLabel value="{! $Label.CCF_Email_Address_used_to_Register }" />
+                                    <apex:inputText id="email_used" styleClass="form-control" value="{!emailAddress_used}" maxlength="80" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <apex:outputLabel value="{! $Label.CCF_Organization_ID }" />
+                                    <apex:inputText id="org_id" styleClass="form-control" value="{!organizationId}" maxlength="100" />
+                                </div>
+                            </div>
+                            <!--div class="col-md-12">
+                                <div class="form-group req-field radio-btn">
+                                    <apex:outputLabel value="{! $Label.CCF_Best_Method_of_Contact}"/>
+                                    <apex:selectRadio value="{! best_method_of_contact }">
+                                        <apex:selectOptions value="{! contactMethods }"/>
+                                    </apex:selectRadio>
+                                    <apex:outputPanel rendered="{!LEN(conatctMethodError)!=0}">
+                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!conatctMethodError}</div>
+                                    </apex:outputPanel>
+                                </div>
+                            </div -->
+                        </div>
+                    </apex:outputPanel>
+
+                    <apex:outputPanel id="caedusupport_details" >  <!-- rendered="{! isCAEduSupport}" -->
+                        <h3> {! $Label.CCF_Details } </h3>
+                        <div class="content-bg">
+                            <div class="col-md-12">
+                                <div class="form-group req-field">
+                                    <apex:outputLabel value="{! $Label.CCF_Your_Question }" />
+                                    <apex:inputTextarea id="caEduSup_your_question" rows="5" styleClass="form-control"  html-maxlength="2500" value="{!caEduSup_your_question}" html-placeholder="{!questionText}"/>
+                                    <div class="caption text-muted">(0 to 2500 max characters)</div>
+                                    <apex:outputPanel rendered="{!LEN(caeduyqError)!=0}">
+                                        <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!caeduyqError}</div>
+                                    </apex:outputPanel>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group"> 
+                                    <apex:outputLabel value="{! $Label.CCF_Class_Name }" />
+                                    <apex:inputText id="course_name_id" styleClass="form-control" value="{!course_name}" maxlength="100" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <apex:outputLabel value="{! $Label.CCF_Class_Number }" />
+                                    <apex:inputText id="course_num_id" styleClass="form-control" value="{!course_number}" maxlength="100" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <apex:outputLabel value="{! $Label.CCF_Date_of_the_class }" />
+                                    <apex:inputText id="date_of_class_id" styleClass="form-control" value="{!date_of_class}" maxlength="20" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <apex:outputLabel value="{! $Label.CCF_Class_Location }" />
+                                    <apex:inputText id="class_location_id" styleClass="form-control" value="{!class_location}" maxlength="100" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <apex:outputLabel value="{! $Label.CCF_Operating_System }" />
+                                    <apex:inputText id="operating_system_id" styleClass="form-control" value="{!operating_system}" maxlength="30" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <apex:outputLabel value="{! $Label.CCF_Browser }" />
+                                    <apex:inputText id="browser_id" styleClass="form-control" value="{!browser}" maxlength="100" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <apex:outputLabel value="{! $Label.CCF_Java_Version }" />
+                                    <apex:inputText id="java_version_id" styleClass="form-control" value="{!java_version}" maxlength="100" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <apex:outputLabel value="{! $Label.CCF_Contact_Instruction }" />
+                                    <apex:inputText id="contact_instruction_id" styleClass="form-control" value="{!contact_instruction}" maxlength="100" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </apex:outputPanel>
+
+
+
+                    <!-- </div> -->
+                    <!-- </div> -->
+
+                    <!-- Attachments Block -->
+                    <apex:outputPanel id="attachment_id" styleClass="content-bg file-attach capartner-req">
+                        <div class="col-md-12">   
+                                <div class="form-group radio-btn ">
+                                 <apex:outputLabel value="{! $Label.CCF_Attachments_Question }" />
+                                 <apex:selectRadio value="{! hasAttachmentsToAdd }">
+                                        <apex:selectOptions value="{! YesNoOptions }"/>
+                                    </apex:selectRadio>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+
+                    <!-- Captcha Block -->
+                    <apex:outputPanel id="captcha_id" styleClass="content-bg"> <!-- rendered="{! (isAnonymousUser && showButtons)}" -->
+                        
+                        <div class="col-md-12">
+                            <div class="form-group req-field">
+                                <apex:outputLabel value="{! $Label.CCF_Captcha }" />
+                                <div class="g-recaptcha" data-sitekey="{!publicKey}"></div>     
+                                <apex:outputPanel rendered="{!LEN(captchaError)!=0}">
+                                                <div class="errorMsg"> <strong>Error:</strong>&nbsp;{!captchaError}</div>
+                                            </apex:outputPanel>
+                            </div>
+                        </div>
+                    </apex:outputPanel> 
+
+
+                    <apex:outputPanel id="buttons_id" > <!-- rendered="{! showButtons}" -->
+                        <!--  -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group submit-buttons">
+                                    <apex:commandButton action="{! cancel }" styleClass="btn btn-dismiss" value="Cancel" />
+                                    <apex:commandButton action="{! save }" styleClass="btn btn-info" value="Submit" />
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+
+                </div>
+            </div>
+
+        </apex:outputPanel>
+
+
+
+        <!-- apex:outputPanel >
+            <script src="https://support-qa.ca.com/etc/designs/digital-experience/external/support/test/aem-footer.js" id="aemSupportFooter"/>
+        </apex:outputPanel -->
+
+    </apex:form>
+
+
+
+</apex:page>

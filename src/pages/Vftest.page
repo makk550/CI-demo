@@ -1,0 +1,6 @@
+<apex:page >
+    <apex:form >
+    helo if(!confirm('Are you sure?')){return false};
+    <apex:commandButton onclick="if(!confirm('Are you sure?')){return false};" id="MarketingNurture" value="Marketing Nurture"/> 
+    </apex:form>
+</apex:page>

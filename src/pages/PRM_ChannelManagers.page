@@ -1,0 +1,86 @@
+<apex:page controller="PRM_ChannelManager" showHeader="false" standardStylesheets="false" sidebar="false">
+<style type="text/css">
+       
+        h3 {
+            font-family: Verdana, Helvetica, sans-serif;
+            font-size: 24px;
+            line-height: 28px;
+            font-weight: normal;
+        }
+
+        a { color:#58bbd2; text-decoration: none!important; font-weight: bold;}
+        a:hover { text-decoration:underline!important }
+
+        body { font-family:Verdana, Helvetica, sans-serif; font-size:100%;  padding:0 15px; color:#333; 
+            display: flex;
+  align-items: center;
+  justify-content: center
+  } /*min-width:1148px;*/
+        .header.container {
+            max-width:1338px;
+        }
+
+        .box { padding:15px; background:#fff; margin:0 0 15px; overflow:hidden; }
+
+    </style>
+ 
+ <div class="box">
+         <div id="body">  
+                 <h3>Contact</h3>
+
+                 <p style="page-break-after: avoid; margin: 5pt 0in; text-autospace: ;"><b>Partner Account ID:</b> {!PartnerAccountId}</p>
+                 <br/>
+                  <p style="page-break-after: avoid; margin: 5pt 0in; text-autospace: ;"><b>Need Assistance?</b></p>
+                        <p style="page-break-after: avoid; margin: 5pt 0in; text-autospace: ;">For Partner Portal technical issues and Enterprise solution questions, please contact us via:</p>
+                        <p style="page-break-after: avoid; margin: 5pt 0in; text-autospace: ;"><b>Phone:</b> Find the support number for your country <span style="text-decoration: underline;"><a href="http://www.ca.com/us/support/phone.aspx" target="_blank"><b>here</b></a></span></p>
+                        <p style="page-break-after: avoid; margin: 5pt 0in; text-autospace: ;"><b>Email:<a href="mailto:capartners@ca.com">capartners@ca.com</a> </b></p>
+                        <p><b>Live Chat:</b> For live assistance during normal business hours find the Live Help link in the <br/>Quick Links on the top left of Home Page.</p>
+                        <!-- Added for SD ticket 100-235429-->
+                             <apex:outputPanel rendered="{!(!AllRTMContainsPARTNorBlank || (AllRTMContainsPARTNorBlank && AccountTeamPamPadCount > 0))}">
+                            <b>CA Partner Account Manager</b>
+                                <hr />   
+                             </apex:outputpanel>
+                 <Table >
+                     <apex:outputPanel id="alliance" rendered="{!alliancePAMName !=null && !alliancePAMNameContainsPARTN}">
+                                 <div>
+                                   
+                                    <span>Alliance:&nbsp;</span>{!alliancePAMName}<br />
+                                    <span>Email Address:&nbsp;</span><a href="mailto:{!alliancePAMEmail}"><b>{!alliancePAMEmail}</b></a><br />
+                                    <span>Phone Number:&nbsp;</span>{!alliancePAMPhone}<br />
+                             <br />
+                                </div>
+                    </apex:outputpanel>
+                    <apex:outputPanel id="solutionprovider" rendered="{!solutionProviderPAMName !=null && !solutionProviderPAMNameContainsPARTN}">
+                                  <div>
+                                   
+                                    <span>Solution Provider:&nbsp;</span>{!solutionProviderPAMName}<br />
+                                    <span>Email Address:&nbsp;</span><a href="mailto:{!solutionProviderPAMEmail}"><b>{!solutionProviderPAMEmail}</b></a><br />
+                                    <span>Phone Number:&nbsp;</span>{!solutionProviderPAMPhone}<br />
+                                    <br />
+                                </div>
+                    </apex:outputpanel>
+                    <apex:outputPanel id="serviceprovider" rendered="{!serviceProviderPAMName !=null && !serviceProviderPAMNameContainsPARTN}">
+                                 <div>
+                                   
+                                    <span>Service Provider:&nbsp;</span>{!serviceProviderPAMName}<br />
+                                    <span>Email Address:&nbsp;</span><a href="mailto:{!serviceProviderPAMEmail}"><b>{!serviceProviderPAMEmail}</b></a><br />
+                                    <span>Phone Number:&nbsp;</span>{!serviceProviderPAMPhone}<br />
+                                    <br />
+                                </div>
+                    </apex:outputpanel>
+                    <apex:outputPanel rendered="{!AllRTMContainsPARTNorBlank && AccountTeamPamPadCount > 0 }"> 
+                        <apex:repeat value="{!AccntTeamMemebers}" var="atmUser">
+                             <apex:outputPanel rendered="{!AccountTeamPamPadCount !=null}">
+                                 <div>
+                                    <span>Name:&nbsp;</span>{!atmUser.Name}<br />
+                                    <span>Email Address:&nbsp;</span><a href="mailto:{!solutionProviderPAMEmail}"><b>{!atmUser.Email}</b></a><br />
+                                    <span>Phone Number:&nbsp;</span>{!atmUser.Phone}<br />
+                                    <br />
+                                </div>
+                            </apex:outputpanel>
+                        </apex:repeat>
+                    </apex:outputpanel>
+                </table>
+          </div>
+        </div>
+</apex:page>

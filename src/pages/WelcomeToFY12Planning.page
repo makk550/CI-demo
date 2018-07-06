@@ -1,0 +1,20 @@
+<apex:page >
+    <apex:form > 
+  <table width="735" border="0" cellpadding="2" cellspacing="2" >
+      
+      <tr><td align="center" width="735"><font size="6">{!$Label.Welcome_to_FY12_Planning}</font></td></tr>
+      <tr><td><br/></td></tr><tr><td><br/></td></tr>
+      <tr><td width="735"><font size="4" >{!$Label.What_is_Account_Planning_Header}</font></td></tr>
+      <tr><td width="735"><font size="2">{!$Label.What_is_Account_Planning_Para1}</font></td></tr>
+      <tr><td width="735"><font size="2">{!$Label.What_is_Account_Planning_Para2}</font></td></tr>
+      <tr><td><br/></td></tr><tr><td><br/></td></tr>
+      <tr><td width="735"><font size="4">{!$Label.Timeline_for_Account_Planning_Header}</font></td></tr>
+      <tr><td width="735"><font size="2">{!$Label.Timeline_for_Account_Planning_Para1 }</font></td></tr>
+      <tr><td><br/></td></tr><tr><td><br/></td></tr>
+      <tr><td width="735"><font size="4">{!$Label.What_is_the_Planning_Tool_Header}</font></td></tr> 
+      <tr><td width="735"><font size="2">{!$Label.What_is_the_Planning_Tool_Para1 }</font></td></tr>
+      <tr><td width="735"><font size="2">{!$Label.What_is_the_Planning_Tool_Para2_1 } {!$Label.Username} {!$Label.What_is_the_Planning_Tool_Para2_2}</font></td></tr>
+      <tr><td align="center" width="735"><font size="4"><apex:commandLink action="{!URLFOR($Label.test_salesforce_com)}" target="_blank" value="{!$Label.test_salesforce_com}"/></font></td></tr>  
+  </table>
+  </apex:form>
+</apex:page>

@@ -1,0 +1,35 @@
+<apex:page showHeader="false" title="Error Displaying results">
+<head>
+<title>Refresh test</title>
+<script type="text/javascript">
+  window.onload=refresh;
+  function refresh(){
+     newUrl = "http://www.ca.com/us/partners/partner-locator.aspx";
+     setTimeout('top.location.href = newUrl',2000);
+  }
+</script>
+</head>
+  <apex:composition template="StdExceptionTemplate">
+    <apex:define name="icon">
+      <apex:image url="{!URLFOR($Resource.SiteSamples, 'img/warning.gif')}"/>
+    </apex:define>
+    <apex:define name="error">
+      <apex:outputText styleClass="title" value="Partner Locator - Error displaying results"/>
+      <br/>
+      <br/>
+        <BR/><BR/><BR/>  
+        <h1> There was an error in your search!</h1> 
+        <BR/>
+        <BR/>
+        <h2>Refine your search criteria to return lesser results.</h2>
+        <BR/>
+        <BR/>
+        <BR/>
+        <BR/>
+        <h2>Please wait while you are redirected to the search page......</h2>
+        <BR/>
+        <BR/>
+        <h2><a href="http://www.ca.com/us/partners/partner-locator.aspx">Click here if you are not automatically redirected</a></h2>
+   </apex:define> 
+  </apex:composition>
+</apex:page>

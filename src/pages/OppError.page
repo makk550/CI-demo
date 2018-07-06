@@ -1,0 +1,16 @@
+<apex:page standardController="opportunity" >
+    
+ 
+    <span style="color:red; font-weight: bold">
+       <apex:outputtext value="{!opportunity.MinMaxErrorFormula__c}" rendered="{!opportunity.Source__c == 'Deal Registration' }" escape="false"/>
+       <apex:outputtext value="{!opportunity.isClosedDateFireDealRegFormula__c}" escape="false"/>
+     <apex:outputtext value="{!opportunity.Warrant_Resubmission_Formula__c}" rendered="{!opportunity.Source__c == 'Deal Registration' }" escape="false"/> 
+   </span>
+   
+    <apex:pageMessage severity="info" 
+   strength="1" 
+   summary="{!$Label.ldm_OppMsg}" 
+   rendered="{!opportunity.Source__c == 'Lead' && opportunity.Total_Product_Line_Count__c <= 0 }"
+    />
+    <!-- rendered="{!opportunity.Source__c == 'Lead' && opportunity.Total_Product_Line_Count__c== }" -->
+</apex:page>

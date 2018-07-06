@@ -1,0 +1,96 @@
+<apex:page standardController="Case" tabStyle="Case" extensions="RelateKBArticleToCase" id="pg">
+    <apex:includeScript value="/support/console/28.0/integration.js"/>
+    <script type="text/javascript">
+        function RefreshPrimaryTab() {
+        	//First find the ID of the current primary tab to close it
+        	sforce.console.getFocusedPrimaryTabId(refreshPrimaryTab);
+            closeCurrentTab();
+        }
+    
+		function closeCurrentTab() {
+            sforce.console.getEnclosingTabId(closeCurrtab);
+        }    
+        var refreshPrimaryTab = function refreshPrimaryTab(result) {
+        	//Now that we have the primary tab ID, we can close it
+        	var tabId = result.id;
+            sforce.console.refreshPrimaryTabById(tabId, true, refreshSuccess);
+        };
+    
+        var refreshSuccess = function refreshSuccess(result) {
+            if (result.success == true) {
+                alert('Subtab refreshed successfully');
+            } else {
+                alert('Subtab did not refresh');
+            }
+        };
+       	
+        var closeCurrtab = function closeCurrtab(result) {
+        	var tabId = result.id;
+        	sforce.console.closeTab(tabId);
+        };
+    
+    	function SaveKbArticle() {
+            var kbArtileno = document.getElementById('{!$Component.pg:fm:pb:pbs:pbsi:kbano}').value;
+            var caseId = '{!case.Id}';
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.RelateKBArticleToCase.saveKBArticle}',
+                kbArtileno,caseId,
+                function(result, event) {
+                    if (event.status) {
+                        console.log(result);
+                        if (result == 'Validation') {
+                            showMessage('ERROR', 'KB Article Number cannot be empty. Please provide KB Article Number.');
+                        } else if (result == 'Linked') {
+                            showMessage('INFO', 'KB Article is already linked.');
+                        } else if (result == 'NotValidKB') {
+                            showMessage('INFO', 'The entered value is not a valid KB article. Please recheck the KB Article number.');
+                        } else if (result == '2018') {
+                            showMessage('ERROR', 'Unable to get the KB token and could not establish session. Please contact System Administrator.');
+                        } else if (result == '2015') {
+                            showMessage('ERROR', 'Retrieving KB article information failed and unable to create a Kb_Case list. Please contact System Administrator.');
+                        } else if (result == 'ConnectionError') {
+                            showMessage('ERROR', 'There is a connectivity issue. Please contact System Administrator.');
+                        } else if (result == 'TimedOut') {
+                            showMessage('ERROR', 'Read Timed Out exception. Please try after some time.');
+                        } else if (result == 'Error') {
+                            showMessage('ERROR', 'Exception while Linking KB Article. Please contact System Administrator.');
+                        } else {
+                            showMessage('INFO', 'KB Article is successfully linked to the case.');
+                        	RefreshPrimaryTab();    
+                        }
+                    } else {
+                        showMessage('ERROR', 'Exception while Relating KB Article. Please contact System Administrator.');
+                    }
+                },
+                {escape: true}
+            );
+        }
+	</script>
+    
+	<apex:form id="fm">
+    	<apex:pageBlock title="Relate KBArticle to Case" id="pb">
+            <apex:pageMessages id="errorMsg"/>
+            <apex:actionFunction name="showMessage" action="{!showMessage}" rerender="errorMsg">
+  				<apex:param name="errorLevel" assignTo="{!errorLevel}" value="" />
+  				<apex:param name="messageName" assignTo="{!messageName}" value="" />
+			</apex:actionFunction>
+        	<apex:pageBlockSection columns="1" id="pbs">              
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Relating to Case Number"/>
+					<apex:outputField value="{!Case.CaseNumber}"/>
+				</apex:pageBlockSectionItem>               
+                <apex:pageBlockSectionItem id="pbsi">
+					<apex:outputLabel value="KB Article Number"/>
+                    <apex:outputPanel styleClass="requiredInput" layout="block" id="outpan">
+   						<apex:outputPanel styleClass="requiredBlock" layout="block"/>
+  						<apex:inputText value="{!kbArticleNumb}" label="KB Article Number" id="kbano"/>
+ 					</apex:outputPanel>
+				</apex:pageBlockSectionItem> 
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+				<apex:commandButton onclick="SaveKbArticle()" value="Save" reRender="errorMsg"/>
+                <apex:commandButton onclick="closeCurrentTab()" value="Cancel" immediate="true"/>
+			</apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

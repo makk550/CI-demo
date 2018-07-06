@@ -1,0 +1,63 @@
+<apex:page controller="CILL_popupController" showHeader="false" >
+ <apex:pageBlock >
+     <apex:pageBlockSection columns="1" title="License Information for {!prodname}" >
+          <apex:outputPanel >
+                            <!---Start -->
+                                 <table cellpadding="4" cellspacing="0" style="width:100%;  border: solid silver 1px" border="1" >
+                                         <!--<tr>
+                                             <th colspan="13" style="background-color:#c7c8eb" >License Information for {!acpname}</th>   
+                                         </tr> -->
+                                         <tr >
+                                             <th style="background-color:#c7c8eb">Licensed Site</th>   
+                                              <th style="background-color:#c7c8eb">GBU</th>   
+                                              <th style="background-color:#c7c8eb">Product Group</th >
+                                              <th style="background-color:#c7c8eb">Product</th>
+                                              <th style="background-color:#c7c8eb">Material Code</th>   
+                                              <th style="background-color:#c7c8eb">Contract #</th>
+                                              <th style="background-color:#c7c8eb">Contract Start</th>   
+                                              <th style="background-color:#c7c8eb">Contract End</th>   
+                                              <th style="background-color:#c7c8eb">License Quantity</th> 
+                                              <th style="background-color:#c7c8eb">License Price</th> 
+                                              <th style="background-color:#c7c8eb">License Type</th>
+                                              <th style="background-color:#c7c8eb">Platform</th>
+                                              <th style="background-color:#c7c8eb">Support Version</th>
+                                              
+                                         </tr>
+                                         <apex:repeat value="{!ACL}" var="a">
+                                                <tr>
+                                                    <td>{!a.acli.SYSTEM_ORIGIN__C}&nbsp;{!a.acli.Ship_To_ID__c}</td>
+                                                    <td>{!csuname}</td>
+                                                    <td>{!prodgroup}</td>
+                                                    <td>{!prodname}</td>
+                                                    <td>{!a.acli.Product_Material__r.Name}</td>
+                                              
+                                                    <td>{!a.acli.Contract_Product__r.Active_Contract__r.name}</td>
+                                                    <td><apex:outputField value="{!a.acli.Contract_Start_Date__c}" /></td>
+                                                    <td><apex:outputField value="{!a.acli.Contract_End_Date__c}" /></td>
+                                                    <td><apex:outputField value="{!a.acli.CILL_Licensed_Quantity_2__c}" /></td>
+                                                    <td><apex:outputField value="{!a.acli.Calculated_AOCV_USD__c}" /></td>
+                                                    <td><apex:outputField value="{!a.acli.License_Type_Text__c}" /></td>
+                                                    <td><apex:outputField value="{!a.acli.Platform__c}" /></td>
+                                                    <td>{!a.suppv}</td>
+                                                 </tr>
+                                          </apex:repeat>
+                                       </table>
+                            <!-- End -->    
+                            </apex:outputPanel>
+                            <apex:form rendered="{!setcon.ResultSize > 0}" >
+                                <apex:outputPanel >
+                                    <table width="100%">
+                                        <tr>
+                                           <td width="10%"> {! ((setcon.PageNumber -1) * setcon.PageSize) + 1 } -  {!IF(setcon.ResultSize <  setcon.PageNumber * setcon.PageSize,setcon.ResultSize,setcon.PageNumber * setcon.PageSize ) } of {!setcon.ResultSize}</td>    
+                                           <td width="38%" style="text-align:right"> <apex:outputLabel rendered="{! !(setcon.hasPrevious)}" >First</apex:outputLabel> <apex:commandLink value="First"  action="{!setcon.First}" rendered="{!setcon.hasPrevious}" /></td>
+                                           <td width="2%" style="text-align:right"> <apex:outputLabel rendered="{! !(setcon.hasPrevious)}" >Previous</apex:outputLabel> <apex:commandLink value="Previous"  action="{!setcon.previous}" rendered="{!setcon.hasPrevious}" /></td>
+                                           <td width="2%"> <apex:outputLabel rendered="{! !(setcon.hasNext)}" >Next</apex:outputLabel> <apex:commandLink value="Next"  action="{!setcon.next}" rendered="{!setcon.hasNext}" /></td>
+                                           <td width="48%"> <apex:outputLabel rendered="{! !(setcon.hasNext)}" >Last</apex:outputLabel> <apex:commandLink value="Last"  action="{!setcon.Last}" rendered="{!setcon.hasNext}" /></td>
+
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                            </apex:form>
+     </apex:pageBlockSection>
+ </apex:pageBlock>
+</apex:page>

@@ -1,0 +1,78 @@
+<apex:page standardController="Access_Request__c"  extensions="AccessReqReassignController">
+
+ <style>
+
+.myCustomMessage .message { 
+    text-align:center;
+    
+}
+
+
+.myCustomMessage2{
+    margin-left:18%;
+
+}
+
+.myCustomMessage3{
+    
+    position: relative;
+    padding: 8px 6px; 
+    text-align:center;
+    margin-top:20px;
+    margin-left: 20%;
+    margin-right: auto;
+    margin-bottom: 15px;
+    width:420px;
+    border: 1px solid #39f;
+    background-color: #ffc;
+}
+
+
+</style> 
+
+ 
+    <apex:sectionHeader title="Reassign Approver" subtitle="Access Request:{!Access_Request__c.Name}"/>
+    
+    <apex:form id="theform">
+    <apex:pageBlock mode="edit" id="theBlock" title="Reassign Approver Detail">
+    
+         
+        
+        <div class="myCustomMessage3">
+        
+        <table id="displaymessage" >
+        <tr><td>Please select the appropriate approver</td></tr>
+               </table> 
+
+        </div>
+        <apex:pagemessages id="ErrorMsgBlock"></apex:pagemessages>
+        
+        <div class="myCustomMessage2">
+        
+        <apex:pageblockSection columns="2">
+        
+        <apex:outputPanel >
+        <table >
+           
+           <tr>
+                <td><b><apex:outputLabel value="Reassign Approver" /></b></td>
+                <td><apex:inputField value="{!Access_Request__c.Approver__c}"/></td>
+                
+           </tr>
+           
+        </table></apex:outputPanel>
+        
+        
+        
+        </apex:pageblockSection>
+        </div>
+        
+        <apex:pageBlockButtons style="align:left;" location="bottom">
+            <apex:commandButton value="Reassign Approver" action="{!saveapprover}" rerender="ErrorMsgBlock" />
+            <apex:commandButton action="{!Cancel}" value="Cancel"/>
+        </apex:pageBlockButtons>
+        
+         </apex:pageBlock>
+     </apex:form>
+
+</apex:page>

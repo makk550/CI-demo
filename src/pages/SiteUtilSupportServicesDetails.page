@@ -1,0 +1,260 @@
+<apex:page standardcontroller="Case" extensions="SiteUtilFramesController" showHeader="true" sidebar="true">
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" />
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js" />
+    
+    <apex:form id="autoCompleteForm">
+        <apex:actionStatus id="loadingStatus">
+            <!-- loading message -->
+            <apex:facet name="start">
+                <apex:outputPanel >
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                        <div style="display: inline-block; padding: 2px; width: 125px;">
+                            <!--<img src="{!URLFOR($Asset.SLDS, '/assets/images/spinners/slds_spinner_brand.gif')}" style="float: left; margin: 8px;" /> -->
+                            <apex:image value="/img/loading32.gif" style="float: left; margin: 8px;"/>
+                            <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+            </apex:facet>
+            <apex:facet name="stop"> </apex:facet>
+        </apex:actionStatus>
+        
+        <apex:actionFunction name="execDetails" action="{!executeDetails}" reRender="out1" status="loadingStatus"/>
+        <apex:actionFunction name="execGetPrevious" action="{!getPrevious}" reRender="out1" status="loadingStatus"/>
+        <apex:actionFunction name="execGetMore" action="{!getMore}" reRender="out1" status="loadingStatus"/>
+        
+        <apex:pageMessages id="errors" />
+        <apex:outputPanel id="entInput">
+        <apex:pageBlock id="EntitlementSearch" title="EntitlementSearch">
+            <div style="width:750px;margin:10px auto;padding-bottom:51px;">
+                <table cellpadding="2" cellspacing="2" width="100%">
+                    <tr><td style="width:105px"><b>Site Association</b></td>
+                        <td style="width:400px"><apex:inputText size="30" value="{!searchTerm}" id="siteTextBoxId" styleClass="placeHolder"/>
+                            <apex:commandButton value="Entitlement Lookup" onclick="execDetails();return false;" styleClass="searchBtn" reRender="out1" ></apex:commandButton>
+                        </td> 
+                        <apex:inputHidden value="{!selectedSiteId}" id="searchSiteId" />
+                        <apex:inputHidden value="{!siteName}" id="searchSiteIdName" />
+                        <apex:inputHidden value="{!topsSiteID}" id="searchSitetopsSiteId"/>
+                        <td colspan="2" style="width:100px;">
+                            <div id="formsubmitbutton"><apex:commandButton value="Reset" action="{!resetValues}" style="margin: 0 !important;"/></div>                       
+                        </td>
+                        <td colspan="2" style="width:120px;">
+                            <div id="formsubmitbutton"><apex:commandButton value="Create Case without Entitlement" action="{!gottodirectCasePage}" style="margin: 0 !important;"/></div>                       
+                        </td>
+                    </tr>
+                </table> 
+            </div>            
+        </apex:pageBlock>
+        <head><style type="text/css">
+            .displayNone,.ui-helper-hidden-accessible { 
+            display:none;
+            }
+            
+            .displayBlock {
+            display:block; 
+            }
+            .ui-autocomplete-loading { 
+            background: white url(/img/loading32.gif) right center no-repeat;
+            background-size:15px 15px; 
+            }
+            .placeHolder {
+            font-style: italic;                    
+            }
+            .ui-autocomplete,.ui-autocomplete>li{
+            list-style:none;
+            border-color: #929292 #D5D5D5 #D5D5D5 #929292 !important;
+            border-style: solid;border-width: 1px !important;
+            background: white;
+            padding:0;
+            margin:0;            
+            }
+            .ui-autocomplete>li{
+            padding-top:10px;
+            }
+            .ui-autocomplete>li a:hover{
+            font-weight:bold;
+            color:Black;
+            }
+            </style>
+        </head>
+        <script type="text/javascript">
+        var siteValue='{!searchTerm}';
+        var PLACEHOLDER = 'Type SiteName/Tops SiteId Here'; 
+        var siteObjects;
+        var queryTerm;        
+        $('[id$=siteTextBoxId]').autocomplete({
+            minLength: 2,
+            source: function(request, response) {
+                queryTerm = request.term;
+                SiteUtilFramesController.searchSiteList(request.term, function(result, event){
+                    if(event.type == 'exception') {
+                        alert(event.message);
+                    } else {
+                        siteObjects = result;
+                        if(siteObjects=='undefined' || siteObjects=='' || siteObjects==null){
+                            siteObjects= [
+                                {
+                                    SC_TOPS_ID__c:'XXXX', 
+                                    Name:'XXXX', 
+                                    City__c:'XXXX',
+                                    Country_Picklist__c:'XXXX'
+                                }
+                            ];
+                        }
+                        response(siteObjects);                       
+                    }
+                });
+            },
+               focus: function( event, ui ) {
+                 var displayName = ui.item.Name;
+                 displayName = displayName.replace( /{!HTMLENCODE('&')}/g, '&' );
+                $('[id$=siteTextBoxId]').val(displayName);
+                return false;
+            }, 
+            select: function( event, ui ) {   
+                var displayName = ui.item.Name;
+                displayName = displayName.replace( /{!HTMLENCODE('&')}/g, '&' );
+                $('[id$=siteTextBoxId]').val(displayName);          
+                $('[id$=searchSiteIdName]').val( displayName );                
+                $('[id$=searchSiteId]').val( ui.item.Id );
+                $('[id$=searchSitetopsSiteId]').val( ui.item.SC_TOPS_ID__c );                
+                return false;
+            },
+        })
+        .data( "ui-autocomplete" )._renderItem = function( ul, item ) { 
+            var entry='';
+            if(item.Name=='XXXX'){
+                item.Name='';
+                entry = "<a>" + 'No Records Found';
+            }else{
+                entry = "<a>" + item.SC_TOPS_ID__c+','+item.Name +','+item.City__c+','+item.Country_Picklist__c;
+            }
+            entry = entry + "</a>";
+            entry = entry.replace(queryTerm, "<b>" + queryTerm + "</b>");
+            return $( "<li></li>" )
+            .data( "item.autocomplete", item )
+            .append(entry)
+            .appendTo( ul );
+        };
+        
+        // Add or remove placeholder values
+        if(siteValue==null || siteValue=='' || siteValue=='null'){
+            $('[id$=siteTextBoxId]').val(PLACEHOLDER);
+        }
+        $('[id$=siteTextBoxId]').on("focus",  function(event){
+            $tgt = $(event.target);         
+            if($tgt.val() === PLACEHOLDER ){
+                $tgt.val('');
+                $tgt.removeClass('placeHolder');
+            }
+            $('[id$=siteTextBoxId]').val(siteValue);
+        });
+        $('[id$=siteTextBoxId]').on( "blur",  function(event){
+            $tgt = $(event.target);
+            if($tgt.val() === '' ){
+                $tgt.val(PLACEHOLDER);
+                $tgt.addClass('placeHolder');
+            }
+        });
+        </script>
+        
+       </apex:outputPanel>
+        
+        
+        <apex:outputPanel id="out1">
+            <script type="text/javascript">
+            $(document).ready(function(){
+                $('#searchListNames').keyup(function(){
+                    searchTable($(this).val());
+                });
+            });
+            /*@Usman
+                Param 1:searchText
+                Description: this method takes an argument and
+                search records in the assigned table Id.
+            */
+            function searchTable(searchText)
+            {
+                /*get Table using its Id */
+                var table = $('table[id$=tblData]');
+                table.find('tr').each(function(index, row){
+                    var allCells = $(row).find('td');
+                    if(allCells.length > 0)
+                    {
+                        var found = false;
+                        allCells.each(function(index, td)
+                        {
+                            var regExp = new RegExp(searchText, 'gim');
+                            if(regExp.test($(td).text()))
+                            {
+                                //added to skip the contents of script tag
+                                if($(td).has('script').length > 0){
+                                    var regExp1 = new RegExp(searchText, 'gim');
+                                    var tt = $(td).find('a');
+                                    if(regExp1.test(tt.html())){
+                                        found = true;
+                                        return false;
+                                    }                                
+                                }
+                                else{
+                                    found = true;
+                                    return false;
+                                }
+                            }
+                        });
+                        if(found == true)$(row).show();else $(row).hide();
+                    }
+                });
+            }   
+        </script>
+            
+        <div align="center">
+            <apex:outputPanel rendered="{!isGetPreviousLinkEnable}">
+                <apex:commandButton value="Get Previous" onclick="execGetPrevious(); return false;" styleClass="searchBtn"> </apex:commandButton>
+            </apex:outputPanel>&nbsp;&nbsp;&nbsp;&nbsp;
+            <apex:outputPanel rendered="{!israngeValueofRecordsPresent}">
+                <font color="blue"><b>{!rangeValueforRecords}</b></font>
+            </apex:outputPanel>&nbsp;&nbsp;&nbsp;&nbsp;      
+            <apex:outputPanel rendered="{!isGetMoreLinkEnable}">
+                <apex:commandButton value="Get Next" onclick="execGetMore(); return false;" styleClass="searchBtn" > </apex:commandButton>
+            </apex:outputPanel>
+        </div>
+        
+        <apex:pageBlock title="Entitlement Results for Site Id:{!topsSiteID}" id="pageBlockId" rendered="{!isDetailsPresent}"> 
+            <apex:outputPanel id="mainPanel" rendered="{!isRecordsPerPage}">
+                <div style="width:700px;margin:10px auto;">
+                     <table cellpadding="2" cellspacing="2" width="100%">
+                         <tr><td style="width:105px"><b>Filter By Name:</b></td>
+                             <td style="width:400px"><input type="text" id="searchListNames" /></td> 
+                         </tr>
+                     </table>
+                 </div>
+                <apex:pageBlockTable value="{!entitlementDetailsWrapperList}" var="entitlementDetailsWrapper"  id="tblData"> 
+                    <apex:column headerValue="Product Code" value="{!entitlementDetailsWrapper.topsPRNum}"/>
+                        <apex:column headerValue="CA Product Name">
+                               <apex:commandLink action="{!executeOfferingServiceDetails}">{!entitlementDetailsWrapper.cAProductName}
+                                <apex:param name="productCode" value="{!entitlementDetailsWrapper.cAProductName}" assignTo="{!entitlementProductCodeSelected}" /> 
+                                <apex:param name="TopsProductCode" value="{!entitlementDetailsWrapper.topsPRNum}" assignTo="{!entitlementTopsProductCodeSelected}" />   
+                            </apex:commandLink>
+                        </apex:column>
+                    <apex:column headerValue="Product Name" value="{!entitlementDetailsWrapper.topsProdDesc}" />
+                </apex:pageBlockTable>
+             </apex:outputPanel>
+        </apex:pageBlock>
+          <div align="center">
+            <apex:outputPanel rendered="{!isGetPreviousLinkEnable}">
+                <apex:commandButton value="Get Previous" onclick="execGetPrevious(); return false;" styleClass="searchBtn" > </apex:commandButton>
+            </apex:outputPanel>&nbsp;&nbsp;&nbsp;&nbsp;
+            <apex:outputPanel rendered="{!israngeValueofRecordsPresent}">
+                <font color="blue"><b>{!rangeValueforRecords}</b></font>
+            </apex:outputPanel>&nbsp;&nbsp;&nbsp;&nbsp;      
+            <apex:outputPanel rendered="{!isGetMoreLinkEnable}">
+                <apex:commandButton value="Get Next" onclick="execGetMore(); return false;" styleClass="searchBtn" > </apex:commandButton>
+            </apex:outputPanel>
+        </div>
+        </apex:outputPanel>
+    </apex:form>  
+</apex:page>

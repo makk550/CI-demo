@@ -1,0 +1,82 @@
+<!-- Quote Automation Screen
+Created By: merha02 -->
+
+
+<apex:page controller="OnGoingSync_QuoteInterface"  tabStyle="Account">
+   <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js">
+        </script>
+        <apex:slds />
+    </head>
+     <div id="overlay_div" class="waiting" style="position:fixed; top:0; left:0; height:100%; width:100%; z-index:2000; background-color:#999; opacity:.6; display:none;" />
+        <div style="position:fixed; top:35%; left:45%; width:150px; height:115px; background-color:#FFF; border:#FF0000 thin solid; z-index:2001; display:none;" align="center" class="ui-corner-all waiting">
+            <div align="center" style="margin-top:17px;">
+                <img src="{!$Resource.loadingGif}" />
+            </div>
+                <div align="center" id="waiting_msg">Working...</div>
+         </div>
+                <apex:actionStatus id="progress" onstart="$('.waiting').show();" onstop="$('.waiting').hide();" />
+  
+      <apex:pageBlock rendered="{!!isMigrationUser}">
+        <apex:pageBlockSection columns="1">
+            <apex:outputText ><b>You have insufficient privilege to access this screen.</b></apex:outputText> 
+        </apex:pageBlockSection>
+     </apex:pageBlock>
+    
+    <apex:form >
+        <apex:pageBlock title="Tensor Quote Interface Automation" id="out" rendered="{!isMigrationUser}">
+             <apex:pageMessages ></apex:pageMessages>
+            <apex:pageBlockSection columns="2">
+                
+                <apex:pageBlockSectionItem >
+                 <apex:outputLabel value="Select" for="list"></apex:outputLabel>
+                     <apex:outputpanel layout="block" styleClass="requiredInput">
+                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                <apex:selectList id="list" value="{!inputType}" multiselect="false" size="1">
+                    <apex:selectOptions value="{!Options}"/>
+               		<apex:actionSupport event="onchange" action="{!onInputNumberChange}"/>
+                </apex:selectList>
+                         </apex:outputpanel>
+                    </apex:pageBlockSectionItem>
+               <apex:pageBlockSectionItem rendered="{!ShowInputvalueFlag}">
+                  
+                <apex:outputLabel value="Enter the number" for="theTextInput"/>
+                   <apex:outputpanel layout="block" styleClass="requiredInput">
+                    <apex:outputpanel layout="block" styleClass="requiredBlock"></apex:outputpanel>
+                    <apex:inputText value="{!inputValue}" id="theTextInput"/>
+                       </apex:outputpanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Migrate" action="{!convert}" rerender="out" status="progress"/>
+            </apex:pageBlockButtons>
+            
+        </apex:pageBlock>
+       
+        	<apex:outputLink value="/!{RecordId}">{!RecordName}</apex:outputLink> 
+            
+        
+        <apex:pageBlock id="list" rendered="{!isMigrationUser}">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Show All Quotes" action="{!GetSerlingQuoteList}" rerender="list" status="progress"/>
+            </apex:pageBlockButtons>
+             <apex:pageBlockSection columns="1" rendered="{!ShowList}">
+                <apex:outputText value="Total:{!sterlingQuotesTotal}" />
+                <apex:outputPanel layout="block" style="overflow: auto; height: 500px;">
+                    <apex:pageBlockTable value="{!SterlingQuotes}" var="quote" >
+                        <apex:column >
+                            <apex:outputLink value="/{!quote.QuoteId}" id="QuoteLink" target="_blank">{!quote.QuoteNumber} 
+                            </apex:outputLink> 
+                            - {!quote.QuoteName} - ({!quote.TransactionType}) 
+                        </apex:column>
+                        <apex:column >
+                         <apex:commandButton value="Migrate" action="{!ConvertLine}" reRender="list">
+                                <apex:param name="eventId" value="{!quote.QuoteNumber}" assignTo="{!SterlingQuoteNumber}"/>
+                       </apex:commandButton>     
+                        </apex:column> 
+                    </apex:pageBlockTable>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

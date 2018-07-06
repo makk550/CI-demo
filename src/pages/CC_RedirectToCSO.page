@@ -1,0 +1,8 @@
+<apex:page controller="CC_RedirectToCSOController" showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0" >
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"></link>
+	<h3 class="text-center">
+		<!-- Please <a href="{!csoBaseUrl}" target="_blank" rel="noopener noreferrer">Go to CSO</a> to create and view your cases. -->
+		We're sorry, this function is temporarily unavailable. Please try again later. If you need to open a case immediately please contact <a href="http://www.ca.com/us/support/ca-support-online/product-content/admin-content/contact-us---customer-care.aspx" target="_blank" rel="noopener noreferrer"> 
+		Customer Support</a>
+	</h3>
+</apex:page>

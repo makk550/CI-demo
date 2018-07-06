@@ -1,0 +1,19 @@
+<apex:page controller="kbHitsController" id="thePage" >
+ <apex:pageBlock id="thePageBlock" title="KB DETAILS VIEW COUNT"> 
+        <apex:pageBlockTable value="{!PageMetrics }" var="record" id="thePageBlockTable"> 
+            <apex:column >
+                <apex:outputField value="{!record.DailyPageViewCount}" id="DailyPageViewCountDOM" /> 
+                <apex:facet name="header">Daily Page View Count</apex:facet>
+            </apex:column>
+            <apex:column >
+                <apex:outputField value="{!record.MetricsDate }" id="MetricsDateDOM" /> 
+                <apex:facet name="header">Metrics Date</apex:facet>
+            </apex:column>
+            <apex:column >
+                <apex:outputField value="{!record.ApexPageId}" id="ApexPageIdDOM" />  
+                    <apex:facet name="header">ApexPageId</apex:facet>
+            </apex:column>
+           
+        </apex:pageBlockTable> 
+        </apex:pageBlock>
+</apex:page>

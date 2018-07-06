@@ -1,0 +1,126 @@
+<apex:page controller="UsageData_Ctrl" showHeader="true" sidebar="true" action="{!externalData}">
+    
+    <style>
+        #arrow-text {
+        
+        visibility: visible;
+        opacity: 1;
+        -webkit-transition: visibility opacity 0.2s;
+        margin-left:10px;
+        font-size: 15px;
+        font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+        font-weight: bold;
+        
+        }
+        
+       
+        
+    </style>
+    
+    <apex:form >
+        
+        <div id="backarrowdiv" style="width:100px;min-width:100px;">
+            <apex:commandLink id="backarrow" action="{!redirectBack}" style="text-decoration:none;">
+                <apex:image id="back" url="{!$Resource.ProdInstBackArrow}" height="25" width="25" />
+                <span id="arrow-text">
+                Back    
+                </span>
+                <p>
+                    
+                </p>
+            </apex:commandLink>
+            
+        </div>
+        <script>
+            if (history.length === 1) {
+              document.getElementById('backarrowdiv').style.display = 'none';
+            }
+        </script>
+        
+        <apex:pageMessages ></apex:pageMessages>
+        
+        <apex:outputPanel rendered="{!!usageDataAvail}">
+            <apex:pageMessage summary="There is No Usage Data for the Product Instance." severity="info" strength="3"/>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!usageDataAvail}" style="margin-left:40%; padding:0px 0px 50px 0px;">
+            <h1 style="font-size: 130%;">{!accName} </h1>
+        </apex:outputPanel>
+        
+        <apex:pageBlock title="Product Instance Details" rendered="{!AND(configDataAvail,usageDataAvail)}">    
+            
+            
+            <apex:pageBlockSection >        
+                <apex:outputText label="Edition"  value="{!almConfigView.edition__c}"/>
+                <apex:outputText value="{!almConfigView.is_active__c}" label="Active"/>
+                <apex:outputText label="Subscription" value="{!duValue}"/>
+                <apex:outputText value="{0,date,yyyy'/'MM'/'dd}" label="Start Date">
+                    <apex:param value="{!almConfigView.entitlement_start_date__c}"/>
+                </apex:outputText>
+                <apex:outputText value="{!almConfigView.product_instance_id__c}" label="Product Instance ID" />
+                <apex:outputText value="{0,date,yyyy'/'MM'/'dd}" label="End Date">
+                    <apex:param value="{!almConfigView.entitlement_end_date__c}"/>
+                </apex:outputText>
+                <apex:outputField label="Paid Seats" value="{!almConfigView.paidseats__c}"/>
+                <apex:outputText value="{!almConfigView.license_type__c}" label="License Type"/>
+                <apex:outputField value="{!almConfigView.unpaidseats__c}" label="Unpaid Seats" />
+                <apex:outputText value="{!almConfigView.software_type__c}" label="Hosted"/>
+                <apex:outputText value="{!rallyTotalSeats}" label="Agile Central Total Seats"></apex:outputText>
+                <apex:outputField value="{!almConfigView.object_id__c}" label="Object Id" />
+            </apex:pageBlockSection>     
+         </apex:pageBlock>       
+                
+         <apex:pageBlock title="Agile Central Configuration" rendered="{!AND(configDataAvail,usageDataAvail)}">
+            
+            <apex:pageBlockSection >
+                
+                <apex:repeat value="{!mapModulesF}" var="f">
+                       <apex:repeat value="{!mapModulesF[f]}" var="fv" rows="15">
+                           <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="{!f}" for="img"/>
+                                <apex:image id="img" value="/img/checkbox_checked.gif" alt="Checked" width="21" height="16" styleclass="checkImg" title="Checked" rendered="{!fv.checkV}"/>
+                           </apex:pageBlockSectionItem>  
+                       </apex:repeat>
+                </apex:repeat>
+                
+                <apex:outputField value="{!almConfigView.maximumprojects__c}" label="Maximum Projects" />                
+                
+                <apex:outputField value="{!almConfigView.maximumsharedtabs__c}" label="Maximum Shared Tabs" />
+                
+                <apex:outputField value="{!almConfigView.projecthierarchyenabled__c}" label="Project Hierarchy" />                
+                <apex:outputField value="{!almConfigView.maximumprivatetabs__c}" label="Private Tab" />
+                
+            </apex:pageBlockSection>
+        </apex:pageBlock> 
+        
+        <apex:pageBlock title="Agile Central Usage Metrics" rendered="{!usageDataAvail}">
+        
+            <apex:pageBlockSection >
+                <apex:outputText value="{!usageRecord.enabledUsers}" label="Enabled Users"/>
+                <apex:outputText value="{!usageRecord.percentUserProvisioned}" label="Percent User Provisioned" />
+                <apex:outputText value="{!usageRecord.disabledUsers}" label="Disabled Users"/>
+                <apex:outputText value="{!usageRecord.thirtyDaySeatUtilization}" label="30 Day Seat Utilization"/> 
+                <apex:outputText value="{0,date,yyyy'/'MM'/'dd}" label="Sample Date">
+                    <apex:param value="{!usageRecord.sampleDate}"/>
+                </apex:outputText>
+                <apex:outputText value="{!usageRecord.thirtyDayUserUtilization}" label="30 Day User Utilization"/>
+                <apex:outputText value="{!usageRecord.dailyActiveUsers}"  label="Daily Active Users"/>
+                <apex:outputText value="{!usageRecord.percentSeatsAtRisk}" label="Percent Seats At Risk" />
+                <apex:outputText value="{!usageRecord.weeklyActiveUsers}"  label="Weekly Active Users"/>
+                <apex:outputText value="{!usageRecord.percentVacancy}" label="Percent Vacancy" />
+                <apex:outputText value="{!usageRecord.monthlyActiveUsers}"  label="Monthly Users"/>                                
+                <apex:outputText value="{!usageRecord.thirtyDayActiveUsers}" label="Thirty Day Active Users"/>                
+                <apex:outputText value="{!usageRecord.healthIndex}" label="Health Index" />
+                <apex:outputText value="{!usageRecord.health}" label="Health"/>
+                
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+                
+        <apex:pageBlock title="Usage Analytics" rendered="{!usageDataAvail}">
+           <iframe src="//rust.f4tech.com/dashboards/salesforce/subscription_usage.html?subOID={!almConfigView.object_id__c}&hosting=On%20Demand" height="550" width="100%" border="0" scrolling="no" />
+        </apex:pageBlock>
+
+
+
+    </apex:form>
+</apex:page>

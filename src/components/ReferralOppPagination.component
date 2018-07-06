@@ -1,0 +1,272 @@
+<apex:component controller="ReferralPortalOppPaginationController">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <style>
+            .loading-icon {
+               background-image: url(/img/loading.gif);
+               width: 16px;
+               height: 16px;
+            }
+            
+            a.alpha-link {
+               font-weight: normal;
+               font-size: 91%;
+               padding: 0 4px;
+               color: #015BA7 !important;
+            }
+            
+            a.alpha-link+a.alpha-link {
+               border-left: 1px solid #CFCECE;
+            }
+            
+            a.alpha-link:hover {
+               background-color: #e0f5fc !important;
+            }
+            
+            a.alpha-select {
+               font-weight: bold;
+               text-decoration: none;
+               background-color: #C6E1FF;
+               color: #000000 !important;
+            }
+            
+            .search-block {
+               text-align: center;
+            }
+            
+            .search-block input {
+               margin: 0px 15px 0px 5px;
+            }
+            
+            .search-block-button {
+               min-width: 110px;
+            }
+            
+            .process-block {
+               text-align: center;
+               margin-top: 10px;
+            }
+            
+            .process-block input {
+               margin: 0px 15px;
+            }
+            
+            .process-block-button {
+               min-width: 110px;
+            }
+            
+            .page-buttons input {
+               min-width: 110px;
+            }
+            .Custompaginationmain{
+                
+            }
+            .Custompaginationmain .searchbar{
+                float:left;
+                padding:5px;
+                padding-left:10px;
+                
+            }
+            .Custompaginationmain .searchimage{
+                float:left;
+                padding:5px;
+                padding-top:6px;
+                padding-left:0px;
+            }
+            .Custompaginationmain .searchimage input.btn{
+                padding:0px;
+            }
+            .Custompaginationmain .Exportlabel{
+                float:right;
+                padding:10px 0px 0px 0px;
+                
+            }
+            .Custompaginationmain .Exportlabel a{
+                color: #00A9E0;
+                text-decoration: none;
+            }
+            .Custompaginationmain .Exportlabel a:hover {
+                text-decoration: underline;
+            }
+            
+            .Custompaginationmain .TopheaderCriteria td{
+                padding:5px;
+            //width:50%;
+            }
+           .footerTable {
+                    width: 100%;
+                    margin: 10px;
+                    padding: 20px;
+            }
+            .footernavigation {
+                width: 40%;
+                float: left;
+            }
+            .Custompaginationmain .DataPerPage {
+                float: right;
+                padding-right: 30px;
+            }
+            
+            .TopheaderCriteria input[type=text],.TopheaderCriteria select, .Custompaginationmain .DataPerPage select{
+                border: none;
+                background: #e8e9eb;
+                width: 213px;
+                height: 24px;
+                font: 15px 'HelveticaNeueW01-65Medi', Helvetica, sans-serif;
+                padding: 0 10px;
+                color: #929394;
+            }
+     
+        </style>
+    </head>
+    <div class="Custompaginationmain">
+        <apex:form >
+        <!-- *************Search Criteria Top Header************** -->
+            <apex:pageBlock mode="maindetail">
+                <table width ="100%" class="TopheaderCriteria">
+                    <tr>
+                        <td>
+                            <div class="searchbar">
+                                 <apex:inputText value="{!SearchName}" html-placeholder="Search" />
+                            </div>
+                            <div class="searchimage">
+                                <apex:commandButton image="{!URLFOR($Resource.ReferralPortalImages,'Btn_ArrowRight_On.gif')}" action="{!SearchLeadName}" rerender="oppTablePanel" status="oppTableUpdateStatus" />
+    
+                            </div>
+                            <div class="Exportlabel">
+                                <apex:commandLink value="{!'Export '+ $Label.Referral_Accepted_Opportunities}" id="theCommandLink" target="_blank" action="{!exportData}"/>
+                                
+                            </div>
+                        </td>
+                        <td>
+                            <div class="searchbar">
+                                  <apex:selectList value="{!topDateFiltervalue}" size="1">
+                                    <apex:selectOptions value="{!topDateFilter}" />
+                                  </apex:selectList>
+                            </div>
+                            <div class="searchbar">
+                                 <apex:selectList value="{!topdaysFiltervalue}" size="1">
+                                    <apex:selectOptions value="{!topdaysFilter}" />
+                                    </apex:selectList>
+                            </div>
+                            <div class="searchimage">
+                                <apex:commandButton image="{!URLFOR($Resource.ReferralPortalImages,'Btn_ArrowRight_On.gif')}" action="{!SearchLastModifiedAndCreated}" rerender="oppTablePanel" status="oppTableUpdateStatus" />
+    
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+          </apex:pageBlock>
+            
+          <!-- ********Search Results*********-->
+           <apex:pageBlock id="oppTablePanel" mode="maindetail">
+                  <apex:actionStatus id="oppTableUpdateStatus">
+                    <!-- loading message -->
+                    <apex:facet name="start">
+                       <apex:outputPanel layout="block" styleClass="message infoM4">
+                          <apex:panelGrid columns="2" styleClass="messageTable" columnClasses="messageCell" style="padding:0px;margin:0px;">
+                             <apex:panelGroup >
+                                <img class="loading-icon" src="/s.gif" />
+                             </apex:panelGroup>
+                             <apex:panelGroup >
+                                <div class="messageText">Please wait...</div>
+                             </apex:panelGroup>
+                          </apex:panelGrid>
+                       </apex:outputPanel>
+                    </apex:facet>
+        
+                    <!-- Referral Opp table -->
+                    <apex:facet name="stop">
+                        <apex:pageBlockTable value="{!CurrentOppList}" var="opp">
+                          <apex:column >
+                             <apex:facet name="header">
+                                <apex:commandLink action="{!SortToggle}" rerender="oppTablePanel" status="oppTableUpdateStatus">
+                                   <apex:param name="SortField" value="Name" assignTo="{!SortField}" />
+                                   <apex:outputText value="Opportunity {!$ObjectType.Opportunity.Fields.Name.Label}{!IF(SortField=='Name',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                             </apex:facet>
+                              <!--<apex:outputLink value="/apex/ReferralPortalLeadPage?ID={!opp.Id}" target="_blank">{!opp.Name}</apex:outputlink>-->
+                              {!opp.Name}
+                          </apex:column>
+                          <apex:column >
+                             <apex:facet name="header">
+                                 
+                                <apex:commandLink action="{!SortToggle}" rerender="oppTablePanel" status="oppTableUpdateStatus">
+                                   <apex:param name="SortField" value="Account.Name" assignTo="{!SortField}" />
+                                  	<apex:outputText value="{!$ObjectType.Lead.Fields.Company.Label}{!IF(SortField=='Account.Name',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                             </apex:facet>
+                             <apex:outputField value="{!opp.Account.Name}" />
+                          </apex:column>
+                            <apex:column >
+                             <apex:facet name="header">
+                                <apex:commandLink action="{!SortToggle}" rerender="oppTablePanel" status="oppTableUpdateStatus">
+                                   <apex:param name="SortField" value="Referral_Approval_Status__c" assignTo="{!SortField}" />
+                                   <apex:outputText value="{!$Label.Referral_Portal_PaymentStatus}{!IF(SortField=='Referral_Approval_Status__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                             </apex:facet>
+                             <apex:outputPanel rendered="{!opp.StageName == $Label.Opp_Stage_Closed_Won }">
+                                 <!--<apex:outputField value="{!IF(opp.Referral_Approval_Status__c == 'Sales Accepted','Payment Approval Pending',IF(opp.Referral_Approval_Status__c == 'Approved','Payment Approved','Payment rejected'))}" />-->
+                                 <apex:outputText value="{!IF(opp.Referral_Approval_Status__c == 'Sales Accepted',$Label.Referral_Pending_Payment_Approval,IF(opp.Referral_Approval_Status__c == 'Approved',$Label.Referral_Payment_Approved,IF(opp.Referral_Approval_Status__c == 'Payment Made',opp.Referral_Approval_Status__c,$Label.Referral_Payment_rejected)))}"/>
+                             </apex:outputPanel>
+                             <apex:outputPanel rendered="{!opp.StageName != $Label.Opp_Stage_Closed_Won }">
+                                 <apex:outputField value="{!opp.Referral_Approval_Status__c}" />  - Working
+                             </apex:outputPanel>
+                          </apex:column>
+                           <apex:column >
+                             <apex:facet name="header">
+                            
+                                   
+                                 <apex:commandLink action="{!SortToggle}" rerender="oppTablePanel" status="oppTableUpdateStatus">
+                                   <apex:param name="SortField" value="StageName" assignTo="{!SortField}" />
+                                   <apex:outputText value="Stage{!IF(SortField=='StageName',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                                
+                             </apex:facet>
+                             <apex:outputField value="{!opp.StageName}" />
+                          </apex:column>
+                            
+                          
+                            <apex:column >
+                             <apex:facet name="header">
+                                <apex:commandLink action="{!SortToggle}" rerender="oppTablePanel" status="oppTableUpdateStatus">
+                                   <apex:param name="SortField" value="Referral_Date__c" assignTo="{!SortField}" />
+                                   <apex:outputText value="Registered{!IF(SortField=='Referral_Date__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                             </apex:facet>
+                             <apex:outputField value="{!opp.Referral_Date__c}" />
+                          </apex:column>
+                            
+                          <apex:column >
+                             <apex:facet name="header">
+                                <apex:commandLink action="{!SortToggle}" rerender="oppTablePanel" status="oppTableUpdateStatus">
+                                   <apex:param name="SortField" value="Referral_Expiration_Date__c" assignTo="{!SortField}" />
+                                   <apex:outputText value="{!$ObjectType.Opportunity.Fields.Referral_Expiration_Date__c.Label}{!IF(SortField=='Referral_Expiration_Date__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                             </apex:facet>
+                             <apex:outputField value="{!opp.Referral_Expiration_Date__c}" />
+                          </apex:column>
+                        </apex:pageBlockTable>
+                      </apex:facet>
+                      
+                 </apex:actionStatus>
+               <div class="footerTable">
+                      <div class="footernavigation">
+                            <span class="page-buttons"> <apex:commandButton disabled="{!!StdSetControllerObject.hasprevious}" value="Previous" action="{!StdSetControllerObject.previous}"
+                                  rerender="oppTablePanel" /> <apex:commandButton disabled="{!!StdSetControllerObject.hasnext}" value="Next"
+                                  action="{!StdSetControllerObject.next}" rerender="oppTablePanel" />
+                                <apex:commandLink />
+                            </span>
+                        </div>
+                       <div class="DataPerPage">
+                            <apex:outputText value="Display Items: " />
+                            <apex:selectList value="{!RecPerPage}" size="1">
+                               <apex:selectOptions value="{!RecPerPageOption}" />
+                               <apex:actionSupport event="onchange" action="{!BuildQuery}" reRender="oppTablePanel" status="oppTableUpdateStatus" />
+                            </apex:selectList>
+                        </div>  
+               </div>
+           </apex:pageBlock>
+        </apex:form>
+    </div>  
+</apex:component>

@@ -1,0 +1,17 @@
+<apex:page >
+  <br></br>
+  <br></br>
+  <h1>FAQs</h1><br></br> 
+  Click <a href="https://one.ca.com/education/help/Lists/Knowledge%20Library/Basics%20Chatter.aspx" target="_blank">here</a> for frequently asked questions about chatter located on OneCA Help and How-To site.<br></br> 
+  <br></br> 
+  <h1>Training</h1><br></br> 
+  Click <a href="https://calearning.ca.com/plateau/user/cadeeplink.do?linkId=ITEM_DETAILS&componentID=11SFC10040&componentTypeID=Web+Based+Training&revisionDate=1309538760000" target="_blank">here</a> for a short online course on "Top Ways to Use Chatter within Salesforce". <br></br> 
+
+  <br></br>
+  <h1>Support</h1><br></br> 
+  Join the <a href="/0F9300000000OkC">Chatter Support Group</a>.  If you have a question on how to use Chatter, post a message to the group and let the power of the crowd help you along.  Open a <a href="http://servicedesk.ca.com" target="_blank">Service Desk</a> ticket if you cannot access Chatter or are experiencing technical issues. <br></br> 
+  <br></br> 
+  <h1>Report Misuse</h1><br></br> 
+  CA Technologies goal is to ensure that Chatter is used as a collaborative tool that helps CA Technologies achieve its business goals.  If you feel that the system is being used improperly, or that others are posting or sharing inappropriate information or otherwise violating company policies, please send an email to <a href="mailto:ReportOneCAMisuse@ca.com?subject=Chatter Misuse">ReportOneCAMisuse@ca.com</a>.
+
+</apex:page>

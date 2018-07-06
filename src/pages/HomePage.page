@@ -1,0 +1,317 @@
+<apex:page id="page" showHeader="false" sidebar="false" controller="HomePageControllerClass" action="{!init}">
+     <!-- custom styles used within the application -->
+     <style>
+        .activeTab {background-color: #236FBD; color:white; background-image:none}
+        .inactiveTab {background-color: lightgrey; color:black; background-image:none}
+        .attAccount {background-color:#F3F781; color:red; background-image:none}
+        .headerStyle{background-color:#638658;color:#FFFFFF}
+        .headerRow .headerStyle{background-color:#638658;color:#FFFFFF}
+        .alignStyle{text-align:right;vertical-align:center}
+        .accTableStyle{vertical-align:top}
+    </style>        
+    <script language="JavaScript">
+        function calcHeight()
+        {
+          //find the height of the internal page
+          alert(document.getElementById('the_iframe'));
+          var the_height=document.getElementById('the_iframe').contentWindow.
+              document.body.scrollHeight;
+              alert(the_height);
+        
+          //change the height of the iframe
+          document.getElementById('the_iframe').height=the_height;
+        }
+        
+        // function to set values for the hidden variables 
+        function showProductView(id1,id2,mfaName,prodView)
+        {
+            document.getElementById(id1).value = mfaName;
+            document.getElementById(id2).value = 'prodView';
+        }
+        
+        //function to open the popup window
+        function openPopUp(accId,oppsType)
+        {
+            //alert('here '+oppId);
+            window.open('/apex/OpportunityPopUp?pageState=popsUp&accId='+accId+'&oppsType='+oppsType,'OpportunityDetails','menubar=1,resizable=no,scrollbars=yes,width=600,height=300,top=250,left=345,status=no');
+        }
+
+        //function to open the popup window 2
+        function openPopUp2()
+        {
+            //alert('here '+oppId);
+            window.open('/apex/OpenOpportunitiesPopUp?pageState=popsUp2','NewOpenOpportunities','menubar=1,resizable=yes,scrollbars=yes,width=600,height=300,top=250,left=345,status=no');
+        }
+               
+    </script>
+    <table width="98%" bgColor="#FFFFFF" border="0" cellspacing="0" cellpadding="0">   
+        <tr>                    
+            <td align="right">                
+                    <apex:image url="{!$Resource.SAP_Icon}" height="30" width="50"
+                    onclick="window.open('https://portalpe1.ca.com','Sap','width=700,height=500,menubar=1,resizable=yes,scrollbars=yes,location=yes')" 
+                    alt="SAP" title="SAP" rendered="{!sapImageVisibility}"/>
+                    &nbsp;&nbsp;                 
+                    <apex:image url="{!If(BEGINS(userRoleName,'NA'),$Resource.NA_Sales_Workbench_icon,$Resource.Sales_Workbench_Icon )}" height="30" width="50"
+                     onclick="window.open('{!If(BEGINS(userRoleName,'NA'),'https://km.ca.com/sales/nasalesworkbench/Pages/default.aspx','https://km.ca.com/sales/Pages/Default.aspx')}','KM','width=700,height=500,menubar=1,resizable=yes,scrollbars=yes,location=yes');"
+                     alt="" title="" rendered="{!salesWBenchVisibility}"/>
+                    &nbsp;&nbsp; 
+                    <apex:outputPanel rendered="{!BEGINS(userRoleName,'NA')}">
+                    <apex:image url="{!If(BEGINS(userRoleName,'NA'),$Resource.Sales_Workbench_Icon,'/s.gif' )}" height="30" width="50"
+                     onclick="window.open('https://km.ca.com/sales/Pages/Default.aspx','KM','width=700,height=500,menubar=1,resizable=yes,scrollbars=yes,location=yes');"
+                     alt="" title=""/> 
+                    &nbsp;&nbsp;                       
+                    </apex:outputPanel>         
+                    <apex:image url="{!$Resource.Pricing_Portal_Icon}" height="30" width="50"
+                    onclick="window.open('http://intranet.ca.com/pricing/','Sap','width=700,height=500,menubar=1,resizable=yes,scrollbars=yes,location=yes')" 
+                    alt="Pricing Portal" title="Pricing Portal" rendered="{!pricingPortalVisility}"/>
+                    &nbsp;&nbsp;                
+                    <apex:image url="{!$Resource.Performance_Management_Icon}" height="30" width="50"
+                    onclick="window.open('https://performancemanagement.ca.com/home/home.cfm','PerformanceManagement','width=700,height=500,menubar=1,resizable=yes,scrollbars=yes,location=yes')"
+                    alt="Performance Management" title="Performance Management" rendered="{!perfMgmtVisibility}"/>
+                    &nbsp;&nbsp;               
+                    <apex:image url="{!$Resource.Service_Desk_Icon}" height="30" width="50"
+                    onclick="window.open('http://servicedesk.ca.com/CAisd/pdmweb.exe','PerformanceManagement','width=700,height=500,menubar=1,resizable=yes,scrollbars=yes,location=yes')"
+                    alt="Service desk" title="Service desk" rendered="{!serviceDeskVisibility}"/>
+                    &nbsp;&nbsp;                
+                    <apex:image url="{!$Resource.Leader_Board_Icon}" height="30" width="50"
+                    onclick="window.open('http://leaderboard.ca.com','Leader_Board','width=700,height=500,menubar=1,resizable=yes,scrollbars=yes,location=yes')" 
+                    alt="Leader Board" title="Leader Board" rendered="{!leaderBoardVisibility}"/>
+                    &nbsp;&nbsp;                
+                    <!--<apex:image url="{!$Resource.CPMS_Icon}" height="30" width="50"
+                    onclick="window.open('http://opportunitymanagementinternal.vlidev.com/logon.asp?step=5&popup=1&pmfKey={!$User.PMFKey__c}&SFDC=1','CPMS','width=700,height=500,menubar=1,resizable=yes,scrollbars=yes,location=yes')"
+                    alt="CPMS" title="CPMS" rendered="{!cpmsVisibility}"/>-->
+                    &nbsp;&nbsp;                
+                    <apex:image url="{!$Resource.Customer_Survey_Icon}" height="30" width="50"
+                    onclick="window.open('http://survey.ca.com','CustomerFeedback','width=700,height=500,menubar=1,resizable=yes,scrollbars=yes,location=yes')" 
+                    alt="Customer Feedback" title="Customer Survey" rendered="{!custFeedbackVisibility}"/>
+                    &nbsp;&nbsp;                          
+            </td>                       
+        </tr>        
+    </table>
+
+    <apex:form id="homeForm"> 
+        <apex:inputHidden id="mfaName"/>
+        <apex:inputHidden id="view"/>
+        <apex:inputHidden id="mfaName_QT"/>
+        <apex:inputHidden id="view_QT"/>
+        <apex:pageBlock id="homePB">    
+            <apex:actionRegion id="the_region" immediate="true">
+                <apex:actionFunction id="changeView" name="changeView" action="{!changeView}" rerender="pipelineYTD"/>                    
+            </apex:actionRegion>
+            
+            <apex:outputPanel rendered="true" id="homeOpanel">
+            <table width="99%" border="5">
+            <tr>
+            <td width="40%" valign="top" height="100%">     
+                  <apex:pageBlockTable value="{!accList}" var="acc" id="accountTable" width="100%">
+                    <apex:column headerValue="{!accTitle}" headerClass="headerStyle">
+                        <apex:outputLink value="/{!acc.account.Id}" target="_blank" styleClass="{!acc.style}">{!acc.account.Name}</apex:outputLink>
+                    </apex:column>
+                    <apex:column style="text-align: right;vertical-align:middle;" headerClass="headerStyle">
+                         <apex:facet name="header">                     
+                            <div style="text-align: right;vertical-align:middle;">
+                                Closed  Opps<br/>Amount (FY)
+                            </div>
+                         </apex:facet>
+                         <apex:commandLink value="{!acc.ClosedOpportunities}" onclick="javascript:openPopUp('{!acc.account.Id}','closedOpps');return false" style="text-align:right" title="Closed Opportunities drilldown"/>
+                    </apex:column>
+                    <apex:column style="text-align: right;vertical-align:middle;" headerClass="headerStyle">
+                     <div style="{vertical-align:right;text-align:right}">
+                        <apex:facet name="header">
+                            <div style="text-align: right;vertical-align:middle;">
+                                Open Opps<br/>Amount (FY)
+                            </div>              
+                        </apex:facet>
+                        <apex:commandLink value="{!acc.openOpportunities}" onclick="javascript:openPopUp('{!acc.account.Id}','openOpps');return false" style="text-align:right" title="Open Opportunities drilldown"/>
+                    </div>
+                    </apex:column>
+                    <apex:column style="text-align: right;vertical-align:middle;" headerClass="headerStyle" rendered="false">
+                        <apex:facet name="header">
+                            <div style="text-align: right;vertical-align:middle;">
+                                Open &amp; Closed<br/>Amount (FY)
+                            </div>
+                        </apex:facet>
+                        <apex:outputText value="{!acc.totalOppValue}"/>
+                    </apex:column>
+                    <apex:column rendered="false" style="text-align: right;vertical-align:middle;" headerClass="headerStyle">
+                        <apex:facet name="header">
+                            <div style="text-align: right;vertical-align:middle;">
+                                Account <br/>Target Amount 
+                            </div>
+                        </apex:facet>
+                        {!acc.target}
+                    </apex:column>
+                    <apex:column rendered="{!clInsiVisibleFlag}" style="text-align: right;vertical-align:middle;" headerClass="headerStyle">
+                        <apex:facet name="header">
+                            <div style="text-align: right;vertical-align:middle;">
+                                Closed &amp; Inside<br/>Amount (FY)
+                            </div>                      
+                        </apex:facet>
+                        {!acc.closedOpenInsideOpportunities}
+                    </apex:column>  
+                  </apex:pageBlockTable>     
+            </td>
+            <td width="60%" valign="top" bgcolor="white">
+                <apex:outputPanel id="ytdPanel">
+                <apex:CommandLink id="commLinkId1" immediate="true" action="{!showMFAviewYTD}" reRender="ytdPanel" rendered="{!reportLink1Status}">View FY report by <b>Business Unit</b></apex:CommandLink>
+                <p><b>Pipeline Coverage(FY)</b></p>
+                  <apex:dataTable value="{!pipelineYTD}" var="plYTD" id="pipelineYTD" width="100%">
+                        <apex:column headerClass="headerStyle" width="25%">
+                         <apex:facet name="header">{!columnHeaderYTD}</apex:facet>
+                         <div id="MFAlink" style="{!column1StyleYTD}">
+                             <apex:CommandLink immediate="true" onclick="showProductView('{!$Component.mfaName}','{!$Component.view}','{!plYTD.marketFA}','prodView')" reRender="ytdPanel" action="{!changeView}">
+                                 <apex:outputText value="{!if(plYTD.marketFA == 'Total','',plYTD.marketFA)}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"> 
+                                 </apex:outputText>
+                             </apex:CommandLink>
+                         </div>
+                         <div id="ProdName" style="{!column2StyleYTD}">
+                                 <apex:outputText value="{!if(plYTD.marketFA == 'Total','',plYTD.marketFA)}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"> 
+                                 </apex:outputText>
+                         </div>           
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">
+                                Qualified &amp; <br/>&amp; Pipeline &amp;<br/>&amp; Amount
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.qualifiedPline}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/> 
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">
+                                &amp;Closed &amp; <br/> &amp;Won &amp;<br/>&amp; Amount
+                                </div>
+                            </apex:facet>            
+                            <apex:outputText value="{!plYTD.closedWon}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/> 
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">
+                                Pipeline <br/>  &amp; Won <br/> Amount
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.pLineAndWon}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/>                
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">
+                                    Qualified <br/> Pipeline <br/> Opps
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.qualifiedPlineU}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/>                
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">
+                                    Closed <br/>Won<br/> Opps
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.closedWonU}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/>                                 
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">  
+                                    Total <br/>Opps<br/>
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.totalU}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/>                                                 
+                        </apex:column>                     
+                  </apex:dataTable>     
+            </apex:outputPanel>
+            <br/>
+                <apex:outputPanel id="QTPanel">
+                    <apex:CommandLink id="commLinkId2" immediate="true" action="{!showMFAviewQT}" reRender="QTPanel" rendered="{!reportLink2Status}">View QT report by <b>Business Unit</b></apex:CommandLink>
+            
+                     <p><b>Pipeline Coverage(QT)</b></p>
+                     <apex:dataTable value="{!pipelineQT}" var="plYTD" id="pipelineQT" width="100%">
+                        <apex:column headerClass="headerStyle" width="25%">
+                         <apex:facet name="header">{!columnHeaderQT}</apex:facet>
+                         <div id="MFAlink2" style="{!column1StyleQT}">
+                             <apex:CommandLink immediate="true" onclick="showProductView('{!$Component.mfaName_QT}','{!$Component.view_QT}','{!plYTD.marketFA}','prodView_QT')" reRender="QTPanel" action="{!changeQTView}">
+                                 <apex:outputText value="{!if(plYTD.marketFA == 'Total','',plYTD.marketFA)}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"> 
+                                 </apex:outputText>
+                             </apex:CommandLink>
+                         </div>
+                         <div id="ProdName2" style="{!column2StyleQT}">
+                                 <apex:outputText value="{!if(plYTD.marketFA == 'Total','',plYTD.marketFA)}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"> 
+                                 </apex:outputText>
+                         </div>           
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">
+                                    Qualified  <br/>&amp; Pipeline <br/> Amount
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.qualifiedPline}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/> 
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">
+                                    Closed  <br/>&amp; Won <br/> Amount
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.closedWon}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/> 
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">
+                                    Pipeline <br/> &amp; Won <br/> Amount
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.pLineAndWon}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/>                
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">
+                                    Qualified <br/> Pipeline <br/> Opps
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.qualifiedPlineU}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/>                
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">
+                                    Closed <br/>Won<br/> Opps
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.closedWonU}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/>                                 
+                        </apex:column>
+                        <apex:column headerClass="headerStyle" style="text-align: right;vertical-align:middle;">
+                            <apex:facet name="header">
+                                <div style="text-align: right;vertical-align:middle;">  
+                                    Total <br/>Opps<br/>
+                                </div>
+                            </apex:facet>
+                            <apex:outputText value="{!plYTD.totalU}" style="{!if(plYTD.marketFA='Total','font-weight: bold', 'color:black')}"/>                                                 
+                        </apex:column>                     
+                  </apex:dataTable>     
+            </apex:outputPanel>
+            <br/>
+            <br/>
+            <table width="80%" border="1" align="center">
+            <tr>
+            <td>
+            Qualified Pipeline = Opportunities listed as "Open">10% Milestone<br/>
+            All monetary values are displayed in thousands based on your default currency setting
+            </td>
+            </tr>
+            </table>
+            </td>
+            </tr>
+            
+            <tr><td colspan="2">
+            <ul>
+                <li> Highlighted accounts have at least one opportunity closing within 2 weeks </li>
+                <li> You have {!noOfOpenOpportunities_alert3} open opportunities past closed date </li>
+                <li> You have {!noOfOpenOpportunities_alert5} open opportunities without products </li>
+                <li style="{!amtBelow5AlertStyle}"> You have {!noOfOpenOpportunities_alert4} open opportunities with amounts less than $5.00 USD</li>
+                <li style="{!openOppAlertStyle}"> You have <apex:commandLink value="{!noOfNewOpenOpportunities_alert6}" onclick="javascript:openPopUp2();return false"/> new opportunities from deal registration </li>
+             </ul>         
+            </td></tr> 
+            </table>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,15 @@
+<!--
+Standard Class::      scpq__SciQuote__c
+Extension     ::      VisualforceSCIQuoteAdd_Pilot
+Purpose       ::      This page is the used to display steriling page with sidebar.
+Created Date  ::      April 2011
+Modified History:
+-->
+<apex:page standardController="scpq__SciQuote__c" extensions="VisualforceSCIQuoteAdd_Pilot"  sidebar="true">
+<style>
+iframe {
+  border: 0px solid #ffffff;
+}
+</style>
+  <iframe id="itarget2"  width="100%" scrolling="no" height="{!iframeHeight}" frameborder="false" src="/apex/scpq__VisualforceSCIQuoteAdd?CF00N30000006NCzn_lkid={!scpq__SciQuote__c.scpq__OpportunityId__c}&scontrolCaching=1&sfdc.override=1&isdtp=mn" />
+</apex:page>

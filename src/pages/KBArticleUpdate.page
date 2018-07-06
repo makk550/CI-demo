@@ -1,0 +1,42 @@
+<apex:page standardController="Case" showHeader="false" sidebar="false">
+   <script type="text/javascript">
+    var __sfdcSessionId = '{!GETSESSIONID()}';
+   </script>
+   <script src="/soap/ajax/28.0/connection.js" type="text/javascript"></script> 
+   <script>
+        function resizeIframe(newHeight) {  
+            document.getElementById('receiver').style.height = newHeight + 'px';
+        }
+            
+        window.onload = function() {
+            var receiver = document.getElementById('receiver').contentWindow;
+    
+            // A function to handle sending messages.
+            function sendMessage(obj) {
+                receiver.postMessage(obj , '*');
+            }
+            function receiveMessage(e) {
+                var kbObj=e.data;
+                console.log("Sharepoint.message:" + JSON.stringify(kbObj));
+                if(kbObj.message == 'updateKB') {
+                    console.log("sending Case details");
+                    var caseResult = sforce.connection.query("SELECT Subject,Description FROM CASE WHERE caseNumber='{!$CurrentPage.parameters.caseNumber}'");
+                    console.log('Case Details:'+caseResult);
+                    var caseObj={
+                        "Subject":caseResult.records.Subject,
+                        "description":caseResult.records.Description,
+                        "action":'update'
+                    };
+                    sendMessage(caseObj);   
+                }
+            }
+            window.addEventListener('message',receiveMessage);
+        }
+    </script>
+    <div id="msg" style="color:#cc0000"></div>   
+    <apex:iframe src="{!$Label.ecm_kb}pages/Authoring/Create-KB-Article.aspx?kbid={!$CurrentPage.parameters.kbid}" scrolling="true" id="receiver"  
+        html-style="margin:0px;padding:0px;" 
+        html-sandbox="allow-same-origin allow-scripts allow-modals" 
+        html-onload="resizeIframe(window.innerHeight);"     
+        frameborder="false"/>
+</apex:page>

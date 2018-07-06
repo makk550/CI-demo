@@ -1,0 +1,36 @@
+<apex:page standardcontroller="Account" extensions="ReadOnlyAccountPlanController" action="{!init}" showHeader="False" sidebar="False">
+ <apex:outputPanel id="pnlReadOnlyAccountPlan" rendered="{!showAccountPlanPanel}">
+ <apex:pageBlock >
+ <apex:pageBlockSection columns="2" showHeader="False">
+ <apex:outputField value="{!ap.Name}"/>
+ <apex:pageBlockSectionItem >	        	
+     <apex:outputLabel value="{!$ObjectType.Account_Plan__c.Fields.Customer_s_Contact_Consulted_For_Plan__c.Label}" for="outTxtContactConsulted"/>
+     <apex:outputText value="{!ap.Customer_s_Contact_Consulted_For_Plan__r.Name}" id="outTxtContactConsulted"></apex:outputText>
+ </apex:pageBlockSectionItem> 
+ <apex:outputField value="{!ap.ELA_Renewal_Date__c}"/>
+ <apex:outputField value="{!ap.Customer_s_Budget_Cycle_End_Date__c}"/>
+ <apex:outputField value="{!ap.Key_Business_Problems__c}"/>
+  <apex:pageBlockSectionItem >	        	
+     <apex:outputLabel value="{!$ObjectType.Account_Plan__c.Fields.Key_Client_Sponsor__c.Label}" for="outTxtClientSponsor"/>
+     <apex:outputText value="{!ap.Key_Client_Sponsor__r.Name}" id="outTxtClientSponsor"></apex:outputText>
+ </apex:pageBlockSectionItem> 
+ <apex:outputField value="{!ap.Key_Trends_Risks_Regulatory_Issues__c}"/>
+ <apex:outputField value="{!ap.Account_Goals__c}"/> 
+ <apex:outputField value="{!ap.Customer_s_Competitive_Landscape__c}"/>
+ <apex:outputField value="{!ap.Identified_IT_projects_w_IT_Init__c}"/>
+ <apex:outputField value="{!ap.Identify_Customer_s_Mission_critical_app__c}"/>
+ <apex:outputField value="{!ap.Plan_FY_NCV_Product_Sales_Goal__c}"/>
+ <apex:outputField value="{!ap.Key_Company_Directives__c}"/>
+ <apex:outputField value="{!ap.Plan_FY_Renewal_Revenue_Goals__c}"/> 
+ <apex:outputField value="{!ap.Customer_Competitive_Strategy__c}"/> 
+ <apex:outputField value="{!ap.Plan_FY_Services_Sales_Goal__c}"/>
+ <apex:outputField value="{!ap.Where_Will_CA_Provide_the_Most_Value__c}"/>  
+ <apex:outputField value="{!ap.Potential_Barriers__c}"/>
+ <apex:outputField value="{!ap.Plan_Status__c}"/> 
+ </apex:pageBlockSection>
+ </apex:pageBlock> 
+ </apex:outputPanel>
+ <apex:outputPanel id="pnlErrorMessage" rendered="{!ShowAccountPlanNotFoundPanel}">
+ <apex:outputText style="font-style:italic" value="{!errorMessage}"></apex:outputText>
+ </apex:outputPanel>  
+</apex:page>

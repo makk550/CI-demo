@@ -1,0 +1,57 @@
+<apex:component allowDML="true" id="editRegion" >
+
+<apex:attribute name="editFields" 
+    description="This is the list of filter fields passed to the component"
+    type="FormField[]" 
+    required="true"/>
+
+    <apex:outputPanel style="width:100%" layout="block">
+        <table width="626" border="0" align="left" cellpadding="5" cellspacing="0">   
+            <apex:repeat var="field" value="{!editFields}">
+                <tr>
+                    <td width="145" class="border">
+                        <apex:outputLabel value="{!field.label}"/>
+                    </td>
+                    <td width="461"  class="border">
+
+                        <apex:inputCheckbox value="{!field.value}"  
+                            rendered="{!field.fieldType=='BOOLEAN'}"/>
+
+                        <apex:inputText size="80" value="{!field.value}" 
+                            rendered="{!OR(field.fieldType=='STRING',
+                                field.fieldType=='INTEGER',
+                                field.fieldType=='LONG',
+                                field.fieldType=='DOUBLE',
+                                field.fieldType=='URL',
+                                field.fieldType=='CURRENCY',
+                                field.fieldType=='EMAIL',
+                                field.fieldType=='PERCENT',
+                                field.fieldType=='PHONE'
+                            )}"/>
+
+                        <apex:inputTextArea cols="80" rows="3" value="{!field.value}" 
+                            rendered="{!field.fieldType=='TEXTAREA'}"/>
+
+
+                        <apex:selectList style="width:100%" value="{!field.value}"                
+                            rendered="{!field.fieldType=='PICKLIST'}" 
+                            multiselect="false"
+                            size="1" >
+                            <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                            <apex:selectOptions value="{!field.pickListValues}"/>
+                        </apex:selectList>
+
+                        <apex:selectList style="width:100%" value="{!field.values}"                
+                            rendered="{!field.fieldType=='MULTIPICKLIST'}" 
+                            multiselect="true"
+                            size="3" >
+                            <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                            <apex:selectOptions value="{!field.picklistValues}"/>
+                        </apex:selectList>
+
+                    </td>           
+                </tr>
+            </apex:repeat>
+        </table>
+    </apex:outputPanel>
+</apex:component>

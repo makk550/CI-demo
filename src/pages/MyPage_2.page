@@ -1,0 +1,5 @@
+<apex:page showHeader="false" applyBodyTag="false" applyHtmlTag="false" controller="KBDetailsController">
+    <apex:form >
+     <b>Hello, this is the second page.</b>
+ </apex:form>    
+</apex:page>

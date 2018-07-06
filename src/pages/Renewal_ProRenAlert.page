@@ -1,0 +1,23 @@
+<apex:page standardController="Renewal__c">
+    <script type="text/javascript">
+    var __sfdcSessionId = '{!GETSESSIONID()}';
+    </script>
+
+    <script src="../../soap/ajax/19.0/connection.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+        var renId = '{!Renewal__c.Id}';
+        
+        var result = sforce.connection.query('SELECT Id, Is_Projected_Renewal_Changed__c FROM Renewal__c WHERE Id = \'' + renId + '\'');
+        records = result.getArray("records");
+         
+        for (var i=0; i< records.length; i++) {
+            var renewal = records[i];           
+            if(renewal.Is_Projected_Renewal_Changed__c == 'true'){
+                alert('You have changed Project renewal value. This will override Projected Renewal value of associated Renewal Product records.');          
+                renewal.Is_Projected_Renewal_Changed__c = 'false';
+                sforce.connection.update([renewal]);
+            }    
+        }
+    </script>
+</apex:page>

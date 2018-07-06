@@ -1,0 +1,149 @@
+<apex:page standardController="OpportunityTeamMember" extensions="OppTeamMemberAddController">
+	<head>
+        <apex:slds />
+    </head>
+    <script>
+    	function callSaveMethod(buttonId){
+            
+            Save(buttonId);
+        }
+    	var newWin=null; 
+    function OpenChildpopup(oppId,userId,targetfield,targetId)  
+    {
+      
+        var url="partner/apex/OppTeamMemberSearchList?OppId="+oppId+"&userid="+userId+"&targetfield="+targetfield+"&targetId="+targetId;
+       
+        console.log(url);
+        newWin=window.open(url, 'Popup','height=500,width=800,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+        
+        
+        if (window.focus)    
+        {    newWin.focus();   
+        }           
+        return false;
+    }
+        function closeLookupPopup()  
+        {     
+            
+            if (null!=newWin)     
+            {        
+                newWin.close();     
+            }    
+            
+        }
+    </script>
+    	<apex:form Id="TheForm" >
+            
+        	<apex:pageBlock title="Add Team Member" id="TheBlock">
+                <apex:pageMessages id="error"/>        
+				<apex:pageBlockButtons >
+                	<apex:commandButton value="Save"  onclick="callSaveMethod('saveButton');return false;" />
+                   	<apex:commandButton value="Save & More" onclick="callSaveMethod('saveAndMoreButton');return false;" />
+                    <apex:commandButton value="Cancel" action="{!cancel}"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="3" id="TheSection">
+                    <apex:pageBlockSectionItem >
+                		<apex:outputlabel value=""/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+						<apex:outputlabel value="Team Role"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                   	    <apex:outputlabel value="Opportunity Access"/>
+                    </apex:pageBlockSectionItem>
+               
+                    <!-- ------------------------------------1st User start------------------------->
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputPanel >
+                            <apex:inputText id="User_1txt" required="true" disabled="true" style="backgroundColor : white;"/>
+                            <a href="#" onclick="OpenChildpopup('{!oppid}','{!currentuserid}','{!$Component.User_1txt}','{!$Component.User_1}');"> 
+                                <img title="Team Member List" class="lookupIcon" alt="Team Member List" src="/s.gif"/>                
+                            </a> 
+                          <apex:inputHidden id="User_1" value="{!User_1}"/> 
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputlabel value="{!TeamRole}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:selectList id="OppAccess_1" size="1" value="{!OppAccess_1}">
+                    	  	<apex:selectOption itemValue="Read Only" itemLabel="Read Only"/>
+                            <apex:selectOption itemValue="Read/Write" itemLabel="Read/Write"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    
+                    <!------------------------------- 2nd User start ------------------------------->
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputPanel >
+                            <apex:inputText id="User_2txt" required="true" disabled="true" style="backgroundColor : white;"/>
+                            <a href="#" onclick="OpenChildpopup('{!oppid}','{!currentuserid}','{!$Component.User_2txt}','{!$Component.User_2}');"> 
+                                <img title="Team Member List" class="lookupIcon" alt="Team Member List" src="/s.gif"/>                
+                            </a> 
+                          <apex:inputHidden id="User_2" value="{!User_2}"/> 
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputlabel value="{!TeamRole}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:selectList id="OppAccess_2" size="1" value="{!OppAccess_2}">
+                    	  	<apex:selectOption itemValue="Read Only" itemLabel="Read Only"/>
+                            <apex:selectOption itemValue="Read/Write" itemLabel="Read/Write"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    
+                    <!------------------------- 3rd User start---------------------------------------->
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputPanel >
+                            <apex:inputText id="User_3txt" required="true" disabled="true" style="backgroundColor : white;"/>
+                            <a href="#" onclick="OpenChildpopup('{!oppid}','{!currentuserid}','{!$Component.User_3txt}','{!$Component.User_3}');"> 
+                                <img title="Team Member List" class="lookupIcon" alt="Team Member List" src="/s.gif"/>                
+                            </a> 
+                          <apex:inputHidden id="User_3" value="{!User_3}"/> 
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputlabel value="{!TeamRole}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:selectList id="OppAccess_3" size="1" value="{!OppAccess_3}">
+                    	  	<apex:selectOption itemValue="Read Only" itemLabel="Read Only"/>
+                            <apex:selectOption itemValue="Read/Write" itemLabel="Read/Write"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    
+                    <!----------------------- 4th User start------------------------------------------->
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputPanel >
+                            <apex:inputText id="User_4txt" required="true" disabled="true" style="backgroundColor : white;"/>
+                            <a href="#" onclick="OpenChildpopup('{!oppid}','{!currentuserid}','{!$Component.User_4txt}','{!$Component.User_4}');"> 
+                                <img title="Team Member List" class="lookupIcon" alt="Team Member List" src="/s.gif"/>                
+                            </a> 
+                          <apex:inputHidden id="User_4" value="{!User_4}"/> 
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputlabel value="{!TeamRole}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:selectList id="OppAccess_4" size="1" value="{!OppAccess_4}">
+                    	  	<apex:selectOption itemValue="Read Only" itemLabel="Read Only"/>
+                            <apex:selectOption itemValue="Read/Write" itemLabel="Read/Write"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    
+                  </apex:pageBlockSection>
+            </apex:pageBlock>
+            
+        	<apex:outputPanel id="panelId">
+            	<apex:actionFunction action="{!Save}" name="Save" reRender="panelId,error">
+                	<apex:param name="buttonName" value=""/>
+                </apex:actionFunction>
+            </apex:outputPanel>
+            
+        </apex:form>  
+</apex:page>

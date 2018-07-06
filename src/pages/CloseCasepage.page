@@ -1,0 +1,35 @@
+<apex:page standardController="Case">
+
+    <script language="JavaScript1.2" src="/js/functions.js"></script>
+    <script src="/soap/ajax/9.0/connection.js" type="text/javascript"></script>
+    <script id="clientEventHandlersJS" language="javascript">
+    
+    sforce.connection.sessionId = '{!$Api.Session_ID}';
+    
+    try
+    {
+        var qr = sforce.connection.query("select id,status,Ownerid,whatid,Case__c,Type,RecordTypeId from task where status NOT IN ('Closed', 'Completed') AND Case__c ='" + "{!Case.id}" + "'");
+        var records = qr.getArray("records");
+        alert('qr '+qr);
+    }
+    catch (error)
+    {
+        alert(error.faultstring);
+    }
+
+  /*  if (qr.size >= 0)
+    {
+        alert("All Gainsight Tasks must be closed in order to Close the case");
+    }
+    else
+    {*/
+        window.Location="/{!Case.Id}/s?retURL=%2F{!Case.Id}&cas7=Closed&00Na000000BGTdH='6. End Engagement'";
+ 
+    //}
+
+
+
+
+</script>
+
+</apex:page>

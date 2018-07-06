@@ -1,0 +1,139 @@
+<apex:page controller="Renewal_LicenseMassEdit">
+    
+    <script language="javascript">
+    function ShowOrHide()
+    {
+        if(document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility == 'visible' || document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility == '')
+        {
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility = 'hidden';
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.width = 0;
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.height = 0;
+        }
+        else
+        {
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility = 'visible';
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.width = '100%';
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.height = '100%';
+        }
+        return false;
+    }
+    function checkall(){
+        checkalllineitems();
+    }
+    window.onload = setFocus
+    function setFocus() {
+        document.getElementById("hiddenElement").focus();
+    }
+    
+    </script>
+    <apex:form >
+          <apex:outputLink value="/{!$CurrentPage.parameters.Id}">Go back to opportunity page</apex:outputLink>
+        <apex:pageMessages id="pgmsgs"></apex:pageMessages>
+        <input id="hiddenElement" type="hidden" />
+        <apex:actionFunction action="{!checkalllineitems}" name="checkalllineitems" status="msgUF" reRender="lineitemsection"/>
+        
+        <apex:actionStatus id="msgUF">
+            <apex:facet name="start">
+                <apex:outputPanel >
+                    <apex:commandButton value="Processing..." status="myStatus" disabled="true"/>
+                    <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 20px; position: absolute; left:50%;top:50%;"/></div>
+                </apex:outputPanel>
+            </apex:facet>
+            <apex:facet name="stop"> 
+            </apex:facet>
+        </apex:actionStatus>
+        <apex:pageBlock title="Opportunity Info" rendered="{!renderdetails}" mode="Edit">
+            <apex:pageBlockSection >
+                <apex:outputField value="{!opp.name}"/>
+                
+                <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem id="lic">                   
+                    <apex:outputLabel value="License Type"/>                       
+                    <apex:selectList value="{!selectedLicense}" id="prd_Licensetype" size="1"   >   
+                        <apex:selectOptions value="{!LicenseType}"/>
+                    </apex:selectList>                  
+                    
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>            
+            
+            <apex:outputPanel id="renewalreasons">
+                
+                
+            </apex:outputPanel>
+        </apex:pageBlock>
+        
+        <apex:pageBlock title="Product Information" rendered="{!renderdetails}" id="lineitemsection">
+            <apex:pageBlockSection id="pbs" columns="1">
+                <apex:outputPanel >
+                    <apex:pageBlockSection columns="3">
+                        <apex:pageBlockSectionItem >
+                            <apex:commandButton value="Previous" style="font-weight:bold" rerender="pbs" rendered="{!hasPrevious}" action="{!previous}"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:commandButton value="Next" style="font-weight:bold" rerender="pbs" rendered="{!hasNext}" action="{!next}"/>
+                        </apex:pageBlockSectionItem>                  
+                    </apex:pageBlockSection>
+                    <apex:pageBlockTable value="{!OpplineitemList}" rows="{!pages}" var="val" title="Opportunity Line Items">
+                        <apex:column >
+                            <apex:facet name="header">
+                                <apex:inputCheckBox id="main" value="{!allchecked}" onclick="checkall();"/>
+                            </apex:facet>
+                            <apex:inputCheckBox value="{!val.selectedItem}">
+                                
+                            </apex:inputCheckBox>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header" >Product</apex:facet>
+                            {!val.opplin.PriceBookEntry.Product2.Name}
+                        </apex:column>            
+                        <apex:column value="{!val.opplin.License__c}"> </apex:column>       	           
+                        
+                        <apex:column value="{!val.opplin.Material_Text__c}"/>
+                        <apex:column value="{!val.opplin.Platform_Category__c}"/>
+                        <apex:column value="{!val.opplin.License_Classification__c}"> </apex:column>        	
+                        
+                        
+                        
+                        <apex:column >
+                            <apex:facet name="header" >Business Type</apex:facet>
+                            {!val.opplin.Business_Type__c}
+                        </apex:column>
+                        
+                        
+                    </apex:pageBlockTable>
+                    <!--samap01-->
+                    <apex:pageBlockSection columns="7" >
+                        <apex:actionRegion >
+                            <apex:outputText value=" Display Records per page: "></apex:outputText>
+                            <apex:selectList value="{!pages}" size="1">
+                                <apex:selectOptions value="{!Pageno}"/>
+                                <apex:actionSupport event="onchange" rerender="pbs" action="{!check}" status="procesingstatus1" />
+                            </apex:selectList>&nbsp;&nbsp;
+                            <apex:actionStatus id="procesingstatus1" startstyle="color:#15428B;" >
+                                <apex:facet name="start"><apex:outputlabel >Please wait...</apex:outputlabel><apex:image url="{!URLFOR($Resource.process)}"/>
+                                </apex:facet>
+                            </apex:actionStatus>
+                            
+                        </apex:actionRegion><apex:outputText value="                        "/><apex:actionRegion > <apex:outputPanel id="test2"> <div align="right">   
+                        Page #:&nbsp;<apex:inputtext id="inputpage" size="3"  value="{!acpage}"/> of {!npages}
+                        <!-- <apex:actionSupport event="onchange" rerender="pbs" action="{!check}" status="procesingstatus2" /> -->
+                        &nbsp;&nbsp;<apex:commandButton value="Go" status="procesingstatus2" action="{!check}" reRender="pbs"/>
+                        <apex:actionStatus id="procesingstatus2" startstyle="color:#15428B;" >
+                            <apex:facet name="start"><apex:outputlabel >Please wait...</apex:outputlabel><apex:image url="{!URLFOR($Resource.process)}"/>
+                            </apex:facet>
+                        </apex:actionStatus></div></apex:outputPanel></apex:actionRegion>
+                    </apex:pageBlockSection> 
+                    <!--samap01-->
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save" action="{!Save}" onclick="if(!confirm('Are you sure you want to update License for selected records?')){return false};" />
+                <apex:commandButton value="Cancel" action="{!Cancel}"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+        
+    </apex:form>
+    
+</apex:page>

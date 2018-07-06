@@ -1,0 +1,122 @@
+<apex:page standardController="Case" showHeader="false" sidebar="false">
+   <script type="text/javascript">
+        var __sfdcSessionId = '{!GETSESSIONID()}';
+   </script>
+   <script src="/soap/ajax/28.0/connection.js" type="text/javascript"></script>
+   <script src="/soap/ajax/28.0/apex.js" type="text/javascript"></script>
+   <script>
+    
+    function resizeIframe(newHeight) {  
+        document.getElementById('receiver').style.height = newHeight + 'px';
+    }
+    
+    function createKBRecord(kbObj) {
+        var KbArticle = new sforce.SObject("KB_Article__c");
+        KbArticle.KB_Article_No__c =kbObj.kbid;
+        KbArticle.Status__c =kbObj.status;
+        KbArticle.KB_Article_Title__c=kbObj.title;
+        KbArticle.Author__c=kbObj.author;
+        
+        KbArticle.ECM_Last_Modified_By__c =' {!$User.LastName}, {!$User.FirstName} ';
+        KbArticle.ECM_created_Date__c =new Date().toISOString();
+        KbArticle.Status_Change_Date__c= new Date().toISOString();
+        console.log("sp:" + kbObj.statusChangeDate  + "      ####SC date:" + KbArticle.Status_Change_Date__c);
+        var outMsg = document.getElementById("msg");
+          
+        try {
+            result = sforce.connection.create([KbArticle])[0];
+        } catch(error) {
+            createFailed(error, outMsg);
+        }
+                
+        if ( result.getBoolean("success") )
+        {
+            var KbCaseAssoc = new sforce.SObject("KB_Article_Case__c");
+            KbCaseAssoc.Case__c ="{!$CurrentPage.parameters.id}";
+            KbCaseAssoc.KB_Article__c =result.id;
+            KbCaseAssoc.New_KB__c = true;
+            
+            try {
+                kbAsocResult = sforce.connection.create([KbCaseAssoc])[0];    
+            } catch(error) {
+                createFailed(error, outMsg);
+            }
+            
+            if ( kbAsocResult.getBoolean("success") )
+            {
+                outMsg.className = "message infoM3";
+                outMsg.innerHTML = "<br/>KB Article is successfully created and linked to the CASE.<br/>Refresh Case detail page to view related KB article<br/>";
+            } else {
+                createFailed(kbAsocResult.errors.message, outMsg);
+            }
+        } else {
+            createFailed(result.errors.message, outMsg);
+        }
+        
+        function createFailed(error, outMsg) {
+            outMsg.className = "message errorM3";
+            outMsg.innerHTML = "An error has occurred: <p>" + error;
+        }
+
+    }
+        
+    window.onload = function() {
+        // Get the kb tool window displayed in the iframe.
+        //document.getElementById('receiver').src = 'https://lod1716-2.ca.com/sites/ecm/Pages/authoring/create-KB-Article.aspx?kbid=TEC1975954';
+        var receiver = document.getElementById('receiver').contentWindow;
+        var srr = document.getElementById('receiver').src;
+        
+        console.log('SRT:'+srr);
+        // A function to handle sending messages.
+        function sendMessage(obj) {
+            receiver.postMessage(obj , '*');
+        }
+        function receiveMessage(e){
+            var kbObj=e.data;
+            console.log("Sharepoint.message:" + JSON.stringify(kbObj));
+            //console.log("Sharepoint.message:" + kbObj.message);
+            if(kbObj.message == 'casedetails') {
+                //console.log("sending message");
+                
+                var caseResult = sforce.connection.query("SELECT CaseNumber, Subject, Description, CA_Product_Controller__r.name, Component_Code__c, Product_Release__c FROM CASE WHERE caseNumber = '{!case.caseNumber}' ");
+                console.log('Case Details:'+caseResult);
+                var productResult = sforce.connection.query("SELECT KB_Product_Name__c FROM SCKBProductMap__c WHERE SCProduct__r.name = '"+caseResult.records.CA_Product_Controller__r.Name+"' LIMIT 1");
+                console.log('Product Details:'+productResult);
+                if (productResult.size > 0) {
+                    var caseObj={
+                        "casenumber":caseResult.records.CaseNumber,
+                        "Subject":caseResult.records.Subject,
+                        "description":caseResult.records.Description,
+                        "product":productResult.records.KB_Product_Name__c,
+                        "component_code":caseResult.records.Component_Code__c,
+                        "product_release":caseResult.records.Product_Release__c,
+                        "action":'create'
+                    };
+                } 
+                else {
+                    var caseObj={
+                        "casenumber":caseResult.records.CaseNumber,
+                        "Subject":caseResult.records.Subject,
+                        "description":caseResult.records.Description,
+                        "product":'',
+                        "component_code":caseResult.records.Component_Code__c,
+                        "product_release":caseResult.records.Product_Release__c,
+                        "action":'create'
+                    };
+                }    
+                
+                sendMessage(caseObj);   
+            } else if(kbObj.message == 'relate') {
+                createKBRecord(kbObj);
+            }
+        }
+        window.addEventListener('message',receiveMessage);
+    }
+   </script>
+<div id="msg" style="color:#cc0000"></div>   
+<apex:iframe src="{!$Label.ecm_kb}pages/Authoring/Create-KB-Article.aspx" scrolling="true" id="receiver"  
+         html-style="margin:0px;padding:0px;" 
+        html-sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation allow-pointer-lock allow-modals" 
+        html-onload="resizeIframe(window.innerHeight);"     
+        frameborder="false"/>
+</apex:page>

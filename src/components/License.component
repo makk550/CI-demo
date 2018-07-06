@@ -1,0 +1,81 @@
+<apex:component controller="MyUserLicense" access="global">
+ 
+ <style type="text/css">
+h1 {
+    display:block; width:637px; padding:34px 0 28px;
+    font-size:18px; line-height:23px; text-align:center; font-weight:normal;
+}
+.tabletop {
+    display:block; width:630px; height:15px; 
+    background:transparent url(images/top.gif) no-repeat scroll 0 0;
+    margin:0 0 0 4px;
+}
+.tablebk {
+    width:615px;
+    background:transparent url(images/middle.gif) repeat-y scroll 0 0;
+    margin:0 0 0 4px; padding:0 0 0 15px;
+}
+.tablebottom {
+    display:block; width:630px; height:16px; 
+    background:transparent url(images/bottom.gif) no-repeat scroll 0 0;
+    margin:0 0 0 4px;
+}
+
+table {table-layout:fixed; border-collapse:collapse; border-spacing:0; }
+th, td {border:1px solid #999; text-align:center; font-weight:bold; }
+th {
+    color:#fff; background-color:#0141ab;
+    font-size:16px; line-height:22px;
+    padding:5px 11px 8px;
+}
+td {
+    color:#000; background-color:#d9e8f0;
+    font-size:14px; line-height:16px;
+    padding:11px;
+    vertical-align:top;
+}
+th.col1,
+td.col1 {text-align:left;}
+.odd td {background-color:#f2f7fa;}
+
+td input {
+    width:85px; height:22px;
+    font-size:14px; line-height:16px; font-weight:bold; text-align:center;
+    padding-top:3px;
+    border:1px solid #999;
+}
+
+tr:hover td {background-color:#599bbd;} /* hover state does not work in ie6 */
+
+.threshold { background-color:#ffff00; }
+
+/* END Table CSS */
+</style>
+ 
+<apex:outputLabel value="{!OrgName}" style="font-weight:bold"></apex:outputLabel><br></br><br></br>
+
+<apex:dataTable value="{!UL}" var="u" id="theUsers" cellPadding="4" border="1" style="text-align: center;vertical-align:middle;">
+
+<apex:column >
+<apex:facet name="header">License</apex:facet>
+<apex:outputText styleClass="{!u.style}" value="{!u.common}"/>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">Total</apex:facet>
+<apex:outputText styleClass="{!u.style}" value="{!u.Total}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">Consumed</apex:facet>
+<apex:outputText styleClass="{!u.style}" value="{!u.Used}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">Available</apex:facet>
+<apex:outputText styleClass="{!u.style}" value="{!u.available}"/>
+</apex:column>
+</apex:dataTable><br></br>
+
+
+<apex:outputLabel value="{!show}" style="font-weight:bold"></apex:outputLabel><br></br><br></br>
+
+</apex:component>

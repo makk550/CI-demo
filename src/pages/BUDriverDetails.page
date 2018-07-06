@@ -1,0 +1,359 @@
+<apex:page action="{!initPlanDetails}" standardController="Opportunity_Plan_Detail__c" extensions="BUDriverDetailsController" tabStyle="Opportunity_Plan__c" showHeader="false" sidebar="false">
+<style>
+.drivers {}
+.menu {}
+.currentNCV {font-weight: bolder;}
+.disabled {disabled:disabled;}
+</style>
+<script> 
+    function setURI(sUri){
+        window.location.href = sUri;
+    }
+</script>
+<apex:Messages id="errMsg" rendered="{!hasErrors}"  />
+<apex:form >
+<apex:pageBlock >
+    <apex:pageBlockButtons >
+        <apex:commandButton action="{!save}" value="Save" id="theButton" />
+    </apex:pageBlockButtons>
+<div class="menu">
+<apex:repeat value="{!drivers}" var="driver" id="theRepeat">
+    <a href="javascript:setURI('apex/BUDriverDetails?planId={!$CurrentPage.parameters.PlanId}&ncvId={!driver.Id}&Driver={!driver.NCV_Driver__c}&BU={!driver.Business_Unit__c}&AccId={!$CurrentPage.parameters.AccId}');" target="_self" title="{!driver.NCV_Driver__c}" class="drivers"><span class="{!IF($CurrentPage.parameters.Driver == driver.NCV_Driver__c,'currentNCV','')}">{!driver.NCV_Driver__c}</span></a>
+    &nbsp;|&nbsp;
+</apex:repeat> 
+</div>
+<br></br>
+<apex:outputPanel rendered="{!IF(ncvId!=null, false, true)}">
+    <h3>Please click any of above NCV driver links to view details.</h3>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!IF(ncvId!=null, true, false)}">
+<apex:pageBlockSection title="Opportunity"  collapsible="false"></apex:pageBlockSection>
+<table>
+    <tr>
+        <td align="center" width="150" nowrap="nowrap"><b></b></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td align="left" width="150" nowrap="nowrap">     
+            <apex:image url="{!$Resource.greenCircle}" rendered="{!IF(oppCount>0,true,false)}"></apex:image>  
+            <apex:image url="{!$Resource.redCircle}" rendered="{!IF(oppCount<=0,true,false)}"></apex:image>  
+        </td>
+        <td>
+            <apex:outputLabel value="If there is no opportunity please indicate why:"/>
+        </td>
+        <td>
+            <apex:outputPanel id="op0">
+                <apex:outputLabel value="" for="Opportunity_Question_1__c"/>
+                <apex:inputField id="Opportunity_Question_1__c" value="{!Opportunity_Plan_Detail__c.Opportunity_Question_1__c}"/>
+                <script>
+                    document.getElementById('{!$Component.Opportunity_Question_1__c}').disabled={!IF(oppCount>0,true,false)};
+                </script>
+            </apex:outputPanel>         
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            &nbsp;
+        </td>
+        <td>
+            <apex:outputLabel value="Open Opportunities:"/>
+        </td>
+        <td>&nbsp;
+            <apex:outputPanel rendered="{!IF(oppCount>0,true,false)}">
+                <a target="top" href="/00O300000048DVf?pv0={!LEFT($CurrentPage.parameters.AccId,15)}&pv1={!$CurrentPage.parameters.Driver}&pv2={!LEFT($CurrentPage.parameters.AccId,15)}&pv3={!EntId}"  id="reportLink">{!oppCount}</a>
+            </apex:outputPanel>
+            <apex:outputLabel rendered="{!IF(oppCount<=0,true,false)}" value="0"/>
+        </td>
+    </tr>
+</table>
+
+<apex:pageBlockSection title="Competitor License"  collapsible="false"></apex:pageBlockSection>
+<table>
+    <tr>
+        <td align="left" valign="top" width="150" nowrap="nowrap">
+            <apex:outputPanel id="pnlCompIcon">
+            <apex:image url="{!$Resource.greenCircle}" id="compGreen" rendered="{!IF(CompetitorLicenseIcon=='green',true,false)}"></apex:image>  
+            <apex:image url="{!$Resource.redCircle}" id="compRed" rendered="{!IF(CompetitorLicenseIcon=='red',true,false)}"></apex:image>  
+            <apex:image url="{!$Resource.grayCircle}" id="compGray" rendered="{!IF(CompetitorLicenseIcon=='grey',true,false)}"></apex:image>
+            </apex:outputPanel>  
+        </td>
+        <th>Competitor</th>
+        <td valign="top">
+            <apex:outputPanel id="op1" >
+                <apex:outputLabel value="" for="Competitor_Name_1__c"/>
+                <apex:selectList id="Competitor_Name_1__c" value="{!Opportunity_Plan_Detail__c.Competitor_Name_1__c}" size="1">
+                     <apex:selectOptions value="{!Competitor1}"/>
+                </apex:selectList>
+            </apex:outputPanel>
+        </td>
+        <td width="50" nowrap="nowrap">&nbsp;</td>
+        <th>Competitor</th>
+        <td valign="top">
+            <apex:outputPanel id="op6">
+                <apex:outputLabel value="" for="Competitor_Name_2__c"/>
+                <apex:selectList id="Competitor_Name_2__c" value="{!Opportunity_Plan_Detail__c.Competitor_Name_2__c}" size="1">
+                     <apex:selectOptions value="{!Competitor2}"/>
+                </apex:selectList>
+            </apex:outputPanel>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>       
+        <th>Product</th>
+        <td valign="top">
+            <apex:outputPanel >
+                <apex:outputLabel value="" for="Competitor_Product1__c"/>
+                <apex:inputField id="Competitor_Product1__c" value="{!Opportunity_Plan_Detail__c.Competitor_Product1__c}"/>
+            </apex:outputPanel>
+        </td>        
+        <td width="50" nowrap="nowrap">&nbsp;</td>
+        <th>Product</th>
+        <td valign="top">
+            <apex:outputPanel >
+                <apex:outputLabel value="" for="Competitor_Product2__c"/>
+                <apex:inputField id="Competitor_Product2__c" value="{!Opportunity_Plan_Detail__c.Competitor_Product2__c}"/>
+            </apex:outputPanel>
+        </td>                
+    </tr>
+    <tr>
+        <td>&nbsp;</td>       
+        <th># of License</th>
+        <td valign="top">
+            <apex:outputPanel id="op2" >
+                <apex:outputLabel value="" for="Competitor_License1__c"/>
+                <apex:inputField style="width:100px" id="Competitor_License1__c" value="{!Opportunity_Plan_Detail__c.Competitor_License1__c}"/>
+            </apex:outputPanel>
+        </td>
+        <td width="50" nowrap="nowrap">&nbsp;</td>
+        <th># of License</th>
+        <td valign="top">
+            <apex:outputPanel id="op7">
+                <apex:outputLabel value="" for="Competitor_License2__c"/>
+                <apex:inputField style="width:100px" id="Competitor_License2__c" value="{!Opportunity_Plan_Detail__c.Competitor_License2__c}"/>
+            </apex:outputPanel>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>       
+        <th>Renewal Date</th>
+        <td valign="top">
+            <apex:outputPanel id="op3">
+                <apex:outputLabel value="" for="Renewal_Date_1__c"/>
+                <apex:inputField id="Renewal_Date_1__c" value="{!Opportunity_Plan_Detail__c.Renewal_Date_1__c}"/>
+            </apex:outputPanel>
+        </td>
+        <td width="50" nowrap="nowrap">&nbsp;</td>
+        <th>Renewal Date</th>
+        <td valign="top">
+            <apex:outputPanel id="op8">
+                <apex:outputLabel value="" for="Renewal_Date_2__c"/>
+                <apex:inputField id="Renewal_Date_2__c" value="{!Opportunity_Plan_Detail__c.Renewal_Date_2__c}"/>
+            </apex:outputPanel>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>       
+        <th>Supporter</th>
+        <td valign="top">
+            <apex:outputPanel id="op4">
+                <apex:outputLabel value="" for="Supporter_Contact1__c"/>
+                <apex:inputField id="Supporter_Contact1__c" value="{!Opportunity_Plan_Detail__c.Supporter_Contact1__c}"/>
+            </apex:outputPanel>
+        </td>
+        <td width="50" nowrap="nowrap">&nbsp;</td>
+        <th>Supporter</th>
+        <td valign="top">
+            <apex:outputPanel id="op9">
+                <apex:outputLabel value="" for="Supporter_Contact2__c"/>
+                <apex:inputField id="Supporter_Contact2__c" value="{!Opportunity_Plan_Detail__c.Supporter_Contact2__c}"/>
+            </apex:outputPanel>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>       
+        <th>Detractor</th>
+        <td valign="top">
+            <apex:outputPanel id="op5">
+                <apex:outputLabel value="" for="Detractor_Contact1__c"/>
+                <apex:inputField id="Detractor_Contact1__c" value="{!Opportunity_Plan_Detail__c.Detractor_Contact1__c}"/>
+            </apex:outputPanel>
+        </td>
+        <td width="50" nowrap="nowrap">&nbsp;</td>
+        <th>Detractor</th>
+        <td valign="top">
+            <apex:outputPanel id="op10">
+                <apex:outputLabel value="" for="Detractor_Contact2__c"/>
+                <apex:inputField id="Detractor_Contact2__c" value="{!Opportunity_Plan_Detail__c.Detractor_Contact2__c}"/>
+            </apex:outputPanel>
+        </td>
+    </tr>
+    <tr><td colspan="6">&nbsp;</td></tr>
+    <tr>
+        <td colspan="5" align="right">Rating of Customer Satisfaction and Install?</td>
+        <td>
+            <apex:outputPanel id="op11">
+                <apex:outputLabel value="" for="Competitor_Question_1__c"/>
+                <apex:inputField id="Competitor_Question_1__c" value="{!Opportunity_Plan_Detail__c.Competitor_Question_1__c}"/>
+                <script>
+                    //document.getElementById('{!$Component.Competitor_Question_1__c}').disabled={!IF(Opportunity_Plan_Detail__c.Competitor__c='Yes','false','true')};
+                </script>
+            </apex:outputPanel>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="5" align="right">How "sticky" are competitors to clients environment?</td>
+        <td>
+            <apex:outputPanel id="op12">
+                <apex:outputLabel value="" for="Competitor_Question_2__c"/>
+                <apex:inputField id="Competitor_Question_2__c" value="{!Opportunity_Plan_Detail__c.Competitor_Question_2__c}"/>
+                <script>
+                    //document.getElementById('{!$Component.Competitor_Question_2__c}').disabled={!IF(Opportunity_Plan_Detail__c.Competitor__c='Yes','false','true')};
+                </script>
+            </apex:outputPanel>
+        </td>
+    </tr>
+</table>
+
+<apex:pageBlockSection title="CA License" collapsible="false"></apex:pageBlockSection>
+    <table cellspacing="2">
+        <tr>
+            <td align="left" valign="top" width="150" nowrap="nowrap">
+                <apex:image url="{!IF(hasLicenses,$Resource.greenCircle,$Resource.redCircle)}"></apex:image>  
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td colspan="7" align="right">Key Contact:</td>
+                        <td>
+                            <apex:outputPanel >
+                                <apex:outputLabel value="" for="CA_License_Key_Contact__c"/>
+                                <apex:inputField id="CA_License_Key_Contact__c" value="{!Opportunity_Plan_Detail__c.CA_License_Key_Contact__c}"/>
+                                    <apex:outputPanel rendered="{!!hasLicenses}">
+                                        <script>
+                                            document.getElementById('{!$Component.CA_License_Key_Contact__c}').disabled={!!hasLicenses};
+                                            document.getElementById('{!$Component.CA_License_Key_Contact__c}_lkwgt').href='#;';
+                                        </script>
+                                    </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="7" align="right">Rating of Customer Satisfaction and Install?</td>
+                        <td>
+                            <apex:outputPanel >
+                                <apex:outputLabel value="" for="CA_License_Question_1__c"/>
+                                <apex:inputField id="CA_License_Question_1__c" value="{!Opportunity_Plan_Detail__c.CA_License_Question_1__c}"/>
+                                <script>
+                                    document.getElementById('{!$Component.CA_License_Question_1__c}').disabled={!!hasLicenses};
+                                </script>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="7" align="right">How "sticky" are CA licenses to clients environment?</td>
+                        <td>
+                            <apex:outputPanel >
+                                <apex:outputLabel value="" for="CA_License_Question_2__c"/>
+                                <apex:inputField id="CA_License_Question_2__c" value="{!Opportunity_Plan_Detail__c.CA_License_Question_2__c}"/>
+                                <script>
+                                    document.getElementById('{!$Component.CA_License_Question_2__c}').disabled={!!hasLicenses};
+                                </script>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="7" align="right">If above is 3 or below, what is the cause?</td>
+                        <td>
+                            <apex:outputPanel >
+                                <apex:outputLabel value="" for="CA_License_Question_3__c"/>
+                                <apex:inputField id="CA_License_Question_3__c" value="{!Opportunity_Plan_Detail__c.CA_License_Question_3__c}"/>
+                                <script>
+                                    document.getElementById('{!$Component.CA_License_Question_3__c}').disabled={!!hasLicenses};
+                                </script>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td><b><i>Note: ODS Values are converted to USD at the Income Statement rate in force for the booking month</i></b></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>
+                <table style="border-style:solid;" border="1" cellspacing="0">
+                    <tr>
+                        <td rowspan="2" valign="top" align="center" bgcolor="98FB98"><b>Site Id</b></td>
+                        <td rowspan="2" valign="top" align="center" bgcolor="#98FB98"><b>Material Code</b></td>
+                        <td rowspan="2" valign="top" align="center"bgcolor="#98FB98"><b>Product</b></td>
+                        <td colspan="2" align="center"bgcolor="#98FB98"><b>Version</b></td>
+                        <td colspan="3" align="center"bgcolor="#98FB98"><b>Contract</b></td>
+                        <td colspan="3" align="center"bgcolor="#98FB98"><b>Purchase</b></td>
+                        <td rowspan="2" valign="top" align="center" bgcolor="#98FB98"><b>Platform</b></td>
+                    </tr>
+                    <tr>
+                        
+                        
+                        
+                        <td align="center" bgcolor="#98FB98"><b>Contract</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>Support</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>#</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>Start Date</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>End Date</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>Quantity</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>Price</b></td>
+                        <td align="center" bgcolor="#98FB98"><b>Type</b></td>
+                        
+                    </tr>
+                    <apex:repeat var="license" value="{!licenses}">
+                    <tr>
+                        <td>{!license.Site_ID__c}&nbsp;</td>
+                        <td>{!license.Material_Code__c}&nbsp;</td>
+                        <td>{!license.Product_Name__c}&nbsp;</td>
+                        <td>{!license.Contract_Version__c}&nbsp;</td>
+                        <td>{!license.Support_Version__c}&nbsp;</td>
+                        <td>{!license.Contract_Number__c}&nbsp;</td>
+                        <td align="right">
+                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                <apex:param value="{!license.Contract_Start__c}" />
+                            </apex:outputText>&nbsp;
+                        </td>
+                        <td align="right">
+                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                <apex:param value="{!license.Contract_End__c}" />
+                            </apex:outputText>&nbsp;    
+                        </td>
+                        <td align="right">
+                            <apex:outputText value="{0,number,#0}">
+                                <apex:param value="{!license.Quantity__c}" />
+                            </apex:outputText>&nbsp;
+                        </td>
+                        <td align="right">
+                            <apex:outputText value="{0,number,###,###,##0.00}">
+                                <apex:param value="{!license.Purchase_Price__c}" />
+                            </apex:outputText>&nbsp;
+                        </td>
+                        <td>{!license.License_Type__c}&nbsp;</td>
+                        <td>{!license.Operation_System__c}&nbsp;</td>
+                    </tr>
+                    </apex:repeat>
+                </table>               
+            </td>
+        </tr>
+    </table>
+</apex:outputPanel>
+
+</apex:pageBlock>
+</apex:form>
+<script>
+//  if("{!$CurrentPage.parameters.id}"!=""){
+//      alert("pdId: {!$CurrentPage.parameters.id}");
+//      setURI('apex/BUDriverDetails?planId={!$CurrentPage.parameters.PlanId}&ncvId={!$CurrentPage.parameters.ncvId}&Driver={!$CurrentPage.parameters.Driver}&BU={!$CurrentPage.parameters.BU}&AccId={!$CurrentPage.parameters.AccId}');        
+//  }
+</script>
+
+
+</apex:page>

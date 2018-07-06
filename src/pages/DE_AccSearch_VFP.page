@@ -1,0 +1,567 @@
+<apex:page id="dgbxSrch" sidebar="{!showsidebar}" showHeader="{!showhead}" controller="DE_AccSearch_CLS" action="{!loadheader}">
+    <apex:pagemessages ></apex:pagemessages>
+    <apex:includeScript value="{!$Resource.JS_JQuery}" />
+    <apex:includeScript value="{!$Resource.JS_JQuery_Block_UI}" />
+    <apex:includeScript value="{!$Resource.YUI_ModalLoader}" /> 
+    <apex:includeScript value="{!$Resource.YUI_ModalLoader}" />  
+    
+    <apex:stylesheet value="{!URLFOR($Resource.ISTP,'/progress.css')}"/>
+    
+    
+    <apex:form id="frmSrch" styleClass="hasMotif lookupTab  LookupSearchFrame">
+        <apex:actionFunction name="doSearch" action="{!SearchAcc}" >  
+            <apex:param name="name" assignTo="{!accountName}" value=""/>
+            <apex:param name="country" assignTo="{!physicalCountry}" value=""/>
+            <apex:param name="city" assignTo="{!physicalCity}" value=""/>
+            <apex:param name="state" assignTo="{!physicalState}" value=""/> 
+            <apex:param name="zip" assignTo="{!ZipPostalCode}" value=""/>
+            <apex:param name="address" assignTo="{!physicalAddress}" value=""/>
+        </apex:actionFunction>
+        
+        <apex:outputPanel title="Partner" rendered="{!bIsPartner}">
+            <apex:pageBlock mode="edit" id="pageTitle">
+                
+                <table height="100%">
+                    <tr width="100%" height="30px">
+                        <td  style="align:left;width:75%"><apex:outputText /><b>Account Search</b></td>
+                        <td  style="align:right;width:25%"><apex:image rendered="{!bIsPartner}" value="{!URLFOR($Resource.ISTP,'/1.png')}"/></td>
+                    </tr>
+                </table>
+                
+            </apex:pageBlock>
+            <div align="right">
+                <apex:commandButton id="Cancel" value="Cancel" onclick="YUIShowLoading();ClosePage();return false;" oncomplete="YUIHideLoading();" /><br/>  
+            </div>
+            
+            <table width="100%" border="0" >
+                
+                
+                <tr>
+                    <td width="50%" valign="top">
+                        
+                        <apex:pageblock >
+                            <apex:outputLabel value="Search for Account using " /><b>Search Methods</b>
+                        </apex:pageblock>
+                        <apex:pageblock id="blk">
+                            <apex:PageBlockButtons location="bottom">
+                                <div align="right">
+                                    <apex:commandButton id="Search" value="Search" onclick="validateFields('dgbxSrch:frmSrch:blk','{!Usrtyp}');return false;" oncomplete="YUIHideLoading();" />
+                                    
+                                </div>
+                            </apex:PageBlockButtons>
+                            
+                            <apex:outputpanel >Required address information does not have to be an exact match, however providing the most accurate address may yield a best Company match<br/><br/></apex:outputpanel>
+                            
+                            <apex:pageBlockSection columns="1" id="sec">
+                                <apex:pageblockSectionItem id="si1">           
+                                    <apex:outputLabel value="End User Account Name " />
+                                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                        <apex:inputText id="accName" value="{!accountName}"/>
+                                    </apex:outputPanel>
+                                </apex:pageblockSectionItem>
+                                <apex:pageblockSectionItem id="secitemc">           
+                                    <apex:outputLabel value="Country" />
+                                    <apex:outputPanel styleClass="requiredInput" layout="block" id="opcountry">
+                                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                        <apex:selectList value="{!physicalCountry}" size="1" id="lstCountry"  onchange="LoadStateRegionFor_US_CA('dgbxSrch:frmSrch:blk','{!Usrtyp}');">
+                                            <apex:selectoptions value="{!countries}"></apex:selectoptions>
+                                        </apex:selectList>    
+                                    </apex:outputPanel>
+                                </apex:pageblockSectionItem>
+                                <apex:pageblockSectionItem id="secitem11">           
+                                    <apex:outputLabel value="Address" style="align:left;"/>
+                                    <apex:outputPanel layout="block"> <!--removed styleClass="requiredInput"//Nihal//-->
+                                        <apex:outputPanel layout="block"/>    <!--removed styleClass="requiredBlock"//Nihal//-->            
+                                        <apex:inputText id="address" value="{!physicalAddress}"/>
+                                    </apex:outputPanel>
+                                </apex:pageblockSectionItem>
+                                <apex:pageblockSectionItem id="secitem12">           
+                                    <apex:outputLabel value="City" />
+                                    <apex:outputPanel layout="block">
+                                        <apex:outputPanel layout="block"/>
+                                        <apex:inputText id="city" value="{!physicalCity}"/>
+                                    </apex:outputPanel>
+                                </apex:pageblockSectionItem>
+                                <apex:pageblockSectionItem id="secitems">                    
+                                    <apex:outputLabel value="State/Region" id="statelabel"/>
+                                    <apex:outputPanel >
+                                        <apex:inputText id="state" value="{!physicalStateFree}" />
+                                        <apex:outputPanel layout="block" id="opStateRegion_US" >
+                                            <apex:outputPanel layout="block"/>
+                                            <apex:selectList value="{!physicalStateUS}" size="1" id="lstStateRegion_US" onchange="validateZip('dgbxSrch:frmSrch:blk');">
+                                                <apex:selectoptions value="{!stateRegionsFor_US}"></apex:selectoptions>
+                                            </apex:selectList>    
+                                        </apex:outputPanel>
+                                        
+                                        <apex:outputPanel layout="block"  id="opStateRegion_CA">
+                                            <apex:outputPanel layout="block"/>
+                                            <apex:selectList value="{!physicalStateCA}" size="1" id="lstStateRegion_CA">
+                                                <apex:selectoptions value="{!stateRegionsForCANADA}"></apex:selectoptions>
+                                            </apex:selectList>    
+                                        </apex:outputPanel>                                        
+                                        <apex:outputPanel layout="block"  id="opStateRegion_Australia">
+                                            <apex:outputPanel layout="block"/>
+                                            <apex:selectList value="{!physicalStateAU}" size="1" id="lstStateRegion_Australia">
+                                                <apex:selectoptions value="{!StateRegionsForAustralia}"></apex:selectoptions>
+                                            </apex:selectList>    
+                                        </apex:outputPanel>
+                                        
+                                        <!-- samap01 -->
+                                        <apex:outputPanel layout="block"  id="opStateRegion_INDIA">
+                                            <apex:outputPanel layout="block"/>
+                                            <apex:selectList value="{!physicalStateIndia}" size="1" id="lstStateRegion_INDIA">
+                                                <apex:selectoptions value="{!stateRegionsForINDIA}"></apex:selectoptions>
+                                            </apex:selectList>    
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>      
+                                </apex:pageblockSectionItem>
+                                <apex:pageblockSectionItem id="secitem13">           
+                                    <apex:outputLabel value="Zip/Postal Code" />
+                                    <apex:outputPanel styleClass="requiredInput" layout="block"> <!--samap01 US465954-->
+                                        <apex:outputPanel styleClass="" layout="block" id="zipPanel"/>
+                                        <apex:inputText id="zipCode" value="{!ZipPostalCode}" />
+                                    </apex:outputPanel>
+                                </apex:pageblockSectionItem>
+                            </apex:pageBlockSection>
+                            <apex:pageBlockSection >
+                                <apex:pageblockSectionItem >
+                                    <apex:outputText ><br/><br/><b>Red Denotes Required Field </b></apex:outputText>
+                                </apex:pageblockSectionItem>
+                            </apex:pageBlockSection>
+                        </apex:pageBlock>
+                        
+                        
+                    </td>
+                    <td width="50%" valign="top">
+                        
+                        <apex:pageblock >
+                            <apex:outputLabel style="text-align:right" value=" or Search for Account using " /><b>Recent Account List</b>
+                        </apex:pageblock>
+                        <apex:pageblock title="Recent Accounts">
+                            <apex:pageBlockTable value="{!recentlyAccounts}" var="account">
+                                <apex:column width="50px">
+                                    <apex:facet name="header">End User Account Name</apex:facet>
+                                    <apex:outputLink value="#" onclick="fillIn(event,'{!account.Accountid}')">{!account.Account.Name}</apex:outputLink>
+                                </apex:column>
+                                <apex:column >
+                                    <apex:facet name="header">CA Account ID</apex:facet>
+                                    <apex:outputLabel value="{!account.Account.Enterprise_ID__c}"/>
+                                </apex:column>
+                                <apex:column >
+                                    <apex:facet name="header">Country</apex:facet> 
+                                    <apex:outputLabel value="{!account.Account.Country_Picklist__c}"/>
+                                </apex:column>
+                                <apex:column >
+                                    <apex:facet name="header">Segment</apex:facet> 
+                                    <apex:outputLabel value="{!account.Account.Segment__c}"/>
+                                </apex:column>
+                            </apex:pageBlockTable>
+                            
+                        </apex:pageBlock>
+                        
+                    </td>
+                </tr>
+                
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel title="InternalUsers" rendered="{!!bIsPartner}">
+            
+            <apex:pageBlock title="Account Search" mode="edit" id="blk1">
+                
+                <apex:PageBlockButtons location="bottom">
+                    <div align="right">
+                        <apex:commandButton id="Search" value="Search" onclick="validateFields('dgbxSrch:frmSrch:blk1','{!Usrtyp}');return false;" oncomplete="YUIHideLoading();" />
+                        <apex:commandButton id="Cancel" value="Cancel" onclick="YUIShowLoading();ClosePage();return false;" oncomplete="YUIHideLoading();" />
+                    </div>
+                </apex:PageBlockButtons>
+                
+                
+                
+                <apex:pageBlockSection columns="1" id="sec">
+                    <apex:pageblockSectionItem id="si1">           
+                        <apex:outputLabel value="What Account are you looking for?" />
+                        <apex:outputPanel styleClass="requiredInput" layout="block">
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                            <apex:inputText id="accName" value="{!accountName}"/>
+                        </apex:outputPanel>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem id="secitemc">           
+                        <apex:outputLabel value="Country" />
+                        <apex:outputPanel styleClass="requiredInput" layout="block" id="opcountry">
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                            <apex:selectList value="{!physicalCountry}" size="1" id="lstCountry"  onchange="LoadStateRegionFor_US_CA('dgbxSrch:frmSrch:blk1','{!Usrtyp}');">
+                                <apex:selectoptions value="{!countries}"></apex:selectoptions>
+                            </apex:selectList>    
+                        </apex:outputPanel>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem id="secitem11">           
+                        <apex:outputLabel value="Address" style="align:left;"/>
+                        <apex:outputPanel styleClass="requiredInput" layout="block">
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>                
+                            <apex:inputText id="address" value="{!physicalAddress}"/>
+                        </apex:outputPanel>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem id="secitem12">           
+                        <apex:outputLabel value="City" />
+                        <apex:outputPanel styleClass="requiredInput" layout="block">
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                            <apex:inputText id="city" value="{!physicalCity}"/>
+                        </apex:outputPanel>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem id="secitems">                    
+                        <apex:outputLabel value="State/Region" id="statelabel"/>
+                        <apex:outputPanel >
+                            <apex:inputText id="state" value="{!physicalStateFree}" />
+                            <apex:outputPanel styleClass="requiredInput" layout="block"  id="opStateRegion_US">
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:selectList value="{!physicalStateUS}" size="1" id="lstStateRegion_US" onchange="validateZip('dgbxSrch:frmSrch:blk1');">
+                                    <apex:selectoptions value="{!stateRegionsFor_US}"></apex:selectoptions>
+                                </apex:selectList>    
+                            </apex:outputPanel>
+                            <apex:outputPanel styleClass="requiredInput" layout="block"  id="opStateRegion_CA">
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:selectList value="{!physicalStateCA}" size="1" id="lstStateRegion_CA">
+                                    <apex:selectoptions value="{!stateRegionsForCANADA}"></apex:selectoptions>
+                                </apex:selectList>    
+                            </apex:outputPanel>
+                            <apex:outputPanel styleClass="requiredInput" layout="block"  id="opStateRegion_Australia">
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:selectList value="{!physicalStateAU}" size="1" id="lstStateRegion_Australia"  >
+                                    <apex:selectoptions value="{!StateRegionsForAustralia}"></apex:selectoptions>
+                                </apex:selectList>    
+                            </apex:outputPanel>    
+                            <apex:outputPanel styleClass="requiredInput" layout="block"  id="opStateRegion_INDIA"> <!--samap01 US465954-->
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:selectList value="{!physicalStateIndia}" size="1" id="lstStateRegion_INDIA">
+                                    <apex:selectoptions value="{!stateRegionsForINDIA}"></apex:selectoptions>
+                                </apex:selectList>    
+                            </apex:outputPanel>
+                        </apex:outputPanel>      
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem id="secitem13">   
+                        <apex:outputLabel value="Zip/Postal Code" />
+                        <apex:outputPanel styleClass="requiredInput" layout="block"> <!--samap01 US465954-->
+                            <apex:outputPanel styleClass="" layout="block" id="zipPanel"/>
+                            <apex:inputText id="zipCode" value="{!ZipPostalCode}" />
+                        </apex:outputPanel>
+                        
+                    </apex:pageblockSectionItem>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection >
+                    <apex:pageblockSectionItem >
+                        <apex:outputText ><br/><br/><b>Red Denotes Required Field</b></apex:outputText>
+                    </apex:pageblockSectionItem>
+                </apex:pageBlockSection>
+                
+            </apex:pageBlock>
+            
+        </apex:outputPanel>
+    </apex:form>
+    <script>
+    
+    
+    function fillIn(ev, id)    {       
+        
+        if (document.all && document.querySelector && !document.addEventListener)// added for IE8
+        {
+            var name = ev.srcElement.innerText.replace("'","\'");
+        }
+        else
+        {
+            var src = ev.target.textContent || ev.srcElement.innerText;
+            var name = src.replace("'","\'");
+        }
+        
+        
+        if("{!parentPage}" == "Deal"){
+            
+            window.parent.opener.document.getElementById('targetName').innerHTML = name;
+            window.parent.opener.document.getElementById('thePage:theform:theBlock:hdnAccountName').value=name;
+            window.parent.opener.document.getElementById('thePage:theform:theBlock:hdnAccountID').value=id;
+        }
+        if("{!parentPage}" == "Dealxsp"){
+            window.parent.opener.document.getElementById('targetSPName').innerHTML = name;
+            window.parent.opener.document.getElementById('thePage:theform:theBlock:hdnserviceProAccountName').value=name;
+            window.parent.opener.document.getElementById('thePage:theform:theBlock:hdnserviceProAccountId').value=id;
+        }
+        if("{!parentPage}" == "Opportunity"){
+            
+            window.parent.opener.document.getElementById('targetName').innerHTML = name;
+            window.parent.opener.document.getElementById('EditPartnerOpp:theform:theBlock:pbs3:hdnAccountName').value=name;
+            window.parent.opener.document.getElementById('EditPartnerOpp:theform:theBlock:pbs3:hdnAccountID').value=id;
+        }
+        
+        if("{!parentPage}" == "Lead"){
+            
+            window.parent.opener.document.getElementById('targetName').innerHTML = name;
+            window.parent.opener.document.getElementById('thePage:theForm:theBlock:hdnAccountName').value=name;
+            window.parent.opener.document.getElementById('thePage:theForm:theBlock:hdnAccountID').value=id;
+        }
+        
+        ClosePage();    
+        
+    }      
+    
+    function CloseWindow()    {       
+        winMain=window.opener;       
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener;       
+        }       
+        winMain.closeLookupPopup();    
+    }
+    
+    window.onload=function() {
+        if({!bIsPartner})
+            idHierarchy = 'dgbxSrch:frmSrch:blk';
+        
+        else 
+            idHierarchy = 'dgbxSrch:frmSrch:blk1';
+        ShowHideComponents(idHierarchy);                    
+    }
+    
+    function ShowHideComponents(idHierarchy,usertype) {
+        var usr=usertype;
+        if(document.getElementById(idHierarchy+':sec:secitemc:lstCountry').value == 'CA - CANADA'){
+            document.getElementById(idHierarchy+':sec:secitems:state').style.display = 'none';
+            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_US').style.display = 'none';       
+            
+            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_CA').style.display = 'block';
+            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_Australia').style.display = 'none';
+            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_INDIA').style.display = 'none'; //SAMAP01
+            document.getElementById(idHierarchy+':sec:secitems:statelabel').style.display = 'block';
+        }
+        else if(document.getElementById(idHierarchy+':sec:secitemc:lstCountry').value == 'US - UNITED STATES') {
+            document.getElementById(idHierarchy+':sec:secitems:state').style.display = 'none';            
+            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_US').style.display = 'block';
+            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_INDIA').style.display = 'none';
+            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_CA').style.display = 'none';             
+            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_Australia').style.display = 'none';
+            document.getElementById(idHierarchy+':sec:secitems:statelabel').style.display = 'block'; //System.debug('Hi');
+        }
+            else if(document.getElementById(idHierarchy+':sec:secitemc:lstCountry').value == 'AU - AUSTRALIA') {
+                document.getElementById(idHierarchy+':sec:secitems:state').style.display = 'none';
+                document.getElementById(idHierarchy+':sec:secitems:opStateRegion_US').style.display = 'none';                
+                document.getElementById(idHierarchy+':sec:secitems:opStateRegion_CA').style.display = 'none'; 
+                document.getElementById(idHierarchy+':sec:secitems:opStateRegion_INDIA').style.display = 'none';
+                document.getElementById(idHierarchy+':sec:secitems:opStateRegion_Australia').style.display = 'block';
+                document.getElementById(idHierarchy+':sec:secitems:statelabel').style.display = 'block';//System.debug('Hi');
+            }
+        //SAMAP01 -US465954
+                else if(document.getElementById(idHierarchy+':sec:secitemc:lstCountry').value == 'IN - INDIA') {
+                    document.getElementById(idHierarchy+':sec:secitems:state').style.display = 'none';
+                    document.getElementById(idHierarchy+':sec:secitems:opStateRegion_US').style.display = 'none';
+                    
+                    document.getElementById(idHierarchy+':sec:secitems:opStateRegion_CA').style.display = 'none'; 
+                    document.getElementById(idHierarchy+':sec:secitems:opStateRegion_Australia').style.display = 'none';
+                    document.getElementById(idHierarchy+':sec:secitems:opStateRegion_INDIA').style.display = 'block';
+                    document.getElementById(idHierarchy+':sec:secitems:statelabel').style.display = 'block';
+                } //SAMAP01 -US465954
+                    else if(document.getElementById(idHierarchy+':sec:secitemc:lstCountry').value == '--Select--') {
+                        document.getElementById(idHierarchy+':sec:secitems:state').style.display = 'none';
+                        document.getElementById(idHierarchy+':sec:secitems:statelabel').style.display = 'none';
+                        document.getElementById(idHierarchy+':sec:secitems:opStateRegion_US').style.display = 'none';
+                        
+                        document.getElementById(idHierarchy+':sec:secitems:opStateRegion_CA').style.display = 'none'; 
+                        document.getElementById(idHierarchy+':sec:secitems:opStateRegion_INDIA').style.display = 'none';
+                        document.getElementById(idHierarchy+':sec:secitems:opStateRegion_Australia').style.display = 'none'; 
+                    }
+                        else {
+                            document.getElementById(idHierarchy+':sec:secitems:statelabel').style.display = 'block';
+                            document.getElementById(idHierarchy+':sec:secitems:state').style.display = 'block';
+                            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_US').style.display = 'none';
+                            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_INDIA').style.display = 'none'; 
+                            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_CA').style.display = 'none';                             
+                            document.getElementById(idHierarchy+':sec:secitems:opStateRegion_Australia').style.display = 'none';  
+                            
+                        }
+       
+    }
+    
+    function LoadStateRegionFor_US_CA(idHierarchy,usertype) {
+        var ustyp=usertype;
+        // alert('user type '+ustyp);
+        ShowHideComponents(idHierarchy,ustyp);   
+        validateZip(idHierarchy);
+        
+    }
+    
+    //samap01 - check if California or Penslyvania then make zipcode mandatory -US465954
+    function validateZip(idHierarchy){
+      
+        var state;
+        var  country = document.getElementById(idHierarchy+':sec:secitemc:lstCountry').value;
+        //alert('country --'+country);
+        if(country == 'US - UNITED STATES'){
+            // if(document.getElementById(idHierarchy+':sec:secitems:opStateRegion_US').style.display != 'none'  ){            
+            state = document.getElementById(idHierarchy+':sec:secitems:lstStateRegion_US').value;               
+            // alert('state-us------/'+state);
+            if(state == "California" || state == "Pennsylvania") 
+            {
+                document.getElementById(idHierarchy+':sec:secitem13:zipPanel').className = "requiredBlock";
+                //alert('Please enter the zipcode.');
+                // return false; 
+            }
+            else
+            {
+                document.getElementById(idHierarchy+':sec:secitem13:zipPanel').className = "";
+                
+                // return false; 
+            }
+            // }
+        }
+        else
+        {
+            document.getElementById(idHierarchy+':sec:secitem13:zipPanel').className = "";          
+            //alert('Please enter the zipcode.');
+            // return false; 
+        }
+    }
+    
+    function validateFields(idHierarchy, Usrtype){
+        var name, city, country, state, zip,street;
+        var exp=/^[A-Za-z][A-Za-z0-9 ]*$/i;
+        var let=new RegExp(exp);
+        var usrtyp=Usrtype;
+        // alert('usrtyp-------/'+usrtyp);
+        //var InvalidChars = /^[\u4E00-\u9FAF|\u3040-\u3096|\u30A1-\u30FA|\uFF66-\uFF9D|\u31F0-\u31FF]+$/i;
+        var validChars = /^[\u0000-\u2E80]+$/i;
+        var regstringval = new RegExp(validChars);
+        
+        name = document.getElementById(idHierarchy+':sec:si1:accName').value;
+        // alert('name------'+name);
+        country = document.getElementById(idHierarchy+':sec:secitemc:lstCountry').value;
+        city = document.getElementById(idHierarchy+':sec:secitem12:city').value;
+        stateval = document.getElementById(idHierarchy+':sec:secitems:state').value;
+        
+        
+        if(document.getElementById(idHierarchy+':sec:secitems:opStateRegion_US').style.display != 'none'){
+            
+            state = document.getElementById(idHierarchy+':sec:secitems:lstStateRegion_US').value;
+            
+            // alert('state-us------/'+state);
+        }
+        else if(document.getElementById(idHierarchy+':sec:secitems:opStateRegion_CA').style.display != 'none'){
+            state = document.getElementById(idHierarchy+':sec:secitems:lstStateRegion_CA').value;
+            // alert('state-ca-----'+state);
+        }
+            else if(document.getElementById(idHierarchy+':sec:secitems:opStateRegion_Australia').style.display != 'none'){
+                state = document.getElementById(idHierarchy+':sec:secitems:lstStateRegion_Australia').value;
+                //alert('state-Au-----'+state);
+            }
+        //SAMAP01 -US465954
+                else if(document.getElementById(idHierarchy+':sec:secitems:opStateRegion_INDIA').style.display != 'none'){
+                    state = document.getElementById(idHierarchy+':sec:secitems:lstStateRegion_INDIA').value;
+                    //alert('state-Au-----'+state);
+                } //SAMAP01
+                    else {
+                        state = document.getElementById(idHierarchy+':sec:secitems:state').value;
+                    }
+        // alert('state------'+state);
+        
+        
+        zip = document.getElementById(idHierarchy+':sec:secitem13:zipCode').value;
+        street= document.getElementById(idHierarchy+':sec:secitem11:address').value;
+        //     alert('zip------'+zip);
+        //samap01 - if CA - California or PA - Pennsylvania -US465954
+        if(zip=="" && (state == "California" || state == "Pennsylvania") )
+        {
+            alert('Please enter the zipcode.');
+            return false; 
+        }
+        if(name == ""||name==null){
+            alert('Please enter the account name.');
+            
+            return false; 
+        }
+        else if(name.trim().length<1)
+        {
+            alert('Account Name Should Not Contain WhiteSpaces');
+            return false; 
+            
+        }  
+            else if(country == '--Select--'){
+                alert('Please select the country.');
+                return false; 
+                
+            } 
+        /*else if(street== ""||street==null){
+             alert('Please enter Address Details.');
+              return false; 
+            }*///nihal deleted this 
+                else if(street.trim().length<1 && usrtyp!="PowerPartner")
+                {
+                    alert('Address Field Should Not Contain WhiteSpaces');
+                    return false; 
+                }  
+                    else if((city == ""||city ==null) && usrtyp!="PowerPartner"){
+                        alert('Please select the city');
+                        return false; 
+                    }
+                        else if(city .trim().length<1 && usrtyp!="PowerPartner")
+                        {
+                            alert('City Field Should Not Contain WhiteSpaces');
+                            return false; 
+                        }  
+                            
+                                else{
+                                    var boolValidChars = true;
+                                    name = name.replace("'","\'");
+                                    
+                                    if(!name.match(regstringval)) {
+                                        boolValidChars = false;
+                                    }
+                                    if(!street.match(regstringval)&& usrtyp!="PowerPartner") {
+                                        boolValidChars = false;
+                                    }
+                                    if(!city.match(regstringval) && usrtyp!="PowerPartner") {
+                                        boolValidChars = false;
+                                    }
+                                    if(stateval != ''&& usrtyp!="PowerPartner") {
+                                        if(!stateval.match(regstringval)) {
+                                            boolValidChars = false;
+                                        }
+                                    }                
+                                    if(!boolValidChars) { alert('Search is not supported for other Languages, Please fill in Account Name, Address, City and State in English'); return false; }
+                                    if(!city.match(let)&& usrtyp!="PowerPartner") {
+                                        alert('City should not contain Special charaters');
+                                        return false; 
+                                    }
+                                    
+                                    YUIShowLoading();
+                                    doSearch(name,country,city,state,zip,street);
+                                    
+                                }
+    }
+    
+    function ClosePage()   
+    {  
+        var pagered = '{!pagered}';
+        if(pagered!=null && pagered =='StandNew')
+        {
+            setURI('/001/o');                      
+            
+        }
+        else if(pagered !=null && pagered =='TAQButton')
+        {
+            setURI('/a15/o');    
+            
+        }        
+            else {
+                winMain=window.opener;  
+                if (null==winMain) {     
+                    winMain=window.parent.opener;       
+                } 
+                winMain.closeLookupPopup();    
+            } 
+        
+    }      
+    
+    function setURI(sUri){
+        window.location.href= sUri;
+    }
+    
+    
+    </script>
+</apex:page>

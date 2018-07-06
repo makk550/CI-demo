@@ -1,0 +1,16 @@
+<apex:page controller="AcctCont" readOnly="true">
+ <apex:form >
+ <apex:pageBlock >
+ <apex:pageBlockSection >
+ <apex:outputLabel value="Enter Name"/>
+ <apex:inputText value="{!acName}"/>
+ <apex:pageblockTable value="{!cont}" var="acc">
+ <apex:column value="{!acc.Name}"/>
+ <apex:column value="{!acc.Email}"/>
+ <apex:column value="{!acc.Phone}"/>
+ </apex:pageblockTable>
+ <apex:commandButton value="Submit" action="{!Submit}"/>
+ </apex:pageBlockSection>
+ </apex:pageBlock>
+ </apex:form>
+</apex:page>

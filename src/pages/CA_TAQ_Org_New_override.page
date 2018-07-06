@@ -1,0 +1,3 @@
+<apex:page action="{!newPage}" standardController="TAQ_Organization__c" extensions="CA_TAQ_Org_New_override">
+
+</apex:page>

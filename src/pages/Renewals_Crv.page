@@ -1,0 +1,3 @@
+<apex:page controller="Renewals_CRV" action="{!gotoRep}" >
+
+</apex:page>

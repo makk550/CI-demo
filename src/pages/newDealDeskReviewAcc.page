@@ -1,0 +1,63 @@
+<apex:page standardcontroller="Account" extensions="newDealDeskAccount" standardStylesheets="true" showheader="true">
+    <!-- <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">-->
+    
+        <apex:form >
+                
+                <apex:pageBlock title="Create an NDA Request Directly from the Account"> 
+                    <apex:pageBlockSection title="Use this Form to Request an NDA Contract" >
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel > Account :</apex:outputLabel>
+                            <apex:outputField value="{!Account.name}"/>
+                            <!-- <apex:inputField value="{!Opportunity.Name}"/>-->
+                        </apex:pageBlockSectionItem> 
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel > Account Type :</apex:outputLabel>
+                            <apex:outputField value="{!Account.Segment__c}"/>
+                            <!--<apex:inputField value="{!Account.Segment__c}"/>-->
+                        </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+                    <apex:actionFunction name="enableNDAType" action="{!enableNDAtypefun}" rerender="pg"/>
+                    <apex:pageBlockSection id="pg">
+                        <apex:pageBlockSectionItem HelpText="{!$ObjectType.Deal_Desk_Review__c.fields.Deal_Desk_Request_Type__c.inlineHelpText}">
+                            <apex:outputLabel > Transaction Type :</apex:outputLabel>
+                            <apex:selectList size="1" value="{!TransactionType}" onchange="enableNDAType();">                              
+                                <apex:selectOption itemLabel="NDA" itemvalue="NDA"></apex:selectOption>
+                            </apex:selectList> 
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem HelpText="{!$ObjectType.Deal_Desk_Review__c.fields.NDA_Type__c.inlineHelpText}">
+                            <apex:outputLabel > NDA Type :</apex:outputLabel> 
+                            <apex:selectList size="1" value="{!NDATypeselected}">
+                                <apex:selectOptions value="{!NDAType}"/>
+                            </apex:selectList>
+                        </apex:pageBlockSectionItem>
+                        
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection >
+                      <!--  <apex:pageBlockSectionItem >
+                            <apex:outputLabel > Quote :</apex:outputLabel>
+                            <apex:selectList size="1" value="{!Quoteselected}">
+                                <apex:selectOptions value="{!QouteOptions}"/>
+                            </apex:selectList>
+                        </apex:pageBlockSectionItem>  -->
+                        
+                        <apex:pageBlockSectionItem HelpText="{!$ObjectType.Deal_Desk_Review__c.fields.Sales_Comments__c.inlineHelpText}">
+                        <apex:outputLabel > Sales comment :</apex:outputLabel>
+                            <apex:inputTextarea value="{!SalesComment}" style="width: 360px; height: 40px" />
+                        </apex:pageBlockSectionItem>  
+                            
+                        
+                        
+                    </apex:pageBlockSection>
+    
+                    <table align="center">
+                            <tr>
+                                <td><apex:commandButton value="Apply Selection" action="{!ApplySelectionfunction}"/></td>
+                                <td><apex:commandButton value="Cancel" action="{!Cancelfunction}"/></td></tr>
+                        </table>
+                    <table align="center">
+                      <tr><td style="color:red"><apex:messages /></td></tr>
+                    
+                </table>
+                </apex:pageBlock> 
+                 </apex:form>
+        </apex:page>

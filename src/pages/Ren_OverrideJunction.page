@@ -1,0 +1,5 @@
+<apex:page standardController="Renewal_Contracts__c" >
+ <script type="text/javascript">
+  window.location.href = '/{!Renewal_Contracts__c.Active_Contract__c}';
+ </script>
+</apex:page>

@@ -1,0 +1,54 @@
+<apex:page Controller="ConsoleSearchUtility" action="{!gotoTarget}" >
+    
+    <apex:includeScript value="/support/console/37.0/integration.js"/>
+    <script type="text/javascript">
+      function showPopUpWindow(){
+        var url='/apex/SC_MDM_Site_Search'+location.search;
+          popupWindow = window.open(url,'popUpWindow','height=700,width=800,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+      }
+      function showNewSiteWindow(){
+          var url='/a26/e'+location.search;
+        //var url='/a26/o'+location.search;
+          
+          popupWindow = window.open(url,'popUpWindow','height=700,width=800,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+      }
+      function showSiteLookupEntitlementsWindow(){   
+          var ask = true;
+          while(ask){
+            var topsSiteID= prompt ("Please enter TOPS SITE ID" , "");
+            if (topsSiteID=== null) {//user cancelled
+                ask = false;
+                break;
+            }
+            else if (!isNaN(parseInt(topsSiteID))) {
+                break;
+            }
+        }
+        //var url='http://find.ca.com/ER/ERDetails.aspx?TOPSID='+topsSiteID;     
+        var url='https://bo.ca.com/BOE/OpenDocument/1504190144/OpenDocument/opendoc/openDocument.faces?iDocID=AS96Pfuu5stInmH.0izULcc&sIDType=CUID&sType=wid&sOutputFormat=H&sRefresh=N&lsSEnter+Site+ID='+topsSiteID;
+
+        window.open(url,'_blank');     
+      }
+
+      function openSaasUserLookup() {
+        var url = '/apex/SC_SaasUserLookup';
+        sforce.console.openPrimaryTab(null, url, true, 'SaaS User Lookup');
+
+      }
+    </script>
+    <apex:form >
+
+
+        <b><apex:commandLink value="MDM SEARCH" action="{!MDMSearch}" onclick="showPopUpWindow();"/></b><br/>
+        <apex:outputLink value="#" onclick="showNewSiteWindow();"><b>CREATE SITE</b></apex:outputLink><br/>
+        <apex:outputLink value="#" onclick="showSiteLookupEntitlementsWindow();"><b>Site Entitlements Lookup</b></apex:outputLink><br/>
+        <b><apex:commandLink value="SaaS User Lookup" onclick="openSaasUserLookup();"></apex:commandLink></b><br/>
+        
+        <!--<apex:pageblock >
+            <apex:pageblockSection >
+                    <apex:inputfield value="{!case.Status}"/>
+                    <apex:commandButton value="Search" action="{!search}"/>
+            </apex:pageblockSection>
+        </apex:pageblock> -->
+    </apex:form>
+</apex:page>

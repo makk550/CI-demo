@@ -1,0 +1,219 @@
+<apex:page showHeader="true" standardStylesheets="false" controller="PartnerHome" cache="false" sidebar="true" id="partnerpage">
+<apex:stylesheet value="{!URLFOR($Resource.JQueryUiLibrary, '/css/custom-theme/jquery-ui-1.8.2.custom.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.JQueryUiLibrary, '/js/jquery-1.4.2.min.js')}"/>  
+<apex:includeScript value="{!URLFOR($Resource.JQueryUiLibrary, '/js/jquery-ui-1.8.2.custom.min.js')}"/>
+<style>
+.ui-state-ok {
+    background: url("images/ui-bg_gloss-wave_75_2191c0_500x100.png") repeat-x scroll 50% top #00CC33;
+    border: 2px solid #CD0A0A;
+    color: #FFFFFF;
+}
+</style>
+<script type="text/javascript">
+function ToggleLoadInlineTerms(id)
+{
+    try
+    {
+        var indiv=document.getElementById("iframe-dialog-confirm-details"+id);
+        var bt=document.getElementById("btn-iframe-dialog-confirm-details"+id);
+        var ifr=document.getElementById("container-iframe-dialog-confirm-details"+id);
+        var objdiv=document.getElementById("err-iframe-dialog-confirm-details"+id);
+        if(indiv && bt && ifr && objdiv)
+        {
+            if(ifr.src!='')
+            {
+                if(indiv.style.display=="none")
+                {
+                    indiv.style.display='';
+                    bt.value="Hide Details";
+                }
+                else
+                {
+                    indiv.style.display='none';
+                    bt.value="Show Details";
+                }
+            }
+            else
+            {
+                if(objdiv.style.display=="none")
+                {
+                    objdiv.style.display='';
+                    bt.value="Hide Details";
+                }
+                else
+                {
+                    objdiv.style.display='none';
+                    bt.value="Show Details";
+                }
+            }
+        }
+        
+    }catch(err)
+    {
+        alert(err);
+    }
+}
+</script>
+<apex:form id="partnerForm">
+<apex:inputHidden id="SRDs" value="{!SelectedIDs}" immediate="true"/>
+<apex:pageMessages rendered="{!bShowError}"/>
+<apex:repeat var="md" id="mdfR" value="{!lstMDFs}">
+<div id="dialog-confirm{!md.iCounter}" title="{!md.strName}" style="display:none">
+
+<div id="dialog-confirm-details{!md.iCounter}">
+<input class="ui-state-default" id="btn-iframe-dialog-confirm-details{!md.iCounter}" type="button" value="Show Details" OnClick="javascript:ToggleLoadInlineTerms({!md.iCounter });"></input>
+<div id="iframe-dialog-confirm-details{!md.iCounter}" style="display:none">
+<IFRAME   SRC="{!md.MDFTermUrl}" WIDTH="620" HEIGHT="400"    SCROLLING="YES" id="container-iframe-dialog-confirm-details{!md.iCounter}"></IFRAME>
+</div>
+<div id="err-iframe-dialog-confirm-details{!md.iCounter}" style="display:none" class="ui-state-ok" ><p>There is no any document available for this MDF program</p></div>
+</div>
+
+    <input type="hidden" value="{!md.objFundPart.Id}" id="RecordId__{!md.iCounter}"/>
+    <apex:outputLabel escape="false" value="{!md.strHtmlTerms}"></apex:outputLabel>
+</div>
+</apex:repeat>
+<div class="demo" style="display:none">
+<div id="dialog-confirm" title="Welcome to CA technologies">
+<iframe src="{!strTermUrl}" width="640px" height="600px" border="0"/>
+</div>
+</div>
+<div id="waiting" style="display:none" title="Redirecting to CA Educational portal">
+<img src="/img/waiting_dots.gif" width="200" height="20"/>
+<p>Please wait, system will redirect you to CA Educational Portal</p>
+</div>
+<div id="logout" style="display:none">
+<img src="/img/waiting_dots.gif" border="0" width="200" height="20"/>
+<p>Thank you for Visiting CA Partner Portal......</p>
+</div>
+<apex:actionFunction action="{!Register}" id="registeruser" immediate="true" name="registeruser"/>
+<apex:actionFunction action="{!LogoutUser}" id="LogoutUser" immediate="true" name="LogoutUser"/>
+<apex:actionFunction action="{!KnownUser}" id="KnownUser" immediate="true" name="KnownUser"/>
+<apex:actionFunction action="{!RegisterAndMDFHandler}" name="RegisterAndMDFHandler"/>
+<apex:actionFunction action="{!MDFHandlerOnly}" name="MDFHandlerOnly"/>
+</apex:form>
+<script type="text/javascript">
+var $J=jQuery.noConflict();
+$J(document).ready(function(){
+var bProcess="{!bTermsAccepted}";
+var bPortalChamp="{!bIsPortalChamp}";
+var bTermsPending="{!bIsAnyTermsPending}";
+var iTotal="{!iTotalMdf}" - 0 ;
+var strHomeURL="{!strHomeURL}";
+var strAccepted='';
+var strRejected='';
+var iCount=1;
+var skip=0;
+var RegisterAndMDF=0;
+function ProcessMDFHandling()
+{
+    if(iTotal==0)
+    {
+    window.location=strHomeURL;
+    }
+    checkCounter();
+}
+function checkCounter()
+{
+if(skip==0 && iCount < (iTotal - 0 +1) )
+{
+$J("#dialog-confirm"+iCount).dialog({
+            show:'slide',
+            draggable: false,
+            closeOnEscape: false,
+            height:650,
+            width:650,
+            resizable: false,
+            modal:true,
+            buttons: {
+                'Accept': function() {
+                strAccepted=strAccepted +document.getElementById('RecordId__'+iCount).value +'===';
+                $J(this).dialog('close');
+                },
+                'Skip All': function() {
+                skip=1;
+                 $J(this).dialog('close');
+              },
+              'Reject':function(){
+              strRejected=strRejected + document.getElementById('RecordId__'+iCount).value +'===';
+              $J(this).dialog('close');
+              }
+            }
+});
+$J("#dialog-confirm"+iCount).bind("dialogclose", function(event, ui) {
+iCount++;
+checkCounter();
+});
+}
+else
+{
+strAccepted=strAccepted.replace(strRejected,'');
+document.getElementById("{!$Component.partnerForm.SRDs}").value=strAccepted;
+if(strAccepted !='' || RegisterAndMDF ==1)
+{
+if(RegisterAndMDF == 1)
+{
+RegisterAndMDFHandler();
+}
+else
+{
+MDFHandlerOnly(strAccepted);
+}
+}
+else
+{
+window.location=strHomeURL;
+}
+}
+}
+if(bProcess=='true')
+{
+      $J("#dialog-confirm").dialog({
+            show: 'slide',
+            hide: 'slide',
+            draggable: false,
+            closeOnEscape: false,
+            resizable: false,
+            position:'top',
+            height:650,
+            width:650,
+            modal: true,
+            buttons: {
+                'Do Not Agree': function() {
+                location.href='https://www.ca.com/us/register/logout.aspx';
+                },
+                'Agree with Terms ': function() {
+                if("{!bIsAnyTermsPending}"=='true')
+                {
+                RegisterAndMDF=1;
+                $J(this).dialog('close');
+                ProcessMDFHandling();
+                }
+                else
+                {
+                      registeruser();
+                }
+                }
+            }
+        });
+}
+else if(bPortalChamp =='true' && bTermsPending=='true')
+{
+    ProcessMDFHandling();
+}
+else
+{
+location.href='{!strHomeURL}';
+}
+
+$J("#dialog-confirm" ).bind("dialogclose", function(event, ui) {
+if(RegisterAndMDF==0)
+{
+var options = {};
+$J("#logout").show('drop',options,500);
+location.href='https://www.ca.com/us/register/logout.aspx';
+}
+});
+/**Code Holder**/
+});
+</script>
+</apex:page>

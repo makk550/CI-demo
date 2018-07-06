@@ -1,0 +1,223 @@
+<apex:page standardController="Contact" extensions="ContactinteligenceController" standardStylesheets="false"   docType="html-5.0" action="{!ifserviceclouduser}">
+ <html>
+       <LINK href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"/>
+     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css"/>
+     <head>
+         <apex:slds />
+        <style type="text/css">
+            
+             .slds-scope h1, .slds-scope h2, .slds-scope h3, .slds-scope h4, .slds-scope h5, .slds-scope h6 {
+    display: inline-block !important;
+} 
+				.toggleContent {display:{!if($Profile.Name != 'Service Cloud Bus Admin',"block","none")};
+            							{!if($Profile.Name != 'Support Business Analyst',"block","none")};
+            							{!if($Profile.Name != 'Sustaining Engineering',"block","none")};
+            							{!if($Profile.Name != 'Support L1',"block","none")};
+            							{!if($Profile.Name != 'Support Business Partner',"block","none")};
+            							{!if($Profile.Name != 'Outsourced Support',"block","none")};
+            							{!if($Profile.Name != 'Global Quote Support/Deal Desk/Service Cloud',"block","none")};
+            							{!if($Profile.Name != 'Global GSC User',"block","none")};
+            							{!if($Profile.Name != 'Global GSC PRM Support',"block","none")};
+            							{!if($Profile.Name != 'Corporate Escalation',"block","none")};
+            					
+            					}
+    
+            					
+			</style>
+        <script type="text/javascript">
+          function Callmefunc()
+           {
+               // alert('Hi'); 
+           var frname= document.getElementById("{!$Component.frm.Pb1.Pb1s.frname}").value;
+           var lstname=document.getElementById("{!$Component.frm.Pb1.Pb1s.lsname}").value;
+           var emailid=document.getElementById("{!$Component.frm.Pb1.Pb1s.maill}").value;
+           var accountid=document.getElementById("{!$Component.frm.Pb1.Pb1s.accs}").value;
+          
+               // alert('accountid---'+accountid);
+            
+            check(emailid,frname,lstname,accountid); 
+            
+            return true;
+            
+           
+           }
+        
+        function getrelationfields()
+           {
+           var relationtype= document.getElementById("{!$Component.frm.Pb1.Pb2s.input01}").value;
+           var strength=document.getElementById("{!$Component.frm.Pb1.Pb2s.input02}").value;
+           var conrole=document.getElementById("{!$Component.frm.Pb1.Pb2s.input03}").value;
+           getrelation(relationtype,strength,conrole);
+           }
+        
+          function myFunction() {
+        	var email;
+              //alert('in myFunction');
+
+        	email = document.getElementById("{!$Component.frm.Pb1.Pb1s.maill}").value;
+              //alert('in myFunction ss');
+             
+    		var atpos = email.indexOf("@");
+    		var dotpos = email.lastIndexOf(".");
+
+            if (atpos<1 || dotpos<atpos+2 || dotpos+2>=email.length) 
+            {
+           
+                alert('Invalid Email Address ->'+email);
+                return false;
+            } else{
+                // alert('valid Email Address ->'+email);
+                check(email);
+            return true;
+            }
+            
+            
+
+       
+    }
+        </script>
+         
+      </head>
+     
+        <body class="slds-scope">
+            <apex:form id="frm">
+                <apex:actionFunction action="{!SearchContact}" name="check" reRender="frm,opanal,norecs" status="pageStatus">
+                	<apex:param name="email" assignTo="{!con.Email}" value="" />
+                    <apex:param name="frname" assignTo="{!con.FirstName}" value="" />
+                    <apex:param name="lstname" assignTo="{!con.LastName}" value="" />
+                    <apex:param name="accountid" assignTo="{!con.Account.Name}" value="" />
+                </apex:actionFunction>
+                <apex:actionFunction action="{!getrelationshipvalues}" name="getrelation" reRender="Pb1s" status="pageStatus">
+                    <apex:param name="rtype" assignTo="{!relationtype}" value="{!conrelation.CARelationshipType__c}" />
+                    <apex:param name="cRole" assignTo="{!conRole}" value="{!conrelation.Contact_Role__c}" />
+                    <apex:param name="SofR" assignTo="{!StrengthOfR}" value="{!conrelation.StrengthOfRelationship__c}" />
+                </apex:actionFunction>
+                <apex:pageBlock id="Pb1">
+                    <apex:pagemessages ></apex:pagemessages>
+                    <apex:actionStatus id="pageStatus">
+                            <apex:facet name="start">
+                               <div class="demo-only" style="height: 6rem;">
+                                  <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                  </div>
+                                </div>
+                            </apex:facet>
+                        </apex:actionStatus>
+                    <apex:pageBlockButtons location="bottom" id="buttons">
+                        <apex:commandButton styleclass="slds-button slds-button--brand" value="Search For Duplicates" action="{!SearchContact}" reRender="frm,opanal,norecs"   status="pageStatus" rendered="{!!hasduplicates}" />
+
+                        <apex:commandLink styleclass="slds-button slds-button--brand" value="Cancel" action="{!back}" immediate="true" />
+                        <apex:commandButton styleclass="slds-button slds-button--brand" value="Create Contact Relationship" action="{!nextPage}" rendered="{!hascon}" immediate="true"/>
+                        <apex:commandButton styleclass="slds-button slds-button--brand" value="Create New Contact" action="{!createnewcon}" rendered="{!IF(AND(nocon==true,consexists==true), TRUE, FALSE)}"/>
+                        <apex:commandButton styleclass="slds-button slds-button--brand" value="Create New Contact" action="{!createnewcon}" rendered="{!IF(AND(nocon==true,consexists==false), TRUE, FALSE)}"/>
+                    </apex:pageBlockButtons>
+                    <div class="slds-page-header ">
+                      <div class="slds-media">
+                        <div class="slds-media__figure">
+                          <span class="slds-icon_container slds-icon-custom-custom9" title="Description of icon when needed">
+                            <svg class="slds-icon slds-icon--large" aria-hidden="true">
+                              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#contact')}"></use>
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="slds-media__body">
+                          <h1 class="slds-page-header__title slds-truncate slds-align-middle " >Contact </h1>
+                          <p class="slds-text-body_small slds-line-height_reset">Search</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="slds-box">
+                   
+                       <apex:pageBlockSection columns="2" showHeader="true" title="Contact Info" id="Pb1s" >
+                           
+                        <apex:inputField value="{!con.Email}" id="maill" required="true" onchange="myFunction();">
+                          
+                           </apex:inputField>
+                        <apex:inputField value="{!con.FirstName}" id="frname" rendered="{!firname}" onchange="Callmefunc()"/>
+                        <apex:inputtext value="{!con.LastName}" id="lsname" rendered="{!latname}" onchange="Callmefunc()" required="false"/>
+                         
+                         <apex:inputField value="{!con.Accountid}" id="accs" rendered="{!accname}" onchange="Callmefunc()"/>
+                        
+                    </apex:pageBlockSection>
+                    <div   class="toggleContent"> 
+                        <apex:outputPanel rendered="{!hascon}">
+                            <apex:pageBlockSection columns="2" title="Contact Relationship Info"  id="Pb2s" >
+              					<apex:inputField value="{!conrelation.CARelationshipType__c}" id="input01" required="true" />
+                            	<apex:inputField value="{!conrelation.StrengthOfRelationship__c}" id="input02"  onchange="getrelationfields()"/>
+                            	<apex:inputField value="{!conrelation.Contact_Role__c}" id="input03" required="true" onchange="getrelationfields()"/>
+                            </apex:pageBlockSection>    
+                        </apex:outputPanel>
+                 
+                    </div>
+               </div>
+     </apex:pageBlock>
+                 <apex:outputPanel id="opanal" rendered="{!hasduplicates}">
+                     <p>
+                         <b> Please Select Below contact to Create a Relationship</b>
+                     </p><br/>
+                     
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+	<thead>
+		<tr class="slds-text-title_caps">
+			<th scope="col">
+				<div class="slds-truncate" title="Select">Select</div>
+			</th>
+			<th scope="col">
+				<div class="slds-truncate" title="Contact Name">Contact Name</div>
+			</th>
+			<th scope="col">
+				<div class="slds-truncate" title="Account Name">Account Name</div>
+			</th>
+			<th scope="col">
+				<div class="slds-truncate" title="Email">Email</div>
+			</th>
+            <th scope="col">
+				<div class="slds-truncate" title="Contact RelationShip">Contact RelationShip</div>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<apex:repeat value="{!Dupconlist2}" var="dupcon">
+			<tr>
+				<td>
+                	<apex:outputPanel > 
+                    	<input type="radio" name="sel1">
+                        	<apex:actionsupport event="onclick" action="{!validateAccountSearch}"  rerender="Pb1" status="pageStatus">
+                            	<apex:param name="select"  value="{!dupcon.con.id}" assignTo="{!conid}"/> 
+                            </apex:actionsupport> 
+                        </input>
+                    </apex:outputPanel>
+                                        </td>
+                                        <td>
+                                            <apex:outputLink value="/{!dupcon.con.id}" target="_blank">{!dupcon.con.Name}</apex:outputLink>
+                                        </td>
+                                        <td>
+                                            <apex:outputLink value="/{!dupcon.con.Accountid}" target="_blank">{!dupcon.con.Account.Name}</apex:outputLink>
+                                        </td>
+                                        <td>
+                                            {!dupcon.con.Email}
+                                        </td>
+        								<td>
+                                            <apex:outputLink value="/{!dupcon.crid}/e" target="_blank">{!dupcon.crblist1}</apex:outputLink>
+                                        
+       									 </td>
+			</tr>
+</apex:repeat>
+</tbody>
+</table>
+            </apex:outputPanel>
+    <apex:outputPanel id="norecs" rendered="{!nocon}">
+                         <p>
+                         <center><b> No Duplicate Contacts To Display</b></center>
+                     </p><br/>
+    
+    </apex:outputPanel>
+     </apex:form>
+           
+  </body>
+</html>
+</apex:page>

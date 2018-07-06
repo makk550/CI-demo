@@ -1,0 +1,20 @@
+<apex:page standardController="User_Skills__c" extensions="UserSkillUpdateSite" standardStylesheets="true" >
+<apex:stylesheet value="{!URLFOR($Resource.bpstyles, 'styles.min.css')}" />
+  <apex:form >       
+        <apex:pageBlock title="User Skills Site ID Update">
+        <apex:pageMessages id="showmsg"></apex:pageMessages>
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!cancel}" value="Cancel" styleClass="btn" />   
+            <apex:commandButton value="Update" action="{!updateResult}" styleClass="btn"/>  
+        </apex:pageBlockButtons>  
+        <apex:outputPanel id="p1">
+           <apex:pageBlockTable value="{!siteWrapperList}"  var="s" id="test">
+            <apex:column headerValue="Checkbox" >
+                 <apex:inputCheckbox value="{!s.checkbox}"  id="inputId"/>
+             </apex:column>
+             <apex:column headerValue="Sites" value="{!s.site}" />
+             </apex:pageBlockTable>
+             </apex:outputPanel>     
+      </apex:pageBlock>           
+   </apex:form>          
+</apex:page>

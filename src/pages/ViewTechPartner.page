@@ -1,0 +1,66 @@
+<apex:page controller="ViewTech">
+    <style type="text/css">
+        span.blue {color:lightskyblue;font-weight:bold}
+        span.green {color:darkolivegreen;font-weight:bold}
+    </style>
+    <apex:form >
+    <apex:pageBlock rendered="{!$ObjectType.Account.accessible}" title="Technology Partner Details" tabStyle="Account">
+        <apex:pageBlockSection title="Address Information" collapsible="true" columns="1">
+            <apex:pageBlockSectionItem >
+                <apex:outputText escape="false" value="Name :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.name}"></apex:outputLabel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputText escape="false" value="Phone :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.phone}"></apex:outputLabel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputText escape="false" value="Street:" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.BillingStreet}"></apex:outputLabel> 
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputText escape="false" value="City :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.BillingCity}"></apex:outputLabel> 
+            </apex:pageBlockSectionItem>            
+            <apex:pageBlockSectionItem >
+                <apex:outputText escape="false" value="State :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.BillingState}"></apex:outputLabel> 
+            </apex:pageBlockSectionItem>
+            <apex:pageblocksectionItem >
+                <apex:outputText escape="false" value="Zip/Postal Code :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.BillingPostalCode}"></apex:outputLabel> 
+            </apex:pageblocksectionItem>
+            <apex:pageblocksectionItem >
+                <apex:outputText escape="false" value="Country :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.BillingCountry}"></apex:outputLabel> 
+            </apex:pageblocksectionItem>
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="Address Information Local (APJ)" collapsible="true" columns="1">
+            <apex:pageBlockSectionItem >
+                <apex:outputText escape="false" value="Physical Street Local :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.Physical_Street_Local__c}"></apex:outputLabel> 
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputText escape="false" value="Physical City Local :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.Physical_City_Local__c}"></apex:outputLabel> 
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputText escape="false" value="Physical State/Prov Local :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.Physical_State_Prov_Local__c}"></apex:outputLabel> 
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputText escape="false" value="Physical Zip Local :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.Physical_Zip_Local__c}"></apex:outputLabel> 
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputText escape="false" value="Physical Country Local :" styleClass="green"></apex:outputText>
+                <apex:outputLabel value="{!account.Physical_Country_Local__c}"></apex:outputLabel> 
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        <apex:commandButton value="Back" action="{!redirect}"/>
+    </apex:pageBlock>
+    <apex:pageBlock rendered="NOT({!$ObjectType.Account.accessible})" title="Unable to View Technology Partner " tabStyle="Account">
+        <p>Sorry, but you cannot see the data because you do not have access to the Account object.</p>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

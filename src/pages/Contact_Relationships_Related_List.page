@@ -1,0 +1,63 @@
+<apex:page standardController="Contact" extensions="Contact_Relationship_RelatedList">
+
+<apex:form >
+
+<apex:pageblock id="CustomList" title="Contact Relationships"  >
+        <apex:pageBlockButtons >
+          <apex:commandButton onclick="window.open('/{!listurl}/e?{!crContactName}={!Contact.FirstName}+{!Contact.LastName}&{!crContactName}_lkid={!contact.id}&{!crUserName}={!$User.FirstName} {!$User.LastName}&{!crUserName}_lkid={!$User.Id}&retURL=/apex/ContactViewOverride?id={!ID}');" value="New Contact Relationship" />
+
+          </apex:pageBlockButtons>
+
+   <apex:pageBlockTable value="{!CR}" var="o" rendered="{!NOT(ISNULL(CR))}">
+
+
+        <apex:column >
+               
+           <apex:outputLink title="" value="/{!o.id}/e?retURL=/apex/ContactViewOverride?id={!Contact.id}" style="font-weight:bold" target="_blank">Edit</apex:outputLink>&nbsp;|
+            <apex:outputLink title="" value="/{!o.id}" style="font-weight:bold" target="_blank">View</apex:outputLink>&nbsp;
+           <!--a href="javascript:if (window.confirm('Are you sure?')) DeleteAccount('{!o.Id}');" style="font-weight:bold"--><!--/a-->
+         </apex:column>
+        
+        <apex:column headerValue="Name" >
+            <apex:outputlink value="/{!o.CA_User__c}" target="_parent">
+             <apex:outputText value="{!o.CA_User_Name__c}"/>
+            </apex:outputLink>
+       </apex:column>      
+        
+        
+        <apex:column value="{!o.CARelationshipType__c}" headerValue="CA Relationship Type" />        
+        <apex:column value="{!o.Strength__c}" title="{!o.StrengthOfRelationship__c}" headerValue="Relationship Strength" />
+        <apex:column value="{!o.Contact_Role__c}" headerValue="Contact Role"/>
+        <!--apex:column value="{!o.Primary_Contact_Owner__c}" headerValue="Primary Contact Owner" /-->
+        <apex:column value="{!o.Active__c}" headerValue="Active" />
+        <apex:column value="{!o.LastActivityDate}" headerValue="Last Activity Date" />
+        <apex:column value="{!o.CreatedDate}" headerValue="Created Date" />
+       <apex:column headerValue="Notes">      
+           <apex:Repeat value="{!o.Notes}" var="ot"  >
+          <table>
+              
+              
+               <tr>
+               <td>    <apex:Outputtext ><apex:outputlink value="/{!ot.id}" target="_blank" >{!ot.Title}</apex:outputlink></apex:Outputtext></td>
+               </tr>
+               </table> 
+       </apex:Repeat>
+           </apex:column>
+ <apex:column headerValue="Attachments">      
+           <apex:Repeat value="{!o.Attachments}" var="oa"  >
+              <table>
+              
+              
+               <tr>
+               <td>  <apex:Outputtext >  <apex:outputlink value="{!URLFOR($Action.Attachment.Download, oa.id)}" target="_blank" >{!oa.Name}</apex:outputlink></apex:Outputtext>
+                   </td>
+               </tr>
+               </table> 
+       </apex:Repeat>
+           </apex:column>
+   </apex:pageBlockTable>
+   <apex:outputLabel value="No records to display" rendered="{!(ISNULL(CR))}" styleClass="noRowsHeader"></apex:outputLabel>
+      
+ </apex:pageblock>
+</apex:form>
+</apex:page>

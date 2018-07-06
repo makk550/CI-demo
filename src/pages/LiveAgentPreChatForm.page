@@ -1,0 +1,482 @@
+<apex:page showHeader="false" controller="LiveAgentPreChatFormController" standardStylesheets="false" sidebar="false"> 
+    <html>
+        <head>
+            
+            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>    
+            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css"/>
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>  
+            <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+            <script type="text/javascript">
+            (function() { 
+                function handlePageLoad() {
+                    var endpointMatcher = new RegExp("[\\?\\&]endpoint=([^&#]*)");
+                    document.getElementById('prechatForm').setAttribute('action',decodeURIComponent(endpointMatcher.exec(document.location.search)[1]));
+
+                } 
+                if (window.addEventListener) {
+                    window.addEventListener('load', handlePageLoad, false);
+                } else { 
+                    window.attachEvent('onload', handlePageLoad, false);
+                }
+            })(); 
+            </script>
+            
+            <style>
+                .form-group.required .control-label:after {
+                    content:"*";
+                    color:red;
+                }
+                .panel-heading {
+                    padding: 10px 25px 10px 25px;                
+                }
+                .logo {max-height: 100px; max-width: 100px;}
+              
+            </style>
+        </head>
+        <body>
+           
+                
+            
+            <form method="post" id="prechatForm" onsubmit="return validateForm();">
+                <div class="container">
+                    <div class="panel panel-info">
+                        <!-- Default panel contents -->
+                        <div class="panel-heading">
+                            <div class="row">
+                                
+                                <div class="col-sm-2 col-md-2 "><img src="{!$Resource.LiveAgentCALogo}" class="img-responsive logo"/></div>
+                                <div class="col-sm-10 col-md-10">
+                               
+                                    <div class="row">   
+                                        <b><h3>WELCOME TO CA’S LIVE AGENT TOOL</h3></b> 
+                                            </div>      
+                                    <div class="row">                                                                              
+Please provide details about your technical issue, the release and/or version of your CA product, to best enable one of our engineers to support you.  
+
+If this is a question regarding an existing open case, please request support within your case in our support portal and the assigned engineer will respond directly. 
+
+To ensure your request is immediately serviced at the appropriate level of expertise, if you are having a mission critical or high business impact production issue we recommend calling our CA Support Hotline 24x7 or opening the case directly in your support portal.  You will be contacted directly by an engineer ready to assist
+                                        
+                                    </div>  
+                                </div>
+                            </div>  
+                            
+                        </div>
+                        <div class="panel-body ">
+                            <div class="form-horizontal">
+                                
+                                <div class="form-group required">
+                                    <label class="col-sm-2 col-xs-3 control-label">Your Name</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:Name" id="name" class="form-control" required="required" />
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group required required">
+                                    <label class="col-sm-2 col-xs-3 control-label">Your Site Id</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" id="tempSite" name="liveagent.prechat:siteId" onblur="getRemoteSiteId();" class="form-control" readonly="true" />
+                                    </div>
+                                </div>
+                                <!--
+                                <div class="form-group ">
+                                    <label class="col-sm-2 col-xs-3 control-label">Your Company</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:company" id="company" class="form-control"  />
+                                    </div>
+                                </div>
+                                -->
+                                
+                                <div class="form-group required">
+                                    <label class="col-sm-2 col-xs-3 control-label"> Description of Issue</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:caseSubject" class="form-control" required="required" id="description"/>
+                                        
+                                    </div>
+                                </div>
+                                <div class="form-group required">
+                                    <label class="col-sm-2 col-xs-3 control-label">Phone</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:phone" id="phone" class="form-control" required="required" />
+                                    </div>
+                                </div>
+                                <!--div class="form-group required">
+                                    <label class="col-sm-2 col-xs-3 control-label">Issue Severity</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" class="form-control" name="liveagent.prechat:caseSeverity" id="issueSeverity" required="required" readOnly="true" value="4-Minor problem or question about use"/>
+                                        <select  class="form-control" name="liveagent.prechat:caseSeverity"  id="issueSeverity" required="required">
+                                            <option value="3">3-Intermittent or low-impact condition</option>
+                                            <option value="4">4-Minor problem or question about use</option>                     
+                                        </select>                                  
+                                    </div>
+                                </div-->
+                                
+                                <!--
+                                <div class="form-group required">
+                                    <label class="col-sm-2 col-xs-3 control-label">Product Information</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:productInformation" id="productInformation" class="form-control" required="required" />
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-xs-3 control-label">Product Release</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:producRelease" id="producRelease" class="form-control" />
+                                    </div>
+                                </div>                          
+                                -->
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-xs-3 control-label">Operating System</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:operatingSystem" id="operatingSystem" class="form-control" />
+                                    </div>
+                                </div>
+                                
+                                <!--
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-xs-3 control-label">Case Number</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" name="liveagent.prechat:cNumber" class="form-control"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-xs-3 control-label">Chat Record</label>
+                                    <div class="col-sm-10 col-xs-9">
+                                        <input type="text" id="chatRecord" class="form-control"/>
+                                    </div>
+                                </div>
+                                -->
+                            </div>
+                        </div>                
+                    </div>
+                    
+                    <center> <input type="submit" value="Request Chat" id="prechat_submit" class="btn btn-primary" /> </center>
+                </div>
+                <!-- show fields on agent console -->
+                <input type= "hidden" name= "liveagent.prechat.findorcreate.displayToAgent: Name" value= "true" /> 
+                <input type= "hidden" name= "liveagent.prechat.findorcreate.displayToAgent: company" value= "true" />
+                <input type= "hidden" name= "liveagent.prechat.findorcreate.displayToAgent: phone" value= "true" />
+                <input type= "hidden" name= "liveagent.prechat.findorcreate.displayToAgent: operatingSystem" value= "true" />
+                <input type= "hidden" name= "liveagent.prechat.findorcreate.displayToAgent: productInformation" value= "true" />
+                <input type= "hidden" name= "liveagent.prechat.findorcreate.displayToAgent: producRelease" value= "true" />
+                
+                <!-- store values on live chat transcript-->
+                <input type="hidden" name="liveagent.prechat:ldapId" value="" id="ldapId" />
+                <input type="hidden" name="liveagent.prechat:productCode" value="" id="productCode"  />
+                <input type="hidden" name="liveagent.prechat:CA Product" value="" id="productName"  />
+                <input type="hidden" name="liveagent.prechat.save:ldapId" value="LDAP_Id__c"  />
+                <input type="hidden" name="liveagent.prechat.save:productCode" value="Product_Code__c" />
+                <input type="hidden" name="liveagent.prechat.save:CA Product" value="CA_Product__c" />
+                <input type="hidden" name="liveagent.prechat.save:siteId" value="Site_Id__c" />
+                <input type="hidden" name="liveagent.prechat.save:phone" value="Phone__c" /> 
+                <input type="hidden" name="liveagent.prechat.save:caseSubject" value="Description_of_Issue__c" /> 
+                <input type="hidden" name="liveagent.prechat.save:operatingSystem" value="Operating_System__c" />
+                <input type="hidden" name="liveagent.prechat.save:caseContactId" value="ContactId" />
+                
+                
+                <!-- Create a Case every time -->
+                <input type="hidden" name="liveagent.prechat:caseOrigin" value="Chat" />
+                <input type="hidden" name="liveagent.prechat:siteAssociation" id="siteField" /><br />                
+                <input type="hidden" name="liveagent.prechat:projectSiteAssociation" id="projectsiteField" /><br />
+                <input type="hidden" name="liveagent.prechat:CAProductId"  id="caProductId" /><br />               
+                <input type="hidden" name="liveagent.prechat:caseContactId" id="caseContactId" /><br />
+                <input type="hidden" name="liveagent.prechat:caseInternalContact" id="caseInternalContact" /><br />
+                <input type="hidden" name="liveagent.prechat:caProductComponent" id="caProductComponentId" />
+                <input type="hidden" name="liveagent.prechat:caProductMaterial" id="caProductMaterialId" />
+                <!-- <input type="hidden" name="liveagent.prechat:caseDescription" id="caseDesc" /> -->
+                <input type="hidden" name="liveagent.prechat:caseStatus" value="Open" />
+                <input type="hidden" name="liveagent.prechat:caseType" id='caseTypeBasedOnSiteId' />
+                <input type="hidden" name="liveagent.prechat:noComponentFound" id="noComponentFoundId"/>
+                <input type="hidden" name="liveagent.prechat:noDefaultTopsCode" id="noDefaultTopsCodeId"/>
+                <input type="hidden" name="liveagent.prechat:noProductFound" id="noProductFoundId"/>
+                <input type="hidden" name="liveagent.prechat:noDefaultTopsCodeFlag" id="noDefaultTopsCodeFlag"/>
+                <input type="hidden" name="liveagent.prechat:additionalInformationVal" id="additionalInformationId"/>
+                <input type="hidden" name="liveagent.prechat:caseSeverityValue" value="4"/>
+                
+                
+                <!--
+                <input type="hidden" name="liveagent.prechat.findorcreate.map:Case" value="Origin,caseOrigin;Subject,caseSubject;Status,caseStatus;ContactId,caseContactId;CA_Product_Component__c ,caProductComponent;Site_Association__c,siteAssociation;CA_Product_Controller__c,CAproduct;Case_Type__c,caseType;Description,caseDescription;Severity__c ,caseSeverity; Internal_Contact__c,caseInternalContact;Product_Material__c,caProductMaterial; " />
+                <input type="hidden" name="liveagent.prechat.findorcreate.map.doCreate:Case" value="Origin,true;Subject,true;Status,true;ContactId,true;CA_Product_Component__c,true;Site_Association__c,true;CA_Product_Controller__c,true;Case_Type__c,true;Description,true;Severity__c,true;Internal_Contact__c,true; Product_Material__c,true;" />
+                -->
+                <input type="hidden" name="liveagent.prechat.findorcreate.map:Case" value="Additional_Info__c,additionalInformationVal;noDefaultTopsCodeFlag__c,noDefaultTopsCodeFlag;NoComponentFound__c,noComponentFound;noDefaultTopsCode__c,noDefaultTopsCode;NoProductFound__c,noProductFound;Origin,caseOrigin;Subject,caseSubject;Status,caseStatus;ContactId,caseContactId;CA_Product_Component__c ,caProductComponent;Site_Association__c,siteAssociation;Project_Site_Association__c,projectSiteAssociation;CA_Product_Controller__c,CAProductId;Case_Type__c,caseType;Description,caseSubject;Severity__c ,caseSeverityValue; Product_Material__c,caProductMaterial;" />
+                <input type="hidden" name="liveagent.prechat.findorcreate.map.doCreate:Case" value="Additional_Info__c,true;noDefaultTopsCodeFlag__c,true;NoComponentFound__c,true;noDefaultTopsCode__c,true;NoProductFound__c,true;Origin,true;Subject,true;Status,true;ContactId,true;CA_Product_Component__c,true;Site_Association__c,true;Project_Site_Association__c,true;CA_Product_Controller__c,true;Case_Type__c,true;Description,true;Severity__c,true;Product_Material__c,true;"/>
+      
+                <input type="hidden" name="liveagent.prechat.findorcreate.saveToTranscript:Case" value="Case" />
+                <input type="hidden" name="liveagent.prechat.findorcreate.showOnCreate:Case" value="true" />
+                
+               <script type='text/javascript' src='{!$Label.Live_Agent_Pre_Chat_Link}' />
+                <script type='text/javascript'>                    
+                    liveagent.details.preChatInit('{!$Label.Live_Agent_Pre_Chat_Callback_Link}','detailCallback');
+                </script>
+                <script type="text/javascript">                
+                    var n = 0;
+                    var topscode ;
+                    var connectId;
+                    var tempSource;
+                    var detailCallback = function (details){
+                        //console.log('callback');
+                        //console.log(n);
+                        if(n==0){
+                            for (var i = 0; i < details.customDetails.length; i++) {
+                                
+                                if(details.customDetails[i].label == 'customer_name'){
+                                    $('#name').val(details.customDetails[i].value);                             
+                                }else
+                                if(details.customDetails[i].label == 'site_Id'){
+                                    $('#tempSite').val(details.customDetails[i].value);   
+                                    //console.log('site_Id -->'+ details.customDetails[i].value);
+                                }else
+                                /*if(details.customDetails[i].label == 'company'){
+                                    $('#company').val( details.customDetails[i].value);                             
+                                }*/
+                                if(details.customDetails[i].label == 'tops_code'){
+                                    topscode = details.customDetails[i].value;    
+                                    //console.log('topscode -->'+topscode);
+                                }else
+                                if(details.customDetails[i].label == 'connect_id'){
+                                    connectId = details.customDetails[i].value;  
+                                    //console.log('connectid -->'+connectId);
+                                }else
+                                if(details.customDetails[i].label == 'phone_number'){
+                                    $('#phone').val(details.customDetails[i].value);                             
+                                }
+                               /*if(details.customDetails[i].label == 'product_information'){
+                                    $('#productInformation').val(details.customDetails[i].value);                             
+                                }
+                                if(details.customDetails[i].label == 'product_release'){
+                                    $('#producRelease').val( details.customDetails[i].value);                             
+                                }*/
+                                
+                                 //US209609 - Added for Customer Community Chat
+                                 if(details.customDetails[i].label == 'chat_initiated_from'){
+                                    tempSource = details.customDetails[i].value;
+                                    console.log('tempSource:'+tempSource);
+                                 }
+                                  if(details.customDetails[i].label == 'product_name'){
+                                    productName = details.customDetails[i].value;
+                                    $('#productName').val(details.customDetails[i].value);
+                                    console.log('productName:'+productName);
+                                 }
+                                 if(details.customDetails[i].label == 'caseType')
+                                 {
+
+                                    $('#caseTypeBasedOnSiteId').val(details.customDetails[i].value);
+                                    console.log('----------'+document.getElementById("caseTypeBasedOnSiteId").value);
+                                 }
+
+
+                            }
+                            $('#ldapId').val(connectId);
+                            getContactId(connectId);
+                            getRemoteSiteId();
+                            
+                            //US209609 -Fetching the product details based on the chat initiation. 
+                            // Initiation from customer community, tempSource will be set to 'CustomerCommunity'
+                            if(tempSource!= undefined || tempSource != null){
+                                getProductControllerIdFromProductName(productName);
+                            }
+                            else{
+                                $('#productCode').val(topscode);
+                                getCAproductController(topscode);
+                            }
+                            
+                        }
+                        n++;                        
+                    };
+                
+                //US209609 - Community Chat - Fetch the ProductId based on ProductName 
+                 function getProductControllerIdFromProductName(prodName){
+                        Visualforce.remoting.Manager.invokeAction(
+                            '{!$RemoteAction.LiveAgentPreChatFormController.getProductId}',
+                            prodName, 
+                            function(result, event){
+                                if (event.status) {
+                                    var resultValue = result.split('=')[0];
+                                    var noProductValue = result.split('=')[1];
+                                    var changeProductVal = result.split('=')[2];
+                                    $('#caProductId').val(resultValue);
+                                    if(noProductValue!='' && noProductValue!= null){
+                                        $('#noProductFoundId').val(noProductValue);   
+                                    }
+                                    if(changeProductVal!=''){
+                                        $('#additionalInformationId').val(changeProductVal);
+                                    }
+                                } else if (event.type === 'exception') {
+                                    console.log('Product Id  not found for : '+prodName);
+                                } else {
+                                    alert('Error fetching product id');
+                                }
+                            },
+                             {escape: true}
+                             );
+                    }
+                
+                //var siteId = ctrl.siteName.substring(ctrl.siteName.lastIndexOf('(')+1,ctrl.siteName.lastIndexOf(')'));                
+                //console.log('siteIdoooo');                
+                    function getRemoteSiteId() {
+                        var siteId  = $('#tempSite').val();
+                        Visualforce.remoting.Manager.invokeAction(
+                            '{!$RemoteAction.LiveAgentPreChatFormController.getSiteId}',
+                            siteId, 
+                            function(result, event){
+                                if (event.status) {
+                                    if(document.getElementById("caseTypeBasedOnSiteId").value == "Project")
+                                    {
+                                        $('#siteField').val(result.substring(0,result.indexOf('-')));
+                                        $('#projectsiteField').val(result.substring(result.indexOf('-')+1),result.length-1);
+                                    }
+                                    else
+                                    {
+                                        $('#siteField').val(result);
+                                    }
+                                    //console.log('site-->'+result);
+                                } else if (event.type === 'exception') {
+                                    //console.log('siteid not found'+siteId);
+                                    //alert('site id not found -->'+siteId);
+                                } else {
+                                    alert('error');
+                                }
+                            }, 
+                            {escape: true}
+                        );
+                    }
+                    function getCAproductController(topscode) {  
+                        Visualforce.remoting.Manager.invokeAction(
+                            '{!$RemoteAction.LiveAgentPreChatFormController.getCAProductController}',
+                            topscode, 
+                            function(result, event){
+                                if (event.status) {   
+                                    if(result != 'null'){
+                                        var materialId = result.split('=')[1];
+                                        var productId = result.split('=')[0];
+                                        var topsCodeVal = result.split('=')[2];
+                                        var productName = result.split('=')[3];
+                                        var productChangedFlag = result.split('=')[4];
+                                        //console.log('productId--> '+productId);
+                                        //console.log('materialId--> '+materialId);
+                                        //$('#caProductId').val(productId);
+                                        //$('#caProductMaterialId').val(materialId);
+                                        //console.log($('#caProductMaterialId').val());
+                                        if(topsCodeVal != '' && topsCodeVal!=null){
+                                            $('#noComponentFoundId').val(topsCodeVal);  
+                                        }
+                                        if(productName!='' && productName!=null){
+                                            $('#noDefaultTopsCodeId').val(productName);
+                                        }
+                                        getCAProductComponent(productId,materialId,productChangedFlag);
+                                    }else{
+                                        alert('CA product controller or material is missing for this tops code');    
+                                    }
+                                } else if (event.type === 'exception') {
+                                    //console.log('Product Not Found'+topscode);
+                                    //alert('Product Not Found for topscode -->'+topscode);
+                                } else {
+                                    alert('error');
+                                }
+                            }, 
+                            {escape: true}
+                        );
+                    }
+                    
+                    function getCAProductComponent(productControllerID,materialId,productChangedFlag){
+                        console.log(productControllerID+'*****'+materialId+'*****'+productChangedFlag);
+                        Visualforce.remoting.Manager.invokeAction(
+                            '{!$RemoteAction.LiveAgentPreChatFormController.getCAProductComponent}',
+                            productControllerID, materialId,productChangedFlag,
+                            function(result, event){
+                                if (event.status) {  
+                                    var resultValue = result.split('=')[0];
+                                    var defaultCompFlag = result.split('=')[1];
+                                    var gscProduct = result.split('=')[2];
+                                    var gscProductMaterial = result.split('=')[3];
+                                    var gscProductChangedFlag = result.split('=')[4];
+                                    console.log(result);
+                                    if(defaultCompFlag!=null && defaultCompFlag!=''){
+                                        $('#noDefaultTopsCodeFlag').val(defaultCompFlag);
+                                    }
+                                    
+                                    if(gscProductChangedFlag!=''){
+                                        $('#additionalInformationId').val(gscProductChangedFlag);
+                                    }
+                                    $('#caProductId').val(gscProduct);
+                                    $('#caProductMaterialId').val(gscProductMaterial);
+                                    $('#caProductComponentId').val(resultValue);
+                                } else if (event.type === 'exception') {
+                                    //console.log('component not found'+productControllerID);
+                                    //alert('component not found for '+productControllerID);
+                                } else {
+                                    alert('error');
+                                }
+                            }, 
+                            {escape: true}
+                        );
+                        
+                    }
+                    function getContactId(connectID){
+                        console.log('connectID:'+connectID);
+                        Visualforce.remoting.Manager.invokeAction(
+                            '{!$RemoteAction.LiveAgentPreChatFormController.getContactId}',
+                            connectID, 
+                            function(result, event){
+                                if (event.status) {     
+                                    if(result!=undefined && result!='null' ){
+                                         var array = result.split("#");
+                                        if(array[1] == 'contact'){                                          
+                                            $('#caseContactId').val(array[0]);
+                                            $('#caseInternalContact').val(null);
+                                        }else if(array[1] == 'user'){
+                                            $('#caseInternalContact').val(null);//US285561
+                                            $('#caseContactId').val(array[0]);//US285561
+                                        }
+                                    }else{
+                                        //alert('connectid not found for');
+                                        //console.log('contact id-->'+result); 
+                                     }   
+                                   
+                                  
+                                    //caseInternalContact
+                                    
+                                } else if (event.type === 'exception') {
+                                    //console.log('connectid not found'+connectID);
+                                    //alert('connectid not found for '+connectID);
+                                } else {
+                                    alert('error');
+                                }
+                            }, 
+                            {escape: true}
+                        );
+                    }
+                    var isRequestChatClicked ;
+                     function validateForm() {
+                        var caseSubjectVal = document.forms["prechatForm"]["liveagent.prechat:caseSubject"].value;
+                        isRequestChatClicked = true;                        
+                        if (caseSubjectVal  == null || caseSubjectVal  == ' '||caseSubjectVal==''||caseSubjectVal.length==0||caseSubjectVal.trim()=='') {
+                            alert('Description is required');
+                            return false;
+                        }
+                        else
+                        {
+
+                           document.getElementById("caseDesc").value = caseSubjectVal;
+                       }
+                           
+                    }
+                    if (window.addEventListener) {
+                        window.addEventListener('beforeunload', sendMessageToOpenerWin, false);                    
+                    } else { 
+                        window.attachEvent('beforeunload', sendMessageToOpenerWin, false);         
+                    }
+                    
+                    function sendMessageToOpenerWin(){
+                        if(isRequestChatClicked == undefined || isRequestChatClicked!== true){
+                            window.parent.opener.postMessage('Chat session ending', document.referrer);
+                        }
+                    }
+                
+                </script>
+            </form> 
+        </body>
+    </html>
+</apex:page>

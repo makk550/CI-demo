@@ -1,0 +1,6 @@
+<apex:page standardController="Case">
+    <apex:form >
+    <apex:outputLabel value="Case Reason:"/>	
+   <apex:inputField value="{!Case.Reason}"/> 
+    </apex:form>
+</apex:page>

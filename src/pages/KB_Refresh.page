@@ -1,0 +1,86 @@
+<apex:page standardController="Case" extensions="KB_Refresh_ext">
+    <apex:sectionHeader title="Refresh KB Article"/>
+    <apex:includeScript value="/support/console/28.0/integration.js"/>
+    <apex:form >
+        <script> 
+        var previousOnload = window.onload;
+        var caseNo='{!case.caseNumber}';
+        var serverMsg='';
+        // This function will close the current tab with this page
+        // and after that refresh the opener case tab
+        function closeCurrentTab() {
+            //document.getElementById("initial").style.display = "none";
+            //alert('{!message}');   
+            // alert('KB Article sync for case completes, closing current tab and please refresh case window to see updated KB Article. ');
+            sforce.console.getEnclosingTabId(closeThisTabAndRefreshParent);                
+        }
+
+        var closeThisTabAndRefreshParent = function closeThisTabAndRefreshParent(result) {
+            
+            // Refreshing a subtab by ID.
+            // An opener tab id was passed as a URL param.
+            sforce.console.refreshSubtabById('{!$CurrentPage.parameters.tid}', true);
+
+            // Closing current tab
+            sforce.console.closeTab(result.id);
+        };
+        
+        function RefreshPrimaryTab() {
+            alert(serverMsg);
+            //alert('For Case#{!case.caseNumber},Related KB Article are successfully refreshed, after click on Ok,  this window will close and Case window will automatically refresh.');
+            //First find the ID of the current primary tab to close it
+            sforce.console.getFocusedPrimaryTabId(refreshPrimaryTab);
+            closeCurrentTab();
+        }
+    
+        function closeCurrentTab() {
+            sforce.console.getEnclosingTabId(closeCurrtab);
+        }    
+        var refreshPrimaryTab = function refreshPrimaryTab(result) {
+            //Now that we have the primary tab ID, we can close it
+            var tabId = result.id;
+            sforce.console.refreshPrimaryTabById(tabId, true, refreshSuccess);
+        };
+    
+        var refreshSuccess = function refreshSuccess(result) {
+            if (result.success == true) {
+                alert('Subtab refreshed successfully');
+            } else {
+                alert('Subtab did not refresh');
+            }
+        };
+        
+        var closeCurrtab = function closeCurrtab(result) {
+            var tabId = result.id;
+            sforce.console.closeTab(tabId);
+        };
+        
+        window.onload = function() { 
+            if (previousOnload) { 
+                previousOnload();
+            }
+            refresh();            
+        } 
+        </script>
+        <body>
+            <apex:pageMessages id="errorMsg"/>
+            <apex:actionFunction name="refresh" action="{!refreshCaseKB}" reRender="out" oncomplete="RefreshPrimaryTab()" />
+            <div id='initial'>
+                For case#{!case.casenumber}, KB Article refresh is in progress. 
+                <br/>
+                <font color='red'>
+                    Please dont refresh/close this window, this will auto close and case page will be refreshed.  
+                </font>
+            </div>
+            <apex:outputPanel id="out"> 
+                <script>
+                    serverMsg='{!message}';
+                    
+                </script>
+                {!message}   
+            </apex:outputPanel>
+            
+        </body>
+    </apex:form>            
+    
+</apex:page>

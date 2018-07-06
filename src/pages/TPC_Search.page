@@ -1,0 +1,70 @@
+<apex:page controller="TPC_SearchController"  >
+  <apex:form id="resultForm">
+      Search Results for <b><u>{!searchTerm}</u></b><br/><br/>
+      Search : <apex:inputText id="searchTerm" value="{!searchTerm}" onkeypress="javascript:return autoSearch();"/> 
+      <apex:commandButton value="Search" action="{!searchRecords}" reRender="resultForm"/> 
+      <apex:outputPanel rendered="{!contactResult.size==0 && caseResult.size==0 && siteResult.size==0 && productResult.size==0 && componentResult.size==0 && searchTerm != ''}">
+          <apex:pageMessage severity="Info" title="No Record Found" summary="Sorry no Record found. Please try with different Keyword." />
+      </apex:outputPanel>
+      <apex:outputPanel id="resultsPanel">
+          <apex:pageBlock title="Contacts({!contactResult.size})" rendered="{!contactResult.size>0}" >
+                <apex:pageBlockTable value="{!contactResult}" var="con">
+                    <!-- <apex:column value="{!con.Id}"/> -->
+                    <apex:column title="Id" headerValue="Contact Name"><a href="{!$Site.baseURL+'/'+con.Id}">{!con.name}</a></apex:column>
+                    <apex:column value="{!con.email}"/>
+                    <apex:column value="{!con.MobilePhone}"/>
+                    <apex:column value="{!con.Account.Name}"/>
+                    <apex:column value="{!con.TPC_Team__r.Name}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+            
+            <apex:pageBlock title="Case({!caseResult.size})" rendered="{!caseResult.size>0}">
+                <apex:pageBlockTable value="{!caseResult}" var="caseRecord">
+                    <apex:column title="Id" headerValue="Case Number"><a href="{!$Site.baseURL+'/'+caseRecord.Id}">{!caseRecord.caseNumber}</a></apex:column>
+                    <apex:column value="{!caseRecord.Subject}"/>
+                    <apex:column value="{!caseRecord.Priority}"/>
+                    <apex:column value="{!caseRecord.Status}"/>
+                    <apex:column value="{!caseRecord.Site_Association__r.Name}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+          
+            <apex:pageBlock title="Site Association({!siteResult.size})" rendered="{!siteResult.size>0}">
+                <apex:pageBlockTable value="{!siteResult}" var="siteRecord">
+                    <apex:column title="Id" headerValue="Site Name"><a href="{!$Site.baseURL+'/'+siteRecord.Id}">{!siteRecord.Name}</a></apex:column>
+                    <apex:column value="{!siteRecord.SC_TOPS_ID__c}"/>
+                    <apex:column value="{!siteRecord.Site_Status__c}"/>
+                    <apex:column value="{!siteRecord.Territory_Country__c}"/>
+                    <apex:column value="{!siteRecord.Country__c}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+          
+            <apex:pageBlock title="CA Product Controller({!productResult.size})" rendered="{!productResult.size>0}">
+                <apex:pageBlockTable value="{!productResult}" var="productRecord">
+                    <apex:column title="Id" headerValue="CA Product"><a href="{!$Site.baseURL+'/'+productRecord.Id}">{!productRecord.Name}</a></apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+          
+            <apex:pageBlock title="CA Components({!componentResult.size})" rendered="{!componentResult.size>0}">
+                <apex:pageBlockTable value="{!componentResult}" var="componentRecord">
+                    <apex:column title="Id" headerValue="CA Component"><a href="{!$Site.baseURL+'/'+componentRecord.Id}">{!componentRecord.Name}</a></apex:column>
+                    <apex:column value="{!componentRecord.CA_Product_Controller__r.Name}"/>
+                    <apex:column value="{!componentRecord.CA_Product_Text__c}"/>
+                    <apex:column value="{!componentRecord.Component_Code__c}"/>
+                    <apex:column value="{!componentRecord.Component_Text__c}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+         <apex:actionFunction name="searchRecords" action="{!searchRecords}"></apex:actionFunction>
+    </apex:form> 
+<script type="text/javascript"> 
+function autoSearch() {
+    var keycode = (event.keyCode ? event.keyCode : event.which);
+    if(keycode == '13') {
+        searchRecords();
+        return false;
+    }else {
+        return true;
+    }
+}
+</script>
+</apex:page>

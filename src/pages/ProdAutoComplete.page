@@ -1,0 +1,139 @@
+<apex:page standardController="Case" extensions="AutoProdCompleteController" sidebar="false" id="pageId" standardStylesheets="true">
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" />
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js" /> 
+<apex:styleSheet value="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/smoothness/jquery-ui.css" />
+<apex:stylesheet value="https://ca--fsb1--c.cs79.visual.force.com/resource/1526976532000/SCProdAutoComplete" />
+    
+    <style>
+        .displayNone { 
+            display:none; 
+        }
+        .displayBlock {
+            display:block;
+        }
+        .ui-autocomplete-loading { 
+            background: white url(/img/loading32.gif) right center no-repeat;
+            background-size:15px 15px; 
+        }
+        .placeHolder {
+            font-style: italic;
+        }
+    </style>
+    
+    <apex:form id="autoCompleteForm" >
+        
+        <apex:pageBlock id="searchBlock" >
+            <apex:pageBlockSection id="searchSection">
+                
+                 <apex:outputPanel >
+                     <apex:inputText id="prodTextBox" value="{!searchTerm}" styleClass="placeHolder"/>
+                     <apex:inputHidden id="prodID" value="{!selectedProd }" />
+                     <apex:outputLabel id="prodID1" value="{!selectedProd }" />
+                 </apex:outputPanel>
+            </apex:PageBlockSection>
+                 
+                 
+                 
+                  <span id="errorMessage" style="font-size:14px;color:red;"/>
+        <apex:pagemessages escape="false"/>
+        <apex:pageBlock title="Product Release and Component Details" id="pageBlockTable" rendered="{!IF(showTable,true,false)}">
+            <apex:pageblockSection columns="1">
+                <apex:outputLabel value="CA Product: ">{!productName}</apex:outputLabel>
+                <apex:outputLabel value="CA Product Release: ">
+                    <apex:selectList value="{!productReleaseValue}" size="1" onchange="passRelease(this.value)">
+                        <apex:selectOptions value="{!ProudctRelease}"/>
+                    </apex:selectList>
+                </apex:outputLabel>
+                <apex:outputLabel value="CA Product Component: " rendered="{!IF(showComp,true,false)}" id="CompId">
+                    <apex:selectList value="{!productComponentValue}" size="1">
+                        <apex:selectOptions value="{!ProudctComponent}"/>
+                    </apex:selectList>
+                </apex:outputLabel>
+            </apex:pageblockSection>     
+        </apex:pageBlock>
+        <apex:outputPanel id="panelId">
+            <apex:actionFunction name="releaseFunc" action="{!releaseFunc}" reRender="pageBlockTable">
+                <apex:param name="releaseId" value=""/>
+            </apex:actionFunction>
+        </apex:outputPanel>
+        <apex:outputPanel >
+          <apex:commandButton value="Create Case" action="{!gottodirectCasePage}"/>      
+        </apex:outputPanel>
+                
+        </apex:pageBlock>
+        <apex:outputPanel id="panelId">
+            <apex:actionFunction name="releaseFunc" action="{!releaseFunc}" reRender="pageBlockTable">
+                <apex:param name="releaseId" value=""/>
+            </apex:actionFunction>
+        </apex:outputPanel>
+        
+        
+    </apex:form>
+    
+    <script type="text/javascript">
+        var PLACEHOLDER = 'Type Product Name Here'; 
+        var prodObjects;
+        var queryTerm;
+        
+        function passRelease(Val){
+            if(Val!='-None-'){
+                releaseFunc(Val);
+                document.getElementById('errorMessage').innerHTML = '';
+            }else{
+                document.getElementById('errorMessage').innerHTML = 'Please select the valid option.';
+            }
+        }
+        
+        $('[id$=prodTextBox]').autocomplete({
+            minLength: 2,
+            source: function(request, response) {
+                        queryTerm = request.term;
+                        AutoProdCompleteController.searchProd(request.term, function(result, event){
+                            if(event.type == 'exception') {
+                                  alert(event.message);
+                            } else {
+                                 prodObjects = result;
+                                 response(prodObjects);
+                            }
+                        });
+                   },
+            focus: function( event, ui ) {
+                    $('[id$=prodTextBox]').val( ui.item.Name );
+                    return false;
+                    },
+            select: function( event, ui ) {
+                        $('[id$=prodTextBox]').val( ui.item.Name );
+                        $('[id$=prodID]').val( ui.item.Id );
+                        return false;
+                    },
+         })
+         .data( "autocomplete" )._renderItem = function( ul, item ) {
+            var entry = "<a>" + item.Name;
+           
+            entry = entry + "</a>";
+            entry = entry.replace(queryTerm, "<b>" + queryTerm + "</b>");
+            return $( "<li></li>" )
+                .data( "item.autocomplete", item )
+                .append( entry )
+                .appendTo( ul );
+        };
+            
+        // Add or remove placeholder values
+        $('[id$=prodTextBox]').val(PLACEHOLDER);
+        $('[id$=prodTextBox]').on("focus",  function(event){
+            $tgt = $(event.target);
+            if($tgt.val() === PLACEHOLDER ){
+                $tgt.val('');
+                $tgt.removeClass('placeHolder');
+            }
+        });
+        $('[id$=prodTextBox]').on( "blur",  function(event){
+            $tgt = $(event.target);
+            if($tgt.val() === '' ){
+                $tgt.val(PLACEHOLDER);
+                $tgt.addClass('placeHolder');
+            }
+        });
+        
+            </script>
+</apex:page>

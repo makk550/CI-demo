@@ -1,0 +1,181 @@
+<apex:page controller="ctrlServices" tabStyle="Account_Success_View__tab" >
+    <apex:sectionHeader title="Customer Success View" />
+    <apex:form >
+    <!-- commented by heena as part of Req # 979 begins-->
+        <apex:actionFunction name="fnChangeChecklist" id="fnChangeChecklist" action="{!refreshValues}" status="msgStatus" reRender="block2,block3,block4, block5, block6, outPnl" /> 
+    <!-- commented by heena as part of Req # 979 ends--> 
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="2" id="pbli" >
+                   <apex:pageBlockSectionItem >
+                             <apex:outputLabel >Account</apex:outputLabel>
+                             <apex:outputpanel id="outPnl" >
+                                   <apex:inputfield value="{!templookup.Account_Name__c}"  rendered="{!(includeCommercial != true)}" onchange="fnChangeChecklist()"/> 
+                                   <apex:inputfield value="{!cspLookup.Account__c}"  rendered="{!(includeCommercial)}" onchange="fnChangeChecklist()"/> 
+                                   <apex:actionStatus startText="Refreshing..." stopText="" id="msgStatus"></apex:actionStatus>
+                              </apex:outputPanel>
+                     </apex:pageBlockSectionItem>    
+                     <!-- commented by sudhir as part of PR04264 begins-->
+                       <!-- apex:pageblocksectionItem >
+                            <!-- apex:commandButton action="{!URLFOR('https://km.ca.com/sales/cst/CSMandA/ACCOUNT%20ACTIVITY/Playbook.aspx')}" value="Account Playbook" id="theButton" />
+                       <!-- /apex:pageblocksectionItem>
+                     <!-- commented by sudhir as part of PR04264 ends-->
+
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection columns="2"  id="block2" title="Account Details" >
+                       
+                            <apex:outputText rendered="false"  value="{!account.Company_Logo__c}" escape="false"/>
+                            <apex:outputField value="{!account.Name}" />
+                            <apex:outputField value="{!account.Enterprise_ID__c}" rendered="{!Account.Recordtype.Name !='SMB'}"  />
+                            <apex:outputField value="{!account.Commercial_ID__c}" rendered="{!Account.Recordtype.Name=='SMB'}" />
+                            <apex:outputField value="{!account.Segment__c}" />
+                            <apex:outputField value="{!account.ownerid}" />
+                            <apex:outputField value="{!account.Coverage_Model__c}" />
+                            <apex:pageBlockSectionItem >
+                                  <apex:outputLabel >Account Team</apex:outputLabel>
+                                   <Apex:outputLink value="{!URLFOR('/acc/accteammemberlist.jsp?id=' + account.id )}" target="_blank" rendered="{!account.id != null}" >Team Members</Apex:outputLink>
+                              </apex:pageBlockSectionItem>
+                            <apex:outputField value="{!account.GEO__c}" rendered="{!Account.Recordtype.Name!='Territory Covered Account'}" />
+                            <apex:outputField value="{!account.HQ_Countries__c}" rendered="{!Account.Recordtype.Name=='Territory Covered Account'}" />
+                            <apex:outputField value="{!account.Sales_Area__c}" rendered="{!Account.Recordtype.Name!='Territory Covered Account'}"/>
+                            <apex:outputField value="{!account.Sales_Region__c}" rendered="{!Account.Recordtype.Name!='Territory Covered Account'}"/>
+                            
+                           
+                          
+                              
+                           <!--End : Saba changes for Sprint 3 -->
+                            
+                    </apex:pageBlockSection>
+                    <!-- Start: Saba changes for Sprint 3 -->
+                    <apex:pageBlockSection columns="1"  id="block5"   title="Customer Success Program" >
+                       <apex:outputPanel >
+                        <apex:commandButton action="{!URLFOR('/apex/Add_RemoveOpportunity?id=' + account.id + '&accname=' + account.name)}" value="New CSP" id="theButton" rendered="{! (account.id != null && includeCommercial ) }"/>
+                        </apex:outputPanel>     
+                             <apex:pageBlockTable value="{!lstCSP}" var="o" id="table3">
+                           
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">CSP Name</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.CSP_Name__c}</apex:outputLink>
+                                </apex:column>
+                                
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">CSP Id</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Name}</apex:outputLink>
+                                </apex:column>
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Account</apex:facet>
+                                        <apex:outputLink value="/{!o.Account__c}" >{!o.Account__r.Name}</apex:outputLink>
+                                </apex:column>
+                                
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header"> Program Type</apex:facet>
+                                       {!o.Program_Type__c}
+                                </apex:column>
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';" >
+                                        <apex:facet name="header"> CVP/SRP status</apex:facet>
+                                        <apex:outputField value="{!o.CVP_Status__c}"/>
+                                </apex:column>
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Owner </apex:facet>
+                                        <apex:outputLink value="/{!o.ownerid}" >{!o.Owner.name}</apex:outputLink>
+                                </apex:column>
+                           </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+                   
+                      <apex:pageBlockSection columns="1"  id="block6"   title="Leads (Customer Success Program)"   >
+                             <apex:pageBlockTable value="{!lstLeads}" var="o" id="table6">
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Lead</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Name}</apex:outputLink>
+                                </apex:column>
+                                 <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">CSP Id</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Customer_Success_Program__r.Name}</apex:outputLink>
+                                </apex:column>
+                              <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header"> Lead status</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Status}</apex:outputLink>
+                                </apex:column>
+                                 <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Lead Source</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.LeadSource}</apex:outputLink>
+                                </apex:column>
+                                 <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header"> Lead Owner</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Owner.Name}</apex:outputLink>
+                                </apex:column>
+                                  <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Created by</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.CreatedBy.Name}</apex:outputLink>
+                                </apex:column>
+                           </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+                   <!--End : Saba changes for Sprint 3 -->
+                        
+                    <apex:pageBlockSection columns="1"  id="block3"   title="Services Implementations"   >
+                             <apex:pageBlockTable value="{!lst}" var="o" id="table">
+                             
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';" >
+                                        <apex:facet name="header">CA Account ID</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Enterprise_ID__c}</apex:outputLink>
+                                </apex:column>
+                                 <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';" >
+                                        <apex:facet name="header">Project ID</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Project_ID__c}</apex:outputLink>
+                                </apex:column>
+                                  
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Source System</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Source_System__c}</apex:outputLink>
+                                </apex:column>
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Parent Project Id</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Parent_Project_ID__c}</apex:outputLink>
+                                </apex:column>
+                                 
+                             </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+                     <apex:pageBlockSection columns="1"  id="block4"   title="Support Tickets"   >
+                             <apex:pageBlockTable value="{!lstTickets}" var="o" id="table2">
+                           
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Ticket</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Ticket__c}</apex:outputLink>
+                                </apex:column>
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header"> Ticket Description</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Ticket_Description__c}</apex:outputLink>
+                                </apex:column>
+                                
+                                <apex:column style="cursor:pointer;cursor:hand; text-align:right; width:5%" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header"> Priority</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Priority__c}</apex:outputLink>
+                                </apex:column>
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';" >
+                                        <apex:facet name="header">Product</apex:facet>
+                                        <apex:outputField value="{!o.Product_Name__c}"/>
+                                </apex:column>
+                                <apex:column style="cursor:pointer;cursor:hand; text-align:right; width:5%" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header"> Product Version</apex:facet>
+                                        <apex:outputLink value="/{!o.id}" >{!o.Product_Version__c}</apex:outputLink>
+                                </apex:column>
+                               <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Status</apex:facet>
+                                        <apex:outputField value="{!o.Status__c}"/>
+                                </apex:column>
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Assignee</apex:facet>
+                                        <apex:outputField value="{!o.Assignee_Name__c}"/>
+                                </apex:column>
+                                <apex:column style="cursor:pointer;cursor:hand" onclick="window.document.location.href = '/{!o.id}';">
+                                        <apex:facet name="header">Last Updated</apex:facet>
+                                        <apex:outputField value="{!o.Last_Updated__c}"/>
+                                </apex:column>
+                           </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+                    
+                   
+          </apex:pageBlock>
+    </apex:form>
+    
+    
+</apex:page>

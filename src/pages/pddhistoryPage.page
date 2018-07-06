@@ -1,0 +1,3 @@
+<apex:page controller="PDDHistoryController" sidebar="false">
+  <c:PDDHistoryComp lstPddIds="{!PDDIds}"/>
+</apex:page>

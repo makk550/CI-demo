@@ -1,0 +1,72 @@
+<apex:page standardController="Automic_R_D_Component_Version__c" showHeader="false" extensions="AutomicVersion">
+<head>
+         <apex:includeScript value="{!URLFOR($Resource.jQuery_email, '/jquery-1.8.2.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.jQuery_email, '/postmessage/jquery.ba-postmessage.js')}"/>
+    <script type="text/javascript">
+        var j$ = jQuery.noConflict();
+
+        var parent_domain = '{!$CurrentPage.parameters.parent_domain}';
+
+        j$(document).ready(function() {
+            j$('input[id$=btnCloseModalDialog]').click(function(event) {
+                event.preventDefault();
+                closeModalDialogAndRedirect();
+            });
+        });
+        
+        function closeModalDialog() {
+            var cross_result = new Object();
+            cross_result.action = 'close_modal_dialog';
+            //alert('enter 1');
+            j$.postMessage(
+                cross_result,
+                parent_domain,
+                parent
+            );
+        }
+        
+        function closeModalDialogAndRedirect(errorFlag) {
+            if(!errorFlag){
+                var redirectUrl = j$('input[id$=redirectUrl]').val();
+                //alert(redirectUrl);
+                var cross_result = new Object();
+                cross_result.action = 'close_modal_dialog_redirect';
+                cross_result.redirect_url = redirectUrl;
+            
+                j$.postMessage(
+                    cross_result,
+                    parent_domain,
+                    parent
+                );
+            }
+        }
+    </script>
+</head>
+
+  <apex:form id="frm">
+     <apex:sectionHeader subtitle="Product Information" title="Edit"/>
+     <apex:pageBlock >
+         <apex:pageBlockSection columns="1">
+             <apex:outputField value="{!c.CA_Product_Controller__c}">
+             <apex:actionSupport action="{!resetVersionLists}" event="onchange" reRender="mulPan" />
+             </apex:outputField>
+             <apex:outputField value="{!c.CA_Product_Component__c}" label="Component Name">
+             <apex:actionSupport action="{!PicklistONProductSelect}" event="onchange" reRender="mulPan" />
+             </apex:outputField>
+                 <apex:pageBlockSectionItem >
+             <apex:outputLabel style="color:red">Component Release</apex:outputLabel>
+             <c:CustomMultiSelectPicklist id="mulPan" leftLabel=""
+                leftOption="{!allOptions}"
+                rightLabel=""
+                rightOption="{!selectedOptions}"
+                size="14"
+                width="auto"/>
+             </apex:pageBlockSectionItem> 
+         </apex:pageBlockSection>
+         <apex:pageBlockButtons location="bottom">
+             <apex:commandButton action="{!save}" reRender="frm" onclick="this.disabled=true;" value="Save" oncomplete="closeModalDialogAndRedirect({!isError});"/>
+             <input type="button" value="Cancel" onclick="closeModalDialog();" class="btn"/>
+         </apex:pageBlockButtons>
+     </apex:pageBlock>
+  </apex:form>  
+</apex:page>

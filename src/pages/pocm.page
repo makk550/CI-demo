@@ -1,0 +1,127 @@
+<apex:page standardController="Trial_Request__c"  extensions="PocMaterialController">
+
+<apex:outputPanel id="MaterialPanel" >
+<apex:outputPanel id="MaterialSelectionPanel" rendered="{! !isViewMode}">
+<apex:form rendered="{! ifNoError}" >
+<table border="0">
+    <tr>
+        <td colspan='3'>
+            <div width='50%' align='center'>
+                <apex:actionStatus id="saveStatus">
+                    <apex:facet name="stop">                     
+                             <apex:commandButton value="Save Product Selection" action="{! saveMaterialSelection}" status="saveStatus" rerender="MaterialPanel" />                            
+                    </apex:facet>
+                    <apex:facet name="start">
+                        <apex:commandButton value="Saving..." disabled="true" status="saveStatus"/>
+                    </apex:facet>
+                </apex:actionStatus>
+             </div>              
+         </td>
+    </tr>
+    <tr>
+        <td colspan='3'>
+        <div style='overflow:scroll; width:900px;height:350px;'>        
+      <table>
+       <tr>
+        <th>POC Products</th>
+        <th>Material</th>
+        <th>SAP ID</th>
+    <!--    <th>TOPS Code</th> -->
+        <th>Selection</th>    
+        <th>Qty</th>
+       </tr>
+    
+      <apex:repeat value="{! CkProductList}" var="ckproditem">
+      <tr>
+        
+      </tr>
+      
+      <tr>
+        <td style="text-decoration: underline;font-weight: bold;"><span>{! ckproditem.product.Name}</span></td>
+          
+      </tr>
+        <apex:repeat value="{! ckproditem.pms}" var="ckprodmaterialitem" >
+          <tr>
+            <td></td>
+            <td>        
+            {!ckprodmaterialitem.materialName}         
+            </td>
+           <td>
+             <span>{!ckprodmaterialitem.saptopsid}</span>
+            <!--<apex:outputText value="{!ckprodmaterialitem.saptopsid}" rendered="{! ckprodmaterialitem.src == 'SAP'}"/>-->
+            </td>
+            <td>
+                 <apex:inputCheckBox value="{! ckprodmaterialitem.selected}" />
+            </td>
+    
+            <td><apex:inputText maxlength="10" value="{! ckprodmaterialitem.qty}" onkeypress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"  /></td>
+          </tr>
+        
+        </apex:repeat>
+      </apex:repeat>       
+       
+            <tr> </tr> 
+
+    </table>      
+    </div>
+        </td>        
+    </tr>
+</table>    
+
+</apex:form>
+</apex:outputPanel>  
+
+<apex:outputPanel id="MaterialViewPanel" rendered="{! isViewMode}">
+<apex:form >
+
+<table border="0" cellpadding="5">
+ <tr>
+<td colspan='2'>
+ <div width='40%' align='center'>
+
+<apex:commandButton value="Edit Product Selection" action="{! editMaterialSelection}" reRender="MaterialPanel"  />
+</div>
+</td>
+</tr>
+  <tr>
+    <th>POC Products</th>
+    <th>SAP ID</th>
+    <th>Qty</th>
+  </tr>
+
+<apex:repeat value="{!currentPocProductMaterials}" var="cktranproditem" >
+
+  <tr>
+    <td style="text-decoration: underline;font-weight: bold;"><span>{! cktranproditem.product.Name}</span></td>
+
+  </tr>
+    
+      <apex:repeat value="{!cktranproditem.pms}" var="ckprodmaterialitem" >
+      <tr>
+         <td>
+            <span>
+            {! ckprodmaterialitem.materialName}
+            </span>
+         </td>
+        <td>
+        <apex:outputText value="{! ckprodmaterialitem.saptopsid}" rendered="{! ckprodmaterialitem.src == 'SAP'}"/>
+        </td>
+        <td><span>{! ckprodmaterialitem.qty}</span></td>
+        
+        </tr>
+        </apex:repeat>
+        
+    </apex:repeat>
+   
+    <tr>  </tr>      
+</table>    
+
+<apex:inputHidden value="{! Trial_Request__c.Opp_Name__c}"/>
+
+</apex:form>
+</apex:outputPanel>
+</apex:outputPanel>
+
+<apex:pageMessages ></apex:pageMessages>
+
+</apex:page>

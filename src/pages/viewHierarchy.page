@@ -1,0 +1,86 @@
+<apex:page controller="ctrlAccounts" tabStyle="Account" >
+    <apex:sectionHeader title="Account Hierarchy" subtitle="{!acc.name}"/>
+      The hierarchy is created by associating accounts with parent accounts.
+    <apex:pageBlock mode="detail">
+      <apex:pageBlockSection columns="1" >
+                      <table cellpadding="3" cellspacing="0" width="100%" >
+                          <tr   >
+                              <td style=" text-align:left; width: 37%" class="labelCol">Account Name</td>
+                              <td style="text-align:left; width:10%" class="labelCol">Enterprise ID</td>
+                              <td style="text-align:left; width:10%" class="labelCol">Site ID</td>
+                              <td style="text-align:left" class="labelCol">Account Type</td>
+                              <td style="text-align:left; width:20%" class="labelCol">Country Picklist</td>
+                          </tr>
+                          <apex:repeat var="level1" value="{!lstacc1}" >
+                            <tr style="display:{!IF(level1.parentId != null, 'none','')}" class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+                              <td style="border-top:1px solid #EEDFCC"><apex:outputLink value="/{!level1.id}" >{!level1.name}</apex:outputLink></td>  
+                              <td style="border-top:1px solid #EEDFCC">{!level1.Enterprise_ID__c}</td>
+                              <td style="border-top:1px solid #EEDFCC">{!level1.Commercial_ID__c}</td>
+                              <td style="border-top:1px solid #EEDFCC">{!level1.Customer_Category__c}</td>
+                              <td style="border-top:1px solid #EEDFCC">{!level1.Country_Picklist__c}</td>
+                           </tr>
+                            <apex:repeat var="level2" value="{!lstacc2}" >
+                                    <tr style="display:{!IF(level2.parentId != level1.Id, 'none','')}" class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+                                       <td style="border-top:1px solid #EEDFCC; ; padding-left:30px">
+                                          <apex:outputLink value="/{!level2.id}" >{!level2.name}</apex:outputLink></td>  
+                                          <td style="border-top:1px solid #EEDFCC">{!level2.Enterprise_ID__c}</td>
+                                          <td style="border-top:1px solid #EEDFCC">{!level2.Commercial_ID__c}</td>
+                                          <td style="border-top:1px solid #EEDFCC">{!level2.Customer_Category__c}</td>
+                                          <td style="border-top:1px solid #EEDFCC">{!level2.Country_Picklist__c}</td>
+                                   </tr>
+                                   <apex:repeat var="level3" value="{!lstacc3}" >
+                                            <tr style="display:{!IF(level3.parentId != level2.Id, 'none','')}" class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+                                               <td style="border-top:1px solid #EEDFCC; ; padding-left:60px">
+                                                  <apex:outputLink value="/{!level3.id}" >{!level3.name}</apex:outputLink></td>  
+                                                  <td style="border-top:1px solid #EEDFCC">{!level3.Enterprise_ID__c}</td>
+                                                  <td style="border-top:1px solid #EEDFCC">{!level3.Commercial_ID__c}</td>
+                                                  <td style="border-top:1px solid #EEDFCC">{!level3.Customer_Category__c}</td>
+                                                  <td style="border-top:1px solid #EEDFCC">{!level3.Country_Picklist__c}</td>
+                                           </tr>
+                                           <apex:repeat var="level4" value="{!lstacc4}" >
+                                                <tr style="display:{!IF(level4.parentId != level3.Id, 'none','')}" class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+                                                   <td style="border-top:1px solid #EEDFCC; ; padding-left:90px">
+                                                      <apex:outputLink value="/{!level4.id}" >{!level4.name}</apex:outputLink></td>  
+                                                      <td style="border-top:1px solid #EEDFCC">{!level4.Enterprise_ID__c}</td>
+                                                      <td style="border-top:1px solid #EEDFCC">{!level4.Commercial_ID__c}</td>
+                                                      <td style="border-top:1px solid #EEDFCC">{!level4.Customer_Category__c}</td>
+                                                      <td style="border-top:1px solid #EEDFCC">{!level4.Country_Picklist__c}</td>
+                                               </tr>
+                                                <apex:repeat var="level5" value="{!lstacc5}" >
+                                                    <tr style="display:{!IF(level5.parentId != level4.Id, 'none','')}" class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+                                                       <td style="border-top:1px solid #EEDFCC; padding-left:120px">
+                                                          <apex:outputLink value="/{!level5.id}" >{!level5.name}</apex:outputLink></td>  
+                                                          <td style="border-top:1px solid #EEDFCC">{!level5.Enterprise_ID__c}</td>
+                                                          <td style="border-top:1px solid #EEDFCC">{!level5.Commercial_ID__c}</td>
+                                                          <td style="border-top:1px solid #EEDFCC">{!level5.Customer_Category__c}</td>
+                                                          <td style="border-top:1px solid #EEDFCC">{!level5.Country_Picklist__c}</td>
+                                                   </tr>
+                                                    <apex:repeat var="level6" value="{!lstacc6}" >
+                                                        <tr style="display:{!IF(level6.parentId != level5.Id, 'none','')}" class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+                                                           <td style="border-top:1px solid #EEDFCC; padding-left:150px"><apex:outputLink value="/{!level6.id}" >{!level6.name}</apex:outputLink>
+                                                              </td>  
+                                                              <td style="border-top:1px solid #EEDFCC">{!level6.Enterprise_ID__c}</td>
+                                                              <td style="border-top:1px solid #EEDFCC">{!level6.Commercial_ID__c}</td>
+                                                              <td style="border-top:1px solid #EEDFCC">{!level6.Customer_Category__c}</td>
+                                                              <td style="border-top:1px solid #EEDFCC">{!level6.Country_Picklist__c}</td>
+                                                       </tr>
+                                                        <apex:repeat var="level7" value="{!lstacc7}" >
+                                                            <tr style="display:{!IF(level7.parentId != level6.Id, 'none','')}">
+                                                               <td style="border-top:1px solid #EEDFCC; padding-left:180px">
+                                                                  <apex:outputLink value="/{!level7.id}" >{!level7.name}</apex:outputLink></td>  
+                                                                  <td style="border-top:1px solid #EEDFCC">{!level7.Enterprise_ID__c}</td>
+                                                                  <td style="border-top:1px solid #EEDFCC">{!level7.Commercial_ID__c}</td>
+                                                                  <td style="border-top:1px solid #EEDFCC">{!level7.Customer_Category__c}</td>
+                                                                  <td style="border-top:1px solid #EEDFCC">{!level7.Country_Picklist__c}</td>
+                                                           </tr>
+                                                       </apex:repeat>
+                                                   </apex:repeat>
+                                               </apex:repeat>
+                                           </apex:repeat>
+                                   </apex:repeat>
+                           </apex:repeat>
+                         </apex:repeat>
+                      </table>
+          </apex:pageBlockSection>
+  </apex:pageBlock>
+ </apex:page>

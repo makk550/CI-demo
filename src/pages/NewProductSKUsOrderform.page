@@ -1,0 +1,805 @@
+<apex:page controller="QuoteOrderFormController" language="{!LangCode}" renderAs="pdf" >
+<!-- ISTP - Quote Templates for New product SKUs based -->
+<!-- Author:Ram -->
+<apex:form >
+<html>
+<head>
+<style type="text/css" >
+
+body{font-family: Arial Unicode MS;}
+table {page-break-inside:avoid;}
+
+.divbreak {display: block; page-break-before:auto; page-break-inside: auto; page-break-after: auto}
+
+table#hrdftrtbl
+{ margin:0in 0in 0in 900in;
+    width:1px;
+    height:1px; 
+    overflow:hidden;
+}
+td.data{border-style:solid;border-width:1px 1px 1px 1px;border-color:#000000;border-collapse:collapse;}
+
+</style>
+</head>
+
+<body>
+
+<c:HeaderFooter type="header" > 
+<table width="100%" >
+    <tr>
+        <td style="width:40%;" align="left"><apex:image value="{!$Resource.CALogoGrey}" width="70" height="60"/></td>
+        <td style="font-size:15px;" align="right"><b>{!$Label.Reseller_Order_Form}</b></td>                   
+    </tr>
+</table>
+</c:HeaderFooter>
+  
+<c:HeaderFooter type="footer">
+<table  width="100%">
+    <tr>
+        <td style="align:left;width:20%;font-size:9px">{!FooterString}</td>
+        <td style="align:center;width:25%;font-size:9px"></td>
+        <td style="align:center;width:35%;font-size:9px">Page <span class="pagenumber"/> of <span class="pagecount"/></td>                   
+        <td style="align:center;width:20%;font-size:9px"></td>
+    </tr>
+</table>
+</c:HeaderFooter>
+
+<table width="100%" >
+ <tr>  
+           <td  style="font-size:9px;width:100%;" align="center">{!CAEntityName}{!CAEntityAddress}</td>
+ </tr>
+ </table>
+
+<apex:outputPanel >
+<div>
+
+
+<table width="100%" cellpadding="5" style="border:1px solid black;border-collapse:collapse;">    
+    <tr width="100%">
+        <td width ="30%" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;"><apex:outputLabel >{!$Label.Effective_Date_of_this_Order_Form}:</apex:outputLabel> &nbsp;&nbsp;{!QuoteRec.Effective_Date_text__c} </td> 
+        <td colspan="2" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;"><apex:outputLabel >{!$Label.End_User_Customer_Site_ID_No}:</apex:outputLabel> &nbsp;&nbsp;{!QuoteRec.CA_Sold_To_ID__c} </td>
+    </tr>
+    <tr width="100%">  
+        <td  colspan="3" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;"><apex:outputLabel >{!$Label.Reseller_name_and_address}:&nbsp;&nbsp;</apex:outputLabel>{!QuoteRec.CA_Reseller_Name__c}&nbsp;&nbsp;{!QuoteRec.CA_Partner_Address__c} </td>  
+    </tr>
+    <tr width="100%">
+        <td colspan="3" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;"><apex:outputLabel >{!$Label.End_User_Customer_name_and_address}:&nbsp;&nbsp;</apex:outputLabel>{!QuoteRec.CA_End_User_Name__c}&nbsp;&nbsp;{!QuoteRec.CA_End_User_Address__c}</td>
+    </tr>
+     <tr width="100%">
+        <td colspan="3" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;">{!$Label.Billing_Address}:&nbsp;&nbsp;<apex:outputtext >{!QuoteRec.Bill_To_Address__c}</apex:outputtext>  </td>
+    </tr>
+    <tr width="100%">
+        <td width="30%" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;">{!$Label.Billing_Contact}:&nbsp;&nbsp;<apex:outputtext > {!QuoteRec.CA_Billing_Contact_Name__c}</apex:outputtext></td>  
+        <td width="30%" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;">{!$Label.Phone}: &nbsp;&nbsp;{!QuoteRec.Bill_To_Phone__c}</td>
+        <td width="40%" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;">{!$Label.E_mail}: &nbsp;&nbsp;{!QuoteRec.Bill_To_Email_Address__c} </td>     
+    </tr>
+   	<tr>
+		<td colspan="3" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;">{!$Label.Installation_Location}:&nbsp;&nbsp; <apex:outputPanel rendered="{!shipAddressDiffer}">{!QuoteRec.Ship_To_Address__c} </apex:outputPanel></td> 
+	</tr>
+	<tr width="100%">        
+       <td width="30%" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;">{!$Label.Customer_Technical_Contact_Name}:&nbsp;&nbsp; {!QuoteRec.CA_Technical_Contact_Name__c}</td>  
+       <td width="30%" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;">{!$Label.Phone}: &nbsp;&nbsp;{!QuoteRec.Technical_Contact_Phone__c} </td>
+       <td width="40%" align="left"  style="border:1px solid black;font-size:10px;padding-left:5px;">{!$Label.E_mail}:&nbsp;&nbsp; {!QuoteRec.Technical_Contact_Email_Address__c}</td>      
+    </tr>
+    <tr width="100%" align="center" >
+        <td colspan="3" style="border:1px solid black;font-size:10px;padding-left:5px;">   
+            <table width="90%" style="border:0px solid black;border-collapse:collapse;">
+            <tr width="100%"> 
+                <td width="50%" align="center" style="border:0px solid black;font-size:10px;padding-left:5px;"><apex:image url="{!IF(ShiptoReseller,$Resource.checkbox_checked,$Resource.checkbox_unchecked)}"/>{!$Label.Ship_to_Reseller}</td>
+                <td width="50%" align="center" style="border:0px solid black;font-size:10px;padding-left:5px;"><apex:image url="{!IF(ShiptoEndUser,$Resource.checkbox_checked,$Resource.checkbox_unchecked)}"/>{!$Label.Ship_to_End_User}</td>
+            </tr>
+
+
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td colspan="4" align="left" style="border:0px solid black;font-size:10px;padding-left:5px;">{!$Label.Specific_Instructions}</td>
+            </tr>
+            </table> 
+        </td>  
+    </tr>
+
+    <tr width="100%" align="center">
+        <td  colspan="3" align="Left"  style="border:1px solid black;font-size:10px;padding-left:5px;">{!$Label.Reseller_Agreement}: &nbsp;&nbsp; {!resellerAgreementNumber} </td> 
+    </tr>
+    <tr width="100%" align="center">
+        <td  colspan="3" align="Left"  style="border:1px solid black;font-size:10px;padding-left:5px;">{!$Label.Reseller_Purchase_Order}: </td> 
+    </tr>
+    <tr width="100%" align="center">
+        <td  colspan="3" align="Left"  class ="boldstyle" style="border:1px solid black;font-size:10px;padding-left:5px;"><b>{!$Label.THIS_RESELLER_ORDER_FORM_IS_MADE_PURSUANT}</b></td> 
+    </tr>
+    <tr width="100%" align="left">
+        <td colspan="3" align="Left"   style="border:1px solid black;font-size:10px;padding-left:5px;">   
+            <apex:outputPanel rendered="{!isRAQLtm}">
+            <table width="100%" style="border:0px solid black;border-collapse:collapse;">
+            <tr width="100%"> 
+                <td colspan="2" align="left" style="border:0px solid black;font-size:12px;"><b>{!$Label.Order_and_Payment}</b></td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr>
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.Order_and_Payment_Text1}</td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.Order_and_Payment_Text2} <a href="{!$Label.Order_and_Payment_Text2_1}">{!$Label.Order_and_Payment_Text2_1}</a>.</td>
+                    
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.Order_and_Payment_Text3} <a href="{!$Label.Order_and_Payment_Text3_1}">{!$Label.Order_and_Payment_Text3_1}</a>.</td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;"><apex:image url="{!IF(PerpetualQuote ,$Resource.checkbox_checked,$Resource.checkbox_unchecked)}"/><b>{!$Label.PERPETUAL_LICENSE}</b> : {!$Label.PERPETUAL_LICENSE_Text}</td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;"><apex:image url="{!IF(SubscriptionQuote ,$Resource.checkbox_checked,$Resource.checkbox_unchecked)}"/><b>{!$Label.USAGE_LICENSE}</b> : {!$Label.USAGE_LICENSE_Text}</td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;"><apex:image url="{!IF(MaintenanceQuote ,$Resource.checkbox_checked,$Resource.checkbox_unchecked)}"/><b>{!$Label.MAINTENANCE}</b> : {!$Label.MAINTENANCE_Text}</td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.MAINTENANCE_Text1_1}</td>
+            </tr>
+            </table> 
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!isCSMQLtm}"> 
+            <table width="100%" style="border:0px solid black;border-collapse:collapse;">
+            <tr width="100%"> 
+                <td colspan="2" align="left" style="border:0px solid black;font-size:12px;"><b>{!$Label.Order_and_Payment}</b></td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr>
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.Order_and_Payment_Text5}</td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.Order_and_Payment_Text6} <a href="{!$Label.Order_and_Payment_Text2_1}">{!$Label.Order_and_Payment_Text2_1}</a>.</td>
+                    
+            </tr>
+            <tr><td><br/></td></tr>
+            
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;"><apex:image url="{!$Resource.checkbox_checked}"/><b>{!$Label.SAAS}</b> </td>
+            </tr>
+            <tr><td><br/></td></tr>
+            
+            </table> 
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!isAPIQLtm}">
+            <table width="100%" style="border:0px solid black;border-collapse:collapse;">
+            <tr width="100%"> 
+                <td colspan="2" align="left" style="border:0px solid black;font-size:12px;"><b>{!$Label.Order_and_Payment}</b></td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr>
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.Order_and_Payment_Text1_API}</td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.Order_and_Payment_Text2} <a href="{!$Label.Order_and_Payment_Text2_1}">{!$Label.Order_and_Payment_Text2_1}</a>.</td>
+                    
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.Order_and_Payment_Text3} <a href="{!$Label.Order_and_Payment_Text3_1}">{!$Label.Order_and_Payment_Text3_1}</a>.</td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;"><apex:image url="{!IF(PerpetualQuote ,$Resource.checkbox_checked,$Resource.checkbox_unchecked)}"/><b>{!$Label.PERPETUAL_LICENSE}</b> : {!$Label.PERPETUAL_LICENSE_Text}</td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;"><apex:image url="{!IF(MaintenanceQuote ,$Resource.checkbox_checked,$Resource.checkbox_unchecked)}"/><b>{!$Label.MAINTENANCE}</b> : {!$Label.MAINTENANCE_Text}</td>
+            </tr>
+            <tr><td><br/></td></tr>
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.MAINTENANCE_Text1_1}</td>
+            </tr>
+            </table> 
+            </apex:outputPanel>
+        </td> 
+    </tr>
+</table>
+</div>
+</apex:outputPanel>
+
+<br/>
+  
+<apex:outputPanel >
+<div class="divbreak">
+<!-- CA Release Automation Partner Advantage Offering -->
+
+<apex:outputPanel rendered="{!!isCSMQLtm}">
+<table width="100%" cellpadding="5" style="border:0px solid black;border-collapse:collapse;"> 
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:12px;"><b>{!$Label.Software_and_Maintenance_Payment_Profile}</b></td>
+            </tr>
+</table>
+
+<table width="100%" cellpadding="5" style="border:1px solid black;border-collapse:collapse;">
+            <tr width="100%">
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Due_Date}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Lic_Subscription_Fee}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Maintenance_Fee}</th>
+            </tr>
+        <apex:repeat value="{!Qwrapper}" var="QW">
+            <tr>
+                 <td width="20%"  style="border:1px solid black;font-size:10px;padding-left:3px;"> 
+                           
+                   {!QW.PaymentDate}
+                 </td>     
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">
+                 <apex:outputPanel rendered="{!(QW.QPRCurrency=='USD')}">$</apex:outputPanel>                 
+                   {!QW.ProposedLicSubFee}
+                 </td>    
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;"> 
+                 <apex:outputPanel rendered="{!(QW.QPRCurrency=='USD')}">$</apex:outputPanel>                
+                   {!QW.MaintenanceFee}
+                 </td>
+            </tr>
+        </apex:repeat>    
+            
+</table>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!isCSMQLtm}">
+<table width="100%" cellpadding="5" style="border:0px solid black;border-collapse:collapse;"> 
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:12px;"><b>{!$Label.SaaS_Invoicing_Payment_Schedule}</b></td>
+            </tr>
+</table>
+    <table width="100%" cellpadding="5" style="border:1px solid black;border-collapse:collapse;">
+            <tr width="100%">
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Due_Date_s}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Amount_Due}</th>
+            </tr>
+        <apex:repeat value="{!paymentProfile}" var="PP">
+            <tr>
+                 <td width="20%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!PP.Date_Text__c}
+                 </td>     
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   $&nbsp;{!PP.Payment_Total__c}
+                 </td>                   
+            </tr>
+        </apex:repeat>    
+            
+    </table>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!isRAQLtm}">
+<p style="page-break-after:always;"></p>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!isRAQLtm}">
+<table width="100%" cellpadding="5" style="border:0px solid black;border-collapse:collapse;">
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:12px;"><b>{!$Label.CA_Software_Information}:</b></td>
+            </tr>
+</table>
+
+<table width="100%" cellpadding="5" style="border:1px solid black;border-collapse:collapse;">
+            
+            <tr>
+                <td align="left" style="border:1px solid black;font-size:10px;"><b>{!$Label.Distributed}</b></td>
+                <apex:repeat value="{!QuoteProductRpt}" var="QPR" rows="1">
+                <td colspan="7" width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                    {!QPR.Product_Name__c} 
+                </td> 
+                </apex:repeat>
+            </tr>
+            <tr width="100%">
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.License_Type}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Operating_System_OS}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Authorized_Use_Limitation}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Ship_YN_ESD}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.License_Subscription_Fee}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Subscription_Maintenance_Effective_Date}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Subsccription_Maintenance_End_Date}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Optional_First_Year_Maintenance_Renewal_Perpetual}</th>
+            
+            </tr>
+             <apex:repeat value="{!QuoteProductRpt}" var="QPR" rows="1">
+            <tr>
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!QPR.License_Type__c}
+                 </td>    
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!QPR.Operating_System__c}
+                 </td>
+                 <td width="15%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!QPR.License_Metric__c}
+                 </td>
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   Y
+                 </td>
+                <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">
+                <apex:outputPanel rendered="{!(QPR.CurrencyIsoCode=='USD')}">$</apex:outputPanel>                 
+                   {!QPR.Proposed_Lic_Sub_Fee__c}
+                </td>
+                <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+						{!quoterec.Effective_Date_text__c}
+                 </td>    
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!QPR.End_Date_Text__c}
+                 </td>
+                <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">
+                <apex:outputPanel rendered="{!(QPR.CurrencyIsoCode=='USD')}">$</apex:outputPanel>                 
+                   {!QPR.Stated_Renewal_Fee__c}
+                 </td>
+             </tr>
+        </apex:repeat>    
+</table>
+</apex:outputPanel>
+
+
+<apex:outputPanel rendered="{!isAPIQLtm}">
+<table width="100%" cellpadding="5" style="border:0px solid black;border-collapse:collapse;">
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:12px;"><b>{!$Label.CA_Software_Information}:</b></td>
+            </tr>
+</table>
+
+<table width="100%" cellpadding="5" style="border:1px solid black;border-collapse:collapse;">
+            
+            <tr width="100%">
+            	<th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Distributed}</th>
+<!--                 <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.License_Type}</th> -->
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Operating_System_OS}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Authorized_Use_Limitation}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Ship_YN_ESD}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Maintenance_Effective_Date}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Maintenance_End_Date}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Optional_First_Year_Maintenance_Renewal}</th>
+            
+            </tr>
+             <apex:repeat value="{!QuoteProductRpt}" var="QPR" rows="1">
+            <tr>
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!QPR.Product_Name__c}
+                 </td> 
+<!--                  <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                 -->
+<!--                    {!QPR.License_Type__c} -->
+<!--                  </td>     -->
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!QPR.Operating_System__c}
+                 </td>
+                 <td width="15%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!QPR.License_Metric__c}
+                 </td>
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   Y
+                 </td>
+                <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!quoterec.Effective_Date_text__c}
+                 </td>    
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!QPR.End_Date_Text__c}
+                 </td>
+                <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">
+                <apex:outputPanel rendered="{!(QPR.CurrencyIsoCode=='USD')}">$</apex:outputPanel>                 
+                   {!QPR.Stated_Renewal_Fee__c}
+                 </td>
+             </tr>
+        </apex:repeat>    
+</table>
+</apex:outputPanel>
+
+<br/>
+
+<apex:outputPanel rendered="{!isCSMQLtm}">
+<table width="100%" cellpadding="5" style="border:0px solid black;border-collapse:collapse;"> 
+            <tr width="100%">
+                <td align="left" style="border:0px solid black;font-size:12px;"><b>{!$Label.SaaS_Fees_Production}:</b></td>
+            </tr>
+</table>
+    <table width="100%" cellpadding="5" style="border:1px solid black;border-collapse:collapse;">
+            <tr width="100%">
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.CA_Program}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Effective_Date}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.End_Date}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Pack}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Monthly_Production_Fee_Per_User}</th>
+                <th align="left" style="border:1px solid black;font-size:10px;">{!$Label.Total_Production_Fee_for_Term}</th>
+            </tr>
+      
+            <tr width="100%">
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!csmQPR.Product_Name__c}
+                 </td>
+                 <td width="20%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!csmQPR.Effective_Date_text__c}
+                 </td>  
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   {!csmQPR.End_Date_Text__c}
+                 </td>   
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;">                
+                   1 Pack – 20 Users
+                 </td>   
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;"> 
+                 <apex:outputPanel rendered="{!(csmQPR.CurrencyIsoCode=='USD')}">$</apex:outputPanel>              
+                   &nbsp;{!Monthly_Production_Fee_Per_User}
+                 </td>   
+                 <td width="10%"  style="border:1px solid black;font-size:10px;padding-left:3px;"> 
+                 <apex:outputPanel rendered="{!(csmQPR.CurrencyIsoCode=='USD')}">$</apex:outputPanel>                
+                  &nbsp;{!csmQPR.Proposed_Lic_Sub_Fee__c}
+                 </td>           
+             </tr>
+       
+            
+    </table>
+
+ <br/>   
+</apex:outputPanel>
+
+<!-- CA Release Automation Partner Advantage Offering -->
+
+<apex:outputPanel rendered="{!isRAQLtm}">
+<p align="left" style="font-size:10px;"><b>{!$Label.CA_LISA_Release}</b> {!$Label.consists_of_the_following}</p>
+
+<ol type="1" align="left" style="font-size:10px;">
+  <li>{!$Label.CA_LISA_Release_Text1}</li>
+  <li>{!$Label.CA_API_Gateway_Text2}</li>
+</ol>
+
+<p style="font-size:10px;">{!$Label.CA_LISA_Release_Text3}</p>
+
+</apex:outputPanel>
+
+<!-- API Gateway Offering SaaS  -->
+<apex:outputPanel rendered="{!isAPIQLtm}">
+<p style="page-break-after:always;"></p>
+<p align="left" style="font-size:10px;"><b>{!$Label.CA_API_Gateway_Partner_Advantage_Offering}</b> {!$Label.consists_of_the_following}</p>
+
+
+<ol type="1" align="left" style="font-size:10px;">
+  <li>{!$Label.CA_API_Gateway_Text1}</li>
+  <li>{!$Label.CA_API_Gateway_Text2}</li>
+</ol>
+
+<p style="font-size:10px;">{!$Label.CA_API_Gateway_Text3}</p>
+
+</apex:outputPanel>
+
+<!-- CA Cloud Service Management Advantage Offering SaaS  -->
+<apex:outputPanel rendered="{!isCSMQLtm}">
+<p style="page-break-after:always;"></p>
+<p align="left" style="font-size:10px;"><b>{!$Label.CA_Cloud_Service_Management_Advantage_Offering_SaaS}</b> {!$Label.consists_of_the_following}</p>
+<ol type="1" align="left" style="font-size:10px;">
+  <li> 
+  <apex:outputPanel rendered="{!isCsmSKU2}">{!$Label.CA_Cloud_Service_Management_Text1} </apex:outputPanel>
+  <apex:outputPanel rendered="{!!isCsmSKU2}">{!$Label.CA_Cloud_Service_Management_Text1_1} </apex:outputPanel> &nbsp;{!$Label.CA_Cloud_Service_Management_Text1_1_a} &nbsp;{!NoUserscsmQPR} &nbsp;({!csmQPR.Total_Quantity__c}) &nbsp;{!$Label.CA_Cloud_Service_Management_Text1_2}
+  <ul style="list-style-type:lower-alpha;">
+      <li> {!$Label.CA_Cloud_Service_Management_Text2} </li>
+      <li> {!$Label.CA_Cloud_Service_Management_Text3} </li>
+      <li> {!$Label.CA_Cloud_Service_Management_Text4} </li>
+   </ul>
+  </li>
+  
+</ol>
+
+<p style="font-size:10px;">{!$Label.CA_Cloud_Service_Management_Text5}</p>
+
+</apex:outputPanel>
+
+<p style="font-size:10px;">{!$Label.CA_API_Gateway_Text4}</p>
+
+
+</div>
+
+
+<div class="divbreak">
+<p align="left" style="font-size:14px;"><b>{!$Label.Definitions}:</b></p>
+
+<!-- CA Release Automation Partner Advantage Offering -->
+<apex:outputPanel rendered="{!isRAQLtm}">
+<ol type="1" align="left" style="font-size:10px;">
+  <li>{!$Label.Definitions_Text1}</li>
+</ol>
+
+<p align="left" style="font-size:10px;">{!$Label.Definitions_1}</p>
+
+<p align="left" style="font-size:10px;">{!$Label.Definitions_Text6}</p>
+<apex:outputPanel rendered="{!SelectedCountry}">
+<p align="left" style="font-size:10px;" >{!$Label.Definitions_2}</p>
+</apex:outputPanel>
+<p align="left" style="font-size:10px;">{!$Label.Definitions_Text8} {!QuoteRec.Effective_Date_Text__c} {!$Label.Definitions_Text8_1}</p>
+<p align="left" style="font-size:10px;">{!$Label.Definitions_Text9}</p>
+
+<p align="left" style="font-size:10px;">{!$Label.Definitions_Text11}</p>
+<p align="left" style="font-size:10px;">{!$Label.Definitions_3}</p>
+ 
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!isCSMQLtm}">
+
+<p align="left" style="font-size:10px;"><b>{!$Label.External_System}</b> {!$Label.CSM_Definition_Text1}</p>
+<p align="left" style="font-size:10px;"><b>{!$Label.Named_User}</b> {!$Label.CSM_Definition_Text2}</p>
+
+
+<p align="left" style="font-size:10px;">{!$Label.CSM_Definition_Text3}</p>
+
+<p align="left" style="font-size:10px;">{!$Label.CSM_Definition_Text5}</p>
+<p align="left" style="font-size:10px;">{!$Label.CSM_Definition_Text6}</p>
+<apex:outputPanel rendered="{!AND(isOneYearTransaction,isCsmSKU2)}">
+<p align="left" style="font-size:10px;">{!$Label.CSM_Definition_Text7} &nbsp;{!NoUserscsmQPR} &nbsp;({!csmQPR.Total_Quantity__c})&nbsp;  {!$Label.CSM_Definition_Text7_1}&nbsp;$&nbsp;{!csmQPR.Stated_Renewal_Fee__c}  </p>
+</apex:outputPanel>
+<p align="left" style="font-size:10px;">{!$Label.CSM_Definition_Text4}</p>
+
+<p align="left" style="font-size:10px;">{!$Label.CSM_Definition_Text10} {!$Label.CSM_Definition_Text11}</p>
+
+<apex:outputPanel rendered="{!SelectedCountry}"> 
+<p align="left" style="font-size:10px;" >{!$Label.Definitions_2}</p>
+</apex:outputPanel>
+ 
+<p align="left" style="font-size:10px;">{!$Label.CSM_Definition_Text8}&nbsp; {!QuoteRec.Effective_Date_text__c}{!$Label.CSM_Definition_Text8_1}</p> 
+<p align="left" style="font-size:10px;">{!$Label.CSM_Definition_Text9}</p>
+
+<p align="left" style="font-size:10px;">{!$Label.Definitions_Text11}</p>
+<p align="left" style="font-size:10px;">{!$Label.Definitions_3}</p>
+
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!isAPIQLtm}">
+	<ol type="1" align="left" style="font-size:10px;">
+	  <li>{!$Label.API_Definition_Text1}
+	    <ol type="a" style="font-size:10px;list-style-type:lower-alpha;">
+	        <li>{!$Label.API_Definition_Text1_a}</li>
+	        <li>{!$Label.API_Definition_Text1_b}</li>
+	        <li>{!$Label.API_Definition_Text1_c}</li>
+	    </ol>
+	  </li>
+	</ol>
+	
+	<p align="left" style="font-size:10px;">{!$Label.Definitions_Text2}</p>
+	<p align="left" style="font-size:10px;">{!$Label.Definitions_1}</p>
+	
+	<p align="left" style="font-size:10px;">{!$Label.Definitions_Text6_API}</p>
+	<apex:outputPanel rendered="{!SelectedCountry}">
+	<p align="left" style="font-size:10px;" >{!$Label.Definitions_2}</p>
+	</apex:outputPanel>
+	<p align="left" style="font-size:10px;">{!$Label.Definitions_Text8_API} {!QuoteRec.Effective_Date_Text__c} {!$Label.CSM_Definition_Text8_1}</p>
+	<p align="left" style="font-size:10px;">{!$Label.Definitions_Text9_API}</p>
+	
+	<p align="left" style="font-size:10px;">{!$Label.Definitions_Text11}</p>
+<!-- 	<p align="left" style="font-size:10px;">{!$Label.Definitions_3}</p>  -->
+ 
+</apex:outputPanel>
+<table width="100%" cellpadding="3" style="border:0px solid black;border-collapse:collapse;">
+           
+            <tr width="100%">
+                <td width="3%" align="left" style="border:0px solid black;font-size:10px;">1.</td>
+                <td align="left" style="border:0px solid black;font-size:10px;"><b>{!$Label.CA_Reseller_End_User_Terms}</b></td>
+            </tr>
+            <tr width="100%">
+                <td width="3%" align="left" style="border:0px solid black;font-size:10px;"></td>
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.CA_Reseller_End_User_Terms_Text1_1} <a href="{!$Label.Order_and_Payment_Text2_1}">{!$Label.Order_and_Payment_Text2_1}</a>.{!$Label.CA_Reseller_End_User_Terms_Text1_2}</td>
+            </tr>
+            <tr><td colspan="2"></td></tr>
+            <tr width="100%">
+                <td width="3%" align="left" style="border:0px solid black;font-size:10px;">2.</td>
+                <td align="left" style="border:0px solid black;font-size:10px;"><b>{!$Label.Audit}</b></td>
+            </tr>
+            <tr width="100%">
+                <td width="3%" align="left" style="border:0px solid black;font-size:10px;"></td>
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.Audit_Text}</td>
+            </tr>
+            <apex:outputPanel rendered="{!!isCSMQLtm}">
+            <tr width="100%">
+                <td width="3%" align="left" style="border:0px solid black;font-size:10px;">3.</td>
+                <td align="left" style="border:0px solid black;font-size:10px;"><b>{!$Label.New_Product_clause_exclusion}</b></td>
+            </tr>
+            <tr width="100%">
+                <td width="3%" align="left" style="border:0px solid black;font-size:10px;"></td>
+                <td align="left" style="border:0px solid black;font-size:10px;">{!$Label.New_Product_clause_exclusion_Text}</td>
+            </tr>
+            </apex:outputPanel>
+           
+</table>
+</div>
+
+<div class="divbreak">
+<p align="left" style="font-size:10px;">{!$Label.Definitions_Text_Last}</p>
+
+<apex:outputPanel rendered="{!OR(isAPIQLtm,isCSMQLtm)}">
+<p style="page-break-after:always;"></p>
+</apex:outputPanel>
+
+<table  width="100%" style="border:0px solid black;border-collapse:collapse;"> 
+    <tr>
+        <th colspan="2" style="font-size:10px;width:20%;">{!QuoteRec.CA_Reseller_Name__c}</th>
+        <th colspan="2" style="font-size:10px;width:20%;">CA</th>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Signature}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\s1\</font>________________________________________</td>
+        <td style="font-size:10px;width:20%;">{!$Label.Signature}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\s2\</font>________________________________________</td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Name}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\n1\</font>________________________________________</td>
+        <td style="font-size:10px;width:20%;">{!$Label.Name}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\n2\</font>________________________________________</td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Title}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\t1\</font>________________________________________</td>
+        <td style="font-size:10px;width:20%;">{!$Label.Title}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\t2\</font>________________________________________</td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Date}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\d1\</font>________________________________________</td>
+        <td style="font-size:10px;width:20%;">{!$Label.Date}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\d2\</font>________________________________________</td>
+    </tr>
+     <tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td align="center" style="font-size:10px;width:40%;">{!$Label.Handwrite}</td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td align="center" style="font-size:10px;width:40%;">{!$Label.Handwrite}</td>
+    </tr>
+     <tr><td><br/></td></tr>
+    
+    <tr>
+    <td colspan="4" align="center" style="font-size:10px;width:40%;font-weight: bold;"> {!$Label.Note_signature_not_required_if_using_a_PO} </td>
+    </tr>
+</table>
+</div>
+    
+<p style="page-break-after:always;"></p>
+<div class="divbreak">
+<!-- CA Release Automation Partner Advantage Offering -->
+<apex:outputPanel rendered="{!isRAQLtm}">
+<table width="100%" style="border:0px solid black;border-collapse:collapse;">
+           
+            <tr width="100%">
+                <td align="center" style="border:0px solid black;font-size:12px;"><b>{!$Label.Exhibit_A}</b></td>
+            </tr>
+            <tr width="100%">
+                <td align="center" style="border:0px solid black;font-size:12px;"><b>{!$Label.CA_RA_PAOS}</b></td>
+            </tr>
+        
+</table>
+<hr style="border-width: 1px;" />
+
+<p align="left" style="font-size:10px;">{!$Label.Exhibit_A_Text}</p>
+
+<table width="100%" style="border:0px solid black;border-collapse:collapse;">
+<tr>
+<td width="10%"></td>
+<td>
+<ol type="1" align="left"  style="font-size:10px;">
+                      <li>{!$Label.Exhibit_A_list_1}
+                      <ol align="left"  style="font-size:10px;list-style-type:lower-alpha;" type="a">
+                            <li>{!$Label.Exhibit_A_list_1a}</li>
+                            <li>{!$Label.Exhibit_A_list_1b}</li>
+                            <li>{!$Label.Exhibit_A_list_1c}</li>
+                            <li>{!$Label.Exhibit_A_list_1d}</li>
+                      </ol>
+                      </li>
+                      <li>{!$Label.Exhibit_A_list_2}</li>
+                      <li>{!$Label.Exhibit_A_list_3}</li>
+                      <li>{!$Label.Exhibit_A_list_4}</li>
+                        
+ </ol>                     
+  </td>
+  </tr>
+  </table>  
+  </apex:outputPanel>
+  
+  <apex:outputPanel rendered="{!isAPIQLtm}">
+<table width="100%" style="border:0px solid black;border-collapse:collapse;">
+           
+            <tr width="100%">
+                <td align="center" style="border:0px solid black;font-size:12px;"><b>{!$Label.Exhibit_A}</b></td>
+            </tr>
+            <tr width="100%">
+                <td align="center" style="border:0px solid black;font-size:12px;"><b>{!$Label.CA_API_Gateway_Partner_Advantage_Offering_Services}</b></td>
+            </tr>
+        
+</table>
+<hr style="border-width: 1px;" />
+<br/>
+
+<table width="100%" style="border:0px solid black;border-collapse:collapse;">
+<tr>
+<td width="10%"></td>
+<td>
+<ol type="1" align="left"  style="font-size:10px;">
+                      <li>{!$Label.API_Exhibit_List1}</li>
+                      <li>{!$Label.API_Exhibit_List2}
+                      <ol align="left"  style="font-size:10px;list-style-type:lower-alpha;" type="a">
+                            <li>{!$Label.API_Exhibit_List2_a}</li>
+                            <li>{!$Label.API_Exhibit_List2_b}</li>
+                      </ol>
+                      </li> 
+                      <li>{!$Label.API_Exhibit_List3}</li>
+                      <li>{!$Label.API_Exhibit_List4}</li>
+                      <li>{!$Label.Exhibit_A_list_4}</li>
+                        
+ </ol>                     
+  </td>
+  </tr>
+  </table>  
+  </apex:outputPanel>
+  
+  <apex:outputPanel rendered="{!isCSMQLtm}">
+  <table width="100%" style="border:0px solid black;border-collapse:collapse;">
+           
+            <tr width="100%">
+                <td align="center" style="border:0px solid black;font-size:12px;"><b>{!$Label.Exhibit_A}</b></td>
+            </tr>
+            <tr width="100%">
+                <td align="center" style="border:0px solid black;font-size:12px;"><b>{!$Label.CA_Cloud_Service_Management_Advantage_Offering_SaaS}</b></td>
+            </tr>
+            
+        
+</table>
+<hr style="border-width: 1px;" />
+<br/>
+<p align="left" style="font-size:10px;">{!$Label.Exhibit_A_Text}</p>
+<table width="100%" style="border:0px solid black;border-collapse:collapse;">
+<tr>
+<td width="10%"></td>
+<td>
+<ol type="1" align="left"  style="font-size:10px;">
+
+                    <li>{!$Label.CA_Cloud_Service_Mgmt_Ext1}</li>
+                    <li>{!$Label.CA_Cloud_Service_Mgmt_Ext2}</li>
+                    <li>{!$Label.CA_Cloud_Service_Mgmt_Ext3}
+                      
+                      <ul align="left"  style="font-size:10px;list-style-type:disc;">
+                            <li>{!$Label.CA_Cloud_Service_Mgmt_Ext4}</li>
+                            <li>{!$Label.CA_Cloud_Service_Mgmt_Ext5}</li>
+                            <li>{!$Label.CA_Cloud_Service_Mgmt_Ext6}</li>
+                            <li>{!$Label.CA_Cloud_Service_Mgmt_Ext7}</li>
+                            <li>{!$Label.CA_Cloud_Service_Mgmt_Ext8}</li>
+                            <li>{!$Label.CA_Cloud_Service_Mgmt_Ext9}</li>
+                            <li>{!$Label.CA_Cloud_Service_Mgmt_Ext10}</li>
+                            <li>{!$Label.CA_Cloud_Service_Mgmt_Ext11}</li>
+                            <li>{!$Label.CA_Cloud_Service_Mgmt_Ext12}</li>
+                            
+                      </ul>
+                      
+                      </li>
+                        
+ </ol>                     
+  </td>
+  </tr>
+  </table>  
+  </apex:outputPanel>    
+  
+         
+</div>
+</apex:outputPanel>
+
+
+
+</body>
+
+</html>
+</apex:form>
+</apex:page>

@@ -1,0 +1,66 @@
+<apex:page controller="TestEditCaseController" showHeader="false" standardStylesheets="true">  <!-- TestEditCaseController -->
+    <apex:includeScript value="/support/console/30.0/integration.js"/>
+    
+    <style> 
+        .bPageBlock { border: 0px; }
+        .bPageBlock.brandSecondaryBrd.bEditBlock.secondaryPalette  { background-color: transparent; border:none}
+         body .bEditBlock .pbBottomButtons{border-top:none;}
+        .ui-widget-content{border:1px solid #999;}       
+    </style>
+    
+    <!-- script type="text/javascript">
+
+        // This function will close the current tab with this page
+        // and after that refresh the opener case tab
+        function closeCurrentTab() {
+            sforce.console.getEnclosingTabId(closeThisTabAndRefreshParent);
+        }
+
+        var closeThisTabAndRefreshParent = function closeThisTabAndRefreshParent(result) {
+
+            // Refreshing a subtab by ID.
+            // An opener tab id was passed as a URL param.
+            //sforce.console.refreshSubtabById('{!$CurrentPage.parameters.tid}', true);
+			sforce.console.refreshPrimaryTabById('01r1h0000008Zth', true);
+            // Closing current tab
+            sforce.console.closeTab(result.id);
+        };
+
+    </script -->
+    
+    
+     <apex:form id="EditCaseForm">         
+           <apex:pageBlock mode="edit" >
+               <apex:pageMessages id="showmsg"></apex:pageMessages>
+                <apex:pageBlockSection title="Edid Field" columns="1" showHeader="false">
+                     <apex:inputField value="{!CurrentCase[fieldName]}" />
+               </apex:pageBlockSection>
+         <apex:pageBlockButtons location="bottom" style="float:center" >
+             <apex:commandButton value="Save" action="{!SaveCaseField}" reRender="showmsg,script-block"  oncomplete="onSaveComplete(); return false;"/> <!-- oncomplete="onSaveComplete();  closeCurrentTab()" /-->
+             <apex:commandButton value="Cancel" action="{!Cancel}" oncomplete="onCancel(); return false;"/> <!-- oncomplete="onCancel();closeCurrentTab"/-->
+         </apex:pageBlockButtons>
+               
+               <apex:outPutPanel layout="block" id="script-block">
+                   <script>
+                   		var hasMessages = '{!hasError}';
+                   </script>
+               </apex:outPutPanel>
+
+         </apex:pageBlock>
+    </apex:form>   
+    
+    <script>
+        function onSaveComplete(){
+            //console.log('In onSaveComplete');
+            if(hasMessages == 'false'){
+                window.parent.$(".btn.refreshListButton").click();           
+                window.parent.$("#dialog").dialog('close');
+            }            
+        }
+        
+        function onCancel(){
+            window.parent.$("#dialog").dialog('close');
+        }    
+    </script>
+    
+</apex:page>

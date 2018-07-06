@@ -1,0 +1,102 @@
+<apex:page controller="SearchContractArchiveController" >
+    <apex:stylesheet value="{!URLFOR($Resource.jquery, 'jquery-ui.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-ui.js')}"/>
+    <script>
+        // To Display Modal Window.
+        function displayModal(fileName,url,source){
+            console.log('Inside displayModal');
+            $("#dialog").dialog({
+                modal: true,
+                title: fileName,
+                width: 65 +'%',
+                height: 750,
+                
+                buttons: {
+                    Close: function () {
+                        $(this).dialog('close');
+                    }
+                },
+                open: function () {
+                    console.log('inside open function');
+                    var object = "<iframe src=\"{FileName}\" type=\"application/pdf\" width=\"100%\" height=\"100%\" scrplling=\"no\" frameborder=\"0\">";
+                    if(source!=''){
+                        object += "If you are unable to view file, you can download from <a href=\"{FileName}\">here</a>";
+                        object += " or download <a target = \"_blank\" href = \"http://get.adobe.com/reader/\">Adobe PDF Reader</a> to view the file.";
+                    }
+                    object += "</iframe>";
+                    object = object.replace(/{FileName}/g, url);
+                    $("#dialog").html(object);
+                    
+                }
+            });
+        }
+        
+        // Resizing the height of the Iframe
+        function resizeIframe(newHeight) {  
+            document.getElementById('receiver').style.height = newHeight + 'px';
+        }
+        
+        window.onload = function() {
+            var receiver = document.getElementById('receiver').contentWindow;
+            // Sending Message to SharePoint Page.    
+            
+            function sendMessage(data) {
+                receiver.postMessage(data, '*');
+            }
+            console.log(receiver);
+            var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+            var eventer = window[eventMethod];
+            var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+            // Listen to message from child window (SharePoint page)
+            // Invoke Apex Controller Method.
+            //if(e.data.length==0 || e.data == null || e.data.indexOf(".pdf") == -1)
+            //return;
+            eventer(messageEvent,function(e) {
+                var exactFileName = e.data;
+                var checkFileSource = exactFileName.split('DOCS');
+                if(checkFileSource[1]!=undefined && exactFileName!=undefined){
+                    var splitFileName = exactFileName.split('/');
+                    var fileHeader = '';
+                    if(splitFileName[1]=='apj' && splitFileName[2]!=null && splitFileName[2]!='' && splitFileName[2]!=undefined){
+                    	fileHeader = 'Selectica '+splitFileName[2];
+                        exactFileName = splitFileName[0]+'/'+splitFileName[2];
+                    }else{
+                    	fileHeader = 'Selectica '+splitFileName[1];
+                        exactFileName = splitFileName[0]+'/'+splitFileName[1];
+                    }
+                    var buildNewURL = window.location.href.substr(0,window.location.href.lastIndexOf("/"))+'/SelecticaContractArchival?ContractLink='+exactFileName;
+                    displayModal(fileHeader.toUpperCase(),buildNewURL,'Selectica');
+                        
+                }else if(e.data.indexOf(".pdf")!= -1){
+                    var filename = '/'+e.data;
+                    console.log(filename);
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.SearchContractArchiveController.search}',
+                        filename,
+                        function(result, event) {
+                            if(event.status){
+                                if(result=='Given AWS Credentials Not Found!'){
+                                    alert('Error Message: '+result);    
+                                }else if(result=='Requested resource not found.'){
+                                    //alert('Requested resource not found.');
+                                }else{
+                                    displayModal(filename,result,'');
+                                }
+                            }else{
+                                alert('Error Message: '+event.message); 
+                            }
+                        },{escape: false}
+                    );
+                }
+            },false);
+        }
+    </script>
+    <div id="dialog" style="display: none">
+    </div>
+    <apex:iframe src="{!searchContractEndPoint}/Pages/ContractSearch.aspx" scrolling="true" id="receiver"  
+        html-style="margin:0px;padding:0px;" 
+        html-sandbox="allow-same-origin allow-scripts allow-forms allow-top-navigation allow-popups"
+        html-onload="resizeIframe(window.innerHeight);"
+        frameborder="false"/>
+</apex:page>

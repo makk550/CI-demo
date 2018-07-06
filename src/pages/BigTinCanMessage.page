@@ -1,0 +1,7 @@
+<apex:page standardController="opportunity">
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>bigtincan Access</h1>
+      <p> <apex:outputLabel value="{!$Label.bigtincan_message_1}"/> </p>
+      <p> <apex:outputLabel value="{!$Label.bigtincan_message_2}"/> </p>
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

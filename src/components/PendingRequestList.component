@@ -1,0 +1,71 @@
+<apex:component controller="PendingRequestCtrl" access="global">
+ 
+<style type="text/css">
+h1 {
+    display:block; width:637px; padding:34px 0 28px;
+    font-size:18px; line-height:23px; text-align:center; font-weight:normal;
+}
+.tabletop {
+    display:block; width:630px; height:15px; 
+    background:transparent url(images/top.gif) no-repeat scroll 0 0;
+    margin:0 0 0 4px;
+}
+.tablebk {
+    width:615px;
+    background:transparent url(images/middle.gif) repeat-y scroll 0 0;
+    margin:0 0 0 4px; padding:0 0 0 15px;
+}
+.tablebottom {
+    display:block; width:630px; height:16px; 
+    background:transparent url(images/bottom.gif) no-repeat scroll 0 0;
+    margin:0 0 0 4px;
+}
+
+table {table-layout:fixed; border-collapse:collapse; border-spacing:0; }
+th, td {border:1px solid #999; text-align:center; font-weight:bold; }
+th {
+    color:#fff; background-color:#0141ab;
+    font-size:16px; line-height:22px;
+    padding:5px 11px 8px;
+}
+td {
+    color:#000; background-color:#d9e8f0;
+    font-size:14px; line-height:16px;
+    padding:11px;
+    vertical-align:top;
+}
+th.col1,
+td.col1 {text-align:left;}
+.odd td {background-color:#f2f7fa;}
+
+td input {
+    width:85px; height:22px;
+    font-size:14px; line-height:16px; font-weight:bold; text-align:center;
+    padding-top:3px;
+    border:1px solid #999;
+}
+
+tr:hover td {background-color:#599bbd;} /* hover state does not work in ie6 */
+
+.threshold { background-color:#ffff00; }
+
+/* END Table CSS */
+</style>
+  
+Dear {!Approver},
+
+<p>Below are the Access Reqeusts that waiting for your approval.</p>
+
+  <apex:dataTable value="{!pendingARs}" var="Ar">
+  <apex:column >
+  <apex:facet name="header">Access Request</apex:facet>
+  <a href="{!baseURl}/{!Ar.Id}">{!Ar.Name}</a>
+  </apex:column>
+  <apex:column >
+   <apex:facet name="header">Requestor</apex:facet>
+  <apex:outputText value="{!Ar.Request_For__r.Name}"/>
+  </apex:column>
+ 
+  </apex:dataTable> 
+ 
+</apex:component>

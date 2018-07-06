@@ -1,0 +1,114 @@
+<apex:page id="leadsLookupPgId" showHeader="false" sidebar="false" controller="MassLeadsAssignLookup" action="{!init}">
+	<style>
+    	.addNL {font-weight: bold}
+        .inactiveTab { background-color: lightgrey; color:black; background-image:none}
+        .secondaryPalette { 
+                background-color:;
+                border-color:;
+         }
+         .pbSubheader {
+                background-color:#222;
+                font-weight:bold;
+                font-size: 91%;
+                padding:2px 2px 2px 5px;
+                margin-top: 15px;
+                overflow: hidden;
+                margin-bottom: 2px;
+          }
+          .pbSubheader.first {
+                margin-top: 0;
+           }
+           body .bDashboard .tertiaryPalette {
+                background-color: ;
+                border-color: ;
+           }       
+           .apexp .detailList .list td, .apexp .detailList .list th, .apexp .editPage .bPageBlock .detailList .list tr td, .apexp .editPage .bPageBlock .detailList .list tr th {
+                border-bottom:1px solid #E3DEB8;
+                color:#333333;
+                padding:4px 2px 4px 5px;
+            }
+            .Custom18Tab .tertiaryPalette, .individualPalette .Custom18Block .tertiaryPalette {
+                background-color:;
+                border-color:;
+            }
+	</style>        
+	<script language="JavaScript">
+        function setSearchText(txtId,srchTxt)
+        {
+        	document.getElementById(txtId).value = document.getElementById(srchTxt).value;
+       	}
+       	       	
+       	function updateAccSel(selName,objId,objName,dispName)
+       	{
+			if(objName == 'acct')
+			{
+			    try
+			    {
+			    	
+		       		top.window.opener.document.getElementById('popUpPage2:mlaForm:mlaPB:mlaPBS:partnerHQid').value= selName;
+		       		top.window.opener.document.getElementById('popUpPage2:mlaForm:accId').value=objId;
+		       		top.window.opener.document.getElementById('popUpPage2:mlaForm:mlaPB:mlaPBS:partnerContid').value= '';			
+		       		top.window.opener.document.getElementById('popUpPage2:mlaForm:mlaPB:mlaPBS:partnerSiteid').value= '';
+	       		}
+	       		catch(err)
+	       		{
+		       		 alert('error is : '+err);
+	       		}
+			}
+			if(objName == 'cont')
+			{
+	       		top.window.opener.document.getElementById('popUpPage2:mlaForm:mlaPB:mlaPBS:partnerContid').value= selName;
+	       		top.window.opener.document.getElementById('popUpPage2:mlaForm:contactId').value=objId;		
+	       		top.window.opener.document.getElementById('popUpPage2:mlaForm:contactName').value = selName;	       		
+			}
+			if(objName == 'pSite')
+			{
+				top.window.opener.document.getElementById('popUpPage2:mlaForm:mlaPB:mlaPBS:partnerSiteid').value= dispName;
+	       		top.window.opener.document.getElementById('popUpPage2:mlaForm:pSiteId').value=objId;		
+	       		top.window.opener.document.getElementById('popUpPage2:mlaForm:partnerSiteName').value = dispName;
+			}
+       		top.window.close();
+       	}       	
+	</script>            
+    <div class="bPageTitle">
+    	<div class="ptBody secondaryPalette">
+        	<div class="content">
+            	<apex:image url="{!$Resource.Lookup_Icon}" styleClass="pageTitleIcon"/>                    	
+                	<h1 class="pageType">Lookup<span class="titleSeparatingColon1"></span></h1>
+                    <h2 class="pageDescription"></h2> 
+                    <div class="blank">&nbsp; </div>
+            </div>      
+        </div>
+    </div>         
+    <apex:form id="lookUpForm">         
+    	<apex:outputPanel rendered="true" id="searchPanel">
+        					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	         	<apex:inputHidden id="searchTxt"/>
+				<apex:outputLabel style="font-weight:bold">Search</apex:outputLabel>
+				&nbsp;<apex:inputText id="searchTxtId"/>
+				&nbsp;&nbsp;<apex:commandButton styleClass="btn" value=" Go! " onclick="javascript:setSearchText('{!$Component.searchTxt}','{!$Component.searchTxtId}')" action="{!searchAction}" id="searchId" reRender="searchResPanel"/>
+				<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You can use "*" as a wildcard next to other characters to improve your search results. For example, "ad*"
+				  returns all <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;records with a word in one of the searched fields that begins with "ad".</p>
+				<br/>
+		</apex:outputPanel>
+		<apex:outputPanel id="searchResPanel">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:outputText value="{!searchAlertStr}" style="color:red"/>
+			<apex:pageBlock id="mlaPB" title="">
+				<apex:pageBlockTable var="searchList" value="{!searchResList}" id="mlaPBTabId1">
+					<apex:column headerValue="{!col1Header}" rendered="{!col1Visibility}">
+						<apex:CommandLink immediate="true" value="{!searchList.strCol1}" onclick="javascript:updateAccSel('{!searchList.strCol1}','{!searchList.strObjId}','{!searchList.strObjName}','{!searchList.strDispName}')" action="{}">
+	                    </apex:CommandLink>	
+					</apex:column>
+					<apex:column headerValue="{!col2Header}" rendered="{!col2Visibility}"> {!searchList.strCol2}</apex:column>
+					<apex:column headerValue="{!col3Header}" rendered="{!col3Visibility}"> {!searchList.strCol3}</apex:column>
+					<apex:column headerValue="{!col4Header}" rendered="{!col4Visibility}"> {!searchList.strCol4}</apex:column>
+					<apex:column headerValue="{!col5Header}" rendered="{!col5Visibility}"> {!searchList.strCol5}</apex:column>
+					<apex:column headerValue="{!col6Header}" rendered="{!col6Visibility}"> {!searchList.strCol6}</apex:column>
+					<apex:column headerValue="{!col7Header}" rendered="{!col7Visibility}"> {!searchList.strCol7}</apex:column>
+					<apex:column headerValue="{!col8Header}" rendered="{!col8Visibility}"> {!searchList.strCol8}</apex:column>
+				</apex:pageBlockTable>
+		    </apex:pageBlock>
+   			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:outputText value="{!searchAlertStr}" style="color:red"/>		         
+   		</apex:outputPanel>			
+	</apex:form>
+</apex:page>

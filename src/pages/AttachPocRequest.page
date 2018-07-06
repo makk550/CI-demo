@@ -1,0 +1,22 @@
+<apex:page standardController="Trial_Request__c" extensions="AttachPocExt">
+<html>
+<body>
+    <apex:messages />
+    <apex:form id="theForm">
+      <apex:pageBlock >
+          <apex:pageBlockSection >
+            <apex:inputfield value="{!Trial_Request__c.Business_Unit__c}" required="true"/>
+            <apex:inputFile value="{!att.body}" filename="{!att.name}" id="file" />
+            <table width="100%">
+            <tr>
+            <td align="center">
+            <apex:commandButton value="Save" style="width:100px;" action="{!save}"/>
+             </td>
+            </tr>
+            </table>            
+          </apex:pageBlockSection>
+       </apex:pageBlock>
+    </apex:form>
+    </body>
+</html>
+</apex:page>

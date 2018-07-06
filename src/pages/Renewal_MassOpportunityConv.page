@@ -1,0 +1,56 @@
+<apex:page controller="Renewal_MassOpportunityConv" action="{!RenewalConv}">
+ <style type="text/css">
+#parent {position: relative;}
+
+#child {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 30%;
+    width: 50%;
+    margin: -15% 0 0 -25%;
+}
+
+</style>
+<apex:pageMessages ></apex:pageMessages>
+ <apex:outputLink value="{!backToTab}" >Back to Tab</apex:outputLink>
+ 
+  <br/><br/><br/><br/><br/><br/>
+  
+    <div  style="text-align:center;height: 30%; width: 80%;border: 1px solid black"><b>
+    A batch started processing the selected records.An email would be sent once the records are processed. <br/>
+    Please refer to the below link for Error / Success logs..
+    <br/><br/><br/><apex:outputLink value="{!$Label.Renewal_Report_Link}">Report to view the Error / Success Logs </apex:outputLink>
+    <br/><br/>Batch Number : {!Text(BatchNumber)}   </b>         
+    <br/><br/><br/>
+</div>
+ 
+ <!--  <table class="gridtable">   
+    <tr>
+        <th>
+        Renewal
+        </th>
+        <th>
+          Message
+        </th>
+    </tr>
+    <apex:repeat value="{!errorLog}" var="errKey">
+    <tr>
+    <td>
+       <apex:outputText value="{!errKey}" />
+    </td>
+    <td>
+       <apex:outputText value="{!errorLog[errKey]}" />
+    </td>
+    </tr>
+   </apex:repeat>  
+   </table>   
+       
+  -->
+<!-- 
+<apex:form >
+    <apex:commandButton value="Email Logs" action="{!emailLogs}" /><b><div style="background-color: #ffffff" width="100%">{!EmailMsg}</div></b>    
+</apex:form> 
+ -->
+
+</apex:page>

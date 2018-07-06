@@ -1,0 +1,134 @@
+<apex:page id="popUpPage2" showHeader="true" sidebar="true" controller="MassLeadsAssignClass" action="{!init}">
+	<style>
+    	.addNL {font-weight: bold}
+        .inactiveTab { background-color: lightgrey; color:black; background-image:none}
+        .secondaryPalette { 
+                background-color:#638658;
+                border-color:#638658;
+        }
+        .pbSubheader {
+                background-color:#222;
+                font-weight:bold;
+                font-size: 91%;
+                padding:2px 2px 2px 5px;
+                margin-top: 15px;
+                overflow: hidden;
+                margin-bottom: 2px;
+        }
+        .pbSubheader.first {
+                margin-top: 0;
+        }
+        body .bDashboard .tertiaryPalette {
+                background-color: #638658;
+                border-color: #638658;
+        }       
+        .apexp .detailList .list td, .apexp .detailList .list th, .apexp .editPage .bPageBlock .detailList .list tr td, .apexp .editPage .bPageBlock .detailList .list tr th {
+                border-bottom:1px solid #E3DEB8;
+                color:#333333;
+                padding:4px 2px 4px 5px;
+        }
+        .Custom18Tab .tertiaryPalette, .individualPalette .Custom18Block .tertiaryPalette {
+                background-color:#638658;
+                border-color:#638658;
+        }
+    </style>
+    <script language="JavaScript">
+		// function to set values for the hidden variables
+		function callLookup(strId,lookupName)
+		{
+			var accId = document.getElementById(strId).value;
+			if(lookupName == 'acct')					
+				var test = window.open('/apex/MassLeadsAssignLookup?obj=Acc','ParnerSearch','menubar=1,resizable=no,scrollbars=yes,width=750,height=470,top=250,left=345,status=no');
+			else if(lookupName == 'cont')
+				{
+					if(accId == null || accId == '' || accId == 'null')
+						alert('Please select a Reseller first.');
+					else 					
+						window.open('/apex/MassLeadsAssignLookup?obj=cont&acctId='+accId,'ContactSearch','menubar=1,resizable=no,scrollbars=yes,width=750,height=470,top=250,left=345,status=no');	
+				}
+			else
+				{
+					if(accId == null || accId == '' || accId == 'null')
+						alert('Please select a Reseller first.');
+					else 					
+						window.open('/apex/MassLeadsAssignLookup?obj=pSite&acctId='+accId,'PartnerSiteSearch','menubar=1,resizable=no,scrollbars=yes,width=750,height=470,top=250,left=345,status=no');					
+				}
+		}
+		
+		function checkPageFields()
+		{
+			if(document.getElementById('popUpPage2:mlaForm:accId').value == '' ||document.getElementById('popUpPage2:mlaForm:accId').value == null)
+			{
+				alert('Reseller and either Reseller contact or Reseller site are mandatory');
+				return false;
+			}
+			else if ((document.getElementById('popUpPage2:mlaForm:contactId').value == '' ||document.getElementById('popUpPage2:mlaForm:contactId').value == null) && (document.getElementById('popUpPage2:mlaForm:pSiteId').value == '' ||document.getElementById('popUpPage2:mlaForm:pSiteId').value == null))
+			{
+				alert('Reseller and either Reseller contact or Reseller site are mandatory');
+				return false;
+			}
+			else
+				return true;
+		}			
+	</script>            
+    <div class="bPageTitle">
+            <div class="ptBody secondaryPalette">
+                <div class="content">
+                        <h1 class="pageType">Assign a Reseller (Indirect Only)<span class="titleSeparatingColon1"></span></h1>
+                        <h2 class="pageDescription"></h2> 
+                        <div class="blank">&nbsp; </div>
+                </div>      
+            </div>
+    </div>
+    <div style="{!accessErrStyle}">
+         	<b>Insufficient Privileges</b>
+         	<br/>
+	        <p>You do not have the level of access necessary to perform the operation you requested.&nbsp;&nbsp;Please contact the owner of the record
+	        	or your administrator if<br/>access is necessary.</p>
+    </div>         
+    <apex:form id="mlaForm">
+    	<apex:inputHidden id="accId"/>
+        <apex:inputHidden id="contactId"/>
+        <apex:inputHidden id="contactName"/>
+        <apex:inputHidden id="pSiteId"/>
+        <apex:inputHidden id="partnerSiteName"/>
+       	<apex:outputPanel rendered="{!renderPanel}" id="mlaPanel" rendered="{!renderPanel}">
+		<apex:pageBlock id="mlaPB" title="" >
+			<p>This screen allows you to transfer leads selected from the previous screen to a single reseller.&nbsp;&nbsp;Please select Reseller and either<br/>
+			Reseller Contact or Reseller Site.</p>
+			<br/>
+		    <apex:pageBlockSection id="mlaPBS" title="Select a Reseller" collapsible="true" columns="1">
+				<apex:outputLabel value="Reseller" style="font-weight:bold">
+			          	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:inputText id="partnerHQid" disabled="true"/>
+						<a href="javascript:callLookup('{!$Component.partnerHQid}','acct')"><apex:image value="/s.gif" title="Reseller Lookup" alt="Assigned To Lookup (New Window)" styleClass="lookupIcon"/></a>
+				</apex:outputLabel>									          	
+		        <apex:outputLabel value="Reseller Contact" style="font-weight:bold">
+		          		&nbsp;<apex:inputText id="partnerContid" disabled="true"/>		          	
+						<a href="javascript:callLookup('{!$Component.accId}','cont')"><apex:image value="/s.gif" title="Contact Lookup" alt="Assigned To Lookup (New Window)" styleClass="lookupIcon"/></a>
+				</apex:outputLabel>
+		        <apex:outputLabel value="Reseller Site" style="font-weight:bold">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:inputText id="partnerSiteid" disabled="true"/>		          	
+						<a href="javascript:callLookup('{!$Component.accId}','pSite')"><apex:image value="/s.gif" title="Reseller Site Lookup" alt="Assigned To Lookup (New Window)" styleClass="lookupIcon"/></a>
+		         </apex:outputLabel>
+		    </apex:pageBlockSection>
+		    <apex:pageBlockSection id="errorPBS" title="Of the selected Leads, the below were not updated" collapsible="false" columns="1" rendered="{!errorTableDisplay}">
+                <apex:pageBlockTable var="errorPBTable" value="{!errorLeads}" id="errPBTabId" width="100%">
+                    <apex:column headerValue="First Name">
+						<apex:outputText value="{!errorPBTable.firstName}"/>
+                    </apex:column>
+                    <apex:column headerValue="Last Name">
+                        <apex:outputText value="{!errorPBTable.lastName}"/>
+                    </apex:column>
+                    <apex:column headerValue="Error Message">
+                        <apex:outputText value="{!errorPBTable.errorMessage}" style="color:#FF0000"/>
+                    </apex:column>
+                </apex:pageBlockTable>
+		    </apex:pageBlockSection>
+		    <apex:pageBlockButtons id="buttons" location="bottom" style="display:block">
+	           	<apex:commandButton styleClass="btn" value="Save" onclick="javascript:checkPageFields();" action="{!saveAction}" id="saveId" reRender="mlaPanel" rendered="{! !errorTableDisplay}"/>
+				<apex:commandButton styleClass="btn" value="Return to Leads list" action="{!returnToLeadsList}" id="retListId" rendered="{!errorTableDisplay}"/>
+		    </apex:pageBlockButtons> 	  
+		</apex:pageBlock>		         
+	  </apex:outputPanel>
+	</apex:form> 
+</apex:page>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>40.0</apiVersion>
+    <description>Used with getQuoteLinesForQuote class and CPQ Advanced Approvals VisualForce email templates.  Displays all QuoteLines.</description>
+    <label>QuoteLinesForQuote</label>
+    <packageVersions>
+        <majorNumber>208</majorNumber>
+        <minorNumber>9</minorNumber>
+        <namespace>SBQQ</namespace>
+    </packageVersions>
+</ApexComponent>

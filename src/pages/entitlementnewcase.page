@@ -1,0 +1,301 @@
+<apex:page standardcontroller="Case" extensions="newEntitlementsCaseController" showHeader="true" sidebar="true" >
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" />
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js" />
+<head>
+<style type="text/css">
+            .displayNone,.ui-helper-hidden-accessible 
+            { 
+            display:none;
+            }
+            
+            .hideThis
+            {
+             display:none; 
+            }
+            .displayBlock 
+            {
+            display:block; 
+            }
+            .ui-autocomplete-loading { 
+            background: white url(/img/loading32.gif) right center no-repeat;
+            background-size:15px 15px; 
+            }
+            .placeHolder {
+            font-style: italic;                    
+            }
+            .ui-autocomplete,.ui-autocomplete>li{
+            list-style:none;
+            border-color: #929292 #D5D5D5 #D5D5D5 #929292 !important;
+            border-style: solid;border-width: 1px !important;
+            background: white;
+            padding:0;
+            margin:0; 
+            width:1000px;           
+            }
+            .ui-autocomplete>li{
+            padding-top:10px;
+            }
+            .ui-autocomplete>li a:hover{
+            font-weight:bold;
+            color:Black;
+            }
+            
+            .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            /* add padding to account for vertical scrollbar */
+            padding-right: 20px;
+            } 
+            </style>
+
+          
+</head>
+
+
+ <apex:form id="frm1">
+   <div class="bPageTitle" >
+<div class="ptBody">
+<div class="content">
+<img src="/img/s.gif" alt="Case"  class="pageTitleIcon" title="Case"/>
+<h1 class="noSecondHeader pageType">Create Case<span class="icon"></span></h1>
+<div class="blank">&nbsp;</div>
+</div>
+</div>
+</div>
+        <apex:actionStatus id="status">
+            <apex:facet name="start">
+            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.75; z-index: 1000; background-color: black;">
+                &nbsp;
+            </div>
+            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 25% 50%">
+                <img src="/img/loading32.gif" />
+            </div>
+            </apex:facet>
+        </apex:actionStatus>
+      <span id="errorMessage" style="font-size:14px;color:red;"/>
+      <apex:pagemessages escape="false"/>
+      <apex:actionfunction name="refresh" action="{!Refresh}" rerender="pageBlockTable"/> 
+      
+     
+      <apex:pageBlock id="pageBlockTable">
+      <div id="mydiv" style="margin-left:180px;">   
+           
+      <apex:pageBlockSection columns="1" >
+      
+             <apex:pageBlockSectionItem helpText="Select any Product For entitlements" LabelTitle="Select a Product: ">            
+                    <apex:outputLabel value="Select a Product: "/>
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                
+                    <apex:selectList value="{!productName}" style="width:25%" size="1" onchange="passProdName(this.value)">
+                    <apex:selectOptions value="{!productNames}"/>  
+
+                    </apex:selectList>                             
+
+                    </apex:outputPanel> 
+             </apex:pageBlockSectionItem> 
+
+                         
+             <apex:pageBlockSectionItem helpText="Select a Release for the Product" LabelTitle="CA Product Release: ">                
+                <apex:outputLabel value="Select Product Release: "/>
+                <apex:selectList value="{!productReleaseValue}" style="width:25%" size="1" onchange="passForSP(this.value)">
+                <apex:selectOptions value="{!proudctRelease}"/>
+                <apex:actionSupport event="onchange" reRender="form" action="{!spin}" status="status"/>
+                </apex:selectList>
+               <!-- </apex:outputPanel>  -->                             
+             </apex:pageBlockSectionItem> 
+            
+            <apex:pageBlockSectionItem helpText="Select a Component for the Product" LabelTitle="CA Product Component: "> 
+                <apex:outputLabel value="Select Product Component: " id="CompId"/>
+                 <apex:outputPanel styleClass="requiredInput" layout="block">
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>  
+                     <apex:selectList value="{!productComponentValue}" size="1" style="width:25%" onchange="passRelease(this.value)">
+                        <apex:selectOptions value="{!ProudctComponent}"/> 
+                        <apex:actionSupport event="onchange" reRender="form" action="{!spin}" status="status"/>                           
+                    </apex:selectList>                   
+                </apex:outputPanel> 
+             </apex:pageBlockSectionItem> 
+                        
+             <apex:pageBlockSectionItem helpText="Select a Release for the Component" LabelTitle="CA Component Release: "> 
+                <apex:outputLabel value="Select a Component Release: " id="CompRelId"/>
+                     <apex:selectList value="{!ComponentReleaseValue}" size="1" style="width:25%">
+                        <apex:selectOptions value="{!ComponentRelease}" />    
+                        <apex:actionSupport event="onchange" reRender="form" action="{!spin}" status="status"/>                     
+                    </apex:selectList>     
+             </apex:pageBlockSectionItem> 
+                        
+              <apex:pageBlockSectionItem helpText="Select a Service Pack for the Product Release" LabelTitle="Select Service Pack"> 
+                <apex:outputLabel value="Select a Service Pack: "/>
+                     <apex:selectList value="{!ProdServicePackValue}" size="1" style="width:25%">
+                     <apex:selectOptions value="{!ProductServicePack}"/>                     
+                     </apex:selectList>
+              </apex:pageBlockSectionItem>  
+       
+        </apex:pageBlockSection>
+      </div>
+       <apex:pageBlockButtons > 
+          <apex:commandButton value="Create Case"  action="{!gottodirectCasePage}"/> 
+       </apex:pageBlockButtons>  
+
+            
+            
+ 
+  
+    </apex:pageBlock> 
+       
+
+         
+            <apex:outputPanel id="panelIdProd">
+            <apex:actionFunction name="getReleaseFunc" action="{!getReleaseFunc}">
+            <apex:param name="productID" value=""/>
+            </apex:actionFunction>
+            </apex:outputPanel> 
+
+            <apex:outputPanel id="panelId">
+            <apex:actionFunction name="releaseFunc" action="{!releaseFunc}" reRender="pageBlockTable">
+            <apex:param name="productComponentValue" value=""/>
+            </apex:actionFunction>
+            </apex:outputPanel>
+                 
+            <apex:outputPanel id="panelIdSP">
+            <apex:actionFunction name="servicePackFunc" action="{!servicePackFunc}" reRender="pageBlockTable">
+            <apex:param name="productReleaseValue" value=""/>
+            </apex:actionFunction>
+            </apex:outputPanel>
+      
+                      
+</apex:form>
+<script>
+      function passRelease(Val){
+            if(Val!='-None-'){
+               // alert('val is: ' + Val);
+                releaseFunc(Val);
+                 document.getElementById('errorMessage').innerHTML = '';
+            }else{
+                document.getElementById('errorMessage').innerHTML = 'Please select the valid option.';
+            }
+        } 
+        
+    function passProdName(ValProdIAS){
+            if(Val!='-None-'){
+                //alert('val is: ' + ValProdIAS);
+                getReleaseFunc(ValProdIAS);
+                // document.getElementById('errorMessage').innerHTML = '';
+            }else{
+                //document.getElementById('errorMessage').innerHTML = 'Please select the valid option.';
+            }
+    } 
+    
+    
+    function passForSP(spVal)
+    {
+            if(spVal!='-None-')
+            {
+                //alert('val is: ' + spVal);
+                    servicePackFunc(spVal);
+                    // document.getElementById('errorMessage').innerHTML = '';
+                }else{
+                    //document.getElementById('errorMessage').innerHTML = 'Please select the valid option.';
+            }        
+     }  
+        
+    function getValues() 
+    {
+        var v1 = $j('.value1').val();
+        if(typeof v1 != 'undefined') 
+            {
+               // alert('v1saivalus : ' +v1);
+                sendValues(v1);
+            }
+    }   
+        
+   
+    function boolFunction(variable)
+    {
+        var bool = variable.value;
+        if(bool == 'true')
+        {
+            document.getElementById('idSpanEntitlements').style.display = 'block';
+            document.getElementById('idSpanNoEn').style.display = 'none';
+        }
+        else
+        {
+            document.getElementById('idSpanEntitlements').style.display = 'none';
+            document.getElementById('idSpanNoEn').style.display = 'block';
+        }
+    }
+
+
+        var siteValue='{!searchTerm}';
+        var PLACEHOLDER = 'Type SiteName/Tops SiteId Here'; 
+        var siteObjects;
+        var queryTerm;        
+        //$('[id$=site001]').autocomplete({
+        //$("input.site001").autocomplete({
+         if(typeof jQuery != 'undefined'){
+           $j =jQuery.noConflict();
+       }
+         jQuery(function($) {           
+             $j("input.site001").autocomplete({
+            minLength: 2,
+            source: function(request, response) {
+                queryTerm = request.term;
+                entitlementsController.searchSiteList(request.term, function(result, event){
+                    if(event.type == 'exception') {
+                        alert(event.message);
+                    } else {
+                        siteObjects = result;
+                        if(siteObjects=='undefined' || siteObjects=='' || siteObjects==null){
+                            siteObjects= [
+                                {
+                                    SC_TOPS_ID__c:'XXXX', 
+                                    Name:'XXXX', 
+                                    City__c:'XXXX',
+                                    Country_Picklist__c:'XXXX'
+                                }
+                            ];
+                        }
+                        response(siteObjects);                       
+                    }
+                });
+            },
+            focus: function( event, ui ) {
+                 var displayName = ui.item.Name;
+                 displayName = displayName.replace( /{!HTMLENCODE('&')}/g, '&' );
+                $('[id$=site_val]').val(displayName);
+                return false;
+            }, 
+           select: function( event, ui ) {   
+                var displayName = ui.item.Name;
+                displayName = displayName.replace( /{!HTMLENCODE('&')}/g, '&' );
+                $('[id$=site_val]').val(displayName);          
+                $('[id$=searchSiteIdName]').val( displayName );                
+                $('[id$=searchSiteId]').val( ui.item.Id );
+                $('[id$=searchSitetopsSiteId]').val( ui.item.SC_TOPS_ID__c );                
+                return false;
+            },
+        })
+        .data( "ui-autocomplete" )._renderItem = function( ul, item ) { 
+            var entry='';
+            if(item.Name=='XXXX'){
+                item.Name='';
+                entry = "<a>" + 'No Records Found';
+            }else{
+                entry = "<a>" + item.SC_TOPS_ID__c+','+item.Name +','+item.City__c+','+item.Country_Picklist__c;
+            }
+            entry = entry + "</a>";
+            entry = entry.replace(queryTerm, "<b>" + queryTerm + "</b>");
+            return jQuery( "<li></li>" )
+            .data( "item.autocomplete", item )
+            .append(entry)
+            .appendTo( ul );
+                 }
+        
+        });
+        
+     
+        
+</script>
+
+</apex:page>

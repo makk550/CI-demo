@@ -1,0 +1,614 @@
+<apex:page showHeader="false">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>  
+
+        <style>
+        body { 
+             
+            width: 100%; 
+            height: 100%; 
+            padding: 0; 
+            topmargin= 0 ;
+            leftmargin= 0 ;
+            rightmargin= 0 ; 
+            bottommargin= 0 ;
+        }
+        
+        #waitingMessage { 
+            height: 100%; 
+            width: 100%; 
+            vertical-align: middle; 
+            text-align: center;
+            display: none; 
+        }
+        
+        #liveAgentClientChat.liveAgentStateWaiting #waitingMessage { 
+            display: table; 
+        }
+        
+        .liveAgentSaveButton, .liveAgentEndButton{ 
+            z-index: 2; 
+            background: #2aaeb6;
+            padding: 5px;
+            color: #fff;
+            border: 0px none;
+        }
+        
+        
+        
+       .liveAgentChatInput {
+    height: 25px;
+    padding: 2px 0 2px 4px;
+    background: #fff;
+    display: block;
+    width: 99%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px 0px #ccc;
+} 
+
+        
+        .liveAgentSendButton {
+            display: block;
+            width: 60px;
+            height: 31px;
+            padding: 0 0 3px;
+            position: absolute;
+            top: 0;
+            right: -67px;
+            background: #2aaeb6;
+            color: #fff;
+            border: 0px none;
+        }
+        
+        
+        
+        #liveAgentChatLog {
+            width: auto;
+            height: auto;
+            top: 0px;
+            position: absolute;
+            overflow-y: auto;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 0px none;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px 0px #ccc;
+        }
+        
+        .Client{
+        display: block;
+        padding-top:10px;
+        }
+        .liveagent-chat-input{
+            position: absolute; 
+            height: auto; 
+            right: 0; 
+            bottom: 40px; 
+            left: 0; 
+            margin-right: 67px;
+        }
+        
+        .liveagent-main{
+            top: 90px; 
+            left: 5px; 
+            right: 5px; bottom: 5px; 
+            position: absolute; 
+            z-index: 0;
+        }
+        
+        .live-agent-container{
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            position: absolute;
+        }
+        
+        .liveagent-chat-log{
+            top: 50px; 
+            right: 0; 
+            bottom: 90px; 
+            left: 0; 
+            padding: 0; 
+            position: absolute; 
+            word-wrap: break-word; 
+            z-index: 0;
+        }
+        
+        .buttons-end-save {
+            position: absolute;
+            bottom: 10px;
+            padding-left: 5px;
+        }
+        
+        .liveagent-queue-status{
+            display: none;
+        }
+        
+        .liveagent-noqueue-status{
+            
+        }
+        
+        .liveagent-chat-status-text{
+            color: #0E525E;
+            font-size: 18px;
+        }
+        
+        #liveagent_queue_number{
+            color: #52BACC;
+            font-size: 75px;
+            padding: 20px;
+        }
+        
+        /* Queued animated status */
+
+        #bowlG{
+            position:relative;
+            width:128px;
+            height:128px;
+        }
+        
+        #bowl_ringG{
+            position:absolute;
+            width:128px;
+            height:128px;
+            border:11px solid #E6F1F2;
+            -moz-border-radius:128px;
+            -webkit-border-radius:128px;
+            -ms-border-radius:128px;
+            -o-border-radius:128px;
+            border-radius:128px;
+        }
+        
+        .ball_holderG{
+            position:absolute;
+            width:34px;
+            height:128px;
+            left:47px;
+            top:0px;
+            -moz-animation-name:ball_moveG;
+            -moz-animation-duration:1.9s;
+            -moz-animation-iteration-count:infinite;
+            -moz-animation-timing-function:linear;
+            -webkit-animation-name:ball_moveG;
+            -webkit-animation-duration:1.9s;
+            -webkit-animation-iteration-count:infinite;
+            -webkit-animation-timing-function:linear;
+            -ms-animation-name:ball_moveG;
+            -ms-animation-duration:1.9s;
+            -ms-animation-iteration-count:infinite;
+            -ms-animation-timing-function:linear;
+            -o-animation-name:ball_moveG;
+            -o-animation-duration:1.9s;
+            -o-animation-iteration-count:infinite;
+            -o-animation-timing-function:linear;
+            animation-name:ball_moveG;
+            animation-duration:1.9s;
+            animation-iteration-count:infinite;
+            animation-timing-function:linear;
+        }
+        
+        .ballG{
+            position:absolute;
+            left:0px;
+            top:-30px;
+            width:51px;
+            height:51px;
+            background:#52BACC;
+            -moz-border-radius:43px;
+            -webkit-border-radius:43px;
+            -ms-border-radius:43px;
+            -o-border-radius:43px;
+            border-radius:43px;
+        }
+        
+        @-moz-keyframes ball_moveG{
+            0%{
+                -moz-transform:rotate(0deg)
+            }
+            
+            100%{
+                -moz-transform:rotate(360deg)
+            }
+        }
+        
+        @-webkit-keyframes ball_moveG{
+            0%{
+                -webkit-transform:rotate(0deg)
+            }
+            
+            100%{
+                -webkit-transform:rotate(360deg)
+            }
+        }
+        
+        @-ms-keyframes ball_moveG{
+            0%{
+                -ms-transform:rotate(0deg)
+            }
+            
+            100%{
+                -ms-transform:rotate(360deg)
+            }
+        }
+        
+        @-o-keyframes ball_moveG{
+            0%{
+                -o-transform:rotate(0deg)
+            }
+            
+            100%{
+                -o-transform:rotate(360deg)
+            }
+        }
+        
+        @keyframes ball_moveG{
+            0%{
+                transform:rotate(0deg)
+            }
+            
+            100%{
+                transform:rotate(360deg)
+            }
+        }
+        
+        /* Non queued animated status */
+
+        #fountainG{
+            position:relative;
+            width:133px;
+            height:16px
+        }
+        
+        .fountainG{
+            position:absolute;
+            top:0;
+            background-color:#E6F1F2;
+            width:17px;
+            height:17px;
+            -moz-animation-name:bounce_fountainG;
+            -moz-animation-duration:1.3s;
+            -moz-animation-iteration-count:infinite;
+            -moz-animation-direction:linear;
+            -moz-transform:scale(.3);
+            -moz-border-radius:11px;
+            -webkit-animation-name:bounce_fountainG;
+            -webkit-animation-duration:1.3s;
+            -webkit-animation-iteration-count:infinite;
+            -webkit-animation-direction:linear;
+            -webkit-transform:scale(.3);
+            -webkit-border-radius:11px;
+            -ms-animation-name:bounce_fountainG;
+            -ms-animation-duration:1.3s;
+            -ms-animation-iteration-count:infinite;
+            -ms-animation-direction:linear;
+            -ms-transform:scale(.3);
+            -ms-border-radius:11px;
+            -o-animation-name:bounce_fountainG;
+            -o-animation-duration:1.3s;
+            -o-animation-iteration-count:infinite;
+            -o-animation-direction:linear;
+            -o-transform:scale(.3);
+            -o-border-radius:11px;
+            animation-name:bounce_fountainG;
+            animation-duration:1.3s;
+            animation-iteration-count:infinite;
+            animation-direction:linear;
+            transform:scale(.3);
+            border-radius:11px;
+        }
+        
+        #fountainG_1{
+            left:0;
+            -moz-animation-delay:0.52s;
+            -webkit-animation-delay:0.52s;
+            -ms-animation-delay:0.52s;
+            -o-animation-delay:0.52s;
+            animation-delay:0.52s;
+        }
+        
+        #fountainG_2{
+            left:17px;
+            -moz-animation-delay:0.65s;
+            -webkit-animation-delay:0.65s;
+            -ms-animation-delay:0.65s;
+            -o-animation-delay:0.65s;
+            animation-delay:0.65s;
+        }
+        
+        #fountainG_3{
+            left:33px;
+            -moz-animation-delay:0.78s;
+            -webkit-animation-delay:0.78s;
+            -ms-animation-delay:0.78s;
+            -o-animation-delay:0.78s;
+            animation-delay:0.78s;
+        }
+        
+        #fountainG_4{
+            left:50px;
+            -moz-animation-delay:0.91s;
+            -webkit-animation-delay:0.91s;
+            -ms-animation-delay:0.91s;
+            -o-animation-delay:0.91s;
+            animation-delay:0.91s;
+        }
+        
+        #fountainG_5{
+            left:67px;
+            -moz-animation-delay:1.04s;
+            -webkit-animation-delay:1.04s;
+            -ms-animation-delay:1.04s;
+            -o-animation-delay:1.04s;
+            animation-delay:1.04s;
+        }
+        
+        #fountainG_6{
+            left:83px;
+            -moz-animation-delay:1.17s;
+            -webkit-animation-delay:1.17s;
+            -ms-animation-delay:1.17s;
+            -o-animation-delay:1.17s;
+            animation-delay:1.17s;
+        }
+        
+        #fountainG_7{
+            left:100px;
+            -moz-animation-delay:1.3s;
+            -webkit-animation-delay:1.3s;
+            -ms-animation-delay:1.3s;
+            -o-animation-delay:1.3s;
+            animation-delay:1.3s;
+        }
+        
+        #fountainG_8{
+            left:116px;
+            -moz-animation-delay:1.43s;
+            -webkit-animation-delay:1.43s;
+            -ms-animation-delay:1.43s;
+            -o-animation-delay:1.43s;
+            animation-delay:1.43s;
+        }
+        
+        @-moz-keyframes bounce_fountainG{
+            0%{
+            -moz-transform:scale(1);
+            background-color:#E6F1F2;
+            }
+            
+            100%{
+            -moz-transform:scale(.3);
+            background-color:#52BACC;
+            }
+        
+        }
+        
+        @-webkit-keyframes bounce_fountainG{
+            0%{
+            -webkit-transform:scale(1);
+            background-color:#E6F1F2;
+            }
+            
+            100%{
+            -webkit-transform:scale(.3);
+            background-color:#52BACC;
+            }
+        
+        }
+        
+        @-ms-keyframes bounce_fountainG{
+            0%{
+            -ms-transform:scale(1);
+            background-color:#E6F1F2;
+            }
+            
+            100%{
+            -ms-transform:scale(.3);
+            background-color:#52BACC;
+            }
+        }
+        
+        @-o-keyframes bounce_fountainG{
+        0%{
+            -o-transform:scale(1);
+            background-color:#E6F1F2;
+            }
+            
+            100%{
+            -o-transform:scale(.3);
+            background-color:#52BACC;
+            }
+        }
+        
+        @keyframes bounce_fountainG{
+            0%{
+            transform:scale(1);
+            background-color:#E6F1F2;
+            }
+            
+            100%{
+            transform:scale(.3);
+            background-color:#52BACC;
+            }
+        }
+    .liveAgentFileDragArea {
+        position: relative;
+        height: 50px !important;
+    }
+    
+    
+    .chat-wrapper {
+  display: block;
+  z-index: 9999; }
+    .chat-wrapper .chat-comp .chat-eng {
+      height: 40px;
+      width: 100px;
+      float: left; }
+      @media screen and (min-width: 48rem) {
+        .chat-wrapper .chat-comp .chat-eng {
+          height: 60px;
+          width: 200px; } }
+  .chat-wrapper .chat-head {
+    background: #000;
+    width: 100%;
+    height: 140px;; }
+  .chat-wrapper .chat-online {
+    color: #2aaeb6;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 13px; 
+    padding: 10px;
+    font-weight: bold; }
+  .chat-wrapper .chat-online-desc {
+    color: #fff;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 13px;
+    padding: 10px;
+    line-height: 20px; }
+  .chat-wrapper .chat-eng-online {
+    height: 10px;
+    width: 10px;
+    top: -25px;
+    border-radius: 10px;
+    float: right;
+    position: relative;
+    right: 50px; }
+    @media screen and (min-width: 48rem) {
+      .chat-wrapper .chat-eng-online {
+        height: 15px;
+        width: 15px;
+        top: -30px; } }
+        
+
+
+            .chat-cont {
+                margin: auto;
+                position: relative !important;
+                width: 95%;
+            } 
+
+.chat-pos {
+  position: absolute; }
+
+.chat-pos-rem {
+  position: relative; }
+
+.alt-msg{
+position: relative;
+    top: 100px;
+    text-align: center;
+}
+
+
+    
+    </style>
+    
+<div class="chat-wrapper">
+                <div class="chat-head" id="mybutton1">
+                <div class="chat-online">Conversar com CA</div>
+                <div class="chat-eng-online"></div>
+                <div class="chat-online-desc">Nos dê um breve resumo da sua necessidade que lhe direcionaremos ao Representante de Vendas da CA.</div>
+                <div class="chat-eng-online"></div>
+                <div class="chat-online-desc">Nosso horário de atendimento é das 9AM – 6PM.</div>
+
+                </div>
+                </div>
+    <div class="live-agent-container" topmargin="0" leftmargin="0" rightmargin="0" bottommargin="0">
+        
+
+        <liveAgent:clientchat >
+            
+            
+                 
+                
+
+                
+                     
+                <div class="liveagent-main">
+               <div class="system-messages alt-msg">
+                    <liveAgent:clientChatAlertMessage agentsUnavailableLabel="Sua solicitação foi cancelada porque nenhum agente está disponível. Tente novamente em alguns minutos."
+                    chatBlockedLabel="Você foi bloqueado do Chat."
+                    connectionErrorLabel="Conexão perdida: Verifique sua conexão local."
+                    rendered="false" />
+                    <liveAgent:clientChatStatusMessage />
+                    </div>     
+                
+                <table id="waitingMessage" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <center>
+                                <div class="liveagent-queue-status">
+                                    <p class="liveagent-chat-status-text">
+                                       Sua solicitação foi colocada na fila de espera, um agente estará com você em breve
+                                    </p>
+                                    
+                                    <div id="bowlG">
+                                        <div id="bowl_ringG">
+                                            <div id="liveagent_queue_number" title="Posição na fila de espera">
+                                                <liveAgent:clientChatQueuePosition />
+                                            </div>
+                                            <div class="ball_holderG">
+                                                <div class="ballG">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="liveagent-noqueue-status">
+                                    <p class="liveagent-chat-status-text">
+                                        Aguarde enquanto você está sendo conectado a um agente disponível
+                                    </p>
+                                    <div id="fountainG">
+                                        <div id="fountainG_1" class="fountainG"/>
+                                        <div id="fountainG_2" class="fountainG"/>
+                                        <div id="fountainG_3" class="fountainG"/>
+                                        <div id="fountainG_4" class="fountainG"/>
+                                        <div id="fountainG_5" class="fountainG"/>
+                                        <div id="fountainG_6" class="fountainG"/>
+                                        <div id="fountainG_7" class="fountainG"/>
+                                        <div id="fountainG_8" class="fountainG"/>
+                                    </div> 
+                                </div>
+                            </center>
+                        </td>
+                    </tr>
+                </table>
+ 
+                <div class="liveagent-chat-log" >
+                    <liveAgent:clientChatLog />
+                </div>
+                
+                <div class="liveagent-chat-input">
+                    <liveagent:clientChatInput /><liveAgent:clientChatSendButton label="Enviar"/>
+                    </div>
+                </div>
+                
+                 <div class="buttons-end-save">
+                 <liveAgent:clientChatFileTransfer />
+                <liveAgent:clientChatSaveButton label="Salvar Conversa" />
+                <liveAgent:clientChatEndButton label="Fim da Conversa" />
+                </div>
+            
+        </liveAgent:clientchat>
+    </div>
+
+   
+    <script>
+        // everytime the queue status changes, we make sure that respective status block is displayed 
+        $(function(){
+            $(".liveAgentQueuePosition").bind("DOMSubtreeModified", function() {
+                if($(this).text()){
+                    $(".liveagent-queue-status").show();
+                    $(".liveagent-noqueue-status").hide();
+                }else{
+                    $(".liveagent-queue-status").hide();
+                    $(".liveagent-noqueue-status").show();
+                }
+            });
+        });
+    </script>
+    
+</apex:page>

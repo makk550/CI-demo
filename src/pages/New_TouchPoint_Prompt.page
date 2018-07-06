@@ -1,0 +1,19 @@
+<apex:page standardController="HVN_Touchpoint__c">
+    <script> 
+    window.onload = new function(){
+        runOnLoad();
+    } 
+    function runOnLoad(){
+        if(confirm('{!$Label.New_TouchPoint_Prompt}')){ 
+        
+        var RecordTypeId = '{!HVN_Touchpoint__c.RecordTypeId}'; 
+        top.window.location.href = '/a0r/e?RecordType=' + RecordTypeId + '&CF00N30000003ujKH={!HVN_Touchpoint__c.HVN_Contact__c}&CF00N30000003ujKH_lkid={!HVN_Touchpoint__c.HVN_Contact__c}'; 
+        
+        } else { 
+        
+        top.window.location.href = '/{!HVN_Touchpoint__c.HVN_Contact__c}'; 
+        
+        } 
+    }
+    </script>
+</apex:page>

@@ -1,0 +1,77 @@
+<apex:page controller="PreSalesFormController">
+    
+
+<script type="text/javascript">
+  window.onload = setFocus
+  function setFocus() {
+    document.getElementById("hiddenElement").focus();
+  }
+</script>
+<apex:form >
+    <apex:sectionHeader title="New Presales Request"/>
+    <apex:pageMessages ></apex:pageMessages>
+    <input id="hiddenElement" type="hidden" />
+     <apex:pageBlock title="Presales Request" rendered="{!emptyProductnot}">
+     
+     
+     <table class="list">             
+            <tr class="headerRow">
+                <th class="headerRow" scope="col" colspan="1" style=" width: 50%;" >
+                    <div  style="font-size:small">Opportunity Name  : <span style="font-weight: normal;font-size:small">{!listoppProductspick[0].Opportunity.Name}</span></div>
+                    &nbsp;&nbsp;&nbsp;
+                     <div style="font-size:small" >Presales Request Status   :&nbsp;&nbsp;<span style="font-weight: normal;font-size:small">New</span></div>
+                </th>
+                
+            </tr>
+         </table>
+     
+         <br/>
+         
+       <apex:outputPanel >
+       <apex:pageBlockTable value="{!blocklist}" var="prod">
+        
+           <apex:column headerValue="CBU">
+               
+                   <apex:selectList label="CBU" multiselect="false" size="1"  value="{!selectedProduct}"  >
+                      
+                       <apex:selectOptions value="{!selectBu}" >
+                               
+                         </apex:selectOptions>
+                       <apex:actionSupport event="onchange" action="{!getProductAssociateCBU}" reRender="pagetable_id">
+                         </apex:actionSupport>  
+                   </apex:selectList>
+           </apex:column>
+           
+           <apex:column headerValue="Start Date">
+              <apex:inputField value="{!prsal.Start_Date__c}"  />
+           </apex:column>
+           
+           <apex:column headerValue="Duration(hours)">
+              <apex:inputField value="{!prsal.Duration__c}"  />
+           </apex:column>
+           <apex:column headerValue="Activity">
+                         <apex:inputField value="{!prsal.Activity__c}" />
+
+           </apex:column>
+        </apex:pageBlockTable>
+           <br/>
+       </apex:outputPanel>
+        <apex:pageBlockTable value="{!listProduct}" var="products" id="pagetable_id">
+             <apex:column headerValue="Products Name" >
+                 <apex:outputField value="{!products.Product2.name}"/>
+                 
+            
+            </apex:column>
+         
+         </apex:pageBlockTable>
+          <apex:pageBlockButtons >
+               <apex:commandButton value="Submit" action="{!submitForm}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+
+         </apex:pageBlockButtons> 
+       
+     </apex:pageBlock>
+     
+  
+ </apex:form>
+</apex:page>

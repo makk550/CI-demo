@@ -1,0 +1,108 @@
+<apex:component language="{!PRM_Email_Notifications.Locale}" controller="DealCertificateController" access="global">
+    <apex:attribute name="OpportunityId" id="OpportunityId" type="Id" description="Opportunity Id" assignTo="{!oppId}"/>
+        <div class="blueborder">
+        <div class="greenborder">
+        <div class="toplogos">
+        <div class="floatLeft caCertText" style="display:{!showDealNumber}">Certificate #{!relatedTo.Deal_Certificate_Number__c}
+        </div>
+        <div>  
+       </div>
+    <div class="floatRight">
+      <apex:image url="{!ImageURL}" width="100" height="87"/>
+      <!-- <img alt="CA Technologies" src="Email Images/CAPrimaryLogo.jpg" height="107" width="120"></img>-->
+        </div></div>
+            <div class="header">
+                <h1>
+                 <h1>Deal Registration Certificate</h1>
+                </h1>
+                <br></br>
+                
+            </div>
+            
+            <div class="content"><div style="display:{!showCreatedDate}"><p>{!relatedTo.Created_Date_Formula__c}</p></div>              
+                <p>Please submit a copy of this certificate to CA Technologies, or your CA authorized distributor (if applicable), 
+                    when purchasing the CA product for this registered deal. This certificate shall be  
+                    used as validation of your approved CA Deal Registration. </p>
+                    
+                <p>If you have any questions, please contact your Partner Account Manager.</p>
+                <p><br /> 
+                </p>
+                <h3>
+                    Deal Details
+                </h3>
+                <table border="0" cellpadding="0" cellspacing="1" width="100%">
+                    <tbody>
+                    <tr style="display:{!showDealProgram}">
+                        <td width="41%"><strong>Promo Code:</strong></td>
+                        <td width="59%">{!dealCertificate.Promo_Code__c}</td>
+                    </tr>
+                    <tr style="display:{!showDealProgram}">
+                        <td width="41%"><strong>Deal Program:</strong></td>
+                        <td width="59%">{!relatedTo.Deal_Program__c}</td>
+                    </tr>
+                    <tr style="display:{!showDealName}">
+                        <td class="TDlightRow"><strong>Deal Registration Name:</strong></td>
+                        <td class="TDlightRow">{!relatedTo.Name}</td>
+                    </tr>
+                    <tr style="display:{!showPartner}">
+                        <td class="TDlightRow"><strong>Partner:</strong></td>
+                        <td class="TDlightRow">{!relatedTo.Reseller_Name_for_Deal__c}</td>
+                    </tr>
+                    <tr style="display:{!showEndUser}">
+                        <td><strong>End User:</strong></td>
+                        <td>{!relatedTo.Account.Name}</td>
+                    </tr>
+                    <tr style="display:{!showEstimatedValue}">
+                        <td class="TDlightRow"><strong>Estimated Value:</strong></td>
+                        <td class="TDlightRow">
+                            <apex:outputText value="{0, number, .00}">
+                               <apex:param value="{!relatedTo.Reseller_Estimated_Value__c}" />
+                            </apex:outputText> {!relatedTo.currencyIsoCode}
+                        </td>
+                    </tr>
+                    <tr style="display:{!showSubmissionDate}">
+                        <td><strong>Date of Submission:</strong></td>
+                        <td>
+                              <apex:outputText value="{0, date, MM'/'dd'/'yyyy}">
+                            <apex:param value="{!relatedTo.Deal_Registration_Submitted_Date__c}"/>
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr style="display:{!showExpirationDate}">
+                        <td><strong>Deal Registration Expiration Date:</strong></td>
+                        <td>
+                            <apex:outputText value="{0, date, MM'/'dd'/'yyyy}">
+                            <apex:param value="{!relatedTo.Deal_Expiration_Date__c}"/>
+                            </apex:outputText>
+                        </td>    
+                    </tr>
+                    <tr style="display:{!showProducts}">
+                        <td class="TDlightRow"><strong>Products:</strong></td>
+                        <td class="TDlightRow">{!relatedTo.Reseller_Product_Name__c}</td>
+                    </tr>                   
+                    </tbody>
+                </table>
+                
+                <apex:outputPanel rendered="{!showIncentive}"> 
+                
+                
+                <p><apex:outputText value="{!$Label.IncentiveText}" /></p>
+                
+                <apex:datatable value="{!availableIncentives}" var="incentive" width="100%">
+                
+                	<apex:column width="30%" >
+                		<apex:outputText value="{!incentive.incentiveName}"></apex:outputText>
+                	</apex:column>
+                	
+                	
+               		<apex:column >
+                		<apex:outputText value=" Up to {!incentive.maxDiscount}%"></apex:outputText>
+                	</apex:column>
+                </apex:datatable>
+              
+              </apex:outputPanel>
+              </div>
+           </div>
+        </div>
+        <div><br></br></div>
+</apex:component>

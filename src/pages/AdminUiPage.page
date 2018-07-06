@@ -1,0 +1,190 @@
+<apex:page controller="AdminUiContrl" id="page1">
+
+   <style>
+        #arrow-text {
+        
+        visibility: visible;
+        opacity: 1;
+        -webkit-transition: visibility opacity 0.2s;
+        margin-left:10px;
+        font-size: 15px;
+        font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+        font-weight: bold;
+        
+        }
+        
+        .adminUIStyle {
+            border: 2px solid #dce4ec;
+            border-radius: 4px;
+        }
+        
+    </style>
+    
+        
+    <apex:form id="form1">
+        
+    <div id="backarrowdiv" style="width:100px;min-width:100px;">
+            <apex:commandLink id="backarrow" action="{!redirectBack}" style="text-decoration:none;">
+                <apex:image id="back" url="{!$Resource.ProdInstBackArrow}" height="25" width="25" />
+                <span id="arrow-text">
+                Back    
+                </span>
+                <p>
+                    
+                </p>
+            </apex:commandLink>
+            
+     </div>
+    
+    <apex:actionFunction name="saveRecordFunc" action="{!save}" reRender="pBlock1">
+            <apex:param value="" name="recordIdtosave"/>
+        </apex:actionFunction>    
+        
+        <apex:actionFunction name="editRecordFunc" action="{!edit}" reRender="pBlock1">
+            <apex:param value="" name="recordIdtoedit"/>
+        </apex:actionFunction>
+        
+        <apex:outputPanel rendered="{!listAdmin.size == 0}">
+            <apex:pageMessage summary="No Entitlements are available at this time." severity="info" strength="3"/>
+        </apex:outputPanel>
+        
+        <apex:pageBlock id="pBlock1" title="Admin for Manual Fulfillment" rendered="{!listAdmin.size>0}"  >
+            <apex:pageBlockButtons location="Top">
+                 <apex:commandButton value="Mass Update" action="{!massAction}" />
+            </apex:pageBlockButtons>
+           
+
+            <apex:pageBlockTable value="{!listAdmin}" var="eachWrapper" columnsWidth="20%,35%,35%,45%,45%">               
+                <apex:column headerValue="Product Instance Id">                   
+                    <apex:inputfield value="{!eachWrapper.adminRecord.product_instance_id__c}" styleClass="adminUIStyle" style="width:80px; height: 20px" rendered="{!eachWrapper.isEdit}"/>
+                    <apex:outputfield value="{!eachWrapper.adminRecord.product_instance_id__c}" rendered="{!!eachWrapper.isEdit}"/>
+                </apex:column>
+                <apex:column headerValue="Product Descrption">
+                    <apex:outputfield value="{!eachWrapper.adminRecord.name__c}"/>
+                </apex:column> 
+
+                <apex:column headerValue="Email Id">
+                    <apex:outputField value="{!eachWrapper.adminRecord.email__c}"/>
+                    
+                </apex:column>
+                
+               <!-- <apex:column headerValue="Start Date">
+                    <apex:outputField value="{!eachWrapper.adminRecord.entitlement_start_date__c}"/>   
+                </apex:column>-->
+                
+                
+                <apex:column headerValue="Start Date">
+                    <apex:outputText value="{0,date,yyyy/MM/dd}">
+                        <apex:param value="{!eachWrapper.adminRecord.entitlement_start_date__c}" />
+                    </apex:outputText>
+                </apex:column>
+            <!-- Added as part of US340517  -->
+               <apex:column headerValue="Product Insatnce Detail">
+                 <apex:outputfield value="{!eachWrapper.adminRecord.product_detail__c}" rendered="{!!eachWrapper.isEdit}"/>
+
+                <apex:inputfield value="{!eachWrapper.adminRecord.product_detail__c}" styleClass="adminUIStyle" style="width:80px; height: 20px" rendered="{!eachWrapper.isEdit}"/>
+
+                </apex:column>
+              <!--end of US340517-->  
+                 
+                  <apex:column headerValue="Last Update Date">
+                    <apex:outputText value="{0,date,yyyy/MM/dd}">
+                        <apex:param value="{!eachWrapper.adminRecord.last_update_time__c}" />
+                    </apex:outputText>
+                </apex:column>
+                
+                <!--<apex:column headerValue="End Date">
+                        <apex:outputField value="{!eachWrapper.adminRecord.entitlement_end_date__c}"/>   
+                </apex:column>-->
+                
+                <apex:column headerValue="End Date">
+                    <apex:outputText value="{0,date,yyyy/MM/dd}">
+                        <apex:param value="{!eachWrapper.adminRecord.entitlement_end_date__c}" />
+                    </apex:outputText>
+                </apex:column>
+                
+                
+                <apex:column headerValue="Fulfillment Status">
+                    
+                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                    <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                    <apex:selectList value="{!eachWrapper.adminRecord.fulfillment_status__c}" size="1" rendered="{!eachWrapper.isEdit}"  required="true" styleClass="adminUIStyle" style="width:180px; height: 20px" >
+                        <apex:selectOption itemValue="fulfillment ready" itemLabel="fulfillment ready"/>
+                        <apex:selectOption itemValue="fulfillment denied" itemLabel="fulfillment denied"/>
+                        <apex:selectOption itemValue="fulfillment started" itemLabel="fulfillment started"/>
+                        <apex:selectOption itemValue="fulfillment complete" itemLabel="fulfillment complete"/>
+                        <apex:selectOption itemValue="manual fulfillment notified" itemLabel="manual fulfillment notified"/>
+                    </apex:selectList>
+                    </apex:outputPanel>
+                    
+                    <apex:outputfield value="{!eachWrapper.adminRecord.fulfillment_status__c}" rendered="{!!eachWrapper.isEdit}"/>    
+                    
+                </apex:column>
+                <apex:column headerValue="Status">
+                    
+                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                    <apex:outputPanel layout="block" styleClass="requiredBlock"/>    
+                    <apex:selectList value="{!eachWrapper.adminRecord.status__c}" size="1" rendered="{!eachWrapper.isEdit}"  required="true" styleClass="adminUIStyle" style="width:100px; height: 20px" >
+                        <apex:selectOption itemValue="under review" itemLabel="under review"/>
+                        <apex:selectOption itemValue="active" itemLabel="active"/>
+                        <apex:selectOption itemValue="denied" itemLabel="denied"/>
+                        <apex:selectOption itemValue="expired" itemLabel="expired"/>
+                        <apex:selectOption itemValue="cancelled" itemLabel="cancelled"/>
+                    </apex:selectList>
+                    </apex:outputPanel>
+                    
+                    <apex:outputField value="{!eachWrapper.adminRecord.status__c}" rendered="{!!eachWrapper.isEdit}"/>
+                    
+                </apex:column>
+                <apex:column headerValue="Object Id">
+                    <apex:inputField value="{!eachWrapper.adminRecord.object_id__c}" styleClass="adminUIStyle" style="width:80px; height: 20px" rendered="{!eachWrapper.isEdit}"/>
+                    <apex:outputField value="{!eachWrapper.adminRecord.object_id__c}" rendered="{!!eachWrapper.isEdit}"/>
+                </apex:column>
+                <apex:column headerValue="Auto Deactivate">
+                    
+                    <apex:outputField value="{!eachWrapper.adminRecord.auto_deactivate__c }"/>
+                    
+                </apex:column>
+                          <!-- Added as part of US340517  -->
+
+                 <apex:column headerValue="Data Center">
+                <apex:outputPanel layout="block" styleClass="requiredInput">
+                    <apex:outputPanel layout="block" styleClass="requiredBlock"/>    
+                    <apex:selectList value="{!eachWrapper.adminRecord.tech_stack__c}" size="1" rendered="{!AND(if(eachWrapper.adminRecord.entitlement_type__c=='trial',true,false),eachWrapper.isEdit)}"  required="true" styleClass="adminUIStyle" style="width:100px; height: 20px" >
+                        <apex:selectOption itemValue="NA1" itemLabel="NA1"/>
+                        <apex:selectOption itemValue="EU1" itemLabel="EU1"/>
+                      
+                    </apex:selectList>
+                    </apex:outputPanel>
+                    
+                   <apex:outputField value="{!eachWrapper.adminRecord.tech_stack__c}" rendered="{!OR(if(eachWrapper.adminRecord.entitlement_type__c!='trial',true,false),AND(if(eachWrapper.adminRecord.entitlement_type__c=='trial',true,false),!eachWrapper.isEdit))}"/>
+                </apex:column>
+              <!-- End of US340517 -->
+                <apex:column headerValue="Provisioning Request">
+                    <apex:outputLink value="/{!prId}">{!prName}</apex:outputLink>                  
+                </apex:column>
+                <apex:column headerValue="Action">
+                    <apex:commandLink id="saveButton" value="Save" rendered="{!eachWrapper.isEdit}" onclick="return saveRecord('{!eachWrapper.adminRecordId}');"/>
+                    <apex:commandLink id="editButton" value="Edit" rendered="{!!eachWrapper.isEdit}" onclick="return editRecord('{!eachWrapper.adminRecordId}');"/>
+                </apex:column>
+            </apex:pageBlockTable>
+            
+            
+        </apex:pageBlock>
+        
+            
+        
+    </apex:form>
+    
+    <script>
+        function saveRecord(param){
+            saveRecordFunc(param);
+            return false;
+        }
+        function editRecord(param){
+            editRecordFunc(param);
+            return false;
+        }
+    </script>
+   
+</apex:page>

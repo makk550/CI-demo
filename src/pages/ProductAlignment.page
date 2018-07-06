@@ -1,0 +1,194 @@
+<apex:page standardController="Account" extensions="ProductAlignment_Ext" >
+    <apex:sectionHeader title="Product Alignment One View" subtitle="{!Account.Name}" />
+    <apex:form >
+        <style>
+     .headerClass {
+            background: white url('/img/alohaSkin/grid_headerbg.gif') 0 bottom repeat-x;
+            background-image: url(/img/alohaSkin/grid_headerbg.gif);
+            background-repeat-x: repeat;
+            background-repeat-y: no-repeat;
+            background-attachment: initial;
+            background-position-x: 0px;
+            background-position-y: 100%;
+            background-origin: initial;
+            background-clip: initial;
+            background-color: #cfeef8;
+            border: 1px solid black;
+            border-width: 0 0 1px 1px;
+            border-top-width: 0px;
+            border-right-width: 0px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            color: black;
+            font-size: .9em;
+            font-weight: bold;
+            padding: 5px 2px 4px 5px;
+            padding-top: 5px;
+            padding-right: 2px;
+            padding-bottom: 4px;
+            padding-left: 5px;
+            text-align:left;
+            vertical-align:bottom;
+           }
+           
+       .trBG
+           {
+                    background-color:white;
+                  
+            }
+                
+          .trBG:hover
+            {
+                    background-color:#cfeef8;
+                  //  border: solid black 1px;
+            }
+         .requiredField
+         {
+            background-color: #C00;
+            width: 3px;
+            bottom: 1px;
+         }        
+    </style>  
+        
+        <apex:pageBlock >
+            <apex:messages />
+            <apex:pageBlockButtons >
+                    <apex:commandButton value="Edit" action="{!EditPA}" rendered="{! !editView }" />
+                    <apex:commandButton value="Save" action="{!SavePA}" rendered="{! editView }"  />
+                    <apex:commandButton value="Back to Account" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Product Alignment" columns="1">
+             
+             
+             <!--
+                <apex:pageBlockTable value="{!lstPA }" var="pa">
+                    
+                    <apex:column headerValue="{!$ObjectType.Product_Alignment__c.Fields.Related_Account__c.Label}">
+                    </apex:column>       
+                
+                    <apex:column headerValue="{!$ObjectType.Product_Alignment__c.Fields.RTM__c.Label}">
+                    </apex:column>    
+                    
+                    <apex:column headerValue="{!$ObjectType.Product_Alignment__c.Fields.Product_Group__c.Label}">
+                    </apex:column> 
+                    
+                    <apex:column headerValue="{!$ObjectType.Product_Alignment__c.Fields.Business_Unit__c.Label}">
+                    </apex:column> 
+                    
+                    <apex:column headerValue="{!$ObjectType.Product_Alignment__c.Fields.Partner_Approved__c.Label}">
+                    </apex:column> 
+                    
+                    <apex:column headerValue="{!$ObjectType.Product_Alignment__c.Fields.Authorized_Agreement__c.Label}">
+                    </apex:column> 
+                    
+                    <apex:column headerValue="{!$ObjectType.Product_Alignment__c.Fields.Business_Plan__c.Label}">
+                    </apex:column> 
+                    
+                    <apex:column headerValue="{!$ObjectType.Product_Alignment__c.Fields.Accreditation_Certification__c.Label}">
+                    </apex:column>  
+                    
+                    <apex:column headerValue="{!$ObjectType.Product_Alignment__c.Fields.Partner_Delivered_Support__c.Label}">
+                    </apex:column> 
+                
+                </apex:pageBlockTable>
+               -->
+                <apex:outputPanel >
+                <table cellpadding="4" cellspacing="0" style="width:100%;  border: solid silver 1px" border="1">
+                 <tr >
+                      <th class="headerClass" >{!$ObjectType.Product_Alignment__c.Fields.Related_Account__c.Label}</th>   
+                      <th class="headerClass" >{!$ObjectType.Product_Alignment__c.Fields.RTM__c.Label}</th>   
+                      <th class="headerClass">{!$ObjectType.Product_Alignment__c.Fields.Business_Unit__c.Label}</th >
+                      <th class="headerClass">{!$ObjectType.Product_Alignment__c.Fields.Product_Group__c.Label}</th>
+                      <th class="headerClass" >{!$ObjectType.Product_Alignment__c.Fields.Partner_Approved__c.Label}</th>   
+                      <th class="headerClass">{!$ObjectType.Product_Alignment__c.Fields.Authorized_Agreement__c.Label}</th >
+                      <th class="headerClass">{!$ObjectType.Product_Alignment__c.Fields.Business_Plan__c.Label}</th>
+                      <th class="headerClass" >{!$ObjectType.Product_Alignment__c.Fields.Accreditation_Certification__c.Label}</th>
+                      <th class="headerClass" >{!$ObjectType.Product_Alignment__c.Fields.Partner_Delivered_Support__c.Label}</th>   
+   
+                 </tr>
+              
+                 
+              
+                <apex:repeat value="{!lstPA }" var="p" >
+                    <apex:outputPanel rendered="{! (editView  ||  p.Authorized_Agreement__c) }">
+                       
+                        <tr class="trBG">
+                            <td>
+                                <apex:outputField value="{!p.Related_Account__c}" />
+                             </td>
+                             <td>
+                                 <apex:outputField value="{!p.RTM__c}" />
+                             </td>                              
+                             <td >
+                                 <apex:outputField value="{!p.Business_Unit__c}" />
+                             </td>         
+                              <td >
+                                  <apex:outputField value="{!p.Product_Group__c}" />
+                              </td>         
+                              <td  >
+                                  <apex:outputField value="{!p.Partner_Approved__c}" />
+                              </td>         
+                              <td >
+                                  <apex:outputField value="{!p.Authorized_Agreement__c}" rendered="{! (! editView && p.Authorized_Agreement__c) }" />
+                                  <apex:inputField value="{!p.Authorized_Agreement__c}" rendered="{! editView}" />
+                                  
+                              </td>         
+                              <td >
+                                  <apex:outputField value="{!p.Business_Plan__c}" rendered="{! (! editView && p.Authorized_Agreement__c) }" />
+                                  <apex:inputField value="{!p.Business_Plan__c}" rendered="{! editView}" />
+                              </td>         
+                              <td>
+                                  <apex:outputField value="{!p.Accreditation_Certification__c }" rendered="{! (! editView && p.Authorized_Agreement__c) }" />
+                                  <apex:inputField value="{!p.Accreditation_Certification__c }" rendered="{! editView}" />
+                              </td>    
+                              <td >
+                                  <apex:outputField value="{!p.Partner_Delivered_Support__c}" rendered="{! (! editView && p.Authorized_Agreement__c) }" />
+                                  <apex:inputField value="{!p.Partner_Delivered_Support__c}" rendered="{! editView}" />
+                              </td> 
+                          </tr>
+                           </apex:outputPanel>
+                             </apex:repeat>
+                        </table>           
+                    </apex:outputPanel>
+              
+             </apex:pageBlockSection>
+                      
+           
+        </apex:pageBlock>
+      </apex:form>  
+      
+       <!--
+                   <apex:pageBlockTable value="{!lstPA }" var="p" >
+                          <apex:column value="{!p.Related_Account__c}" rendered="{! (editView  ||  p.Authorized_Agreement__c) }" />        
+                          <apex:column headerValue="Route" >
+                              <apex:outputField value="{!p.RTM__c}" rendered="{! (editView  ||  p.Authorized_Agreement__c) }" />
+                          </apex:column>         
+                          <apex:column headerValue="Business Unit" >
+                              <apex:outputField value="{!p.Business_Unit__c}"  rendered="{! (editView  ||  p.Authorized_Agreement__c) }"  />
+                          </apex:column>         
+                          <apex:column headerValue="Product Group"  >
+                              <apex:outputField value="{!p.Product_Group__c}" rendered="{! (editView  ||  p.Authorized_Agreement__c) }" />
+                          </apex:column>         
+                          <apex:column headerValue="Partner Approved" >
+                              <apex:outputField value="{!p.Partner_Approved__c}" rendered="{! (editView  ||  p.Authorized_Agreement__c) }" />
+                          </apex:column>         
+                          <apex:column headerValue="Authorized/Agreement" >
+                              <apex:outputField value="{!p.Authorized_Agreement__c}" rendered="{! (! editView && p.Authorized_Agreement__c) }" />
+                              <apex:inputField value="{!p.Authorized_Agreement__c}" rendered="{! editView}" />
+                              
+                          </apex:column>         
+                          <apex:column headerValue="Business Plan" >
+                              <apex:outputField value="{!p.Business_Plan__c}" rendered="{! (! editView && p.Authorized_Agreement__c) }" />
+                              <apex:inputField value="{!p.Business_Plan__c}" rendered="{! editView}" />
+                          </apex:column>         
+                          <apex:column headerValue="Accreditation/Certification" >
+                              <apex:outputField value="{!p.Accreditation_Certification__c }" rendered="{! (! editView && p.Authorized_Agreement__c) }" />
+                              <apex:inputField value="{!p.Accreditation_Certification__c }" rendered="{! editView}" />
+                          </apex:column>    
+                          <apex:column headerValue="Partner Delivered" >
+                              <apex:outputField value="{!p.Partner_Delivered_Support__c}" rendered="{! (! editView && p.Authorized_Agreement__c) }" />
+                              <apex:inputField value="{!p.Partner_Delivered_Support__c}" rendered="{! editView}" />
+                          </apex:column>    
+                    </apex:pageBlockTable>
+                    -->
+</apex:page>

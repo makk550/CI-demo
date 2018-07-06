@@ -1,0 +1,510 @@
+<apex:page id="thePage" 
+    showHeader="false" 
+    sidebar="false" 
+    standardStylesheets="false"
+    controller="PartnerSearchController"    
+    action="{!doOnLoad}"  
+    language="{!preferredLanguageCode}">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{!$Label.partner_finder_title}</title>
+    <apex:stylesheet value="{!$Page.PartnerFinderCSS}"/>
+    <apex:stylesheet value="{!$Resource.jquery_ui_1_7_2_custom_zip}/css/smoothness/jquery-ui-1.7.2.custom.css"/>
+    <apex:includeScript value="{!$Resource.prototype_js}"/>
+    <apex:includeScript value="{!$Resource.scriptaculous_effects_js}"/>
+    <apex:includeScript value="{!$Resource.scriptaculous_controls_js}"/>
+    <apex:includeScript value="{!$Resource.scriptaculous_builder_js}"/>
+    <apex:includeScript value="{!$Resource.jquery_ui_1_7_2_custom_zip}/js/jquery-1.3.2.min.js"/>
+    <apex:includeScript value="{!$Resource.jquery_ui_1_7_2_custom_zip}/js/jquery-ui-1.7.2.custom.min.js"/>
+<!--     <apex:includeScript value="https://maps.google.com/maps/api/js?sensor=false"/> -->
+	<apex:includeScript value="https://maps.google.com/maps/api/js?"/>	  
+
+
+    <style type="text/css">
+        .dialog_style{ font: 80% "Trebuchet MS", sans-serif; margin: 50px;}        
+    </style>    
+</head>
+
+<body>
+    <apex:form id="theForm">
+    <apex:inputHidden id="LocationData" value="{!locationsJSON}"/>
+    <apex:inputHidden id="GeocodeLatitude" value="{!form.latitude}"/>
+    <apex:inputHidden id="GeocodeLongitude" value="{!form.longitude}"/>
+<div class="main_title"><span class="main_text">{!$Label.partnersearchmaintitle}</span></div>
+
+<apex:outputPanel styleClass="container" style="background:url({!$Resource.bg_container_gif}) top center;" layout="block">
+
+<h1>{!$Label.partnersearchheader}</h1> 
+<apex:outputPanel id="PageMessages" >
+    <apex:outputPanel styleClass="message" rendered="{!messages.size>0}" layout="block"
+                     style="color:#333333;
+font-family:'Arial',sans-serif;
+font-size:12px;
+padding:5px 0">
+        <ul style="margin-left:10px;">       
+            <apex:repeat var="msg" value="{!messages}">
+                <li>{!msg}</li>
+            </apex:repeat>
+        </ul>
+    </apex:outputPanel>
+</apex:outputPanel>
+<div class="search_container">
+<table border="0" cellspacing="0" cellpadding="5" class="partner_search">
+  <tr>
+    <td width="50" align="right">{!$Label.partnerSearchKeyword}:</td>
+    <td height="100%" valign="top" rowspan="2" width="153">
+        <table width="100%" border="0" cellspacing="0" cellpadding="2">
+            <tr>
+                <td>
+                    <div class="textbox">
+                        <apex:inputText value="{!form.keyword}" onkeypress="keypressed(event)" id="txtSearchFor" maxlength="128" required="false" />
+                        <div id="keywordChoices" class="autocomplete"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="search_tip">({!$Label.company_name})</td>
+            </tr>
+        </table>
+    </td>
+    <td width="55">{!$Label.partnersearchlocation}:</td>
+    <td height="100%" valign="top" rowspan="2" width="205">
+        <table width="100%" border="0" cellspacing="0" cellpadding="2">
+            <tr>
+                <td>
+                    <div class="textbox">
+                        <apex:inputText maxlength="50" id="txtLocation" onkeypress="keypressed(event)" value="{!form.address}" />
+                        <div id="addressChoices" class="autocomplete"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="search_tip">({!$Label.city_country_or_postal_code})</td>
+            </tr>
+        </table>
+    </td>
+    <td width="56">{!$Label.partnersearchdistance}:</td>
+    <td height="100%" valign="top" rowspan="2" width="54">
+        <table width="100%" border="0" cellspacing="0" cellpadding="2">
+            <tr>
+                <td>
+                    <div class="textbox_sm">
+                        <apex:selectList id="ddlDistance" value="{!form.distance}" size="1" style="width:50px" >
+                            <apex:selectOptions value="{!form.distanceOptions}"/>
+                        </apex:selectList>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="search_tip"></td>
+            </tr>
+        </table>
+    </td>
+    <td height="100%" valign="top" rowspan="2" width="57">
+        <table width="100%" border="0" cellspacing="0" cellpadding="2">
+            <tr>
+                <td>
+                    <div class="textbox_sm">
+                        <apex:selectList id="unitOfLength" 
+                                         value="{!form.unit}" size="1">
+                            <apex:selectOption itemValue="miles" itemLabel="{!$Label.miles}" />
+                            <apex:selectOption itemValue="kilometers" itemLabel="{!$Label.kilometers}" />
+                        </apex:selectList>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="search_tip"></td>
+            </tr>
+        </table>
+     </td> 
+    <td width="225">
+        <apex:outputPanel id="pnlBtnSearchBasic" styleClass="buttonwrapper" layout="block">
+        
+            <apex:outputLink id="btnSearchBasic"
+                                styleClass="ovalbutton" 
+                                 onclick="javascript: showBusyDialog(); searchButtonClicked();"
+                                 value="#" ><span>{!$Label.btnsearch}</span>
+            </apex:outputLink>
+            
+                <apex:actionFunction name="triggerSearch" 
+                         action="{!searchClicked}" 
+                         rerender="resultsPanel, PageMessages, LocationData" 
+                         status="processingStatus" 
+                         oncomplete="javascript: hideBusyDialog(); updateMap();" 
+                         />     
+        </apex:outputPanel> 
+    </td>
+    <td width="83">
+        </td>   
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>  
+  <tr>
+        <td colspan="9" align="center" valign="middle">
+            <apex:outputPanel id="filterPanel" style="width:100%" layout="block">
+                <table width="100%" cellspacing="0" cellpadding="0" border="0" class="sub_search">
+                    <tbody>
+                        <tr>
+                            <td valign="top" align="left" colspan="3">{!$Label.titleFilterResults}:</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" valign="top">  
+                                <apex:outputPanel id="basicFilterPanel" style="width:100%" rendered="true"
+                                                    styleClass="filterBox" layout="block">
+                                      <c:SearchFilter filterFields="{!form.basicFields}" /> 
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </apex:outputPanel>
+        </td>
+    </tr>
+</table>
+</div>
+    <apex:outputPanel id="FilterPanel2" style="width:100%;">
+       <div align="center">
+       
+        <apex:outputPanel id="advancedFilterPanel2" 
+                          rendered="{!displayAdvancedSearchFlag}" 
+                          styleClass="advanced_search_container" layout="block">
+            <table class="advanced_search" cellspacing="0" cellpadding="5" border="0" width="100%">
+                <tbody>
+                    <tr>
+                        <td align="left" width="100%"><h2>{!$Label.titleAdvancedSearch}</h2></td>
+                    </tr>
+                    <tr>
+                        <td align="right" valign="top">
+                          <c:SearchFilterTable fields="{!form.advancedFieldsSet}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" valign="top">
+                            <table class="partner_search" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tbody>
+                                    <tr>
+                                        <td>&nbsp;
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </apex:outputPanel>
+        </div>
+    </apex:outputPanel>
+    <apex:outputPanel id="searchControlsPanel" layout="block"> 
+            <table align="center" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tbody>
+                    <tr>
+                       <td align="right">
+                            <table align="right" cellspacing="3" cellpadding="0" border="0"
+                             style="color:#333333;font-family:Arial,sans-serif;font-size:11px;font-weight: normal">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <apex:outputPanel rendered="{!form.advancedFields.size > 0}">
+                                                <a href="javascript: showBusyDialog(); toggleFilter();"
+                                                   style="color:#3FA2C2;">
+                                                   {!IF(displayAdvancedSearchFlag,$Label.hide_advanced_search,$Label.show_advanced_search)}
+                                                </a>
+                                            </apex:outputPanel> 
+                                        </td>
+                                        <td>
+                                            <apex:outputPanel rendered="{!form.advancedFields.size > 0}">|</apex:outputPanel> 
+                                        </td>
+                                        <td>
+                                            <apex:outputLink style="color:#3FA2C2;font-family:'Arial',sans-serif;font-size:11px;" value="{!$Page.PartnerSearch}">{!$Label.clear}</apex:outputLink>
+                                        </td>
+                                        <td>
+                                            <apex:outputPanel rendered="{!LEN(config.searchHelpUrl)>0}">|</apex:outputPanel> 
+                                        </td>
+                                        <td>
+                                            <apex:outputPanel rendered="{!LEN(config.searchHelpUrl)>0}">
+                                                <a href="{!config.searchHelpUrl}"
+                                                   target="_blank"
+                                                   style="color:#3FA2C2;font-family:'Arial',sans-serif;font-size:11px;">{!$Label.help}</a>
+                                            </apex:outputPanel> 
+                                        </td>
+                                        <td width="10">&nbsp;</td>
+                                    </tr>
+                                </tbody>
+                            </table>                      
+                      </td>
+                    </tr>
+                </tbody>
+            </table>
+            <apex:actionFunction name="toggleFilter" 
+                         action="{!toggleFilter}" 
+                         rerender="searchControlsPanel, filterPanel, FilterPanel2, pnlLinkSearchBasic, pnlBtnSearchBasic, PageMessages" 
+                         oncomplete="javascript: hideBusyDialog(); updateMap();" 
+             />
+    </apex:outputPanel>
+    <br/>
+   
+    <br/>
+    <apex:outputPanel id="resultsPanel" layout="block"> 
+        <apex:outputPanel id="tabularResults" layout="block">
+            <apex:outputPanel rendered="{!IF(displaySearchResultsFlag,true,false)}" id="resultsTable" layout="block">
+                <table align="center" class="title" width="100%" cellspacing="0" cellpadding="10" border="0">
+                    <tbody>
+                        <tr>
+                            <apex:variable var="withinText" 
+                                value=" " 
+                                rendered=""/>
+                            <apex:variable var="withinText" 
+                                value=""
+                                rendered="{!LEN(TRIM(form.address))==0}" />
+                              
+                            <td width="100%" valign="top" align="left">
+                              <apex:outputLabel value="{!$Label.results}: {!paginator.pageStartPositionDisplayFriendly}-{!paginator.pageEndPositionDisplayFriendly} {!$Label.of} {!paginator.recordCount}" 
+                                  rendered="{!paginator.recordCount > 0}"/>
+                              <apex:outputLabel value="{!$Label.results}: {!$Label.none2}" 
+                                  rendered="{!paginator.recordCount == 0}"/>
+                              <apex:outputPanel rendered="{!LEN(TRIM(form.address))>0}" 
+                                  style="color:#333333;font-family:Arial,sans-serif;font-size:11px;font-weight: normal">
+                                  &nbsp;&nbsp;({!$Label.you_searched_for_locations_within} <b>{!ROUND(form.distance,0)}</b> <b>{!IF(form.unit='miles',$Label.miles,$Label.kilometers)}</b> {!$Label.of} <b>{!form.address}</b>: <i>{!$Label.latitude}: {!ROUND(form.latitude,2)}, {!$Label.longitude}: {!ROUND(form.longitude,2)}</i>)
+                              </apex:outputPanel>
+                            </td>
+                            <th width="60" valign="top" align="right"><apex:outputLabel rendered="{!LEN(TRIM(form.address)) == 0}" value="{!$Label.searchresultsortby}:"/></th>
+                            <td width="171" valign="top" align="left">
+                            <apex:outputPanel id="sortDropdown" rendered="{!LEN(TRIM(form.address)) == 0}">
+                                <div class="textbox_med">
+                            <apex:selectList id="sortBy"
+                                             value="{!sortColumn}" size="1">
+                                <apex:selectOptions value="{!sortColumnList}" />
+                                <apex:actionSupport event="onchange" action="{!sortData}" onsubmit="showBusyDialog()" rerender="LocationData, resultsPanel" oncomplete="javascript: hideBusyDialog(); updateMap();" />
+                            </apex:selectList>
+                            </div>
+                            </apex:outputPanel>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table align="center" width="100%" cellspacing="0" cellpadding="0" border="0" class="results">
+                    <tbody>
+                        <apex:repeat value="{!hits}" var="hit">
+                        <tr>
+                            <td width="20" valign="top" align="left" class="logo">
+                                <apex:outputLink value="#map_canvas" onclick="showLocation('{!hit.locationId}')">
+                                    <apex:outputLabel value="{!hit.resultSequenceNumber}" />
+                                </apex:outputLink>
+                            </td>
+                           
+                            <td width="132" valign="top" align="left" class="logo">
+                                <apex:outputLink value="{!$Page.PartnerDetails}?l={!preferredLanguageCode}&id={!hit.locationId}&{!searchSerialized}#Page:Top">
+                                    <apex:image rendered="{!NOT(ISNULL(hit.logoId))}" height="50" width="150" 
+                                        value="{!URLFOR($Action.Attachment.Download, hit.logoId)}"/>
+                                </apex:outputLink>
+                            </td>
+                                <td>
+                            <apex:outputPanel rendered="{!LEN(config.imageUrlRecommendedPartner)>0}">
+                                        <apex:image rendered="{!hit.isRecommended}" height="50" width="100" 
+                                            value="{!config.imageUrlRecommendedPartner}"/>
+                            </apex:outputPanel>
+                                </td>
+                            <td valign="top" align="left" colspan="2">
+                                <strong><apex:outputLink value="{!$Page.PartnerDetails}?l={!preferredLanguageCode}&id={!hit.locationId}&{!searchSerialized}#Page:Top">{!if(LEN(TRIM(form.address))>0,hit.partnerName & ' - ','')}{!hit.locationName}</apex:outputLink></strong>
+                                <apex:outputPanel rendered="{!NOT(ISNULL(hit.website))}" styleClass="website">
+                                    <apex:outputLink target="_blank" value="{!hit.website}">{!hit.website}</apex:outputLink>
+                                </apex:outputPanel>
+                                <br/>
+                                <apex:outputPanel rendered="{!NOT(AND(ISNULL(hit.street), ISNULL(hit.city), ISNULL(hit.stateProvince), ISNULL(hit.postalCode), ISNULL(hit.country)))}" >
+                                    <apex:outputText rendered="{!NOT(ISNULL(hit.street))}" value="{!hit.street & ', '}"/>
+                                    <apex:outputText rendered="{!NOT(ISNULL(hit.city))}" value="{!hit.city & ', '}"/> 
+                                    <apex:outputText rendered="{!NOT(ISNULL(hit.stateProvince))}" value="{!hit.stateProvince & ', '}"/> 
+                                    <apex:outputText rendered="{!NOT(ISNULL(hit.postalCode))}" value="{!hit.postalCode & ', '}"/>                                      
+                                    <apex:outputText rendered="{!NOT(ISNULL(hit.country))}" value="{!hit.country}"/>  <br/>                                     
+                                </apex:outputPanel>                                
+                                <apex:outputPanel rendered="{!NOT(ISNULL(hit.customFields))}">
+                                    <apex:repeat value="{!hit.customFields}" var="rsField">
+                                        <strong><apex:outputText value="{!rsField.label}:"/></strong>&nbsp;<apex:outputText value="{!rsField.value}"/>&nbsp;
+                                    </apex:repeat>  
+                               </apex:outputPanel>
+                            </td> 
+                            <td valign="top" align="right" colspan="3">
+                                <apex:outputPanel rendered="{!LEN(TRIM(form.address)) > 0}">
+                                    {!$Label.searchresultdistance}: <apex:outputText value="{!IF(form.unit='miles',ROUND(hit.distanceInMiles,0),ROUND(hit.distanceInKilometers,0))} {!IF(form.unit='miles','mi','km')}"/><br/>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!NOT(ISNULL(hit.pointOfContactName))}">
+                                    {!$Label.searchresultpointofcontact}: <apex:outputText value=" {!hit.pointOfContactName}" /><br />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!NOT(ISNULL(hit.Phone_Formula))}">
+                                    {!$Label.searchresultphone}: <apex:outputText value=" {!hit.Phone_Formula}" /><br/>
+                                </apex:outputPanel>
+                                <apex:image title="HQ" width="20px" height="20px" rendered="{!hit.isPrimary}" id="thePrimaryLocatorImage" value="{!$Resource.PartnerLocator_PrimaryLogo}"/>                                 
+                            </td>
+                            <td width="15" align="right"> </td>
+                            </tr>
+                        </apex:repeat>
+
+                    </tbody>
+                </table>            
+            </apex:outputPanel>
+            
+            <apex:outputPanel id="paginationTable" rendered="{!IF(AND(displaySearchResultsFlag,paginator.recordCount > 0),true,false)}" layout="block">
+                    <!-- pagination controls -->
+                    <table align="center" width="100%" cellspacing="0" cellpadding="0" border="0"
+                        class="pagination">
+                        <tbody>
+                            <tr>
+                                <td width="163" valign="top" align="left">
+                                    <apex:outputText >{!$Label.paginationpage} {!IF(paginator.pageCount=0, 0, paginator.pageNumberDisplayFriendly)} {!$Label.paginationof} {!paginator.pageCount} {!$Label.paginationin} {!paginator.recordCount} {!$Label.paginationtextresults} </apex:outputText>
+                                </td>
+
+                                    
+                                <td valign="top" align="right">
+                                <div style="overflow: hidden;" class="paginationBox">
+                                <ul>
+                                    <li>
+                                        <apex:outputLink onclick="javascript: showBusyDialog(); paginatorFirst();" 
+                                            styleClass="grey_arrow" 
+                                            rendered="{!paginator.hasPrevious}"
+                                            value="#"><span>&#060;&#060;</span></apex:outputLink>
+                                        <apex:actionFunction name="paginatorFirst" 
+                                            action="{!paginator.first}" 
+                                            rerender="LocationData, resultsPanel" 
+                                            oncomplete="javascript: hideBusyDialog(); updateMap();"/>
+                                    </li>
+                                    <li>
+                                        <apex:outputLink onclick="javascript: showBusyDialog(); paginatorPrevious();" 
+                                            styleClass="grey_arrow" 
+                                            rendered="{!paginator.hasPrevious}"
+                                            value="#"><span>&#060;</span></apex:outputLink>
+                                        <apex:actionFunction name="paginatorPrevious" 
+                                            action="{!paginator.previous}" 
+                                            rerender="LocationData, resultsPanel" 
+                                            oncomplete="javascript: hideBusyDialog(); updateMap();"/>
+                                    </li>
+                                    <apex:repeat value="{!paginator.previousSkipPageNumbers}" var="skipPageNumber">
+                                        <apex:outputPanel >
+                                            <li>
+                                                <apex:outputLink onclick="javascript: showBusyDialog(); skipToLocation{!skipPageNumber}();" 
+                                                    value="#"><span>{!skipPageNumber+1}</span></apex:outputLink>
+                                                <apex:actionFunction name="skipToLocation{!skipPageNumber}" 
+                                                    action="{!skipToLocation}" 
+                                                    rerender="LocationData, resultsPanel" 
+                                                    oncomplete="javascript: hideBusyDialog(); updateMap();">
+                                                    <apex:param name="pageNumber" value="{!skipPageNumber}"/>
+                                                </apex:actionFunction>
+                                            </li>
+                                        </apex:outputPanel>
+                                    </apex:repeat>
+                                    <li class="isActive">
+                                        <a title="1" href="#">
+                                            <span>{!paginator.pageNumber+1}</span>
+                                        </a>
+                                    </li>
+                                    <apex:repeat value="{!paginator.nextSkipPageNumbers}" var="skipPageNumber">
+                                        <apex:outputPanel id="NextPageLinks">
+                                            <li>
+                                                <apex:outputLink onclick="javascript: showBusyDialog(); skipToLocation{!skipPageNumber}();" 
+                                                    value="#"><span>{!skipPageNumber+1}</span></apex:outputLink>
+                                                <apex:actionFunction name="skipToLocation{!skipPageNumber}" 
+                                                    action="{!skipToLocation}" 
+                                                    rerender="LocationData, resultsPanel" 
+                                                    oncomplete="javascript: hideBusyDialog(); updateMap();">
+                                                    <apex:param name="pageNumber" value="{!skipPageNumber}"/>
+                                                </apex:actionFunction>
+                                            </li>
+                                        </apex:outputPanel>
+                                    </apex:repeat>
+                                    
+                                    <li>
+                                        <apex:outputLink onclick="javascript: showBusyDialog(); paginatorNext();" 
+                                            styleClass="grey_arrow" 
+                                            rendered="{!paginator.hasNext}"
+                                            value="#"><span>&#062;</span></apex:outputLink>
+                                        <apex:actionFunction name="paginatorNext" 
+                                            action="{!paginator.next}" 
+                                            rerender="LocationData, resultsPanel" 
+                                            oncomplete="javascript: hideBusyDialog(); updateMap();"/>
+                                    </li>
+                                    <li>
+                                        <apex:outputLink onclick="javascript: showBusyDialog(); paginatorLast();" 
+                                            styleClass="grey_arrow" 
+                                            rendered="{!paginator.hasNext}"
+                                            value="#"><span>&#062;&#062;</span></apex:outputLink>
+                                        <apex:actionFunction name="paginatorLast" 
+                                            action="{!paginator.last}" 
+                                            rerender="LocationData, resultsPanel" 
+                                            oncomplete="javascript: hideBusyDialog(); updateMap();"/>
+                                    </li>
+                                </ul>
+                                {!$Label.resultsPerPage} &nbsp;
+                                        <apex:selectList value="{!paginator.pageSize}" 
+                                            size="1"
+                                            id="pageSizeOptions"
+                                            onchange="javascript: showBusyDialog(); refresh();">
+                                            <apex:selectOptions value="{!paginator.pageSizeSelectOptions}" />
+                                        </apex:selectList>
+                                        <apex:actionFunction name="refresh" 
+                                            action="{!refresh}" 
+                                            rerender="LocationData, resultsPanel" 
+                                            oncomplete="javascript: hideBusyDialog(); updateMap();"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </apex:outputPanel> <!-- pagination -->
+<!-- <apex:outputtext value="ADDLQUERY"/>
+<apex:outputtext value="{!ADDLQUERY}"/>prm5.5-->
+            <!--  </apex:outputPanel> -->
+            </apex:outputPanel> <!-- tabularResults --> 
+        <apex:outputPanel layout="block">
+            <apex:outputPanel id="map" styleClass="map" rendered="{!displaySearchResultsFlag}" layout="block">
+                <div id="legend" style="width:100%;">
+                    <table cellpadding="0" cellspacing="1" border="0" style="color:#333333;font-family:Arial,sans-serif;font-size:11px;font-weight: normal">
+                        <tr><td>
+                            <b>{!$Label.legend }</b>
+                        </td><td>
+                        &nbsp;&nbsp;
+                        </td><td>
+                            <apex:image value="{!$Resource.blue_dot_small_png}"/>
+                        </td><td>
+                            {!$Label.search_location}&nbsp;
+                        </td><td>
+                            <b>{!IF(LEN(TRIM(form.address))==0,$Label.none2,form.address)}</b>
+                        </td><td>
+                        &nbsp;&nbsp;
+                        </td><td>
+                            <apex:image value="{!$Resource.red_dot_small_png}"/>
+                        </td><td>
+                            {!$Label.search_result}
+                        </td></tr>
+                    </table>
+                </div>
+                <div id="map_canvas" style="width:100%; height:420px; font-family:Arial; font-size:11px;"></div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+            
+    </apex:outputPanel>
+        
+  
+ 
+</apex:outputPanel>
+
+<div class="bottom_bar"><img src="{!$Resource.bottom_bar_gif}" /></div>
+</apex:form>
+
+        <div id="dialog" title="{!$Label.updating}">
+            <table border="0" width="100%" cellpadding="0" cellspacing="3"><tr><td width="20">
+                <apex:image value="{!$Resource.spinner_gif}"/>
+                </td><td>{!$Label.please_wait}</td></tr></table>
+        </div>
+
+    <apex:includeScript value="{!$Page.PartnerFinderJS}" />
+    </body>
+</html>
+
+</apex:page>

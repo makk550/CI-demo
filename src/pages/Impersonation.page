@@ -1,0 +1,37 @@
+<apex:page Controller="Impersonation" >
+    <script>
+        function newwindow(){
+            var email=document.getElementById("email").value;
+            if (email==''){
+                alert('Enter an Email ID');
+                return false;
+            }
+            /*var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;  
+            if(!email.match(mailformat)){ 
+                alert('Enter a valid Email ID');
+                return false;
+            }*/    
+            else if (/@ca\.com$/.test(email)) {
+                alert('CA Employees cannot be impersonated');
+                return false;
+                
+            }
+            var v=window.open('/apex/impersonationaction?email='+email,'popUpWindow','height=800,width=1100,left=200,top=100,,scrollbars=yes,menubar=no');
+            return true;    
+        }
+        function gotohome(){
+            window.location='/home/home.jsp';
+        }
+        
+    </script>
+    <apex:form id="frmImpersonation" accept="" styleClass="submit-bg">
+      <apex:messages />
+      <apex:pageBlock title="Impersonation" mode="edit">
+      <!-- End Default Content REMOVE THIS -->
+      <font  color="red" ><b>You must sign off in the impersonation window to end the session properly !</b></font><br/><br/>
+      Enter the Customer Email : <input id="email"  value="{!email}" styleClass="form-control"   maxlength="100"  /><br/><br/>
+        <input type="button" value="Impersonate " onclick=" return newwindow();"/>
+        <input type="button" value="Cancel" onclick=" return gotohome();"/>
+      </apex:pageBlock>
+    </apex:form>
+</apex:page>

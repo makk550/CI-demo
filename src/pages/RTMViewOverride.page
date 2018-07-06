@@ -1,0 +1,5 @@
+<apex:page standardcontroller="Route_To_Market__c">
+<apex:detail subject="{!Route_To_Market__c.Id}" relatedList="true" title="true" inlineEdit="true" showChatter="true">
+     </apex:detail>
+     
+</apex:page>

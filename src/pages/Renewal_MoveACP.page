@@ -1,0 +1,90 @@
+<apex:page standardController="Active_Contract__c" extensions="Renewal_MoveACPController">
+<chatter:feedWithFollowers entityId="{!Active_Contract__c.id}"/>
+  <script>
+      function selUnsel(ctrl){
+        var chks = document.getElementsByTagName('input'); 
+        for(var i = 0; i<chks.length ;i++){
+          if(chks[i].type == 'checkbox' && chks[i].id.indexOf('chkACP') > 0 ){
+            chks[i].checked = ctrl.checked;
+          } 
+        } 
+      } 
+  </script>
+  <apex:form >
+   <apex:detail relatedList="false" />
+   <apex:pageBlock title="Active Contract Products" id="pb">
+    <apex:pageMessages ></apex:pageMessages>
+    <apex:pageBlockButtons location="top" >
+      <apex:outputPanel >
+       <table width="100%"><tr><td nowrap="nowrap">
+          <apex:outputLabel value="Target Renewal " style="padding-right:12px"></apex:outputLabel>
+          <apex:selectList value="{!selectedRenewal}" multiselect="false" size="1" >
+            <apex:selectOptions value="{!lstRenewals}"></apex:selectOptions>
+          </apex:selectList>
+           <apex:commandButton action="{!moveRenewals}" value="Move to Renewal"/>
+           <apex:outputLabel value="Segmentation Change Reason "></apex:outputLabel>    
+           <apex:selectList value="{!SegChangeReason}" multiselect="false" size="1" >
+           <apex:selectOptions value="{!lstSegChangeReason}"></apex:selectOptions>
+          </apex:selectList>  
+          </td></tr><tr><td>
+          <apex:outputPanel rendered="{!$Profile.Name <> 'Global Renewal'}">  
+           <apex:outputLabel value="Reason for invalid "></apex:outputLabel>    
+           <apex:selectList value="{!reasonForInvalidate}" multiselect="false" size="1">
+            <apex:selectOptions value="{!lstReasonForInvalidate}"></apex:selectOptions>
+           </apex:selectList>
+           <apex:commandButton action="{!InvalidateACP}" value="Set to Invalid"/>
+           </apex:outputPanel>  
+           <apex:commandButton action="{!UnAttachACP}" value="UnAttach"/>
+
+        </td></tr></table> 
+
+      </apex:outputPanel>
+   </apex:pageBlockButtons>
+    <apex:pageBlockSection columns="1" id="pbs">
+      <apex:pageblockTable value="{!lstACP}" var="renACP">
+         <apex:column >
+            <apex:facet name="header">
+              <input type="checkbox" id="chk" name="chk" onclick="selUnsel(this);" />
+            </apex:facet>
+            <apex:inputCheckbox value="{!renACP.sel}" id="chkACP"/>
+         </apex:column>
+         <apex:column HeaderValue="Active Contract Product Name">
+           <apex:outputLink value="/{!renACP.acp.Id}">{!renACP.acp.Name}</apex:outputLink>
+         </apex:column>
+         <apex:column value="{!renACP.acp.Invalid__c}"/>
+         <apex:column value="{!renACP.acp.OCV__c}"/>
+         <apex:column value="{!renACP.acp.AOCV__c}"/>
+            <apex:column headerValue="Expected Close Date">
+           <apex:outputText escape="false" rendered="{!NOT(ISNULL(renACP.acp.Expected_Close_Date__c))}"  value="{!MONTH(renACP.acp.Expected_Close_Date__c)}/{!DAY(renACP.acp.Expected_Close_Date__c)}/{!YEAR(renACP.acp.Expected_Close_Date__c)}"/>
+           
+     </apex:column>  
+      <apex:column headerValue="Renewal Name">
+           <apex:outputText escape="false" value="{!renACP.acp.Renewal_Name__c}"/>
+     </apex:column> 
+     <apex:column Value="{!renACP.acp.Segmentation__c}"/> 
+       <apex:column headerValue="Pre-Segmentation">
+           <apex:outputText escape="false" value="{!renACP.acp.Pre_Segmentation__c}"/>
+     </apex:column>    
+      </apex:pageblockTable>
+      
+      <apex:actionStatus id="mySaveStatus223">
+       <apex:facet name="stop">
+        <apex:commandButton action="{!previous}" status="mySaveStatus223" value="Previous Page" rendered="{!HasPrevious}"  disabled="false"  rerender="pb" />
+        </apex:facet>
+        <apex:facet name="start">
+        <apex:commandButton action="{!previous}" status="mySaveStatus223" rendered="{!HasPrevious}" value="Processing..." disabled="true"/> </apex:facet>
+       </apex:actionStatus>
+      <apex:actionStatus id="mySaveStatus224">
+       <apex:facet name="stop">
+        <apex:commandButton action="{!next}" status="mySaveStatus224" value="Next Page" rendered="{!HasNext}"  disabled="false"  rerender="pb" />
+        </apex:facet>
+        <apex:facet name="start">
+        <apex:commandButton action="{!next}" status="mySaveStatus224" rendered="{!HasNext}" value="Processing..." disabled="true"/> </apex:facet>
+       </apex:actionStatus>
+      <!--<apex:commandLink action="{!previous}" rerender="pb" rendered="{!HasPrevious}"   value="Previous Page"></apex:commandLink>
+     <apex:commandLink action="{!next}" rerender="pb" rendered="{!HasNext}"  value="Next Page"></apex:commandLink>      -->
+
+    </apex:pageBlockSection>
+   </apex:pageBlock>
+  </apex:form> 
+</apex:page>

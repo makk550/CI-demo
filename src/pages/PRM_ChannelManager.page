@@ -1,0 +1,68 @@
+<apex:page controller="PRM_ChannelManager" showHeader="false" standardStylesheets="false" sidebar="false">
+<style type="text/css">
+        cmComponent {
+            font-family: Arial,Helvetica,sans-serif;
+            }
+                    a {
+            color: #429CCB;
+            text-align:center;
+        }
+        b {
+            color: #333333;
+
+        }
+        a:hover {
+            text-decoration: underline;
+            color: #429CDZ;
+        }
+
+        td{font-family: Arial,Helvetica,sans-serif; font-size:75%;}
+
+    </style>
+  
+ <div id="cmComponent">
+ <Table >
+<apex:outputPanel id="alliance" rendered="{!alliancePAMName !=null}">
+              <tr>
+                 <td style="padding: 5px 0 0 0;">
+                        Alliance: 
+                 </td>
+                 <td>
+                       <!-- <a  href="mailto:{!AccOwnerEmail}">{!AccOwner}</a> -->
+                     <a  href="mailto:{!alliancePAMEmail}" >{!alliancePAMName}</a>  
+                 </td>
+             </tr> 
+</apex:outputpanel>
+<apex:outputPanel id="solutionprovider" rendered="{!solutionProviderPAMName !=null}">
+             <tr>
+                 <td style="padding: 4px 10Px 0 0;">
+                        Solution Provider: 
+                 </td>
+                 <td>
+                     <a  href="mailto:{!solutionProviderPAMEmail}" >{!solutionProviderPAMName}</a>  
+                 </td>
+             </tr>
+</apex:outputpanel>
+<apex:outputPanel id="serviceprovider" rendered="{!serviceProviderPAMName !=null}">
+             <tr>
+                 <td style="padding: 4px 10px 0 0;">
+                        Service Provider: 
+                 </td>
+                 <td>
+                     <a  href="mailto:{!serviceProviderPAMEmail}">{!serviceProviderPAMName}</a>  
+                 </td>
+             </tr>
+</apex:outputpanel>
+<apex:outputPanel id="DM" rendered="{!velocitySellerPAMName !=null}">
+             <tr>
+                 <td style="padding: 4px 0 0 0;">
+                        DM: 
+                 </td>
+                 <td>
+                     <a  href="mailto:{!velocitySellerPAMEmail}">{!velocitySellerPAMName}</a>  
+                 </td>
+             </tr>     
+</apex:outputpanel> 
+  </Table>
+  </div>
+</apex:page>

@@ -1,0 +1,64 @@
+<apex:page controller="ctrlChecklist" action="{!initPage}" >
+    <apex:sectionHeader title="Welcome to {!checklistName}"/>
+    <style>
+        .cHeaderClass
+        {
+            background-color:lightblue; font-weight:bold
+        }
+    </style>
+    <apex:form >
+         <apex:pageBlock mode="edit">
+             
+             <apex:pageBlockSection columns="1">
+                     The checklist is intended to keep track of your progress, so please submit each item as you complete it. <b> As you come back to complete more, please check off the prior items as well as the new items you have completed.</b>  This checklist is mandatory and tracked by your management team.
+             </apex:pageBlockSection>
+              <apex:pageBlockSection columns="2">
+                            <apex:pageBlockSectionItem >
+                                 <apex:outputLabel >Your Name</apex:outputLabel>
+                                 {!name}
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                 <apex:outputLabel >Your PMF Key</apex:outputLabel>
+                                 {!pmfKey}
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                 <apex:outputLabel >Title</apex:outputLabel>
+                                  {!title}
+                            </apex:pageBlockSectionItem>
+             </apex:pageBlockSection>
+         </apex:pageBlock>
+        <apex:pageBlock mode="edit">
+             <apex:pageBlockButtons >
+                 <apex:commandButton action="{!submit}" value="Submit Checklist"/>
+             </apex:pageBlockButtons>
+             <apex:pageBlockSection >
+                  <apex:pageBlockSectionItem >
+                                 <apex:outputLabel >Checklist</apex:outputLabel>
+                                 {!checklistName}
+                  </apex:pageBlockSectionItem>
+             </apex:pageBlockSection>
+             <apex:pageBlockSection title="Checklist Items" columns="1">
+             
+                 <br/>
+                 <apex:dataTable value="{!lst}" var="cu" style="width:100%">
+                     <apex:column headerValue="Due Date" style="width:350px" headerClass="cHeaderClass"> 
+                     {!cu.Item_Due_Date__c}
+                     </apex:column> 
+                     <apex:column headerValue="Checklist Item" style="width:550px" headerClass="cHeaderClass"> 
+                             {!cu.Checklist_Item__r.Name}
+                     </apex:column> 
+                     <apex:column headerValue="Completed" style="width:150px" headerClass="cHeaderClass"> 
+                             <apex:inputCheckbox value="{!cu.Completed__c}" disabled="{!cu.Completed__c}" />
+                     </apex:column> 
+                 </apex:dataTable>
+                   <br/>
+                   <div style="height: 20px; text-align:center; font-weight:bold">  {!msg} </div>
+                 
+             </apex:pageBlockSection>
+         </apex:pageBlock>
+     </apex:form>    
+</apex:page>

@@ -1,0 +1,59 @@
+<apex:page standardController="Site_Association__c" extensions="SC_Console_Exts" >
+
+    <apex:form >
+       <apex:pageMessages id="pageMessageId"/>
+        <apex:pageBlock title="Search Site" mode="edit">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Search" action="{!Search}" reRender="op,pageMessageId"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1">
+                     <apex:inputText value="{!siteName}"  label="Name"/>               
+                     <apex:inputText value="{!street}" label="Street"/>
+                     <apex:inputText value="{!city}" label="City"/>
+                     <apex:inputText value="{!postalCode}" label="Postal Code"/>
+                     <apex:selectList id="countries" value="{!country}" size="1" required="true" label="Country">
+                          <apex:selectOptions value="{!countryList}"/>
+                     </apex:selectList>           
+                     <apex:inputText value="{!state}" label="Region"/>
+            </apex:pageblockSection>
+            </apex:pageblock>
+            <apex:outputPanel id="op">
+            
+            <apex:pageBlock rendered="{!showResults}">
+               <apex:pageBlockTable value="{!results}" var="res">
+                   
+                   <apex:column headerValue="Select">
+                       <apex:actionSupport action="{!selectRadio}" event="onclick" reRender="op" status="selectSiteResult">
+                           <input type="radio" name="select"/>
+                         
+                           <apex:param name="siteId" value="{!res.siteId}" assignTo="{!siteId}" />
+                                                 
+                           
+                       </apex:actionSupport>
+                       <apex:actionStatus id="selectSiteResult" startText="Selecting..." >
+                       </apex:actionStatus> 
+                   </apex:column>
+            
+                   <apex:column value="{!res.name}" headerValue="Name"/>
+                   <!--<apex:column value="{!res.score}" headerValue="Score"/>-->
+                   <apex:column value="{!res.sfdcId}" headerValue="SFDC ID"/>
+                   <apex:column value="{!res.siteId}" headerValue="Site ID"/>
+                   <apex:column value="{!res.topsSiteId}" headerValue="TOPS Site ID"/>
+                   <apex:column value="{!res.caAccountId}" headerValue="CA ACCOUNT ID"/>
+                   <apex:column value="{!res.systemName}" headerValue="System"/>
+                   <apex:column value="{!res.street}" headerValue="Street"/>
+                   <apex:column value="{!res.city}" headerValue="City"/>
+                   <apex:column value="{!res.postalCode}" headerValue="Zip Code"/>
+                   <apex:column value="{!res.state}" headerValue="State"/>
+                   <apex:column value="{!res.country}" headerValue="Country"/>
+               </apex:pageBlockTable>
+               <apex:pageBlockButtons location="bottom">
+                  <apex:commandButton value="Navigate to Site" action="{!selected}" reRender="pageMessageId">
+                
+                   </apex:commandButton>
+               </apex:pageblockButtons>
+            </apex:pageBlock>
+        
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

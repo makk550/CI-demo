@@ -1,0 +1,21 @@
+<apex:page standardController="Opportunity" extensions="ApproveOpportunityOverride" >
+    <script>
+        window.onload=function()
+     { 
+             //ReturntoOpp();
+             if(confirm('Once you submit this record for approval, you might not be able to edit it or recall it from the approval process depending on your settings. Continue?')) {
+                    Approve();
+                 //return false;
+             }else{
+                 ReturntoOpp();
+                 }
+            
+            //return false;
+     }
+    </script>
+<apex:form >
+    <apex:PageMessages ></apex:PageMessages>
+    <apex:actionFunction action="{!ApproveOpp}" name="Approve"/>
+        <apex:actionFunction action="{!ReturntoOpp}" name="ReturntoOpp"/>
+</apex:form>
+</apex:page>

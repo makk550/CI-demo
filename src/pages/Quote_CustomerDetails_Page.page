@@ -1,0 +1,794 @@
+<apex:page standardController="SBQQ__Quote__c" extensions="Quote_CustomerDetails_Controller" showHeader="false"  sidebar="false" applyHtmlTag="false" applyBodyTag="false" standardStylesheets="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <apex:slds />
+        <style>
+            .pbHeader{
+                display:none;
+            }
+        	.pbBody {
+                background: white;
+            }
+            .SideHeader{
+                font-weight: bold;
+                text-decoration: underline;
+                padding: 10px;
+            }
+            .slds-scope .lookupIconS{
+                background-color: #e0e5ee;
+                border-radius: .25rem;
+                fill: black;
+                height: 1.5rem;
+                width: 1.5rem;
+                padding: 2px;
+            }
+            .MainSectionBody{
+                padding: 0px 20px;
+                padding-top: 0px;
+                border: 1px solid #738292;
+                margin: 10px;
+                box-shadow: 2px 2px 1px #738292;
+                background: #fdfdfd;
+                margin-bottom: 30px;
+            }
+            .slds-section__content{
+                padding:0px 2rem;
+            }
+           .slds-section__content table th,td{
+               width:25%
+           }
+           input.slds-input.inputW{
+               width:70%;
+           }
+           textarea.slds-textarea.textareaW{
+               width:80%;
+           }
+           .customMessage * {
+                    color: white!important;
+                    font-family: inherit;
+                    font-weight: bold;
+               		font-size: 12px;
+            }
+           .customMessage {
+                    margin: 2px 0px 0px 0px!important;
+               		padding-top:0.3rem!important;
+                    padding-bottom:0.3rem!important;
+                    opacity: 1!important;
+                    width: 100%;
+                    font-size: 11px;
+                    border: 0px;
+                    padding-left: 10px;
+               		border-radius: 0rem!impotant;
+            }
+           .lookupdefault {
+               border:2px solid #a8b7c7!important;
+               border-radius:.2rem;
+           }
+           .message {
+                    opacity: .1
+              }
+          .message td{
+               width: 0%;
+               text-align:center;
+               }
+               .messageCell {
+                   width: 100%;
+				}
+               .fixedheaderF{
+                   position: sticky;
+    				top: -5px;
+                   	background:white;
+                   }
+               .page-header-custom{
+                   padding: 0.3rem 1.5rem !important;
+               }
+               .footer {
+                    position: fixed;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    padding: 0.5rem;
+                    background-color: #5d7193;
+                    text-align: center;
+                    border-radius: 0.2rem;
+                    color: white;
+                    font-weight: bold;
+                }
+               .footerFull{
+                   width:100%;
+               }
+               .footerToggle{
+                   display:none;
+               }
+               #footerFull a{
+                    color: white;
+               		text-decoration: underline;
+                }
+        		#footerFull p{
+                	padding:5px;
+        			text-align: justify;
+        			line-height:1.5rem;
+        			font-size: 15px;
+        		}
+                .footerfullHeader{
+                    margin:0px;
+                    width:100%;
+                }
+        		.footerfullContent{
+                    padding:20px;
+                }
+               .footerFullclose {
+                    color: white;
+                    float: right;
+                    font-size: 45px;
+                    font-weight: bold;
+                    margin-top: -30px;
+                }
+                
+                .footerFullclose:hover,.footerFullclose:focus {
+                    color: #000;
+                    text-decoration: none;
+                    cursor: pointer;
+                }
+               #myDIV{
+               	 cursor:pointer;
+               	 text-decoration: underline;
+           		}
+                
+        </style>
+        
+    </head>
+    <script type="text/javascript">
+    var newWin=null;
+    function openLookupNew(searchPage,searchtype,soldId,enduserid,id,name,address,street,street2,city,state,pincode,country,salesOrg,selectedcountry,siteId,accGrp,accId,type,edmAction,action)  
+    {
+    
+        var accountId ="{!accountID}";
+        var quoteId = "{!QuoteId}";
+        var OppCountryCode ="{!OppCountryCode}";
+        if((searchtype == 'SOLDTO') ||(((searchtype == 'BILLTO') || (searchtype == 'SHIPTO') || (searchtype == 'RESELLER') || (searchtype == 'ENDUSERID')) && soldId != '' && soldId != null)){
+            //var url="{!$Site.prefix}/apex/" + searchPage +"?searchtype="+searchtype+"&soldId=" + soldId+"&namef=" + name + "&idf=" + id+"&address="+address+"&street="+street+"&street2="+street2+"&city="+city+"&state="+state+"&pincode="+pincode+"&country="+country+"&accountId="+accountId+"&OppCountryCode="+OppCountryCode+"&salesOrg="+salesOrg+'&selectedcountry='+selectedcountry+'&quoteId='+quoteId;
+            var url="{!$Site.prefix}/apex/" + searchPage +"?searchtype="+searchtype+"&soldId=" + soldId+"&namef=" + name + "&idf=" + id+"&address="+address+"&street="+street+"&street2="+street2+"&city="+city+"&state="+state+"&pincode="+pincode+"&country="+country+"&accountId="+accountId+"&OppCountryCode="+OppCountryCode+"&salesOrg="+salesOrg+'&selectedcountry='+selectedcountry+'&quoteId='+quoteId+'&selectedSiteId='+siteId+'&selectedAccGroup='+accGrp+'&selectedAccId='+accId+'&selectedType='+type+'&edmAction='+edmAction+'&action='+action+'&endUserId='+enduserid;
+            newWin=window.open(url, 'Popup','height=600,width=1200,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+            
+            
+            if (window.focus)    
+            {    newWin.focus();   
+            }
+         }else{
+             alert("Please select Sold-To ID");
+         }
+        
+                   
+        return false;
+    }
+    function openLookupTechNew(searchPage,searchtype,soldId,enduserid,id,fullname,firstname,lastname,email,phone,flocal,llocal,SoldToCountry,EndUserCountry)    
+    {
+        //var SoldToCountry ='{!quote.SoldTo_Country__c}';
+        
+        var quoteId = "{!QuoteId}";
+        
+        console.debug(SoldToCountry);
+        if(searchtype!='EndUserContact'){
+            if(soldId != '' && soldId != null){
+                var url="{!$Site.prefix}/apex/" + searchPage +"?searchtype="+searchtype+"&soldId=" + soldId+"&idf=" + id+"&fullname="+fullname+"&firstname="+firstname+"&lastname="+lastname+"&email="+email+"&phone="+phone+"&flocal="+flocal+"&llocal="+llocal+"&SoldToCountry="+SoldToCountry+"&EndUserId="+enduserid+"&quoteId="+quoteId+"&EndUserCountry="+EndUserCountry;
+                newWin=window.open(url, 'Popup','height=500,width=900,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+                if (window.focus)    
+                {    
+                    newWin.focus();
+                }
+            }else{
+                alert('Please select the Sold-To ID.');
+            }
+        }
+        else if(searchtype=='EndUserContact'){
+            if(enduserid != '' && enduserid != null){
+                var url="{!$Site.prefix}/apex/" + searchPage +"?searchtype="+searchtype+"&soldId=" + soldId+"&idf=" + id+"&fullname="+fullname+"&firstname="+firstname+"&lastname="+lastname+"&email="+email+"&phone="+phone+"&flocal="+flocal+"&llocal="+llocal+"&SoldToCountry="+SoldToCountry+"&EndUserId="+enduserid+"&quoteId="+quoteId+"&EndUserCountry="+EndUserCountry;
+                newWin=window.open(url, 'Popup','height=500,width=900,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+                if (window.focus)    
+                {    
+                    newWin.focus();
+                }
+            }else{
+                alert('Please select the End User ID.');
+            }
+        }
+            
+        return false;
+    }
+    
+    function closeLookupPopup()  
+    {     
+        
+        if (null!=newWin)     
+        {        
+            newWin.close();
+            refreshaddress();
+        }    
+        
+    }
+    function closeMDMLookupPopup(){
+        
+        if (null!=newWin)     
+        {        
+            newWin.close();  
+            methodCopytheDetails();
+        }
+    }
+   function closeBILLLookupPopup(){
+       
+       if (null!=newWin)     
+        {        
+            newWin.close();  
+            refreshaddress();
+        }
+   }
+   function closeEndUserLookupPopup(){
+       if (null!=newWin)     
+        {        
+            newWin.close();  
+            methodEndUserIdCopyTheDetails();
+        }
+   }
+    
+    </script>
+    <body class="slds-scope">
+        <div id="MainWrap">
+        <apex:form id="Theform" styleClass="hasMotif lookupTab  LookupSearchFrame">
+            <apex:outputPanel id="Loader" styleClass="fixedheaderF" layout="block" >
+                <script>
+                    
+                        $(document).ready(function(){
+                            $("#footerFull").toggleClass("footerToggle");
+                           overridePageMessages(); 
+                            $('#myDIV').click(function(e) {  
+                                $("#footerFull").toggleClass("footerToggle");
+                                $("#footerM").toggleClass("footerToggle");
+                            });
+                            $('.footerFullclose').click(function(e) {  
+                                $("#footerFull").toggleClass("footerToggle");
+                                $("#footerM").toggleClass("footerToggle");
+                            });
+                            
+                        });
+                        function overridePageMessages(){    
+                            var textureEffect = 'slds-theme--alert-texture';
+                            //Uncomment below line for texture effect on page messages
+                            //textureEffect = 'slds-theme--alert-texture';
+                                         
+                            $('.warningM3').addClass('slds-notify slds-notify--toast slds-theme--warning customMessage '+textureEffect);          
+                            $('.confirmM3').addClass('slds-notify slds-notify--alert slds-theme--success  customMessage '+textureEffect);    
+                            $('.errorM3').addClass('slds-notify slds-notify--alert slds-theme--error customMessage '+textureEffect);                  
+                            $('.infoM3').addClass('slds-notify slds-notify--toast customMessage '+textureEffect);    
+                                             
+                            $('.errorM3').removeClass('errorM3'); 
+                            $('.confirmM3').removeClass('confirmM3'); 
+                            $('.infoM3').removeClass('infoM3');   
+                            $('.warningM3').removeClass('warningM3');  
+                        }
+                    </script>
+            		<apex:pagemessages ></apex:pagemessages>
+                	<div class="slds-page-header page-header-custom">
+                      <div class="slds-grid">
+                        <div class="slds-col slds-has-flexi-truncate">
+                          <div class="slds-media slds-no-space slds-grow">
+                            <div class="slds-media__figure">
+                              <svg class="slds-icon slds-icon-standard-account" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#search')}"></use>
+                              </svg>
+                            </div>
+                            <div class="slds-media__body">
+                              <p class="slds-text-title--caps slds-line-height--reset">Customer Details</p>
+                              <h1 class="slds-page-header__title slds-m-right--small slds-align-middle slds-truncate" title="this should match the Record Title">Quote</h1>
+                            </div>
+                          </div>
+                        </div>
+                          <apex:actionRegion >
+        
+                          <apex:commandbutton action="{!save}" styleClass="slds-button slds-button_brand" value="Save">
+                          </apex:commandbutton>
+                          </apex:actionRegion>
+                        </div>
+                      </div>
+           </apex:outputPanel>
+            <apex:actionStatus id="TableUpdateStatus">
+                    <!-- loading message -->
+                    <apex:facet name="start">
+                       <apex:outputPanel >
+                            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                                &nbsp;
+                            </div>
+                            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                                <div style="display: inline-block; padding: 2px; width: 125px;">
+                                    <img src="{!URLFOR($Asset.SLDS, '/assets/images/spinners/slds_spinner_brand.gif')}" style="float: left; margin: 8px;" />
+                                    <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                                </div>
+                            </div>
+                       </apex:outputPanel>
+                    </apex:facet>
+              <apex:facet name="stop"> </apex:facet>
+          </apex:actionStatus>
+            <apex:actionFunction action="{!copythedetails}" name="methodCopytheDetails" reRender="Theform" status="TableUpdateStatus"></apex:actionFunction>
+            <apex:actionFunction action="{!refreshaddress}" name="refreshaddress" reRender="Theform" status="TableUpdateStatus"></apex:actionFunction>
+            <apex:actionFunction action="{!endUserIdCopyTheDetails}" name="methodEndUserIdCopyTheDetails" reRender="Theform" status="TableUpdateStatus"></apex:actionFunction>
+            
+        <apex:pageBlock id="PageB">
+            
+               <div class="MainSectionBody">
+
+                   
+                   <div class="slds-section slds-is-open">
+                       <h3 class="slds-section__title slds-theme_shade">
+                           <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Sold To Details</span>
+                       </h3>
+                       <div aria-hidden="false" class="slds-section__content" id="expando-unique-id">
+                           <table width="100%"  cellpadding="10" cellspacing="10">
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Sold-To-Id#</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;"><apex:outputPanel >
+                                       <apex:inputHidden id="SoldToIDHidden" value="{!quote.SoldTo_BPID__c}"/>
+                                       <apex:inputText id="SoldToID" value="{!quote.SoldTo_BPID__c}" disabled="true" styleClass="slds-input inputW"></apex:inputText>
+                                       <a href="#" onclick="openLookupNew('Quote_MDMSiteSearch','SOLDTO','{!quote.SoldTo_BPID__c}','{!quote.EndUser_BPID__c}','{!$Component.SoldToID}', '{!$Component.SoldToName}','{!$Component.SoldToAddress}','{!$Component.SoldToStreet}','{!$Component.SoldToStreet2}','{!$Component.SoldToCity}','{!$Component.SoldToState}','{!$Component.SoldToPincode}','{!$Component.SoldToCountry}','{!quote.Sales_Organization__c}','{!quote.SoldTo_Country__c}','{!$Component.selectedSoldToSiteId}','{!$Component.selectedSoldToAccGroup}','{!$Component.selectedSoldToAccId}','{!$Component.soldTosearchType}','{!$Component.soldToEDMAction}','{!$Component.soldToAction}'); return false"> 
+                                           <apex:image id="theImage" value="/img/func_icons/util/search16.png" width="26" height="26" styleClass="lookupdefault" style="border: 2px solid black;"/>
+                                       </a>
+                                       </apex:outputPanel></td>
+                                   <th class="labelCol"><apex:outputText >Customer Name</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="SoldToNameHidden" value="{!quote.SoldTo_Name__c}"/>
+                                       <apex:inputText id="SoldToName" value="{!quote.SoldTo_Name__c}" disabled="true" styleClass="slds-input inputW"/>
+                                   </td>
+                               </tr>
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Sold-To Address</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputTextarea id="SoldToAddress" value="{!SoldTofullAddress}" disabled="true" cols="30" rows="4" styleClass="slds-textarea textareaW"/>
+                                   </td>
+                                   <th class="labelCol"><apex:outputLabel value="{!$ObjectType.SBQQ__Quote__c.Fields.Booking_Country__c.Label}"/></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputText id="BookingCountry" disabled="{!!enableCopylink}" maxlength="2" value="{!quote.Booking_Country__c}" styleClass="slds-input inputW"/></td>
+                               </tr>
+                               <tr>
+                                   <th class="labelCol"><apex:outputLabel value="{!$ObjectType.SBQQ__Quote__c.Fields.Company_Registration_Number__c.Label}"/></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="SoldToIDRegcodeHidden" value="{!quote.Company_Registration_Number__c}"/>
+                                       <apex:inputText id="SoldToIDRegcode" disabled="true"  value="{!quote.Company_Registration_Number__c}" styleClass="slds-input inputW"/>
+                                   </td>
+                                   
+                               </tr>
+                               <tr>
+                                   <td></td>
+                                   <td></td>
+                                   <td>
+                                       <apex:inputHidden id="SalesOrg" value="{!quote.Sales_Organization__c}" />
+                                       <apex:inputHidden id="CompanyCode" value="{!quote.Company_Code__c}"/>
+                                       <apex:inputHidden id="SoldToStreet" value="{!quote.SoldTo_Street__c}"/>
+                                       <apex:inputHidden id="SoldToStreet2" value="{!quote.SoldTo_Street2__c}"/> 
+                                       <apex:inputHidden id="SoldToCity" value="{!quote.SoldTo_City__c}"/>   
+                                       <apex:inputHidden id="SoldToState" value="{!quote.SoldTo_State__c}"/> 
+                                       <apex:inputHidden id="SoldToPincode" value="{!quote.SoldTo_PostalCode__c}"/>
+                                       <apex:inputHidden id="SoldToCountry" value="{!quote.SoldTo_Country__c}"/>
+                                       <apex:inputHidden id="SoldToNameLCL" value="{!quote.SoldTo_Name_Intl__c}"/>
+                                       <apex:inputHidden id="SoldToStreetLCL" value="{!quote.SoldTo_Street_Intl__c}"/>
+                                       <apex:inputHidden id="SoldToStreet2LCL" value="{!quote.SoldTo_Street2_Intl__c}"/> 
+                                       <apex:inputHidden id="SoldToCityLCL" value="{!quote.SoldTo_City_Intl__c}"/>   
+                                       <apex:inputHidden id="SoldToStateLCL" value="{!quote.SoldTo_State_Intl__c}"/> 
+                                       <apex:inputHidden id="selectedSoldToSiteId" value="{!selectedSoldToSiteId}"/>
+                                       <apex:inputHidden id="selectedSoldToAccGroup" value="{!selectedSoldToAccGroup}"/>
+                                       <apex:inputHidden id="selectedSoldToAccId" value="{!selectedSoldToAccId}"/>
+                                       <apex:inputHidden id="soldTosearchType" value="{!soldTosearchType}"/>
+                                       <apex:inputHidden id="soldToEDMAction" value="{!selectedSoldToEDM}"/>
+                                       <apex:inputHidden id="soldToAction" value="{!selectedSoldToAction}"/>
+                                       <!--<apex:inputHidden id="SoldToCountryLCL" value="{!quote.SoldTo_Country_Intl__c}"/>-->
+                                   </td>
+                                   <td></td>
+                               </tr>
+                           </table>
+                       </div>
+                   </div>
+                   
+                   
+                   <apex:outputPanel rendered="{!enablePartnerSites1Tier}">
+                       <div class="slds-section slds-is-open">
+                           <h3 class="slds-section__title slds-theme_shade">
+                               <span class="slds-truncate slds-p-horizontal_small" title="Section Title">End User ID Details</span>
+                           </h3>
+                           
+                           <div aria-hidden="false" class="slds-section__content" id="expando-unique-id">
+                               <table width="100%"  cellpadding="10" cellspacing="10">
+                                   <tr>
+                                       <th class="labelCol"><apex:outputText >End User-Id#</apex:outputText> &nbsp;<apex:commandLink action="{!copyEndUserId}" value="(Same as Sold To)" title="same as sold to" rendered="{!AND(enableCopylink,NOT(enablePartnerSites1Tier))}" reRender="Theform" status="TableUpdateStatus"/></th>
+                                       <td class="dataCol" style="padding:5px 5px;"><apex:outputPanel >
+                                           <apex:inputHidden id="EndUserIDHidden" value="{!quote.EndUser_BPID__c}"/>
+                                           <apex:inputText disabled="true" id="EndUserID" value="{!quote.EndUser_BPID__c}" styleClass="slds-input inputW"></apex:inputText>
+                                           <a href="#" onclick="openLookupNew('Quote_MDMSiteSearch','ENDUSERID','{!quote.SoldTo_BPID__c}','{!quote.EndUser_BPID__c}','{!$Component.EndUserID}', '{!$Component.EndUserName}','{!$Component.EndUserAddress}','{!$Component.EndUserStreet}','{!$Component.EndUserStreet2}','{!$Component.EndUserCity}','{!$Component.EndUserState}','{!$Component.EndUserPincode}','{!$Component.EndUserCountry}','{!quote.Sales_Organization__c}','{!quote.SoldTo_Country__c}','{!$Component.selectedEndUserIdSiteId}','{!$Component.selectedEndUserIdAccGroup}','{!$Component.selectedEndUserIdAccId}','{!$Component.EndUserIdSearchType}','{!$Component.EndUserIdEDMAction}','{!$Component.EndUserIdAction}'); return false"> 
+                                               <apex:image value="/img/func_icons/util/search16.png" width="26" height="26" styleClass="lookupdefault"/>
+                                           </a>
+                                           </apex:outputPanel></td>
+                                       <th class="labelCol"><apex:outputText >End User Name</apex:outputText></th>
+                                       <td class="dataCol">
+                                           <apex:inputHidden id="EndUserNameHidden" value="{!quote.EndUser_Name__c}"/>
+                                           <apex:inputText disabled="true" id="EndUserName" value="{!quote.EndUser_Name__c}" styleClass="slds-input inputW"/>
+                                       </td>
+                                   </tr>
+                                   <tr>
+                                       <th class="labelCol"><apex:outputText >End User Address</apex:outputText></th>
+                                       <td class="dataCol" style="padding:5px 5px;"><apex:inputTextarea id="EndUserAddress" value="{!EndUserIdFullAddress}" disabled="true" cols="30" rows="4" styleClass="slds-textarea textareaW"/></td>
+                                       <td>
+                                           <apex:inputHidden id="EndUserStreet" value="{!quote.EndUser_Street__c}"/>
+                                           <apex:inputHidden id="EndUserStreet2" value="{!quote.EndUser_Street2__c}"/> 
+                                           <apex:inputHidden id="EndUserCity" value="{!quote.EndUser_City__c}"/>   
+                                           <apex:inputHidden id="EndUserState" value="{!quote.EndUser_State__c}"/> 
+                                           <apex:inputHidden id="EndUserPincode" value="{!quote.EndUser_Postal_Code__c}"/>
+                                           <apex:inputHidden id="EndUserCountry" value="{!quote.EndUser_Country__c}"/>
+                                           <apex:inputHidden id="EndUserNameLCL" value="{!quote.EndUser_Name_Intl__c}"/>
+                                           <apex:inputHidden id="EndUserStreetLCL" value="{!quote.EndUser_Street_Intl__c}"/>
+                                           <apex:inputHidden id="EndUserStreet2LCL" value="{!quote.EndUser_Street2_Intl__c}"/> 
+                                           <apex:inputHidden id="EndUserCityLCL" value="{!quote.EndUser_City_Intl__c}"/>   
+                                           <apex:inputHidden id="EndUserStateLCL" value="{!quote.EndUser_State_Intl__c}"/>
+                                           <apex:inputHidden id="selectedEndUserIdSiteId" value="{!selectedEndUserIdSiteId}"/>
+                                           <apex:inputHidden id="selectedEndUserIdAccGroup" value="{!selectedEndUserIdAccGroup}"/>
+                                           <apex:inputHidden id="selectedEndUserIdAccId" value="{!selectedEndUserIdAccId}"/>
+                                           <apex:inputHidden id="EndUserIdSearchType" value="{!EndUserIdSearchType}"/>
+                                           <apex:inputHidden id="EndUserIdEDMAction" value="{!selectedEndUserIdEDM}"/>
+                                           <apex:inputHidden id="EndUserIdAction" value="{!selectedEndUserIdAction}"/>
+                                           <!--<apex:inputHidden id="EndUserCountryLCL" value="{!quote.EndUser_Country_Intl__c}"/>-->
+                                       </td>
+                                       <td></td>
+                                   </tr>
+                                   
+                                   <tr>
+                                       <th class="labelCol"><apex:outputText >End User Contact ID</apex:outputText>&nbsp;<apex:commandLink action="{!copyEndUserContacts}" value="(Same as Technical)"  title="same as Technical to" rendered="{!AND(enableCopyTechlink,NOT(enablePartnerSites1Tier))}" reRender="Theform" status="TableUpdateStatus"/></th>
+                                       <td class="dataCol" style="padding:5px 5px;"><apex:outputPanel >
+                                           <apex:inputHidden id="EndUserContactIDHidden" value="{!quote.EndUser_Contact_ID__c}"/>
+                                           <apex:inputText disabled="true" id="EndUserContactID" value="{!quote.EndUser_Contact_ID__c}" styleClass="slds-input inputW"></apex:inputText>
+                                           <a href="#" onclick="openLookupTechNew('Quote_TechnicalContactSearch','EndUserContact','{!quote.SoldTo_BPID__c}','{!quote.EndUser_BPID__c}','{!$Component.EndUserContactID}','{!$Component.EndUserContactfullname}','{!$Component.EndUserContactFirstName}', '{!$Component.EndUserContactLastName}','{!$Component.EndUserContactEmail}','{!$Component.EndUserContactPhone}','{!$Component.EndUserContactIntlFirstName}','{!$Component.EndUserContactIntlLastName}','{!quote.SoldTo_Country__c}','{!quote.EndUser_Country__c}'); return false">
+                                               <apex:image value="/img/func_icons/util/search16.png" width="26" height="26" styleClass="lookupdefault"/>
+                                           </a>
+                                           </apex:outputPanel></td>
+                                       <th class="labelCol"><apex:outputText >End User Contact Name</apex:outputText></th>
+                                       <td class="dataCol" style="padding:5px 5px;">
+                                           <apex:inputHidden id="EndUserContactfullnameHidden" value="{!EndUserContactName}"/>
+                                           <apex:inputText disabled="true" id="EndUserContactfullname" value="{!EndUserContactName}" styleClass="slds-input inputW" />
+                                       </td>
+                                   </tr>
+                                   <tr>
+                                       <th class="labelCol"><apex:outputText >End User Contact Email</apex:outputText></th>
+                                       <td class="dataCol" style="padding:5px 5px;">
+                                           <apex:inputHidden id="EndUserContactEmailHidden" value="{!quote.EndUser_Contact_Email__c}"/>
+                                           <apex:inputText disabled="true" id="EndUserContactEmail" value="{!quote.EndUser_Contact_Email__c}" styleClass="slds-input inputW"/>
+                                       </td>
+                                       <th class="labelCol"><apex:outputText >End User Contact Phone</apex:outputText></th>
+                                       <td class="dataCol" style="padding:5px 5px;">
+                                           <apex:inputHidden id="EndUserContactPhoneHidden" value="{!quote.EndUser_Contact_Phone__c}"/>
+                                           <apex:inputText disabled="true" id="EndUserContactPhone" value="{!quote.EndUser_Contact_Phone__c}" styleClass="slds-input inputW"/>
+                                       </td>
+                                   </tr>
+                                   <tr>
+                                       <td>
+                                           <apex:inputHidden id="EndUserContactFirstName" value="{!quote.EndUser_Contact_First_Name__c}"/>
+                                           <apex:inputHidden id="EndUserContactLastName" value="{!quote.EndUser_Contact_Last_Name__c}"/>
+                                           <apex:inputHidden id="EndUserContactIntlFirstName" value="{!quote.EndUser_Contact_Intl_First_Name__c}"/>
+                                           <apex:inputHidden id="EndUserContactIntlLastName" value="{!quote.EndUser_Contact_Intl_Last_Name__c}"/>
+                                       </td>
+                                       <td></td>
+                                   </tr>
+                                   
+                               </table>
+                           </div>
+                       </div>
+                   </apex:outputPanel>	                   
+                   
+                   
+                   <div class="slds-section slds-is-open">
+                       <h3 class="slds-section__title slds-theme_shade">
+                           <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Contact Details</span>
+                       </h3>
+                       <div aria-hidden="false" class="slds-section__content" id="ssss">
+                           <table width="100%"  cellpadding="10" cellspacing="10">
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Technical Contact ID</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;"><apex:outputPanel >
+                                       <apex:inputHidden id="TechnicalIDHidden" value="{!quote.TechnicalContact_ID__c}"/>
+                                       <apex:inputText disabled="true" id="TechnicalID" value="{!quote.TechnicalContact_ID__c}" styleClass="slds-input inputW"></apex:inputText>
+                                       <a href="#" onclick="openLookupTechNew('Quote_TechnicalContactSearch','TECHNICAL','{!quote.SoldTo_BPID__c}','{!quote.EndUser_BPID__c}','{!$Component.TechnicalID}','{!$Component.Technicalfullname}','{!$Component.TechnicalFirstName}', '{!$Component.TechnicalLastName}','{!$Component.TechnicalEmail}','{!$Component.TechnicalPhone}','{!$Component.TechnicalIntlFirstName}','{!$Component.TechnicalIntlLastName}','{!quote.SoldTo_Country__c}','{!quote.EndUser_Country__c}'); return false">
+                                           <apex:image value="/img/func_icons/util/search16.png" width="26" height="26" styleClass="lookupdefault"/>
+                                       </a>
+                                       </apex:outputPanel></td>
+                                   <th class="labelCol"><apex:outputText >Technical Contact Name</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="TechnicalfullnameHidden" value="{!TechnicalContactName}"/>
+                                       <apex:inputText disabled="true" id="Technicalfullname" value="{!TechnicalContactName}" styleClass="slds-input inputW" />
+                                   </td>
+                               </tr>
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Technical Contact Email</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="TechnicalEmailHidden" value="{!quote.TechnicalContact_Email__c}"/>
+                                       <apex:inputText disabled="true" id="TechnicalEmail" value="{!quote.TechnicalContact_Email__c}" styleClass="slds-input inputW"/>
+                                   </td>
+                                   <th class="labelCol"><apex:outputText >Technical Contact Phone</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="TechnicalPhoneHidden" value="{!quote.TechnicalContact_Phone__c}"/>
+                                       <apex:inputText disabled="true" id="TechnicalPhone" value="{!quote.TechnicalContact_Phone__c}" styleClass="slds-input inputW"/>
+                                   </td>
+                               </tr>
+                               <tr>
+                                   <td>
+                                       <apex:inputHidden id="TechnicalFirstName" value="{!quote.TechnicalContact_FirstName__c}"/>
+                                       <apex:inputHidden id="TechnicalLastName" value="{!quote.TechnicalContact_LastName__c}"/>
+                                       <apex:inputHidden id="TechnicalIntlFirstName" value="{!quote.TechnicalContact_IntlFName__c}"/>
+                                       <apex:inputHidden id="TechnicalIntlLastName" value="{!quote.TechnicalContact_IntlLName__c}"/>
+                                   </td>
+                                   <td></td>
+                               </tr>
+                               
+                           </table>
+                       </div>
+                   </div>
+
+                   
+                   <div class="slds-section slds-is-open">
+                       <h3 class="slds-section__title slds-theme_shade">
+                           <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Bill To Details</span>
+                       </h3>
+                       <div aria-hidden="false" class="slds-section__content" id="ssss">
+                           <table width="100%"  cellpadding="10" cellspacing="10">
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Bill-To-Id#</apex:outputText> &nbsp;<apex:commandLink action="{!copyBillTo}" value="(Same as Sold To)" rendered="{!AND(enableCopylink,NOT(enablePartnerSites1Tier))}" reRender="Theform" status="TableUpdateStatus"/></th>
+                                   <td class="dataCol" style="padding:5px 5px;"><apex:outputPanel >
+                                       <apex:inputHidden id="BillToIDHidden" value="{!quote.BillTo_BPID__c}"/>
+                                       <apex:inputText disabled="true" id="BillToID" value="{!quote.BillTo_BPID__c}" styleClass="slds-input inputW"></apex:inputText>
+                                       <a href="#" onclick="openLookupNew('Quote_MDMSiteSearch','BILLTO','{!quote.SoldTo_BPID__c}','{!quote.EndUser_BPID__c}','{!$Component.BillToID}', '{!$Component.BillToName}','{!$Component.BillToAddress}','{!$Component.BillToStreet}','{!$Component.BillToStreet2}','{!$Component.BillToCity}','{!$Component.BillToState}','{!$Component.BillToPincode}','{!$Component.BillToCountry}','{!quote.Sales_Organization__c}','{!quote.SoldTo_Country__c}','{!$Component.selectedBillToSiteId}','{!$Component.selectedBillToAccGroup}','{!$Component.selectedBillToAccId}','{!$Component.billTosearchType}','{!$Component.billToEDMAction}','{!$Component.billToAction}'); return false">
+                                           <apex:image value="/img/func_icons/util/search16.png" width="26" height="26" styleClass="lookupdefault"/>
+                                       </a>
+                                       </apex:outputPanel></td>
+                                   <th class="labelCol"><apex:outputText >Bill-To Name</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="BillToNameHidden" value="{!quote.BillTo_Name__c}"/>
+                                       <apex:inputText disabled="true" id="BillToName" value="{!quote.BillTo_Name__c}" styleClass="slds-input inputW" />
+                                   </td>
+                               </tr>
+                               
+                               <tr>
+                                   <th class="labelCol" ><apex:outputText >Bill-To Address</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;"><apex:inputTextarea id="BillToAddress" value="{!BillTofullAddress}" disabled="true" cols="30" rows="4" styleClass="slds-textarea textareaW"/></td>
+                                   <td>
+                                       <apex:inputHidden id="BillToStreet" value="{!quote.BillTo_Street__c}"/>
+                                       <apex:inputHidden id="BillToStreet2" value="{!quote.BillTo_Street2__c}"/> 
+                                       <apex:inputHidden id="BillToCity" value="{!quote.BillTo_City__c}"/>   
+                                       <apex:inputHidden id="BillToState" value="{!quote.BillTo_State__c}"/> 
+                                       <apex:inputHidden id="BillToPincode" value="{!quote.BillTo_PostalCode__c}"/>
+                                       <apex:inputHidden id="BillToCountry" value="{!quote.BillTo_Country__c}"/>
+                                       <apex:inputHidden id="BillToNameLCL" value="{!quote.BillTo_Name_Intl__c}"/>
+                                       <apex:inputHidden id="BillToStreetLCL" value="{!quote.BillTo_Street_Intl__c}"/>
+                                       <apex:inputHidden id="BillToStreet2LCL" value="{!quote.BillTo_Street2_Intl__c}"/> 
+                                       <apex:inputHidden id="BillToCityLCL" value="{!quote.BillTo_City_Intl__c}"/>   
+                                       <apex:inputHidden id="BillToStateLCL" value="{!quote.BillTo_State_Intl__c}"/>
+                                       <apex:inputHidden id="selectedBillToSiteId" value="{!selectedBillToSiteId}"/>
+                                       <apex:inputHidden id="selectedBillToAccGroup" value="{!selectedBillToAccGroup}"/>
+                                       <apex:inputHidden id="selectedBillToAccId" value="{!selectedBillToAccId}"/>
+                                       <apex:inputHidden id="billTosearchType" value="{!billTosearchType}"/>
+                                       <apex:inputHidden id="billToEDMAction" value="{!selectedBillToEDM}"/>
+                                       <apex:inputHidden id="billToAction" value="{!selectedBillToAction}"/>
+                                       <!--<apex:inputHidden id="BillToCountryLCL" value="{!quote.BillTo_Country_Intl__c}"/>-->
+                                   </td>
+                                   <td></td>
+                               </tr>
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Billing Contact ID</apex:outputText>&nbsp;<apex:commandLink action="{!copyBillingcontacts}" value="(Same as Technical)"  title="same as Technical to" rendered="{!AND(enableCopyTechlink,NOT(enablePartnerSites1Tier))}" reRender="Theform" status="TableUpdateStatus"/></th>
+                                   <td class="dataCol" style="padding:5px 5px;"><apex:outputPanel >
+                                       <apex:inputHidden id="BillingIDHidden" value="{!quote.BillingContact_ID__c}"/>
+                                       <apex:inputText disabled="true" id="BillingID" value="{!quote.BillingContact_ID__c}" styleClass="slds-input inputW"></apex:inputText>
+                                       <a href="#" onclick="openLookupTechNew('Quote_TechnicalContactSearch','Billing','{!quote.SoldTo_BPID__c}','{!quote.EndUser_BPID__c}','{!$Component.BillingID}','{!$Component.Billingfullname}','{!$Component.BillingFirstName}', '{!$Component.BillingLastName}','{!$Component.BillingEmail}','{!$Component.BillingPhone}','{!$Component.BillingIntlFirstName}','{!$Component.BillingIntlLastName}','{!quote.SoldTo_Country__c}','{!quote.EndUser_Country__c}'); return false">
+                                           <apex:image value="/img/func_icons/util/search16.png" width="26" height="26" styleClass="lookupdefault"/>
+                                       </a>
+                                       </apex:outputPanel></td>
+                                   <th class="labelCol"><apex:outputText >Billing Contact Name</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="BillingfullnameHidden" value="{!BillingContactName}"/>
+                                       <apex:inputText disabled="true" id="Billingfullname" value="{!BillingContactName}" styleClass="slds-input inputW" />
+                                   </td>
+                               </tr>
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Billing Contact Email</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="BillingEmailHidden" value="{!quote.BillingContact_Email__c}"/>
+                                       <apex:inputText disabled="true" id="BillingEmail" value="{!quote.BillingContact_Email__c}" styleClass="slds-input inputW"/>
+                                   </td>
+                                   <th class="labelCol"><apex:outputText >Billing Contact Phone</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="BillingPhoneHidden" value="{!quote.BillingContact_Phone__c}"/>
+                                       <apex:inputText disabled="true" id="BillingPhone" value="{!quote.BillingContact_Phone__c}" styleClass="slds-input inputW"/>
+                                   </td>
+                               </tr>
+                               <tr>
+                                   <td>
+                                       <apex:inputHidden id="BillingFirstName" value="{!quote.BillingContact_FirstName__c}"/>
+                                       <apex:inputHidden id="BillingLastName" value="{!quote.BillingContact_LastName__c}"/>
+                                       <apex:inputHidden id="BillingIntlFirstName" value="{!quote.BillingContact_IntlFName__c}"/>
+                                       <apex:inputHidden id="BillingIntlLastName" value="{!quote.BillingContact_IntlLName__c}"/>
+                                   </td>
+                                   <td></td>
+                               </tr>
+                               
+                               
+                           </table>
+                       </div>
+                   </div>
+
+                   
+                   <div class="slds-section slds-is-open">
+                       <h3 class="slds-section__title slds-theme_shade">
+                           <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Ship To Details</span>
+                       </h3>
+                       
+                       <div aria-hidden="false" class="slds-section__content" id="expando-unique-id">
+                           <table width="100%"  cellpadding="10" cellspacing="10">
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Ship-To-Id#</apex:outputText> &nbsp;<apex:commandLink action="{!copyShipTo}" value="(Same as Sold To)" id="theCommandLink" title="same as sold to" rendered="{!AND(enableCopylink,NOT(enablePartnerSites1Tier))}" reRender="Theform" status="TableUpdateStatus"/></th>
+                                   <td class="dataCol" style="padding:5px 5px;"><apex:outputPanel >
+                                       <apex:inputHidden id="ShipToIDHidden" value="{!quote.ShipTo_BPID__c}"/>
+                                       <apex:inputText disabled="true" id="ShipToID" value="{!quote.ShipTo_BPID__c}" styleClass="slds-input inputW"></apex:inputText>
+                                       <a href="#" onclick="openLookupNew('Quote_MDMSiteSearch','SHIPTO','{!quote.SoldTo_BPID__c}','{!quote.EndUser_BPID__c}','{!$Component.ShipToID}', '{!$Component.ShipToName}','{!$Component.ShipToAddress}','{!$Component.ShipToStreet}','{!$Component.ShipToStreet2}','{!$Component.ShipToCity}','{!$Component.ShipToState}','{!$Component.ShipToPincode}','{!$Component.ShipToCountry}','{!quote.Sales_Organization__c}','{!quote.SoldTo_Country__c}','{!$Component.selectedShipToSiteId}','{!$Component.selectedShipToAccGroup}','{!$Component.selectedShipToAccId}','{!$Component.shipTosearchType}','{!$Component.shipToEDMAction}','{!$Component.shipToAction}'); return false"> 
+                                           <apex:image value="/img/func_icons/util/search16.png" width="26" height="26" styleClass="lookupdefault"/>
+                                       </a>
+                                       </apex:outputPanel></td>
+                                   <th class="labelCol"><apex:outputText >Ship-To Name</apex:outputText></th>
+                                   <td class="dataCol">
+                                       <apex:inputHidden id="ShipToNameHidden" value="{!quote.ShipTo_Name__c}"/>
+                                       <apex:inputText disabled="true" id="ShipToName" value="{!quote.ShipTo_Name__c}" styleClass="slds-input inputW"/>
+                                   </td>
+                               </tr>
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Ship-To Address</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;"><apex:inputTextarea id="ShipToAddress" value="{!ShipTofullAddress}" disabled="true" cols="30" rows="4" styleClass="slds-textarea textareaW"/></td>
+                                   <td>
+                                       <apex:inputHidden id="ShipToStreet" value="{!quote.ShipTo_Street__c}"/>
+                                       <apex:inputHidden id="ShipToStreet2" value="{!quote.ShipTo_Street2__c}"/> 
+                                       <apex:inputHidden id="ShipToCity" value="{!quote.ShipTo_City__c}"/>   
+                                       <apex:inputHidden id="ShipToState" value="{!quote.ShipTo_State__c}"/> 
+                                       <apex:inputHidden id="ShipToPincode" value="{!quote.ShipTo_PostalCode__c}"/>
+                                       <apex:inputHidden id="ShipToCountry" value="{!quote.ShipTo_Country__c}"/>
+                                       <apex:inputHidden id="ShipToNameLCL" value="{!quote.ShipTo_Name_Intl__c}"/>
+                                       <apex:inputHidden id="ShipToStreetLCL" value="{!quote.ShipTo_Street_Intl__c}"/>
+                                       <apex:inputHidden id="ShipToStreet2LCL" value="{!quote.ShipTo_Street2_Intl__c}"/> 
+                                       <apex:inputHidden id="ShipToCityLCL" value="{!quote.ShipTo_City_Intl__c}"/>   
+                                       <apex:inputHidden id="ShipToStateLCL" value="{!quote.ShipTo_State_Intl__c}"/>
+                                       <apex:inputHidden id="selectedShipToSiteId" value="{!selectedShipToSiteId}"/>
+                                       <apex:inputHidden id="selectedShipToAccGroup" value="{!selectedShipToAccGroup}"/>
+                                       <apex:inputHidden id="selectedShipToAccId" value="{!selectedShipToAccId}"/>
+                                       <apex:inputHidden id="shipTosearchType" value="{!shipTosearchType}"/>
+                                       <apex:inputHidden id="shipToEDMAction" value="{!selectedShipToEDM}"/>
+                                       <apex:inputHidden id="shipToAction" value="{!selectedShipToAction}"/>
+                                       <!--<apex:inputHidden id="ShipToCountryLCL" value="{!quote.ShipTo_Country_Intl__c}"/>-->
+                                   </td>
+                                   <td></td>
+                               </tr>
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Shipping Contact ID</apex:outputText>&nbsp;<apex:commandLink action="{!copyShippingcontacts}" value="(Same as Technical)"  title="same as Technical to" rendered="{!AND(enableCopyTechlink,NOT(enablePartnerSites1Tier))}" reRender="Theform" status="TableUpdateStatus"/></th>
+                                   <td class="dataCol" style="padding:5px 5px;"><apex:outputPanel >
+                                       <apex:inputHidden id="ShippingIDHidden" value="{!quote.ShippingContact_ID__c}"/>
+                                       <apex:inputText disabled="true" id="ShippingID" value="{!quote.ShippingContact_ID__c}" styleClass="slds-input inputW"></apex:inputText>
+                                       <a href="#" onclick="openLookupTechNew('Quote_TechnicalContactSearch','Shipping','{!quote.SoldTo_BPID__c}','{!quote.EndUser_BPID__c}','{!$Component.ShippingID}','{!$Component.Shippingfullname}','{!$Component.ShippingFirstName}', '{!$Component.ShippingLastName}','{!$Component.ShippingEmail}','{!$Component.ShippingPhone}','{!$Component.ShippingIntlFirstName}','{!$Component.ShippingIntlLastName}','{!quote.SoldTo_Country__c}','{!quote.EndUser_Country__c}'); return false">
+                                           <apex:image value="/img/func_icons/util/search16.png" width="26" height="26" styleClass="lookupdefault"/>
+                                       </a>
+                                       </apex:outputPanel></td>
+                                   <th class="labelCol"><apex:outputText >Shipping Contact Name</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="ShippingfullnameHidden" value="{!ShippingContactName}"/>
+                                       <apex:inputText disabled="true" id="Shippingfullname" value="{!ShippingContactName}" styleClass="slds-input inputW" />
+                                   </td>
+                               </tr>
+                               <tr>
+                                   <th class="labelCol"><apex:outputText >Shipping Contact Email</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="ShippingEmailHidden" value="{!quote.ShippingContact_Email__c}"/>
+                                       <apex:inputText disabled="true" id="ShippingEmail" value="{!quote.ShippingContact_Email__c}" styleClass="slds-input inputW"/>
+                                   </td>
+                                   <th class="labelCol"><apex:outputText >Shipping Contact Phone</apex:outputText></th>
+                                   <td class="dataCol" style="padding:5px 5px;">
+                                       <apex:inputHidden id="ShippingPhoneHidden" value="{!quote.ShippingContact_Phone__c}"/>
+                                       <apex:inputText disabled="true" id="ShippingPhone" value="{!quote.ShippingContact_Phone__c}" styleClass="slds-input inputW"/>
+                                   </td>
+                               </tr>
+                               <tr>
+                                   <td>
+                                       <apex:inputHidden id="ShippingFirstName" value="{!quote.ShippingContact_FirstName__c}"/>
+                                       <apex:inputHidden id="ShippingLastName" value="{!quote.ShippingContact_LastName__c}"/>
+                                       <apex:inputHidden id="ShippingIntlFirstName" value="{!quote.ShippingContact_IntlFName__c}"/>
+                                       <apex:inputHidden id="ShippingIntlLastName" value="{!quote.ShippingContact_IntlLName__c}"/>
+                                   </td>
+                                   <td></td>
+                               </tr>
+                               
+                           </table>
+                       </div>
+                   </div>
+
+                   
+                   <apex:outputPanel rendered="{!enablePartnerSites1Tier}">
+                       <div class="slds-section slds-is-open">
+                           <h3 class="slds-section__title slds-theme_shade">
+                               <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Reseller ID Details</span>
+                           </h3>
+                           
+                           <div aria-hidden="false" class="slds-section__content" id="expando-unique-id">
+                               <table width="100%"  cellpadding="10" cellspacing="10">
+                                   <tr>
+                                       <th class="labelCol"><apex:outputText >Reseller-Id#</apex:outputText> &nbsp;<apex:commandLink action="{!copyReseller}" value="(Same as Sold To)" title="same as sold to" rendered="{!AND(enableCopylink,NOT(enablePartnerSites1Tier))}" reRender="Theform" status="TableUpdateStatus"/></th>
+                                       <td class="dataCol" style="padding:5px 5px;"><apex:outputPanel >
+                                           <apex:inputHidden id="ResellerIDHidden" value="{!quote.Reseller_BPID__c}"/>
+                                           <apex:inputText disabled="true" id="ResellerID" value="{!quote.Reseller_BPID__c}" styleClass="slds-input inputW"></apex:inputText>
+                                           <a href="#" onclick="openLookupNew('Quote_MDMSiteSearch','RESELLER','{!quote.SoldTo_BPID__c}','{!quote.EndUser_BPID__c}','{!$Component.ResellerID}', '{!$Component.ResellerName}','{!$Component.ResellerAddress}','{!$Component.ResellerStreet}','{!$Component.ResellerStreet2}','{!$Component.ResellerCity}','{!$Component.ResellerState}','{!$Component.ResellerPincode}','{!$Component.ResellerCountry}','{!quote.Sales_Organization__c}','{!quote.SoldTo_Country__c}','{!$Component.selectedResellerSiteId}','{!$Component.selectedResellerAccGroup}','{!$Component.selectedResellerAccId}','{!$Component.ResellerSearchType}','{!$Component.ResellerEDMAction}','{!$Component.ResellerAction}'); return false"> 
+                                               <apex:image value="/img/func_icons/util/search16.png" width="26" height="26" styleClass="lookupdefault"/>
+                                           </a>
+                                           </apex:outputPanel></td>
+                                       <th class="labelCol"><apex:outputText >Reseller Name</apex:outputText></th>
+                                       <td class="dataCol">
+                                           <apex:inputHidden id="ResellerNameHidden" value="{!quote.Reseller_Name__c}"/>
+                                           <apex:inputText disabled="true" id="ResellerName" value="{!quote.Reseller_Name__c}" styleClass="slds-input inputW"/>
+                                       </td>
+                                   </tr>
+                                   <tr>
+                                       <th class="labelCol"><apex:outputText >Reseller Address</apex:outputText></th>
+                                       <td class="dataCol" style="padding:5px 5px;"><apex:inputTextarea id="ResellerAddress" value="{!ResellerIdFullAddress}" disabled="true" cols="30" rows="4" styleClass="slds-textarea textareaW"/></td>
+                                       <td>
+                                           <apex:inputHidden id="ResellerStreet" value="{!quote.Reseller_Street__c}"/>
+                                           <apex:inputHidden id="ResellerStreet2" value="{!quote.Reseller_Street2__c}"/> 
+                                           <apex:inputHidden id="ResellerCity" value="{!quote.Reseller_City__c}"/>   
+                                           <apex:inputHidden id="ResellerState" value="{!quote.Reseller_State__c}"/> 
+                                           <apex:inputHidden id="ResellerPincode" value="{!quote.Reseller_Postal_Code__c}"/>
+                                           <apex:inputHidden id="ResellerCountry" value="{!quote.Reseller_Country__c}"/>
+                                           <apex:inputHidden id="ResellerNameLCL" value="{!quote.Reseller_Name_Intl__c}"/>
+                                           <apex:inputHidden id="ResellerStreetLCL" value="{!quote.Reseller_Street_Intl__c}"/>
+                                           <apex:inputHidden id="ResellerStreet2LCL" value="{!quote.Reseller_Street2_Intl__c}"/> 
+                                           <apex:inputHidden id="ResellerCityLCL" value="{!quote.Reseller_City_Intl__c}"/>   
+                                           <apex:inputHidden id="ResellerStateLCL" value="{!quote.Reseller_State_Intl__c}"/>
+                                           <apex:inputHidden id="selectedResellerSiteId" value="{!selectedResellerSiteId}"/>
+                                           <apex:inputHidden id="selectedResellerAccGroup" value="{!selectedResellerAccGroup}"/>
+                                           <apex:inputHidden id="selectedResellerAccId" value="{!selectedResellerAccId}"/>
+                                           <apex:inputHidden id="ResellerSearchType" value="{!ResellerSearchType}"/>
+                                           <apex:inputHidden id="ResellerEDMAction" value="{!selectedResellerEDM}"/>
+                                           <apex:inputHidden id="ResellerAction" value="{!selectedResellerAction}"/>
+                                           <!--<apex:inputHidden id="ResellerCountryLCL" value="{!quote.Reseller_Country_Intl__c}"/>-->
+                                       </td>
+                                       <td></td>
+                                   </tr>
+                                   
+                               </table>
+                           </div>
+                       </div>
+                   </apex:outputPanel>
+                   
+                   <br/><br/>
+                   
+                </div>
+
+        </apex:pageBlock>
+         <div class="footer">
+             <div id="footerM">
+             	<strong><!--{!$Label.CPQ_New_Cust}-->To update an existing Sold To, Ship To, Bill To, in North America (US and Canada) or APJ, refer to the SAP Portal .......<h3 id="myDIV">Click here for more</h3></strong>.
+             </div>
+         	<div class="footerFull" id="footerFull">
+             	<div class="footerfullHeader">
+                 <span class="footerFullclose">&times;</span>
+             	</div>
+             	<div class="footerfullContent">
+                              <p>
+             To update an existing Sold To, Ship To, Bill To in North America(US and Canada) or APJ refer to the <a href="https://portalpe1.ca.com/irj/portal" target="_blank">SAP Portal</a>
+             
+                and click on the Master Data Management tab to complete your request. For EMEA and LA, make your request via the  <a href="https://servicedesk.ca.com/" target="_blank">Service Desk</a>&nbsp;(Master Data Update>Customer Data).
+             </p>
+             <p>
+                 For Global assistance with Customer Contacts (Technical, Shipping or Billing), please submit a Customer Care Webform by clicking	<a href="https://comm.support.ca.com/csupport/CustomerCareForm" target="_blank">here</a>
+or call the Global Service Center (GSC) directly by using the	<a href="https://caone.sharepoint.com/teams/Support/Lists/Support%20Site%20Directory/AllItems.aspx" target="_blank">directory</a></p>
+             	</div>
+             
+         </div>
+       </div>
+        </apex:form>
+        </div>
+    </body>
+    </html>
+</apex:page>

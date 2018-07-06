@@ -1,0 +1,74 @@
+<apex:page standardController="CA_Product_Renewal__c" recordSetVar="prodRen" extensions="Renewal_editCAProduct">
+
+ <apex:form id="form1" >
+ <apex:pagemessage summary="There are no CA Products added" severity="Info" rendered="{!showMsg}" />
+
+ 
+ <apex:sectionHeader title="{!opp.name}"/>
+ <apex:outputLink value="/{!opp.Id}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb1">
+           <!-- <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveproducts}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons> -->
+            <apex:pageMessages /> 
+            <apex:pageBlockSection id="pbs1" title="Overview" >
+                <apex:pageblockSectionItem >
+                <apex:outputLabel value="New Deal Term (Months)" for="dealTerm"/>
+                <apex:inputField id="dealTerm" value="{!opp.New_Deal_Term_months__c}"/>
+                </apex:pageblockSectionItem>                
+                <apex:pageblockSectionItem >
+                <apex:outputLabel value="Stretch Deal Term (Months)" for="StretchDealTerm"/>
+                <apex:inputField id="StretchDealTerm" value="{!opp.Stretch_Deal_Term_Months__c}"/>
+                </apex:pageblockSectionItem>
+                <apex:pageblockSectionItem >
+                <apex:outputLabel value="Sales Price/Stretch Gap Reason" for="SalesPriceStretchGap"/>
+                <apex:inputField id="SalesPriceStretchGap" value="{!opp.Stretch_Sales_Price_Gap_Reason__c}"/>
+                </apex:pageblockSectionItem>
+                <apex:pageblockSectionItem >
+                <apex:outputLabel value="Business Type" for="BusinessType"/>
+                <apex:outputField id="BusinessType" value="{!opp.Business_Type__c}"/>
+                </apex:pageblockSectionItem>
+                <apex:pageblockSectionItem >
+                <apex:outputLabel value="Sales Price" for="ProjectedRenewal"/>
+                <apex:inputField id="ProjectedRenewal" value="{!opp.Projected_Renewal__c}"/>
+                </apex:pageblockSectionItem>
+                <apex:pageblockSectionItem >
+                <apex:outputLabel value="Total Raw Maint.Calc" for="TotalRawMaintenanceCacl"/>
+                <apex:outputText id="TotalRawMaintenanceCacl" value="{!TotalRawMaintenanceCacl}"/>
+                </apex:pageblockSectionItem>
+                <br/>
+                <apex:commandButton value="Save Opportunity" action="{!updateOpportunity}" />
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection id="pbs2" title="Details" >
+             <apex:commandButton value="Save Products" action="{!updateProducts}" /><br/>
+                <apex:pageBlockTable value="{!caProductList}" var="val">
+                    <apex:column value="{!val.name}"/> 
+                    <apex:column value="{!val.Original_Expiration_Date__c}"/>
+                    <apex:column headerValue="Raw Maint.calc" >
+                        <apex:outputField value="{!val.Raw_Maintenance__c}"/>
+                    </apex:column>
+                   <apex:column headerValue="Sales Price" >
+                        <apex:inputField value="{!val.Projected_Renewal__c}"/>
+                    </apex:column>                    
+                     <apex:column headerValue="Quote" >
+                        <apex:inputField value="{!val.Quote__c}"/>
+                    </apex:column>                                      
+                    <apex:column headerValue="Contract No" >
+                        <apex:inputField value="{!val.Contract_No__c}"/>
+                    </apex:column>
+                    <!--<apex:column value="{!val.Raw_Maintenance__c}"/>-->
+                   <!-- <apex:column value="{!val.Renewal_Opportunity__r.Total_Raw_Maintenance_Cacl__c}"/>-->
+                </apex:pageBlockTable>
+                <br/>
+                
+            </apex:pageBlockSection>
+            <apex:commandButton value="<-Previous" style="font-weight:bold" rerender="pb1" rendered="{!hasPrevious}" action="{!previous}"/>
+            <apex:commandButton value="Next->" style="font-weight:bold" rerender="pb1" rendered="{!hasNext}" action="{!next}"/>
+            <br/>
+           
+
+       </apex:pageBlock>
+    </apex:form>          
+</apex:page>

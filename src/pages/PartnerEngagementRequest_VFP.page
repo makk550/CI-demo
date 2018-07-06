@@ -1,0 +1,482 @@
+<apex:page standardController="Partner_Engagement_Program__c" extensions="PartnerEngagementRequest_Controller" tabStyle="Account">
+
+    <apex:includeScript value="{!URLFOR($Resource.JQueryUiLibrary, '/js/jquery-1.4.2.min.js')}"/> 
+    <script type="text/javascript"> 
+        window.onload = function() { 
+            $("[title='Search scope'] option[value='PartnerUserLookup']").remove();
+            $("[title='Search scope'] option[value='CustomerSuccessUserLookup']").remove();
+        };
+    </script>
+    <style>
+        .vfHelpText a {
+            position:relative;
+        }
+        .vfHelpText a span {
+            display: none;
+        }
+        .vfHelpText a:hover span {
+            display: block;
+            position:absolute;
+            top:1.25em;
+            padding:2px 5px;
+            left:-15em; width:15em;
+            z-index:100;
+            border:1px solid orange;
+            background-color:#FEFDB9;
+            color:black;
+        text-align: left;
+    white-space: normal;
+    font-weight: normal;
+        }
+    </style> 
+    
+<apex:sectionHeader title="New Partner Engagement Request"/>
+<apex:pagemessages ></apex:pagemessages>
+    <apex:form >    
+
+         <apex:pageBlock title="New Partner Engagement Request" rendered="{!showReadOnly}">       
+         <apex:pageblockButtons location="Top">
+         <apex:commandButton value="Edit" action="{!editPER}" rendered="{!AND(Not(isapprovededit),showeditbutton,$ObjectType.Partner_Engagement_Program__c.createable)}"/>
+         <apex:commandButton action="{!save}" value="Save" rendered="{!AND(per.Status__c=='Approved',isapprovededit)}"/>
+              <apex:commandLink value="Return To Opportunity"  action="{!cancel}" />
+          </apex:pageblockButtons>
+          
+<!--              <apex:commandLink value="Return To Opportunity"  action="{!cancel}" />
+          </apex:pageblockButtons>-->
+        
+           <apex:pageBlockSection title="What value will the Partner bring to the deal?">
+          <apex:pageBlockSection title="Collaborative" columns="2">
+            <apex:pageBlockSectionItem >
+                <apex:outputPanel >
+                    <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.POC__c.Label}"/>
+                    <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.POC__c.InlineHelpText}"></apex:outputText></span>
+                                </apex:outputLink>
+                     </span>
+                  </apex:outputPanel>
+                    <apex:outputField value="{!per.POC__c}"/>
+              </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                    <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Demo__c.Label}"/>
+                        <span class="vfHelpText">
+                                    <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                        <img src="/s.gif" alt="" class="helpOrb" />
+                                        <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Demo__c.InlineHelpText}"></apex:outputText></span>
+                                    </apex:outputLink>
+                         </span>
+                    </apex:outputPanel>          
+                    <apex:outputField value="{!per.Demo__c}"/>
+              </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                   <apex:outputPanel >
+                    <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Lunch_and_Learn__c.Label}"/>
+                    <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Lunch_and_Learn__c.InlineHelpText}"></apex:outputText></span>
+                                </apex:outputLink>
+                     </span>
+                  </apex:outputPanel>
+                 <apex:outputField value="{!per.Lunch_and_Learn__c}"/>
+              </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                   <apex:outputPanel >
+                    <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Proposal__c.Label}"/>
+                    <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Proposal__c.InlineHelpText}"></apex:outputText></span>
+                                </apex:outputLink>
+                     </span>
+                  </apex:outputPanel>
+                  <apex:outputField value="{!per.Proposal__c}"/>
+              </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                    <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Presentation__c.Label}"/>
+                        <span class="vfHelpText">
+                                    <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                        <img src="/s.gif" alt="" class="helpOrb" />
+                                        <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Presentation__c.InlineHelpText}"></apex:outputText></span>
+                                    </apex:outputLink>
+                         </span>
+                      </apex:outputPanel>
+                      <apex:outputField value="{!per.Presentation__c}"/>
+              </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+          
+              <!--apex:outputField value="{!per.Price_Quote__c}"/>
+           <apex:outputText value=""/>--> 
+           <!--<apex:outputField value="{!per.Customer_Training__c}"/>-->
+             <apex:outputPanel >
+                <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.PartnerFinancing__c.Label}"/>
+                <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.PartnerFinancing__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                 </span>
+              </apex:outputPanel>
+              <apex:outputField value="{!per.PartnerFinancing__c}"/>
+            </apex:pageBlockSectionItem>
+             <apex:pageBlockSectionItem >
+                <apex:outputPanel >
+                <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Relationship_with_Customer__c.Label}"/>
+                <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Relationship_with_Customer__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                 </span>
+              </apex:outputPanel>
+                <apex:outputField value="{!per.Relationship_with_Customer__c}"/>
+        </apex:pageBlockSectionItem>
+           
+          
+          </apex:pageBlockSection>
+          <apex:pageBlockSection title="Fulfillment" columns="2">
+              <apex:pageBlockSectionItem >
+                <apex:outputPanel >
+                <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.License_Implementation__c.Label}"/>
+                <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" style="bottom: 2px;"/>
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.License_Implementation__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                 </span>
+              </apex:outputPanel>
+             <apex:outputField value="{!per.License_Implementation__c}"/>
+                                </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+            <apex:outputPanel >
+                <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Contract_Administration__c.Label}"/>
+                <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" style="bottom: 2px;" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Contract_Administration__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                 </span>
+              </apex:outputPanel>
+              <apex:outputField value="{!per.Contract_Administration__c}"/>
+                           </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                <apex:outputPanel >
+                <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Support_and_Maintenance__c.Label}"/>
+                <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Support_and_Maintenance__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                 </span>
+              </apex:outputPanel>
+              <apex:outputField value="{!per.Support_and_Maintenance__c}"/>
+                            </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+           <apex:outputPanel >
+                <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Customer_Procurement__c.Label}"/>
+                <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Customer_Procurement__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                 </span>
+              </apex:outputPanel>
+            <apex:outputField value="{!per.Customer_Procurement__c}"/>
+                          </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+              <apex:outputPanel >
+                <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.On_Customer_s_Approved_Vendor_List_for__c.Label}"/>
+                <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.On_Customer_s_Approved_Vendor_List_for__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                 </span>
+              </apex:outputPanel>
+            <apex:outputField value="{!per.On_Customer_s_Approved_Vendor_List_for__c}"/>
+                         </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+            <apex:outputPanel >
+                <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.ProcurementContractAccess__c.Label}"/>
+                <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.ProcurementContractAccess__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                 </span>
+              </apex:outputPanel>
+              <apex:outputField value="{!per.ProcurementContractAccess__c}"/>
+                            </apex:pageBlockSectionItem>
+         
+          </apex:pageBlockSection>
+              
+              
+      </apex:pageBlockSection>
+          <apex:pageBlockSection columns="2" title="Detail Information" >
+           <apex:outputField value="{!per.Name}"></apex:outputField>     
+              <apex:outputField value="{!per.Partner_Engagement_Type__c}"/>
+           <apex:outputText value=""/> <apex:outputText value=""/>
+              <apex:outputField value="{!per.Partner__c}"/>
+          
+              <apex:outputField value="{!per.Partner_Contact__c}"/>
+           <apex:outputText value=""/> <apex:outputText value=""/>
+           <apex:outputField value="{!per.Distributor__c}"/>
+           
+              <apex:outputField value="{!per.Distributor_Contact__c}"/>
+               <apex:outputText value=""/> <apex:outputText value=""/>
+              <apex:outputField value="{!per.Engagement_Approver__c}"/>
+          
+              <apex:outputField value="{!per.Status__c}" rendered="{!OR (NOT($ObjectType.Partner_Engagement_Program__c.createable),NOT(isapprovededit))}"/>
+          
+           <apex:pageBlockSectionItem rendered="{!AND(per.Status__c=='Approved',isapprovededit,$ObjectType.Partner_Engagement_Program__c.createable)}">
+          <apex:outputText value="Status" rendered="{!AND(per.Status__c=='Approved',isapprovededit,$ObjectType.Partner_Engagement_Program__c.createable)}"/> 
+           <apex:selectList value="{!selectedstatus}" multiselect="false" size="1" rendered="{!AND(per.Status__c=='Approved',isapprovededit,$ObjectType.Partner_Engagement_Program__c.createable)}">
+                <apex:selectOption itemValue="" itemLabel="--NONE--"/>   
+                <apex:selectOption itemValue="Partner Obligation Not Met" itemLabel="Partner Obligation Not Met"/> 
+                <apex:selectOption itemValue="Deal Changed to MSP" itemLabel="Deal Changed to MSP"/>
+                <apex:selectOption itemValue="Conflict of Interest" itemLabel="Conflict of Interest"/>             
+            </apex:selectList>
+            </apex:pageBlockSectionItem>
+            
+           <apex:outputText value=""/> <apex:outputText value=""/>
+           
+               <apex:outputField value="{!per.Comments__c}"/>
+        <apex:outputField value="{!per.SendemailtoPartner__c}" rendered="{!OR (NOT($ObjectType.Partner_Engagement_Program__c.createable),NOT(isapprovededit))}"/>
+           <apex:inputField value="{!per.SendemailtoPartner__c}" rendered="{!AND(per.Status__c=='Approved',isapprovededit,$ObjectType.Partner_Engagement_Program__c.createable)}"/>
+           
+      </apex:pageBlockSection>
+     
+      </apex:pageBlock>  
+      
+        
+        
+     <apex:pageBlock title="New Partner Engagement Request" mode="edit" rendered="{!showEdit}">
+         <apex:pageBlockButtons location="Top">
+                    <apex:commandButton action="{!save}" value="Save"/>
+                    <apex:commandButton action="{!saveNsubmit}" value="Save and Submit for Approval" rendered="{!AND($ObjectType.Partner_Engagement_Program__c.createable,(OR(per.Status__c==null,per.Status__c=='New',per.Status__c=='Rejected')))}"/>
+                    <apex:commandButton action="{!cancel}"  value="Cancel" rendered="{!$ObjectType.Partner_Engagement_Program__c.createable}"/>    
+         </apex:pageBlockButtons>
+            <apex:pageBlockSection title="What value will the Partner bring to the deal?">
+          <apex:pageBlockSection title="Collaborative" columns="2">
+              <apex:pageBlockSectionItem >
+                    <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.POC__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.POC__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+                    <apex:inputField value="{!per.POC__c}"/>
+              </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                        <apex:outputPanel >
+                            <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Demo__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Demo__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                        </apex:outputPanel>
+                        <apex:inputField value="{!per.Demo__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                        <apex:outputPanel >
+                            <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Lunch_and_Learn__c.Label}"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Lunch_and_Learn__c.InlineHelpText}"></apex:outputText></span>
+                                </apex:outputLink>
+                            </span>
+                        </apex:outputPanel>
+                        <apex:inputField value="{!per.Lunch_and_Learn__c}"/>
+                 </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Proposal__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Proposal__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+                    <apex:inputField value="{!per.Proposal__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                     <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Presentation__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Presentation__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+                    <apex:inputField value="{!per.Presentation__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+          
+              <!--<apex:inputField value="{!per.Price_Quote__c}"/>
+           <apex:outputText value=""/>--> 
+              <!--<apex:inputField value="{!per.Customer_Training__c}"/>-->
+                    <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.PartnerFinancing__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.PartnerFinancing__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+                    <apex:inputField value="{!per.PartnerFinancing__c}"/>
+                    
+                </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                                <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Relationship_with_Customer__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Relationship_with_Customer__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+           <apex:inputField value="{!per.Relationship_with_Customer__c}"/>
+            </apex:pageBlockSectionItem>
+          </apex:pageBlockSection>
+          <apex:pageBlockSection title="Fulfillment" columns="2">
+              <apex:pageBlockSectionItem >
+                      <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.License_Implementation__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" style="bottom: 2px;"/>
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.License_Implementation__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+                    <apex:inputField value="{!per.License_Implementation__c}" />
+              </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                     <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Contract_Administration__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" style="bottom: 2px;"/>
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Contract_Administration__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+                    <apex:inputField value="{!per.Contract_Administration__c}"/>
+              </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                    <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Support_and_Maintenance__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Support_and_Maintenance__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+                    <apex:inputField value="{!per.Support_and_Maintenance__c}"/>
+              </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                    <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.Customer_Procurement__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.Customer_Procurement__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+                    <apex:inputField value="{!per.Customer_Procurement__c}"/>
+              </apex:pageBlockSectionItem>
+             <apex:pageBlockSectionItem >
+                 <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.On_Customer_s_Approved_Vendor_List_for__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.On_Customer_s_Approved_Vendor_List_for__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+                    <apex:inputField value="{!per.On_Customer_s_Approved_Vendor_List_for__c}"/>
+            </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+                  <apex:outputPanel >
+                        <apex:outputLabel value="{!$ObjectType.Partner_Engagement_Program__c.fields.ProcurementContractAccess__c.Label}"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;" styleClass="helpButtonOn">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span><apex:outputText value="{!$ObjectType.Partner_Engagement_Program__c.Fields.ProcurementContractAccess__c.InlineHelpText}"></apex:outputText></span>
+                            </apex:outputLink>
+                        </span>
+                    </apex:outputPanel>
+                  <apex:inputField value="{!per.ProcurementContractAccess__c}"/>
+              </apex:pageBlockSectionItem>
+              
+              
+          </apex:pageBlockSection>
+          
+          
+         </apex:pageBlockSection>
+        <apex:pageBlockSection columns="2" title="Detail Information">
+             
+             <!--<apex:inputField value="{!per.Have_you_attached_the_teaming_agreement__c}"/>              
+              <apex:outputText value=""/>-->
+             <apex:inputField value="{!per.Partner__c}" required=""/>
+           
+              <apex:inputField value="{!per.Partner_Contact__c}"/>
+               <apex:outputText value=""/>
+                <apex:outputText value=""/>
+           
+            <apex:inputField value="{!per.Distributor__c}"/>
+          
+              <apex:inputField value="{!per.Distributor_Contact__c}"/>
+               <apex:outputText value=""/> 
+               <apex:outputText value=""/>
+              
+              <apex:inputField value="{!per.Engagement_Approver__c}" required="true"/>
+                <apex:inputField value="{!per.SendemailtoPartner__c}"/>
+               <apex:inputField value="{!per.Comments__c}"/>
+          <apex:outputText value=""/> <apex:outputText value=""/>
+              
+          
+      </apex:pageBlockSection>
+         
+   
+     </apex:pageBlock>
+          
+     </apex:form>
+      <apex:outputpanel id="approvalList" rendered="{!if($CurrentPage.parameters.Id!=null&&$CurrentPage.parameters.RetUrl==null,true,false)}">
+        <apex:relatedList list="ProcessSteps"/>  
+       
+    </apex:outputpanel>
+      <script type="text/javascript">
+        try
+        {  
+               if({!per.Status__c == 'Approved'}||{!per.Status__c == 'Partner Obligation Not Met'}){
+                var buttons = document.getElementsByName("piSubmit");
+                buttons[0].style.visibility = "hidden";
+                }
+               
+                var buttons = document.getElementsByName("piRemove");
+                buttons[0].style.visibility = "hidden";
+                
+           
+        }
+        catch(e)
+        {
+        }
+    </script> 
+</apex:page>

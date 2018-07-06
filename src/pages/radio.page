@@ -1,0 +1,296 @@
+<apex:page standardcontroller="Case" lightningStyleSheets="false" extensions="caseCreateController" showHeader="true" sidebar="true" >
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" />
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js" />
+
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<head>
+<style type="text/css">
+            .displayNone,.ui-helper-hidden-accessible { 
+            display:none;
+            }
+            
+            .displayBlock {
+            display:block; 
+            }
+            .ui-autocomplete-loading { 
+            background: white url(/img/loading32.gif) right center no-repeat;
+            background-size:15px 15px; 
+            }
+            .placeHolder {
+            font-style: italic;                    
+            }
+            .ui-autocomplete,.ui-autocomplete>li{
+            list-style:none;
+            border-color: #929292 #D5D5D5 #D5D5D5 #929292 !important;
+            border-style: solid;border-width: 1px !important;
+            background: white;
+            padding:0;
+            margin:0; 
+            width:1000px;           
+            }
+            .ui-autocomplete>li{
+            padding-top:10px;
+            }
+            .ui-autocomplete>li a:hover{
+            font-weight:bold;
+            color:Black;
+            }
+            
+            .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            /* add padding to account for vertical scrollbar */
+            padding-right: 20px;
+            } 
+            </style>
+</head>
+    <apex:form id="frm1">
+    <apex:pageBlock mode="edit" id="pgBlock">
+    
+        <apex:pageBlockSection title="Create New Case" columns="1" id="pgBlockSection">
+            <apex:pageBlockSectionItem id="pgBlockSectionitem">
+
+                <apex:selectRadio id="idRadio1" onclick="boolFunction(this);" >
+                    <apex:selectOption itemValue="true" itemLabel="Create Case With Entitlements" />
+                    <apex:selectOption itemValue="false" itemLabel="Create Case Without Entitlements" />
+                </apex:selectRadio>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+      </apex:pageBlock>
+      <span id="idSpan" style = "display:none">
+      <apex:pageBlock >
+      <apex:pageBlockSection title="Create Case Without Entitlements" columns="1" id="Details">
+       <apex:actionfunction name="refresh" action="{!Refresh}" rerender="pageBlockTable"/> 
+        <span id="errorMessage" style="font-size:14px;color:red;"/>
+        <apex:pagemessages escape="false"/>
+                
+        <apex:pageBlock title="" id="pageBlockTable">      
+            <apex:pageblockSection columns="1"> 
+            <apex:pageBlockSectionItem helpText="Select any Product" LabelTitle="Select a Product: ">            
+                <apex:outputLabel value="Select a Product: ">
+                    <apex:inputText id="sai_val" styleClass="auto001" style="width:25%" value="{!productName}">                                     
+                     </apex:inputText>                                                       
+                </apex:outputLabel>
+             </apex:pageBlockSectionItem> 
+             
+             <apex:pageBlockSectionItem helpText="Select a Release for the Product" LabelTitle="CA Product Release: ">                
+                <apex:outputLabel value="Select Release: ">
+                    <apex:selectList value="{!productReleaseValue}" style="width:15%" size="1" onchange="passRelease(this.value)">
+                        <apex:selectOptions value="{!proudctRelease}"/>
+                        <apex:actionSupport event="onchange" status="waitStatus" reRender="pageBlockTable" />
+                    </apex:selectList>
+                </apex:outputLabel>                
+             </apex:pageBlockSectionItem> 
+            
+            <apex:pageBlockSectionItem helpText="Select a Product Component" LabelTitle="CA Product Component: "> 
+                <apex:outputLabel value="Select Product Component: " id="CompId">
+                    <apex:selectList value="{!productComponentValue}" size="1" style="width:15%">
+                        <apex:selectOptions value="{!ProudctComponent}"/>
+                    </apex:selectList>
+                </apex:outputLabel>    
+                       
+             </apex:pageBlockSectionItem> 
+          <apex:pageBlockSectionItem helpText="Navigate to Case Creation" LabelTitle="CA Product Component: ">      
+                          <apex:outputPanel >
+          <apex:commandButton value="Create Case" action="{!gottodirectCasePage}"/>      
+        </apex:outputPanel>
+          </apex:pageBlockSectionItem> 
+             
+       
+                
+  </apex:pageBlockSection>
+                        
+     
+                
+        <apex:outputPanel id="panelId">
+            <apex:actionFunction name="releaseFunc" action="{!releaseFunc}" reRender="pageBlockTable">
+                <apex:param name="releaseId" value=""/>
+            </apex:actionFunction>
+        </apex:outputPanel>
+        </apex:pageblock>
+        
+
+         </apex:pageBlockSection>
+      </apex:pageBlock>
+      </span>
+       <span id="idSpan1" style = "display:none">
+      <apex:pageBlock >
+      <apex:pageBlockSection title="Create Case With Entitlements" columns="1" id="Details1">
+        <apex:pageBlock id="EntitlementSearch">
+            <div style="width:750px;">
+                <table cellpadding="2" cellspacing="2" width="100%">
+                      <tr><td style="width:105px"><b>Site Association</b></td>
+                        <td style="width:400px"><apex:inputText size="30" value="{!searchTerm}" id="siteTextBoxId" styleClass="placeHolder"/>
+                            <apex:commandButton value="Entitlement Lookup" onclick="execDetails();return false;" styleClass="searchBtn" reRender="out1" ></apex:commandButton>
+                        </td> 
+                        <apex:inputHidden value="{!selectedSiteId}" id="searchSiteId" />
+                        <apex:inputHidden value="{!siteName}" id="searchSiteIdName" />
+                        <apex:inputHidden value="{!topsSiteID}" id="searchSitetopsSiteId"/>  
+                    </tr>
+                    </table> 
+            </div>            
+        </apex:pageBlock>
+
+         </apex:pageBlockSection>
+      </apex:pageBlock>
+      </span>
+
+      
+    </apex:form> 
+      
+    <script> 
+        
+    function boolFunction(variable)
+    {
+        var bool = variable.value;
+        if(bool == 'true')
+        {
+            document.getElementById('idSpan1').style.display = 'block';
+            document.getElementById('idSpan').style.display = 'none';
+        }
+        else
+        {
+            document.getElementById('idSpan1').style.display = 'none';
+            document.getElementById('idSpan').style.display = 'block';
+        }
+    }
+    
+  var siteValue='{!searchTerm}';
+        var PLACEHOLDER = 'Type SiteName/Tops SiteId Here'; 
+        var siteObjects;
+        var queryTerm;        
+        $('[id$=siteTextBoxId]').autocomplete({
+            minLength: 2,
+            source: function(request, response) {
+                queryTerm = request.term;
+                caseCreateController.searchSiteList(request.term, function(result, event){
+                    if(event.type == 'exception') {
+                        alert(event.message);
+                    } else {
+                        siteObjects = result;
+                        if(siteObjects=='undefined' || siteObjects=='' || siteObjects==null){
+                            siteObjects= [
+                                {
+                                    SC_TOPS_ID__c:'XXXX', 
+                                    Name:'XXXX', 
+                                    City__c:'XXXX',
+                                    Country_Picklist__c:'XXXX'
+                                }
+                            ];
+                        }
+                        response(siteObjects);                       
+                    }
+                });
+            },
+               focus: function( event, ui ) {
+                 var displayName = ui.item.Name;
+                 displayName = displayName.replace( /{!HTMLENCODE('&')}/g, '&' );
+                $('[id$=siteTextBoxId]').val(displayName);
+                return false;
+            }, 
+            select: function( event, ui ) {   
+                var displayName = ui.item.Name;
+                displayName = displayName.replace( /{!HTMLENCODE('&')}/g, '&' );
+                $('[id$=siteTextBoxId]').val(displayName);          
+                $('[id$=searchSiteIdName]').val( displayName );                
+                $('[id$=searchSiteId]').val( ui.item.Id );
+                $('[id$=searchSitetopsSiteId]').val( ui.item.SC_TOPS_ID__c );                
+                return false;
+            },
+        })
+        .data( "ui-autocomplete" )._renderItem = function( ul, item ) { 
+            var entry='';
+            if(item.Name=='XXXX'){
+                item.Name='';
+                entry = "<a>" + 'No Records Found';
+            }else{
+                entry = "<a>" + item.SC_TOPS_ID__c+','+item.Name +','+item.City__c+','+item.Country_Picklist__c;
+            }
+            entry = entry + "</a>";
+            entry = entry.replace(queryTerm, "<b>" + queryTerm + "</b>");
+            return $( "<li></li>" )
+            .data( "item.autocomplete", item )
+            .append(entry)
+            .appendTo( ul );
+        };
+        
+             // Add or remove placeholder values
+        if(siteValue==null || siteValue=='' || siteValue=='null'){
+            $('[id$=siteTextBoxId]').val(PLACEHOLDER);
+        }
+        $('[id$=siteTextBoxId]').on("focus",  function(event){
+            $tgt = $(event.target);         
+            if($tgt.val() === PLACEHOLDER ){
+                $tgt.val('');
+                $tgt.removeClass('placeHolder');
+            }
+            $('[id$=siteTextBoxId]').val(siteValue);
+        });
+        $('[id$=siteTextBoxId]').on( "blur",  function(event){
+            $tgt = $(event.target);
+            if($tgt.val() === '' ){
+                $tgt.val(PLACEHOLDER);
+                $tgt.addClass('placeHolder');
+            }
+        });
+        
+        ///////////////////////Without Entitlements///////////////////////////////
+        
+            function passRelease(Val){
+            if(Val!='-None-'){
+                releaseFunc(Val);
+                document.getElementById('errorMessage').innerHTML = '';
+            }else{
+                document.getElementById('errorMessage').innerHTML = 'Please select the valid option.';
+            }
+        }         
+                
+                
+        if(typeof jQuery != 'undefined'){
+           $j =jQuery.noConflict();
+       }
+         $j(function() {            
+             $j("input.auto001").autocomplete({
+                source: function(request, response){
+                    getMyData(response ,request.term);
+                },
+                select: function(event, ui){
+                    $j("input.auto001").val(ui.item.value);
+                   // $j('input.auto002').val(ui.item.id);
+                    refresh();                    
+                    return false;
+                }            
+            });            
+            
+        });
+        
+
+        
+        function getMyData(response,param){
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.caseCreateController.searchProdControllerList}',
+                param, 
+                function(result, event){
+                    if (event.status) {                        
+                        var objList = [];
+                        for(var i = 0; i < result.length; i++){
+                            var obj = new Object();
+                            obj.label = result[i].Name;
+                            obj.value = result[i].Name;
+                            obj.id = result[i].Id;
+                            objList.push(obj);
+                        }
+                        response(objList);
+                    }else {
+                        alert(event.message);
+                    }
+                }, 
+                {escape: true}
+            );
+        }
+    </script>   
+</apex:page>

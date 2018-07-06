@@ -1,0 +1,47 @@
+<apex:page controller="RemoveResorceRequestController"  >
+    <apex:form >
+        <apex:sectionHeader title="Remove Presales Consultant Form"/>
+          <apex:commandLink value="Return to Presales Request" action="{!redirectRecord}"/>
+    <apex:pageBlock title="Consultants  Section" >
+      
+
+               <apex:pageMessages ></apex:pageMessages>
+
+                <apex:pageBlockSection columns="2"   >  
+                     <apex:outputField value="{!presale.Presales_Resource1__c}"  />
+                    <apex:selectList label="Removal Reason 1" multiselect="false" size="1"  value="{!removalReson1}"  disabled="{!removalDisable}">
+                         <apex:selectOptions value="{!getremoveReasons}" >
+                               
+                         </apex:selectOptions>
+                       
+                   </apex:selectList>
+                    
+                    
+                    <apex:outputField value="{!presale.Presales_Resource2__c}"   />
+                                         
+                    <apex:selectList label="Removal Reason 2" multiselect="false" size="1"  value="{!removalReson2}"  disabled="{!removalDisable}">
+                         <apex:selectOptions value="{!getremoveReasons}" >
+                               
+                         </apex:selectOptions>
+                       
+                   </apex:selectList>
+                    
+                        <apex:outputField value="{!presale.Presales_Resource3__c}"  />
+                        <apex:selectList label="Removal Reason 3" multiselect="false" size="1"  value="{!removalReson3}"  disabled="{!removalDisable}">
+                         <apex:selectOptions value="{!getremoveReasons}" >
+                               
+                         </apex:selectOptions>
+                       
+                   </apex:selectList>
+
+                   </apex:pageBlockSection> 
+        
+           <apex:pageBlockButtons >
+                <apex:commandButton value="Submit Request" action="{!reMoval}" disabled="{!removalDisable}"/>
+               
+           </apex:pageBlockButtons>
+         </apex:pageBlock> 
+           
+              
+    </apex:form>
+</apex:page>

@@ -1,0 +1,31 @@
+<apex:page controller="Renewal_ConvertActiveContracts"  action="{!Renewal_ConvertActiveContractsMethod}">
+  <apex:pageMessages />
+  <apex:form > 
+  <apex:pageBlock rendered="{!ShowDataMessage}">   
+  <apex:pageblockSection title="Generated Renewal Details" >
+  <apex:pageBlockTable value="{!GeneratedRenewals}"  var="ren" >
+ 
+      <apex:column headerValue="Renewal Name">
+      <apex:outputLink value="/{!ren.Id}">{!ren.name}
+      </apex:outputLink>
+      </apex:column>
+    </apex:pageBlockTable>
+    <br/>
+    <apex:commandLink value="View Generated Renewals" action="{!recentRenewals}"/><br/>
+    
+    </apex:pageblockSection>
+  </apex:pageBlock>
+  
+  <apex:pageBlock rendered="{!ShowErrorMessage}">   
+  <apex:pageblockSection title="Error Message" >
+  <apex:pageBlockTable value="{!errors}"  var="error" >
+ 
+      <apex:column Value="{!error}" />
+      
+    </apex:pageBlockTable>
+    
+    </apex:pageblockSection>
+  </apex:pageBlock>
+   <!--<apex:actionPoller rendered="{!ShowNoDataMessage}" action="{!Proceed}" rerender="pnl1" interval="5"/>-->
+  </apex:form>
+</apex:page>

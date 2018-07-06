@@ -1,0 +1,126 @@
+<apex:page controller="Renewal_oldRPDSiteSelection" id="pg">
+
+<apex:sectionHeader title="Contracts Selection" />
+<apex:pageMessages ></apex:pageMessages>
+<apex:form id="frm" >
+<script>
+ function fnSelUnsel(selval,containername, ctrlname)
+ {
+ // alert(0);
+  var i=0;
+  while(document.getElementById(containername + ':' + i +':'+ ctrlname))
+  {
+      if(document.getElementById(containername + ':' + i +':'+ ctrlname).disabled == false)
+          document.getElementById(containername + ':' + i +':'+ ctrlname).checked = selval;
+      i++;
+  }
+ }
+</script>
+
+     <apex:pageBlock title="Account Information" id="pb" >
+     
+        <apex:pageBlockSection columns="2" id="pbs" >
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel tabindex="0">Account Name:</apex:outputLabel>
+                <apex:outputText value="{!account.Name}" />
+            </apex:pageBlockSectionItem>
+            <!--<apex:pageBlockSectionItem >
+                <apex:outputLabel >Account Number:</apex:outputLabel>
+                <apex:outputText value="{!account.AccountNumber}" />
+            </apex:pageBlockSectionItem>-->
+            <apex:pageBlockSectionItem rendered="{!showCAAccountId==true}">
+                <apex:outputLabel >CA Account ID:</apex:outputLabel>
+                <apex:outputText value="{!account.Enterprise_ID__c}" />
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!showSiteId==true}">
+                <apex:outputLabel >Site ID:</apex:outputLabel>
+                <apex:outputText value="{!account.Commercial_ID__c}" />
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+     <!--<apex:pageBlock title="Site Selection" id="pb2" >
+        
+        <BR/>
+        <apex:pageBlockSection columns="1" id="pbs2" >
+        <apex:outputPanel layout="block" style="overflow:auto;width:900px;height:250px" id="op" >
+            <apex:pageblockTable value="{!sites}" var="site" id="tbl" >
+                <apex:column width="50px" id="col">
+                  <apex:facet name="header"><input type="checkbox" onClick="fnSelUnsel(this.checked,'pg:frm:pb2:pbs2:tbl','chkSite');" /></apex:facet>
+  
+                  <apex:inputCheckbox value="{!site.selected}" id="chkSite" disabled="{!(site.defaultSelected || isDealModelling) }" />
+                </apex:column>
+                <apex:column headerValue="Site Number" style="{!if(site.defaultSelected,'color:green;font-weight:bold',if(site.selected,'font-weight:bold',''))}">
+                  <apex:outputText value="{!site.siteNumber}" />
+                </apex:column>
+            </apex:pageblockTable>
+        </apex:outputPanel>   
+        </apex:pageBlockSection>  
+        <apex:pageBlockButtons location="bottom">
+            <apex:commandButton value="View Contracts" style="font-weight:bold" action="{!getContracts}" status="mesg"  rendered="{!( !(isDealModelling))}"  />
+            <apex:actionStatus startText="Refreshing Contracts..." id="mesg" stopText="" ></apex:actionStatus>
+        </apex:pageBlockButtons>
+    </apex:pageBlock> -->
+    <!-- <apex:pageBlock id="pgBlockContracts" title="Contracts Selection" rendered="{!viewContracts}" >  -->
+    <apex:pageBlock id="pgBlockContracts" title="Contracts Selection"  rendered="{!ContractsNotAvailable==false}">
+    
+     <BR/>
+        <apex:pageBlockSection columns="1" id="pbscom">
+        <apex:outputPanel id="oPanel" layout="block" style="overflow:auto;width:900px;height:250px"  >
+            <apex:pageblockTable value="{!contracts}" var="contract" id="tblcon" >
+                <apex:column width="50px" id="colcon">
+                    <apex:facet name="header"><input type="checkbox" onClick="fnSelUnsel(this.checked,'pg:frm:pgBlockContracts:pbscom:tblcon','chkCon');" /></apex:facet>
+                    <apex:inputCheckbox id="chkCon" value="{!contract.selected}" disabled="{! (contract.defaultSelected || isDealModelling)}" />
+                </apex:column>
+                <apex:column headerValue="Contract Number">
+                  <apex:outputText value="{!contract.contractNumber}" style="{!if(contract.defaultSelected,'color:green;font-weight:bold',if(contract.selected,'font-weight:bold',''))}"/>
+                </apex:column>
+                <apex:column headerValue="Site Number">
+                  <apex:outputText value="{!contract.siteNumber}" style="{!if(contract.defaultSelected,'color:green;font-weight:bold','')}"/>
+                </apex:column>
+                <apex:column headerValue="Contract End Date">
+                  <apex:outputText value="{!contract.contEndDate}" style="{!if(contract.defaultSelected,'color:green;font-weight:bold','')}"/>
+                </apex:column>
+            </apex:pageblockTable>
+        </apex:outputPanel>    
+        </apex:pageBlockSection>
+        <apex:pageBlockSection >
+            <apex:pageBlockSectionItem rendered="{!( !(isDealModelling))}"  >
+                <apex:outputLabel >Comments:</apex:outputLabel>
+                <apex:inputTextarea id="comments" value="{!comments}" rendered="{!( !(isDealModelling))}" ></apex:inputTextarea>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        <apex:pageBlockButtons location="bottom">
+        <script>
+            function ifRedirect()
+            {
+                 if(confirm('On changing the Site/Contract selection the RPD Review needs to be done again. Do you wish to continue?'))
+                 {
+                     window.parent.location.href= window.parent.location.href.replace('dealM','editMode');
+                     return false;
+                 }
+                 else
+                 return false;
+            }
+            
+            function ifRedirect2()
+            {
+                 if(confirm('All newly selected contracts will not be saved. Do you wish to continue?'))
+                 {
+                     window.parent.location.href= window.parent.location.href.replace('editMode','dealM');
+                     return false;
+                 }
+                 else
+                 return false;
+            }
+            
+        </script>
+            <apex:commandButton value="{!if(isDealModellingEdit,'Save & Return to Opportunity','Analyze Results')}" style="font-weight:bold" rendered="{!( !(isDealModelling))}" action="{!getReportData}"/>
+            <apex:commandButton value="Go To Deal Modeling Scenarios" style="font-weight:bold" rendered="{!isDealModelling}" action="{!Scenarios}"/>
+            <apex:commandButton value="Edit Site/Contract Selection" style="font-weight:bold" onclick="return ifRedirect()" rendered="{!isDealModelling}" action="{!editContracts}"/>
+            <apex:commandButton value="Back to Deal Modeling" style="font-weight:bold" onclick="return ifRedirect2()" rendered="{!isDealModellingEdit}" action="{!editContracts}"/>
+                        
+        </apex:pageBlockButtons>
+    </apex:pageBlock>
+</apex:form>
+
+</apex:page>

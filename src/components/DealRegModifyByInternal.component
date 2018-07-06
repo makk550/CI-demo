@@ -1,0 +1,37 @@
+<apex:component language="{!PRM_Email_Notifications.Locale}" controller="DealCertificateController" access="global">
+    <apex:attribute name="OpportunityId" id="OpportunityId" type="Id" description="Opportunity Id" assignTo="{!oppId}"/>
+    <apex:attribute name="Email" id="isEmail" type="Boolean" description="isEmail" assignTo="{!isEmail}"/>
+  
+        
+{!emailTemplate.Email_Address_Text__c} {!EmailUsername},<br/><br/>
+ 
+
+<p> We are pleased to inform you that the deal registration has been extended and the New Expiration Date is listed below. Be sure to update your registration whenever the status changes.</p>
+<br/>
+
+
+     
+{!emailTemplate.Certificate_Heading_Text__c}<br/><br/>
+  
+
+<p><b>{! IF(showDealProgram == 'none' ,'','Deal Registration Program: ' & relatedTo.Deal_program_Formula__c  &' ' ) }</b></p>
+<p><b>{! IF(showDealName == 'none','',  $ObjectType.Email_Rule__c.Fields.Deal_Registration_Name__c.Label & ': ' & relatedTo.Name &'   ' ) }</b></p>
+<p><b>{! IF(showPartner == 'none','','Partner: ' & relatedTo.Reseller_Name_for_Deal__c &'  ') }</b></p>
+<!---Commented as AR has been deffered for now
+<p><b>{! IF(showDisti == 'none','','Distributor: ' & relatedTo.Distributor_Name__c &'  ') }</b></p>
+---->
+<p><b>{! IF(showEndUser == 'none','',IF((relatedTo.Type == 'xSP' && relatedTo.source__c == 'Deal Registration'),'Partner',$ObjectType.Email_Rule__c.Fields.End_User__c.Label) & ': ' & relatedTo.Account.Name &'  ') }</b></p>
+<p><b>{! IF(showXspPartner == 'none','', 'Service Provider Client' &': ' & relatedTo.Service_Provider_Client__r.Name &' ') }</b></p>
+<p><b>{! IF(showDealProgram == 'none','', $ObjectType.Email_Rule__c.Fields.Estimated_Value__c.Label & ': ' & TEXT(relatedTo.Reseller_Estimated_Value__c) & ' '  & relatedTo.currencyIsoCode  &' ' ) }</b></p>
+<p><b>{! IF(showDealProgram == 'none','', $ObjectType.Email_Rule__c.Fields.Submission_Date__c.Label & ': ' & TEXT(relatedTo.Deal_Registration_Submitted_Date__c )&'  ') }</b></p>
+<p><b>{! IF(showDealProgram == 'none','', $ObjectType.Email_Rule__c.Fields.Expiration_Date__c.Label & ': ' & TEXT( relatedTo.Deal_Expiration_Date__c) &'  ') }</b></p>
+<p><b>{! IF(showDealProgram == 'none','', $ObjectType.Email_Rule__c.Fields.Products__c.Label & ': ' & relatedTo.Reseller_Product_Name__c &'  ') }</b></p>
+
+        
+<br/><br/>
+Copyright © {!year(today())} CA. All Rights Reserved.<br/>
+CA Confidential and proprietary information for CA internal use only.<br/>
+No unauthorized copying or distribution permitted.
+ 
+     
+   </apex:component>

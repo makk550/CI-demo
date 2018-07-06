@@ -1,0 +1,6 @@
+<apex:page showHeader="false" sidebar="false" >
+<script type="text/javascript">
+     location.href='https://calearning.ca.com/plateau/user/portal.do?siteID=PARTNER';
+</script>
+
+</apex:page>

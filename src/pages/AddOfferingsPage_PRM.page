@@ -1,0 +1,193 @@
+<apex:page id="oppofferingspage_PRM" standardcontroller="OpportunityLineItem" extensions="offeringscontroller_PRM" sidebar="false" cache="false">
+
+    <apex:form id="form1">
+    <apex:sectionHeader subtitle="{!oppName}" title="Add/Edit Offerings"/>
+    <apex:outputLink value="/{!oppId}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb1">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveproducts}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageMessages />             
+            <apex:pageBlockSection id="pbs3" title="Services Details" > 
+                <apex:pageBlockTable id="pbt3" value="{!lst_serv}" var="serv" >
+                    <apex:column headervalue="Business Unit">
+                        <apex:selectList disabled="{!serv.isBUDisabled}" value="{!serv.strbu}" id="serv_bu" size="1" style="width:200px" onchange="getprds(this.value,'{!serv.position}','Services');">   
+                            <apex:selectOptions value="{!selbu_services}"/>
+                        </apex:selectList>
+                        <apex:actionFunction name="getprds" action="{!fetchproducts}" rerender="pbt3">
+                            <apex:param name="buvalue" value="" assignTo="{!prdbu}" />
+                            <apex:param name="positionvalue" value="" assignTo="{!prdpos}" />
+                            <apex:param name="familyvalue" value="" assignTo="{!prdfamily}" />
+                        </apex:actionFunction>
+                    </apex:column>
+                    <apex:column headervalue="Offering">
+                        <apex:selectList disabled="{!serv.isPrdDisabled}" value="{!serv.strproduct}" id="serv_prd" size="1">   
+                            <apex:selectOptions value="{!serv.selproductserv}"/>
+                        </apex:selectList>
+                    </apex:column>
+                   
+                    <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}
+                        </apex:facet>
+                        <apex:inputField value="{!serv.opplineitem.UnitPrice}" id="serv_salesprice" style="width:200px" >
+                        </apex:inputField>
+                    </apex:column>
+                    
+                     
+                    <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.Drawdown_from_Prepaid_Funds__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!serv.opplineitem.Drawdown_from_Prepaid_Funds__c}" id="serv_prepaid">   
+                        </apex:inputField>
+                    </apex:column>
+                    
+
+                    
+                </apex:pageBlockTable><br/>
+                <apex:commandbutton value="Add More" action="{!addmore_serv}" rerender="pbt3,servsize" />
+            </apex:pageBlockSection>
+            
+           <apex:pageBlockSection id="pbs2" title="Education Details"  >
+                <apex:pageBlockTable id="pbt2" value="{!lst_edu}" var="edu">
+                    <apex:column headervalue="Business Unit">
+                        <apex:selectList disabled="{!edu.isBUDisabled}" value="{!edu.strbu}" id="edu_bu" size="1" style="width:200px" onchange="getprds1(this.value,'{!edu.position}','Education');">   
+                            <apex:selectOptions value="{!selbu_Education}"/>
+                        </apex:selectList>
+                        <apex:actionFunction name="getprds1" action="{!fetchproducts}" rerender="pbt2">
+                            <apex:param name="buvalue" value="" assignTo="{!prdbu}" />
+                            <apex:param name="positionvalue" value="" assignTo="{!prdpos}" />
+                            <apex:param name="familyvalue" value="" assignTo="{!prdfamily}" />
+                        </apex:actionFunction>
+                    </apex:column>
+                    <apex:column headervalue="Offering">
+                        <apex:selectList disabled="{!edu.isPrdDisabled}" value="{!edu.strproduct}" id="edu_prd" size="1">   
+                            <apex:selectOptions value="{!edu.selproductedu}"/>
+                        </apex:selectList>
+                    </apex:column>
+                    
+                    <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}
+                        </apex:facet>
+                        <apex:inputField value="{!edu.oppline.UnitPrice}" id="edu_salesprice" style="width:200px" >
+                        </apex:inputField>
+                    </apex:column>
+                    
+                    
+
+                    
+                </apex:pageBlockTable><br/>
+                <apex:commandbutton value="Add More" action="{!addmore_edu}" rerender="pbt2,edusize" />
+                 
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection id="pbs1" title="Support Details" >
+                <apex:pageBlockTable id="pbt1" value="{!lst_supp}" var="supp">
+                    <apex:column headervalue="Business Unit">
+                        <apex:selectList disabled="{!supp.isBUDisabled}" value="{!supp.strbu}" id="supp_bu" size="1" style="width:200px" onchange="getprds2(this.value,'{!supp.position}','Support');">   
+                            <apex:selectOptions value="{!selbu_Support}"/>
+                        </apex:selectList>
+                        <apex:actionFunction name="getprds2" action="{!fetchproducts}" rerender="pbt1">
+                            <apex:param name="buvalue" value="" assignTo="{!prdbu}" />
+                            <apex:param name="positionvalue" value="" assignTo="{!prdpos}" />
+                            <apex:param name="familyvalue" value="" assignTo="{!prdfamily}" />
+                        </apex:actionFunction>
+                    </apex:column>
+                    <apex:column headervalue="Offering">
+                        <apex:selectList disabled="{!supp.isPrdDisabled}" value="{!supp.strproduct}" id="sup_prd" size="1" >   
+                            <apex:selectOptions value="{!supp.selproductsupp}"/>
+                        </apex:selectList>
+                    </apex:column>
+                    <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}
+                        </apex:facet>
+                        <apex:selectList value="{!supp.strbustype}" id="supp_bustype" size="1" style="width:200px">   
+                            <apex:selectOptions value="{!selbustype}"/>
+                        </apex:selectList>
+                        
+                    </apex:column>
+                    
+
+                    <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}
+                        </apex:facet>
+                        <apex:inputField value="{!supp.oppli.UnitPrice}" id="supp_salesprice" style="width:200px" >
+                        </apex:inputField>
+                    </apex:column>
+                    
+                    <apex:column >
+                    <apex:facet name="header">
+                        {!$ObjectType.OpportunityLineItem.fields.Contract_Length__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!supp.oppli.Contract_Length__c}" id="supp_contractlength" style="width:50px" >
+                        </apex:inputField>
+                    </apex:column>
+                    
+                    
+                   
+                </apex:pageBlockTable><br/>
+                <apex:commandbutton value="Add More" action="{!addmore_supp}" rerender="pbt1" />
+            </apex:pageBlockSection>
+             
+            
+            
+        </apex:pageBlock> 
+        <apex:inputHidden value="{!edusize}" id="edusize" />
+        <apex:inputHidden value="{!servsize}" id="servsize" />
+    </apex:form> 
+    <script>
+    window.onload = function togglewinloss()
+    {
+        //alert(document.getElementById('oppofferingspage:form1:edusize').value);
+        //toggle_edu_winloss();
+        toggle_edu_all();
+        toggle_serv_all();
+    } 
+    function toggle_edu_all()
+    {
+        var rowcount = document.getElementById('oppofferingspage:form1:edusize').value;
+        var showheader = false;
+        for(i=0;i<rowcount;i++)
+        {
+            var milestone = document.getElementById("oppofferingspage:form1:pb1:pbs2:pbt2:"+i+":edu_milestone").value;
+            if(milestone.indexOf('100%')>=0 || milestone.toLowerCase() == 'closed - lost')
+            {
+                document.getElementById("oppofferingspage:form1:pb1:pbs2:pbt2:"+i+":edu_winloss").style.display = '';
+                showheader = true;
+            }
+            else
+                document.getElementById("oppofferingspage:form1:pb1:pbs2:pbt2:"+i+":edu_winloss").style.display = 'none';
+        }
+        if(showheader)
+            document.getElementById("oppofferingspage:form1:pb1:pbs2:pbt2:op1").style.display = '';
+        else
+            document.getElementById("oppofferingspage:form1:pb1:pbs2:pbt2:op1").style.display = 'none';
+    }
+    function toggle_serv_all()
+    {
+        var rowcount = document.getElementById('oppofferingspage:form1:servsize').value;
+        var showheader = false;
+        for(i=0;i<rowcount;i++)
+        {
+            var milestone = document.getElementById("oppofferingspage:form1:pb1:pbs3:pbt3:"+i+":serv_milestone").value;
+            if(milestone.indexOf('100%')>=0 || milestone.toLowerCase() == 'closed - lost')
+            {
+                document.getElementById("oppofferingspage:form1:pb1:pbs3:pbt3:"+i+":serv_winloss").style.display = '';
+                showheader = true;
+            }
+            else
+                document.getElementById("oppofferingspage:form1:pb1:pbs3:pbt3:"+i+":serv_winloss").style.display = 'none';
+        }
+        if(showheader)
+            document.getElementById("oppofferingspage:form1:pb1:pbs3:pbt3:op1").style.display = '';
+        else
+            document.getElementById("oppofferingspage:form1:pb1:pbs3:pbt3:op1").style.display = 'none';
+    }
+    
+    </script>
+</apex:page>

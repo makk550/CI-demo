@@ -1,0 +1,217 @@
+<apex:page controller="ProductInstanceContactLeadController">
+    
+    <style>
+        .instancetable td{
+        padding-top: 25px;
+        
+        }
+        
+        #arrow-text {
+        
+        -webkit-transition: visibility opacity 0.2s;
+        margin-left:10px;
+        font-size: 15px;
+        font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+        font-weight: bold;
+        
+        }
+        
+        #backarrowdiv:hover #arrow-text {
+        visibility: visible;
+        opacity: 1;
+        }
+        
+        .backbutton{
+        padding: 10px 40px !important;
+        margin: 0px 10px 10px 0px !important;
+        border-radius: 10px !important;
+        font-family: 'Helvetica', cursive !important;
+        font-size: 25px !important;
+        color: #FFF !important;
+        text-decoration: none !important;
+        background-color: #3498DB; !important
+        border-bottom: 5px solid #2980B9 !important;
+        text-shadow: 0px -2px #2980B9 !important;
+        text-decoration:none !important;
+        /* Animation */
+        }
+        
+        
+    </style>
+    
+    
+    
+    
+    
+    <apex:form id="instdetailsform">
+        
+        <div id="backarrowdiv" style="width:100px;min-width:100px;">
+            <apex:commandLink id="backarrow" action="{!redirectHelper}" style="text-decoration:none;">
+                <apex:image id="back" url="{!$Resource.ProdInstBackArrow}" height="25" width="25" />
+                <span id="arrow-text">
+                    Back    
+                </span>
+                <p>
+                    
+                </p>
+            </apex:commandLink>
+            
+        </div>
+        
+        <apex:pageMessages ></apex:pageMessages>
+        <br/><br/>
+        
+
+        
+        <apex:pageBlock id="detailblock" title="Agile Central Details" tabStyle="Contact" mode="maindetail"  rendered="{!hasalmdetails}" >
+            
+            <apex:pageBlockSection collapsible="false">
+                <apex:pageBlockSectionItem rendered="{!almdata.product_instance_id__c!='Awaiting Provisioning'}">
+                    <apex:outputLabel value="Product Instance Id" />
+                    <apex:outputLink value="/apex/Usage_Data?instance={!almdata.instance_id__c}&prod_instance={!almdata.product_instance_id__c}{!usageredirectString}">
+                        <apex:outputField value="{!almdata.product_instance_id__c}"/>
+                    </apex:outputLink>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem rendered="{!almdata.product_instance_id__c=='Awaiting Provisioning'}">
+                    <apex:outputLabel value="Product Instance Id" />
+                    <apex:outputField value="{!almdata.product_instance_id__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                <!--Row 1-->
+                   <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Edition"/>
+                    <apex:outputField value="{!almdata.edition__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Product Detail"/>
+                    <apex:outputField value="{!almdata.product_detail__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Product Description"/>
+                    <apex:outputField value="{!almdata.name__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                
+                
+                <!--Row 2-->
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Entitlement Start Date"/>
+                    <apex:outputText value="{0,date,yyyy/MM/dd}">
+                        <apex:param value="{!almdata.entitlement_start_date__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Entitlement End Date"/>
+                    <apex:outputText value="{0,date,yyyy/MM/dd}" rendered="{!almdata.edition__c<>'CE'}">
+                        <apex:param value="{!almdata.entitlement_end_date__c}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                
+                
+                <!--Row 3-->
+                
+             
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Subscription Type"/>
+                    <apex:outputField value="{!almdata.entitlement_type__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Hosting Type"/>
+                    <apex:outputField value="{!almdata.software_type__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                <!--Row 4-->
+             
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total Paid Seats"/>
+                    <apex:outputField value="{!almdata.quantity__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total Unpaid Seats"/>
+                    <apex:outputText value="{!ALMTotalUnpaidSeats}"/>
+                </apex:pageBlockSectionItem>
+                
+                
+            </apex:pageBlockSection>
+            
+            
+            
+            
+        </apex:pageBlock>
+        
+        <br/><br/><br/><br/>        
+        <apex:pageBlock id="flowdetailblock" title="FlowDock Details" tabStyle="Contact" mode="maindetail"  rendered="{!hasflowdetails}" >
+            
+            <apex:pageBlockSection collapsible="false">
+                <apex:pageBlockSectionItem rendered="{!fdedata.product_instance_id__c!='Awaiting Provisioning'}">
+                    <apex:outputLabel value="Product Instance Id" />
+                    <apex:outputLink value="/apex/Usage_Data?instance={!almdata.instance_id__c}&prod_instance={!fdedata.product_instance_id__c}{!usageredirectString}">
+                        <apex:outputField value="{!fdedata.product_instance_id__c}"/>
+                    </apex:outputLink>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem rendered="{!fdedata.product_instance_id__c=='Awaiting Provisioning'}">
+                    <apex:outputLabel value="Product Instance Id" />
+                    <apex:outputField value="{!fdedata.product_instance_id__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                <!--Row 1-->
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Product Detail"/>
+                    <apex:outputField value="{!fdedata.product_detail__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Product Description"/>
+                    <apex:outputField value="{!fdedata.name__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Edition"/>
+                    <apex:outputField value="{!fdedata.edition__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="FDE UE Seats"/>
+                    <apex:outputField value="{!fdedata.quantity__c}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="FDE Unpaid Addon Seats"/>
+                    <apex:outputText value="{!FD_unpaid_addon_seats}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="FDE Paid Addon Seats"/>
+                    <apex:outputText value="{!FD_paid_addon_seats}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="FDE Paid Standalone Seats"/>
+                    <apex:outputText value="{!FD_paid_standalone_seats}"/>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            
+            
+            
+        </apex:pageBlock>
+        
+        
+    </apex:form>
+    
+    
+</apex:page>

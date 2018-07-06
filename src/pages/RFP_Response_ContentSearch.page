@@ -1,0 +1,419 @@
+<apex:page controller="Ext_RFP" title="Content Search">
+<head>
+<script type="text/javascript">
+   var __sfdcSessionId = '{!GETSESSIONID()}';
+</script>
+
+
+<apex:includescript value="{!$Resource.yuiloader_min_js}"></apex:includeScript>
+<script src="/soap/ajax/21.0/connection.js" type="text/javascript"></script>
+<script src="/soap/ajax/21.0/apex.js" type="text/javascript"></script>
+  
+<script type='text/javascript'>
+   //var g_tabView = null; 
+   
+   var g_selectedResponse = null;
+   var g_responses = null;
+   var g_waitDialog = null;
+   var g_alertDialog = null;
+   var g_responseTextEditor = null;
+   var g_questionResponse = null;
+   var g_ownerAutoComplete = null;
+   var g_responseCache = null;
+   var g_responseOwnerId = null;
+   var g_searched = null;
+   var g_busUnit = '{!BU_Answer}';
+   var g_prod = '{!prod_Answer}';
+   var g_prod_text = '';
+   
+  
+   var loader = new YAHOO.util.YUILoader({ 
+      base: "https://ajax.googleapis.com/ajax/libs/yui/2.9.0/build/",
+      require: ['tabview', 'connection', 'editor', 'container', 'autocomplete', 'datasource', 'json'], 
+      loadOptional: false,
+      onSuccess: function() {
+        initWidget(); 
+      }, 
+      timeout: 10000,    
+      combine: false 
+  });
+  loader.insert();
+  
+  function ajaxCall(pURL, pCallback, pWaitDialog)
+  {
+    var callback = 
+    {
+      success: function(o)
+      {
+        g_waitDialog.hide();
+        pCallback(o);   
+      },
+      failure: function()
+      {
+        g_waitDialog.hide();        
+        alert('It failed!');
+      }
+    };
+    if ((pWaitDialog == null) || (pWaitDialog == true))
+    {
+      g_waitDialog.show();
+    }
+    var request = YAHOO.util.Connect.asyncRequest('POST', pURL, callback);
+  }
+  
+  function initWidget()
+  {
+    //g_tabView = new YAHOO.widget.TabView("RFPQuickLookupWidget");
+    g_waitDialog = 
+        new YAHOO.widget.Panel("wait",  
+            { width:"240px", 
+              fixedcenter:true, 
+              close:false, 
+              draggable:false, 
+              zindex:4,
+              modal:true,
+              visible:false
+            } 
+        );
+    g_waitDialog.setHeader("Please wait...");
+    g_waitDialog.setBody('<img src="{!$Resource.LoadingAnimation}"/>');       
+    g_waitDialog.render(document.body); 
+    
+    g_alertDialog = 
+        new YAHOO.widget.Panel("submitResponseDialog",  
+            { width:"260px", 
+              fixedcenter:true, 
+              close:true, 
+              draggable:false, 
+              zindex:4,
+              modal:true,
+              visible:false
+            } 
+        );
+    g_alertDialog.render(document.body); 
+    
+    /**g_responseTextEditor = new YAHOO.widget.Editor('response:Text', {
+      height: '300px',
+      width: '100%',
+      dompath: false,
+      animate: true,
+      filterWord: true,
+      toolbar: {
+        collapse: true,
+        buttons: [
+            //{ group: 'textstyle', label: 'Font Style',
+                buttons: [
+                    { type: 'push', label: 'Bold', value: 'bold' },
+                    { type: 'push', label: 'Italic', value: 'italic' },
+                    { type: 'push', label: 'Underline', value: 'underline' },
+                    { type: 'separator' } ] },
+            { group: 'textstyle', label: 'Lists',
+                buttons: [
+                    { type: 'push', label: 'Create an Unordered List', value: 'insertunorderedlist' },
+                    { type: 'push', label: 'Create an Ordered List', value: 'insertorderedlist' } ] },
+            { group: 'textstyle', label: 'Indentation',
+                buttons: [
+                    { type: 'push', label: 'Indent', value: 'indent' }, 
+                    { type: 'push', label: 'Outdent', value: 'outdent' },
+                    { type: 'separator' } ] },
+            { group: 'textstyle', label: 'Link',
+                buttons: [
+                    { type: 'push', label: 'HTML Link CTRL + SHIFT + L', value: 'createlink' }
+                ]
+              }
+            ]
+          }
+      });
+    g_responseTextEditor.render();*/   
+    
+    g_questionResponse = new YAHOO.widget.Editor('lookup:ResponseText', {
+      height: '240px',
+      width: '100%',
+      dompath: false,
+      animate: true,
+      toolbar: false
+    });
+    g_questionResponse.on('editorWindowBlur', lookup_recordResponseUsage);   
+    g_questionResponse.render(); 
+     
+    var dataSource = new YAHOO.util.FunctionDataSource(response_OwnerLookup);
+    dataSource.responseSchema = 
+    {
+        fields: ['fullname', 'id']
+    };
+    /*g_ownerAutoComplete = new 
+      //YAHOO.widget.AutoComplete('response:Owner','response:OwnerContainer', dataSource);
+    //g_ownerAutoComplete.resultTypeList = false;    
+    //g_ownerAutoComplete.queryDelay = 0.5;
+    //g_ownerAutoComplete.minQueryLength = 3;
+    //g_ownerAutoComplete.animSpeed = 0.1;
+    //g_ownerAutoComplete.useShadow = true;
+    //g_ownerAutoComplete.forceSelection = true;
+    
+    //g_ownerAutoComplete.itemSelectEvent.subscribe(function(sType, aArgs) 
+    //{
+        //var oData = aArgs[2]; // object literal of selected item's result data
+        //g_responseOwnerId = oData.id;
+    //});*/
+       
+    document.title = 'RFPForce QuickLookup';
+  }
+    
+  function response_OwnerLookup(autoQuery)
+  {
+    var results = [ ];
+    autoQuery = autoQuery.replace(/\s+/g,'');
+    if (autoQuery.length >= 3)
+    {
+      var sfquery = 'Select u.LastName, u.Id, u.FirstName, u.IsActive From User u where ';     
+      sfquery += '(u.FirstName like \'' + autoQuery + '%\' or u.LastName like \'' + autoQuery + '%\') and u.IsActive = true limit 10';
+      
+      var queryResult = sforce.connection.query(sfquery);
+      var it = new sforce.QueryResultIterator(queryResult);
+
+      while (it.hasNext()) 
+      {
+        var user = it.next();
+        results.push ( { id: user.Id, fullname: user.FirstName + ' ' + user.LastName } );
+      }
+    }  
+    return results;
+  }
+      
+  function lookup_lookupQuestion(pSearchTarget)
+  {
+    g_searched = pSearchTarget;
+    var responseText = document.getElementById('lookup:ResponseText');
+    responseText.value = '';
+    var question = document.getElementById('lookup:Question');
+    var questionText = question.value;
+    //var responseQuestion = document.getElementById('response:Question');
+    //responseQuestion.value = questionText;
+    g_responseCache = null;
+    ajaxCall('/apex/RFP_GetResponses?search=' + pSearchTarget + '&question=' + encodeURI(questionText) + '&busUnit=' + g_busUnit + '&prod=' + g_prod_text + '&fnct=SRCH',
+      function(o)
+      {
+        var js = 'g_responses = ' + o.responseText;
+        eval(js);
+        var responseList = document.getElementById('lookup:ResponseSelect');
+        responseList.options.length = 0;
+        for (k = 0; k < g_responses.length - 1; k++)
+        {
+          var newResponse = document.createElement('option');
+          var summary = g_responses[k].Summary;
+          if (summary.length > 47)
+          {
+            summary = summary.substring(0, 60) + '...';
+          }
+          newResponse.text = summary;
+          newResponse.value = g_responses[k].id;
+          if (k == 0)
+          {
+            newResponse.selected = true;
+          } // endif
+          responseList.options[k] = newResponse;
+        } 
+        lookup_getResponseText();
+      });
+  }
+  
+  function lookup_getResponseText()
+  {
+    var responseSelect = document.getElementById('lookup:ResponseSelect');
+    var index = responseSelect.selectedIndex;
+    var responseSummary = document.getElementById('lookup:ResponseSummary');
+    var respText = document.getElementById('lookup:ResponseText');
+    //var responseStatus  = document.getElementById('lookup:ResponseStatus');
+    if (index >= 0)
+    {
+      var option = responseSelect.options[index];
+      g_selectedResponse = option.value;
+      
+      //responseSummary.innerHTML = '<a href="/' + g_selectedResponse + '" target="SFDC">' + 
+                                   g_responses[index].Summary.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;') + '</a>';
+      responseSummary.innerHTML = '<b>' + 
+                                   g_responses[index].Summary.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;') + '</b>';
+      
+      //responseStatus.innerHTML = '<b>Response Status: ' + g_responses[index].Status + '</b>';
+      
+      var responseText = null;
+      if (g_responseCache == null)
+      {
+        g_responseCache = new Array();
+      }
+      else
+      {
+        responseText = g_responseCache[g_selectedResponse];
+      } // endif
+      if (responseText == null)
+      {
+        ajaxCall('/apex/RFP_GetResponseText?id=' + g_selectedResponse,
+          function(output)
+          {
+            g_questionResponse.setEditorHTML(output.responseText);
+            g_questionResponse.responseCopied = false;
+            g_responseCache[g_selectedResponse] = output.responseText;
+            var responseSelect = document.getElementById('lookup:ResponseSelect');
+            responseSelect.focus();
+          });
+       }
+       else
+       {
+         g_questionResponse.setEditorHTML(responseText);
+         g_questionResponse.responseCopied = false;
+       } // endif
+    }
+    else // No response is selected.  Clear the Summary, Status, and Response Editor.
+    {
+      responseSummary.innerHTML = '<b>No results found.</b>';
+      //responseStatus.innerHTML = '<br/>';
+      g_questionResponse.setEditorHTML('<br/>');
+    } // endif   
+  }
+  
+  function lookup_recordResponseUsage()
+  {
+      if ((g_questionResponse._hasSelection()) && (g_questionResponse.responseCopied == false))
+      {
+        var saveResult = recordUsage(false);
+        if (saveResult[0].success == 'false')
+        {
+          var errorJSON = saveResult[0].errors.message;
+          eval(errorJSON);
+          g_alertDialog.setHeader('Warning: Response Already Used');
+          var responseTable = '<table cellpadding="2"><tr><td colspan="2">The response you selected has already been used <b>' + errorJSON.timesUsed + '</b> time(s) in this document.  ';
+          responseTable += 'The most recent use of this response was for the following question:</td></tr>';
+          responseTable += '<tr><td colspan="2"><hr></td></tr>';
+          responseTable += '<tr><td colspan="2"><i>' + errorJSON.question + '</i></td></tr>';
+          responseTable += '<tr><td colspan="2"><hr></td></tr>';
+          responseTable += '<tr><td><b>Used by:</b></td><td>' + errorJSON.user + '</td></tr>';
+          responseTable += '<tr><td colspan="2"><hr></td></tr>';
+          responseTable += '<tr><td><b>Time:</b></td><td>' + errorJSON.time + '</td></tr></table>';
+          responseTable += '<tr><td colspan="2"><hr></td></tr>';
+          responseTable += '<tr><td colspan="2">Only record this question if it is a unique question for this response.</td></tr>';
+          responseTable += '<tr><td colspan="2"><hr></td></tr>';          
+          responseTable += '<tr><td colspan="2" align="center"><input type="button" value="Record Question" onclick="recordUsage(true)"/><input type="button" value="Ignore Question" onclick="g_alertDialog.hide()"/></td></tr></table>';
+          g_alertDialog.setBody(responseTable);              
+          g_alertDialog.show();
+        } // endif        
+      }
+  }
+  
+  function recordUsage(pOverrideWarning)
+  {
+    g_questionResponse.responseCopied = true;
+    var usage = new sforce.SObject('Question__c');
+    usage.Response__c = g_selectedResponse;
+    //usage.RFP__c = g_selectedRfpId;
+    usage.Source__c = g_searched;
+    var question = document.getElementById('lookup:Question');
+    var questionText = question.value;
+    questionText = trim(questionText);
+    if (questionText.length > 255)
+    {
+      questionText = questionText.substring(0, 254);
+      questionText = trim(questionText);
+    }        
+    usage.Question__c = questionText;
+    usage.Override_Warning__c = pOverrideWarning;
+    var saveResult = sforce.connection.create([usage]);
+    if (pOverrideWarning == true)
+    {
+      g_alertDialog.hide();
+    } // endif
+    return saveResult;
+  }
+  
+  function trim(inStr)
+  {
+    inStr = inStr.replace(/^\s+/, '');;
+    inStr = inStr.replace(/\s+$/, '');
+    return inStr;
+  }
+ 
+  
+ 
+  
+  
+function setPrompt(element, event) {
+  var value = trim(element.value);
+  if (event == 'onblur') {
+    if (value == '') {
+      element.value = element.defaultValue;
+    }
+  }
+  if (event == 'onfocus') {
+    if (element.value == element.defaultValue) {
+      element.value = '';
+    }
+  }
+}
+ 
+function setForResponseObject(bbunit,pprod)
+{
+     g_busUnit = bbunit;
+     g_prod = pprod.options[pprod.selectedIndex].value;
+     g_prod_text = pprod.options[pprod.selectedIndex].text;
+}     
+
+function setForBU(buObj)
+{
+   g_busUnit = buObj.options[buObj.selectedIndex].text; //buObj.value
+}
+</SCRIPT>
+
+</head>
+<body id="body" class="yui-skin-sam" background="{!$Resource.CloudsBackground}" >
+
+<div id="wait"></div>
+<div id="submitResponseDialog"></div>
+
+<table width="100%">
+<apex:form >
+
+<apex:actionFunction action="{!getProdList}" name="loadProd" reRender="out_refresh" status="msg_refresh" />
+<tr><td colspan="2"><b></b></td></tr>
+<tr><td colspan="2"><hr/>
+    <b> BU </b><apex:selectList value="{!BU}" size="1" multiselect="false" onchange="setForBU(this); loadProd()">
+                    <apex:selectOptions value="{!ListBU}"/>
+                </apex:selectList>
+    <apex:outputPanel id="out_refresh" >
+        <b> Product </b><apex:selectList value="{!prod}" size="1" multiselect="false" onChange="setForResponseObject('{!BU}',this)" style="width:200px">
+                            <apex:selectOptions value="{!ListProd}"/>
+                        </apex:selectList>
+                         <apex:actionStatus startText="Refreshing Products.." startStyle="color:green;" stopText="" id="msg_refresh" ></apex:actionStatus> 
+     </apex:outputPanel>            
+     </td></tr>
+<tr>
+</apex:form>
+<td colspan="2" valign="top"><textarea rows="3" style="width:100%;border:1" id="lookup:Question" onblur="setPrompt(this, 'onblur')" onfocus="setPrompt(this, 'onfocus')">
+Enter question here:
+</textarea></td>
+</tr>
+<tr><td colspan="2">
+<input type="button" id="lookup:searchResponses" value="Search" onclick="lookup_lookupQuestion('Responses')">
+</td></tr>
+<tr><td colspan="2"><hr/></td></tr>
+<tr>
+<td valign="top" colspan="2">
+<select id="lookup:ResponseSelect" onchange='lookup_getResponseText()' size="5" style="width:100%">
+</select></td>
+</tr>
+<tr>
+<td valign="top" colspan="2"></td>
+</tr>
+<tr><td colspan="2"></td></tr>
+<tr><td colspan="2"><div id="lookup:ResponseSummary"></div></td></tr>
+<tr>
+<td colspan="2" valign="top"><b>Response Text</b><textarea rows="8" style="width:100%;border:1px solid black" id="lookup:ResponseText"></textarea></td>
+
+</tr>
+</table>
+</div> 
+
+                    
+
+
+</body>
+
+</apex:page>

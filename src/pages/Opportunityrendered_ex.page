@@ -1,0 +1,40 @@
+<apex:page standardController="Opportunity" rendered="{!opportunity.Create_Alert__c == true}" extensions="DismissReminderOpportunityController" sidebar="false" showHeader="false" >
+<head>
+    <style>
+        .reminderbox {
+            background-color: #A0A0FF;
+            width: 500px;
+            height: 28px;
+            border: 1px;
+            border-style: solid;
+            border-color: #0000FF; 
+            float:left;
+        }
+        .reminderbox .reminderlable{
+        	padding: 6px 10px 0px 10px;
+        	font-size: 12px;
+            color:#0000FF;
+            font-family:Arial;
+            font-weight:bold;
+           }
+       .dismissbutton {
+       		padding-left:5px;
+        	padding-top:2px;
+        	float:left;
+         
+        }
+    </style>
+  </head>
+    
+
+       <div class="reminderbox">
+           <div class="reminderlable">REMINDER: Please Update your CPQ Quote Status to "Signed by Customer"</div>
+       </div>
+    	<div class="dismissbutton">
+                <apex:form >
+                    <apex:commandButton value="Dismiss" action="{!clickdismissreminder}"></apex:commandButton>
+           		</apex:form>
+        </div>
+
+
+</apex:page>

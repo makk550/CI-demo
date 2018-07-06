@@ -1,0 +1,10 @@
+<apex:component >
+<apex:attribute required="true"  type="string" name="type" description="specify header and footer type" />
+
+<apex:stylesheet value="{!$Resource.HeaderFooterStyle}"/>
+<div class="{!type}" style="box-shadow: 10px 10px 5px #888888;margin-bottom:1000px">
+<apex:componentBody />
+</div>
+
+
+</apex:component>

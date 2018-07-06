@@ -1,0 +1,7 @@
+<apex:page controller="sampleCon">
+    <apex:form >
+       <apex:selectList value="{!strSelCountry}" size="0">
+            <apex:selectOptions value="{!Countries}"/>
+        </apex:selectList> 
+    </apex:form>
+</apex:page>

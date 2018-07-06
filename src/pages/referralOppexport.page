@@ -1,0 +1,6 @@
+<apex:page controller="ReferralPortalOppPaginationController" contentType="text/csv#ReferralOpportunity.csv" cache="true"  showHeader="false" sidebar="false">Opportunity Name,Company,{!$Label.Referral_Portal_PaymentStatus},Stage,Registered,{!$ObjectType.Opportunity.Fields.Referral_Expiration_Date__c.Label}
+
+<apex:repeat value="{!ExportCurrentOppList}" var="x">
+"{!x.name}","{!x.Account.Name}", {!IF(x.StageName == $Label.Opp_Stage_Closed_Won,IF(x.Referral_Approval_Status__c == 'Sales Accepted',$Label.Referral_Pending_Payment_Approval,IF(x.Referral_Approval_Status__c == 'Approved',$Label.Referral_Payment_Approved,IF(x.Referral_Approval_Status__c == 'Payment Made',x.Referral_Approval_Status__c,$Label.Referral_Payment_rejected))),x.Referral_Approval_Status__c+' -Working')},{!x.StageName},<apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!x.Referral_Date__c}" /> </apex:outputText>,<apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!x.Referral_Expiration_Date__c}" /> </apex:outputText> 
+</apex:repeat>
+</apex:page>

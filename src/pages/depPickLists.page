@@ -1,0 +1,29 @@
+<apex:page controller="sample">
+    
+    <apex:form >
+    
+    <apex:pageBlock >
+        <apex:pageBlockSection columns="2">
+            <apex:pageblockSectionItem >
+                <apex:outputLabel value="State"/>
+            </apex:pageblockSectionItem>        
+            <apex:pageblockSectionItem >                
+                <apex:selectList size="1" value="{!state}">
+                    <apex:selectOptions value="{!states}"/>
+                    <apex:actionSupport event="onchange" reRender="a"/>
+                </apex:selectList>                
+            </apex:pageblockSectionItem>
+            <apex:pageblockSectionItem >
+                <apex:outputLabel value="City"/>
+            </apex:pageblockSectionItem>            
+            <apex:pageblockSectionItem >
+                <apex:selectList size="1" value="{!city}" id="a">
+                    <apex:selectOptions value="{!cities}"/>
+                </apex:selectList>
+            </apex:pageblockSectionItem>            
+        </apex:pageBlockSection>        
+    </apex:pageBlock>
+
+    </apex:form>
+
+</apex:page>

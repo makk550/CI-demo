@@ -1,0 +1,35 @@
+<apex:page standardController="Account" >
+    hello...
+    <script>
+        alert(window.parent.document.getElementById('lookupform'));
+  
+        mytext ='';
+    for (i=0; i<document.links.length; i++) 
+        {
+            if(document.links[i].text.indexOf('[View Hierarchy]') > -1)
+                alert(document.links[i].text);
+        }   
+     
+     /*   
+    if(document.all) {
+    
+    for (i=0; i<document.links.length; i++) {
+    if(document.links[i].innerText)
+    if(document.links[i].innerText != " ")
+    mytext += "<li><a target='_new' href="+document.links[i]+">"+document.links[i].innerText+"</a><br>";
+    else
+    mytext += "<li><a target='_new' href="+document.links[i]+">"+document.links[i]+"</a><br>" ;
+       }
+    }
+    else {
+    for (i=0; i<document.links.length; i++) {
+    if(document.links[i].text) {
+    if(((document.links[i].text).indexOf("javascript:")) == -1) {
+    mytext += "<li><a target='_new' href="+document.links[i]+">"+document.links[i].text+"</a><br>" ;
+       }
+    }
+    else { }
+       }
+    }*/
+    </script>
+</apex:page>

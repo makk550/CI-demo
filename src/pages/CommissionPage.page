@@ -1,0 +1,30 @@
+<apex:page controller="PreSalesEditController">
+    <apex:form >
+        <apex:sectionHeader title="Enter Commission Split"/>
+        <apex:outputLink value="/{!presale.id}" >Return to Presales Request </apex:outputLink>
+        <apex:pageBlock title="Commission Section" >
+                    <apex:pageMessages ></apex:pageMessages>
+                <apex:pageBlockSection columns="2">
+                  
+                     <apex:outputField value="{!comRecord.Presales_Resource1__c}" rendered="{!commResorce1}"/>
+                     <apex:InputField value="{!comRecord.Commission_Split1__c}" rendered="{!commResorce1}"/>
+                    <apex:outputField value="{!comRecord.Presales_Resource2__c}" rendered="{!commResorce2}"/>
+                     <apex:InputField value="{!comRecord.Commission_Split2__c}" rendered="{!commResorce2}"/>
+                    <apex:outputField value="{!comRecord.Presales_Resource3__c}" rendered="{!commResorce3}"/>
+                     <apex:InputField value="{!comRecord.Commission_Split3__c}" rendered="{!commResorce3}"/>
+                  
+
+             
+                </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+              <apex:commandButton value="Approve" action="{!save}"/>
+
+            </apex:pageBlockButtons>
+             
+        
+        </apex:pageBlock>
+    
+    </apex:form>
+    
+    
+</apex:page>

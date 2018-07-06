@@ -1,0 +1,61 @@
+<apex:page standardController="Opportunity" extensions="Service_Request" >
+      <apex:sectionHeader title="Services Notes Edit" subtitle="New Services Notes" />
+      <apex:form >
+          <apex:pageBlock >
+                  <apex:messages style="color:red" />
+                  <apex:pageBlockSection columns="1" >Select the Type of the Services Notes and press Apply Selection.</apex:pageBlockSection>
+                  <apex:pageBlockSection title="Opportunity Information" >
+                     <apex:outputField value="{!Opportunity.Name}" />
+                      <apex:outputField value="{!Opportunity.Opportunity_Type__c}" />
+                  </apex:pageBlockSection>
+                  <apex:pageBlockSection title="Services Notes" columns="1" >
+                         <apex:inputField value="{!sr.Services_Request_Type__c}" required="true" />
+                         <!--apex:inputField value="{!sr.Sold_To_Site__c}" required="false" /-->
+                         <apex:inputField value="{!sr.Business_Unit__c}"  required="true" />
+                         <!--apex:inputField value="{!sr.Sold_To__c}" required="false" /-->
+                         <apex:inputField value="{!sr.Transaction_Type__c}" required="true" />
+                         <!--apex:inputField value="{!sr.Ship_To_Site__c}" required="false" --/>
+                         <!--<apex:inputField value="{!sr.Sold_To_Site__c}" required="false" />    
+                         <apex:inputField value="{!sr.Sold_To__c}" required="false" />
+                         <apex:inputField value="{!sr.Ship_To_Site__c}" required="false" />
+                         <apex:inputField value="{!sr.Ship_To__c}" required="false" />-->
+                         <apex:inputField value="{!sr.Services_Delivery_Director__c}" required="false" />
+                         <!--apex:inputField value="{!sr.Ship_To__c}" required="false" /-->
+                         <apex:inputField value="{!sr.Services_Practice_Director__c}" required="false" />
+                         <!--apex:inputField value="{!sr.Bill_To__c}" required="false" /-->
+                         
+                         <!--apex:inputField value="{!sr.Practice_Contact__c}" required="false" /-->
+                         <!--apex:inputField value="{!sr.AMS_Contact__c}" required="false" /-->
+                         <!--apex:inputField value="{!sr.Delivery_Director__c}" required="false" /-->
+                         <!--apex:inputField value="{!sr.Education_Contact__c}" required="false" />
+                      <br/>
+                          <apex:inputField value="{!sr.Solution_Calculator_Used_for_Scoping__c}" required="false" />
+                      <br/>  
+                         <apex:inputField value="{!sr.Contains_GD_Component__c}" required="false" />
+                         <apex:inputField value="{!sr.GD_Contact__c}" required="false" />
+                         <apex:inputField value="{!sr.Bid_Desk__c}" required="false" />
+                         <apex:inputField value="{!sr.Bid_Desk_Contact__c}" required="false" /-->
+                         <apex:inputField value="{!sr.Summary_of_Request__c}" required="true" />
+                        
+                          
+                  </apex:pageBlockSection>
+                  <apex:pageBlockSection columns="1">
+                      <apex:outputPanel style="text-align:center"  >
+                         &nbsp; <apex:commandButton value="Apply Selection" action="{!ApplySelection}"  />
+                          <apex:commandButton value="Cancel" action="{!cancel}" />
+                      </apex:outputPanel>
+                  </apex:pageBlockSection>
+                  <apex:pageBlockSection columns="1">
+                   <ul style="color:red" > Once you press Apply Selection, you will be redirected to a page where you can upload an attachment to this Services Notes.
+                     <br/> Please follow the steps on the next page to attach your file:
+                      <li>Click Browse</li>
+                      <li>Click Attach File</li>
+                      <li>Click Done</li>
+                  </ul>
+                      
+
+
+              </apex:pageBlockSection>
+          </apex:pageBlock>
+      </apex:form>
+</apex:page>

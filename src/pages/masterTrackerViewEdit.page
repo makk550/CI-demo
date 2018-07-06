@@ -1,0 +1,329 @@
+<apex:page controller="masterTrackerViewEditController" sidebar="false">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">
+    </script>
+    
+    <style>
+    #trackerType,.trackerTable{ <!--Styling for the table-->
+        padding: 15px;
+        spacing: 10px;
+        border-collapse: collapse;
+        border: 1px solid black;
+        }
+    </style>
+    
+    <div id="overlay_div" class="waiting" style="position:fixed; top:0; left:0; height:100%; width:100%; z-index:2000; background-color:#999; opacity:.6; display:none;" />
+        <div style="position:fixed; top:35%; left:45%; width:150px; height:115px; background-color:#FFF; border:#FF0000 thin solid; z-index:2001; display:none;" align="center" class="ui-corner-all waiting">
+            <div align="center" style="margin-top:17px;">
+                <img src="{!$Resource.loadingGif}" />
+            </div>
+                <div align="center" id="waiting_msg">Working...</div>
+         </div>
+                <apex:actionStatus id="overlayStatus" onstart="$('.waiting').show();" onstop="$('.waiting').hide();" />
+    
+    <script>
+    function checkall(){
+    	checkalllineitems();
+    }
+    </script>
+    
+     <apex:pageMessages id="errors">
+    </apex:pageMessages>
+    
+    
+        <apex:outputPanel id="typePanel" rendered="{!renderTypeSelection}">
+        <apex:sectionHeader title="Master Tracker Components" subtitle="Select Master Tracker Type"/>
+        
+        <apex:form id="typeSelection">
+            
+            <apex:pageBlock >
+                <div>
+                    Select the type of record.
+                </div>
+                
+                <apex:pageBlockSection showHeader="TRUE">        
+                    <!--Hidden fields added to display the field a bit lower than the pageblock section-->
+                    <apex:inputHidden />
+                    <apex:inputHidden />
+                    
+                    <apex:selectList label="Type of Change" value="{!RcdTy}" multiselect="false" size="1" rendered="true">
+                        <apex:selectOptions value="{!typeList}"/>
+                    </apex:selectList>
+                </apex:pageBlockSection> 
+                
+                <apex:pageBlockButtons location="bottom">
+                    <apex:commandButton action="{!continueType}" value="Continue" />        <!--This sets the appropriate flag variable to true, depending on the type selected-->
+                </apex:pageBlockButtons>													<!--And Renders the appropriate panel-->
+
+                
+            </apex:pageBlock>
+            
+        </apex:form>
+        
+        <table id="trackerType">
+            <tr class="trackerTable"><th class="trackerTable">Type</th><th>Description</th></tr>
+            <tr class="trackerTable"><th class="trackerTable">Code/Config</th><td class="trackerTable">Select this type when you have a code or config change.</td></tr>
+            <tr class="trackerTable"><th class="trackerTable">Date Load</th><td class="trackerTable">Select this type when you a data load.</td></tr>
+        </table>
+        
+    </apex:outputPanel>
+
+    <apex:outputPanel id="componenetPanel" rendered="{!renderComponentSection}">
+        <apex:sectionHeader title="Master Tracker Components" subtitle="Component Details"/>
+        <apex:form id="trackerform">
+            
+            <apex:actionFunction action="{!checkalllineitems}" name="checkalllineitems" status="msgUF" reRender="lineitemsection"/>
+            <apex:actionStatus id="msgUF">
+                <apex:facet name="start">
+                    <apex:outputPanel >
+                        <apex:commandButton value="Processing..." status="myStatus" disabled="true"/>
+                        <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 20px; position: absolute; left:50%;top:50%;"/></div>
+                    </apex:outputPanel>
+                </apex:facet>
+                <apex:facet name="stop"> 
+                </apex:facet>
+            </apex:actionStatus>
+            
+			<apex:outputPanel id="codeconfigSection" rendered="{!renderCodeConfigSection}">
+            	<apex:pageBlock id="lineitemsection">
+                <apex:pageBlockSection title="Component Details">
+                    
+                    <apex:pageBlockTable id="pbt1" value="{!trackerRecordList}" var="tracker">
+                        <apex:column >
+                            <apex:facet name="header">
+                                <apex:inputCheckBox id="main" value="{!allchecked}" onclick="checkall();"/>
+                            </apex:facet>
+                            <apex:inputCheckBox value="{!tracker.checkedornot}">
+                                
+                            </apex:inputCheckBox>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Release Name
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.ReleaseName__c}"/>
+                        </apex:column>
+                        
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                UserStory/CR/Req #
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.Story_Req_SD__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                DevBox Name
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.DevBoxName__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Date Added to Tracker
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.DateAddedtoTracker__c}"/>
+                        </apex:column>
+                        
+                        <apex:column rendered="{!fsb1}">
+                            <apex:facet name="header">
+                                In FSB1?
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.InFSB1__c}" rendered="{!fsb1}"/>
+                        </apex:column>
+                        
+                        <apex:column rendered="{!fsb2}">
+                            <apex:facet name="header">
+                                In FSB2?
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.InFSB2__c}" rendered="{!fsb2}"/>
+                        </apex:column>
+                        
+                        <apex:column rendered="{!fsb3}">
+                            <apex:facet name="header">
+                                In FSB3?
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.InFSB3__c}" rendered="{!fsb3}"/>
+                        </apex:column>
+                        
+                        <apex:column rendered="{!fsb4}">
+                            <apex:facet name="header">
+                                In FSB4?
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.InFSB4__c}" rendered="{!fsb4}"/>
+                        </apex:column>
+                        
+                        <apex:column rendered="{!fsb5}">
+                            <apex:facet name="header">
+                                In FSB5?
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.InFSB5__c}" rendered="{!fsb5}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                New/Existing?
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.NeworExisting__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Type
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.Type__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Component Name
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.ComponentLabelName__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Component API Name
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.ComponentAPIName__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Object/Folder API Name
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.ObjectName__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                BSA
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.BSA__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Developer
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.Developer__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Conflict?
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.Conflict__c}"/>
+                        </apex:column>
+                        
+                        
+                        
+                        
+                    </apex:pageBlockTable>
+                    <br/>
+                </apex:pageBlockSection>
+                <apex:pageBlockButtons location="top">
+                    <apex:commandButton value="Save" action="{!onSave}" reRender="errors,trackerform" status="overlayStatus"/>
+                    <apex:commandButton value="Delete" action="{!onDelete}" reRender="errors,trackerform" status="overlayStatus"/>
+                </apex:pageBlockButtons>
+            </apex:pageBlock>
+            </apex:outputPanel>
+            
+            <apex:outputPanel id="dataloadSection" rendered="{!renderDataLoadSection}">
+                <apex:pageBlock id="dataloadlineitem">
+                <apex:pageBlockSection title="Component Details">
+                    
+                    <apex:pageBlockTable id="pbt2" value="{!trackerRecordList}" var="tracker">
+                        <apex:column >
+                            <apex:facet name="header">
+                                <apex:inputCheckBox id="main_dataload" value="{!allchecked}" onclick="checkall();"/>
+                            </apex:facet>
+                            <apex:inputCheckBox value="{!tracker.checkedornot}">
+                                
+                            </apex:inputCheckBox>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Release Name
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.ReleaseName__c}"/>
+                        </apex:column>
+                        
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                UserStory/CR/Req #
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.Story_Req_SD__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Date Added to Tracker
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.DateAddedtoTracker__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                In FSB1?
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.InFSB1__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                In FSB2?
+                            </apex:facet>
+                            <apex:inputField value="{!tracker.mt.InFSB2__c}"/>
+                        </apex:column>
+
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Type
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.Type__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Object API Name
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.ObjectName__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                BSA
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.BSA__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">
+                                Conflict?
+                            </apex:facet>
+                            <apex:outputField value="{!tracker.mt.Conflict__c}"/>
+                        </apex:column>
+                        
+                        
+                        
+                        
+                    </apex:pageBlockTable>
+                    <br/>
+                </apex:pageBlockSection>
+                <apex:pageBlockButtons location="top">
+                    <apex:commandButton value="Save" action="{!onSave}" reRender="errors,trackerform" status="overlayStatus"/>
+                    <apex:commandButton value="Delete" action="{!onDelete}" reRender="errors,trackerform" status="overlayStatus"/>
+                </apex:pageBlockButtons>
+            </apex:pageBlock>
+            </apex:outputPanel>
+        
+        </apex:form>
+    </apex:outputPanel>
+
+</apex:page>

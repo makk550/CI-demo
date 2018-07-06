@@ -1,0 +1,53 @@
+<apex:page standardController="Account" tabStyle="Account_Visit__c" extensions="EBCOppsExt">
+<script>
+    function applySelection(){
+        var inputElem = document.getElementsByTagName("input");
+        var selectedOpps = "";
+        var len = inputElem.length;
+        for(var i=0; i<=len; i++){
+            if(i>=len){
+            }else{
+                if(inputElem[i].id.indexOf("chkOppId")!=-1){
+                    if(inputElem[i].checked){
+                        selectedOpps+=inputElem[i].value + "=";
+                    }
+                }
+            }
+        }
+        //alert(selectedOpps);
+        //var strURL = "{!URLFOR($Action.Account_Visit__c.New, '',[retURL=$CurrentPage.parameters.AccountId,saveUrl=$CurrentPage.parameters.AccountId,CF00NQ0000000Kydk_lkid=$User.Id,CF00NQ0000000Kydk=$User.FirstName + ' ' + $User.LastName,CF00NQ0000000Kydu_lkid=$CurrentPage.parameters.AccountId,CF00NQ0000000Kydu=$CurrentPage.parameters.AccountName], true)}";
+        var strURL = "{!URLFOR('/apex/EBCForm', '',[retURL=$CurrentPage.parameters.AccountId,saveUrl=$CurrentPage.parameters.AccountId,AccountId=$CurrentPage.parameters.AccountId], true)}";
+        strURL = strURL + "&selectedOpps=" + selectedOpps;
+        //strURL = strURL + "&00NQ0000000KzqQ=" + selectedOpps;
+        //alert(strURL);
+        window.parent.location.href = strURL;
+        return false;
+    }   
+    function skipSelection(){
+        //var strURL = "{!URLFOR($Action.Account_Visit__c.New, '',[retURL=$CurrentPage.parameters.AccountId,saveUrl=$CurrentPage.parameters.AccountId,CF00NQ0000000Kydk_lkid=$User.Id,CF00NQ0000000Kydk=$User.FirstName + ' ' + $User.LastName,CF00NQ0000000Kydu_lkid=$CurrentPage.parameters.AccountId,CF00NQ0000000Kydu=$CurrentPage.parameters.AccountName], true)}";
+        var strURL = "{!URLFOR('/apex/EBCForm', '',[retURL=$CurrentPage.parameters.AccountId,saveUrl=$CurrentPage.parameters.AccountId,AccountId=$CurrentPage.parameters.AccountId], true)}";
+        window.parent.location.href = strURL;
+        return false;
+    }
+</script>
+<apex:form >
+<apex:pageBlock title="Attach Opportunities to a EBC visit request">
+
+    <apex:pageBlockButtons >
+        <apex:commandButton onclick="return applySelection();" value="Apply Selection"/>
+        <apex:commandButton onclick="return skipSelection();" value="No Opportunity Associated"/>
+    </apex:pageBlockButtons>
+  
+    <apex:pageBlockTable value="{!opps}" var="item" width="100%">
+        <apex:column headerValue="Select" rendered="{!!item.IsClosed}">
+            <input type="checkbox" id="chkOppId" value="{!item.id}:{!item.Opportunity_Number__c}"/>
+        </apex:column>        
+        <apex:column value="{!item.name}" rendered="{!!item.IsClosed}"/>
+        <apex:column value="{!item.StageName}" rendered="{!!item.IsClosed}"/>
+        <apex:column value="{!item.closedate}" rendered="{!!item.IsClosed}"/>
+        <apex:column value="{!item.amount}" rendered="{!!item.IsClosed}"/>
+        <apex:column value="{!item.id}" rendered="{!!item.IsClosed}"/>
+    </apex:pageBlockTable>    
+</apex:pageBlock>
+</apex:form>
+</apex:page>

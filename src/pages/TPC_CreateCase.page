@@ -1,0 +1,241 @@
+<apex:page extensions="TPC_CreateCaseExtension" standardController="case" tabStyle="Case">
+    <style>
+        #loading-container{
+            position: absolute;
+            z-index:100;
+            background-color: rgba(0, 0, 0, 0.3);
+            top: 0;
+            bottom:0;
+            left:0;
+            right:0;
+       }
+    </style>
+    
+    <apex:sectionHeader title="Case" subtitle="{!IF(isEditing,'Update Case','New Case')}"/>
+    <apex:form >
+        <apex:actionFunction action="{!getSiteContacts}" reRender="siteContact" name="updateSiteContact" status="fetchStatus" immediate="true"/>
+        <apex:pageMessages id="errorMsg" escape="false" />
+        <apex:pageBlock title="Case Edit" mode="edit">
+            <apex:actionStatus id="fetchStatus" >
+                <apex:facet name="start">
+                    <div id="loading-container">
+                        <center><img src="{!$Resource.LoadingIcon}" style="position:absolute; top:50%;"/></center>
+                    </div>
+                </apex:facet>
+                <apex:facet name="stop"  />
+            </apex:actionstatus>
+            <apex:pageBlockSection title="Case Information" columns="2">
+                
+                <apex:inputField value="{!case.caseNumber}" rendered="{!isEditing}"/>
+                <apex:pageBlockSectionItem rendered="{!isEditing}"></apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    Site Association
+                    <apex:actionRegion >
+                        <apex:selectList size="1" multiselect="false" value="{!siteIdSelected}" required="true" >
+                            <apex:selectOptions value="{!siteIds}"></apex:selectOptions>
+                            <apex:actionSupport event="onchange" action="{!getSiteContacts}" reRender="siteContact"  status="fetchStatus" />
+                        </apex:selectList>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+
+                <!-- US88789 -->
+                <!-- <apex:inputField value="{!case.status}" required="true"/> --> <!-- Commented as part of US88789 -->
+                <apex:inputField value="{!case.Troubleshooting_Stage__c}" required="true"/>
+                <!-- US88789 -->
+
+                <apex:pageBlockSectionItem >
+                    Contact Name
+                    <apex:outputPanel >
+                        
+                    <div class="requiredInput">
+                    <div class="requiredBlock"></div>
+                    <apex:selectList size="1" multiselect="false" value="{!case.contactId}" id="siteContact"  required="true">
+                        <apex:selectOptions value="{!contacts}"></apex:selectOptions>
+                    </apex:selectList>
+                    </div>
+                        </apex:outputPanel>
+
+                </apex:pageBlockSectionItem>
+
+                <apex:inputField value="{!case.Next_Action__c}" /> 
+                 <apex:inputField value="{!case.origin}" required="true"/>
+                 <apex:inputField value="{!case.Next_Action_Due_Date__c}"/> 
+                 <apex:inputField value="{!case.Case_Type__c}" required="true"/>
+                <apex:pageBlockSectionItem rendered="{!isEditing}">
+                    Case Owner
+                    <apex:selectList size="1" multiselect="false" value="{!case.OwnerId}" >
+                        <apex:selectOptions value="{!owners}"></apex:selectOptions>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                 
+                
+                   
+                  
+                  <apex:pageBlockSectionItem rendered="{!!isEditing}">
+                    <label>Case Owner</label>
+                    <apex:outputLabel value="{!$User.FirstName +' '+$User.LastName}"/>
+                </apex:pageBlockSectionItem>
+                   <apex:inputField value="{!case.Severity__c}" required="true"/>
+                   <apex:inputField value="{!case.Internal_CA__c}"></apex:inputField>
+                  <apex:inputField value="{!case.Sev_1_Impact_c__c}"/>
+                 <apex:inputField value="{!case.Symptom__c}"/>
+                  <apex:inputHidden />
+                  <apex:inputField value="{!case.Reason}"/>
+                 
+                 <!--apex:pageBlockSectionItem rendered="{!isEditing}">
+                    Internal Contact
+                    <apex:selectList size="1" multiselect="false" value="{!case.Internal_Contact__c}" >
+                        <apex:selectOptions value="{!TPCTeamContacts}"></apex:selectOptions>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem-->
+                 <apex:inputHidden rendered="{!isEditing}"/> 
+                 <apex:pageBlockSectionItem rendered="{!!isEditing}"></apex:pageBlockSectionItem>
+                 <apex:inputField value="{!case.Production_Down_Status__c}"/>
+                  <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                 <apex:outputField value="{!case.Internal_Priority_New__c}"/>               
+                <apex:inputField value="{!case.Project_Site_Association__c}"/>
+                 <apex:inputField value="{!case.Responsible_Organization__c}" rendered="{!isEditing}"/>
+               
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Details" columns="1">
+                <apex:pageBlockSectionItem >
+                    Subject
+                    <apex:inputField value="{!case.subject}" required="true"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                Description
+                <apex:outputPanel >
+                <div class="requiredInput">
+                    <div class="requiredBlock"></div>
+                        <apex:inputTextarea value="{!case.Description}" cols="40" rows="2" required="true"/>
+                </div>
+                </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                
+                <apex:inputTextarea value="{!case.Resolution__c}" cols="40" rows="3"/>
+                <apex:inputTextarea value="{!case.Business_Impact__c}" cols="40" rows="4"/>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Advanced Information" columns="2">
+                <apex:inputField value="{!case.Issue_Action_c__c}"/>
+                <apex:inputField value="{!case.IsEscalated}"/>
+                <apex:inputField value="{!case.Help_Required__c}"/>
+              <!-- <apex:inputField value="{!case.Next_Action__c}"/>   -->
+               <apex:inputField value="{!case.Customer_Environment__c}"/>
+              <apex:outputField value="{!case.AccountId}"/>
+                <!--  <apex:outputField value="{!case.Next_Action_Date__c}"/> -->
+                <apex:inputField value="{!case.Cust_Env_Profile_c__c}"/>
+               <!-- <apex:inputField value="{!case.Next_Action_Due_Date__c}"/> -->
+               <apex:outputField value="{!case.Third_Party_Reference__c}"/>
+               <apex:inputField value="{!case.Function_text__c}"/>
+                <apex:inputField value="{!case.parentId}"/>
+                <apex:inputField value="{!case.Root_Cause_Category_Text__c}"/>
+                <apex:inputHidden />
+                <apex:inputField value="{!case.Root_Cause_Sub_Category_Text__c}"/>
+                <apex:inputHidden />
+                <apex:inputField value="{!case.Additional_Info__c}"/>
+                 <apex:inputHidden />
+                <!-- <apex:inputField value="{!case.BusinessHoursId}"/> -->
+                <apex:inputField value="{!case.Priority}"/>
+                
+
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Search/Select CA Product and Component" columns="2" id="productsSection" >
+                <apex:pageBlockSectionItem >
+                    CA Product
+                    <apex:outputPanel >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:actionRegion >
+                                <apex:selectList size="1" multiselect="false" value="{!case.CA_Product_Controller__c}" required="true">
+                                    <apex:selectOptions value="{!CAProducts}"></apex:selectOptions>
+                                    <apex:actionSupport event="onchange" action="{!getValuesFromController}" reRender="productsSection"  status="fetchStatus" />
+                                </apex:selectList>
+                            </apex:actionRegion>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+
+              <!-- <apex:pageBlockSectionItem rendered="{!case.CA_Product_Controller__c != NULL}">
+                    Product Release
+                    <apex:actionRegion >
+                      <apex:selectList size="1" multiselect="false" value="{!case.Product_Release_Selection__c}" id="productReleaseList" >
+                          <apex:selectOptions value="{!CAProductRelease}"></apex:selectOptions>
+                          <apex:actionSupport event="onchange" action="{!getOperatingSystems}" reRender="OSList"  status="fetchStatus" />
+                      </apex:selectList>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem> --> 
+
+                <apex:pageBlockSectionItem rendered="{!case.CA_Product_Controller__c != NULL}">
+                    Component Description
+                    <apex:outputPanel >
+                    <div class="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:actionRegion >
+                        <apex:selectList size="1" multiselect="false" value="{!case.CA_Product_Component__c}" id="componentsList" required="true">
+                            <apex:selectOptions value="{!CAComponents}"></apex:selectOptions>
+                            <apex:actionSupport event="onchange" action="{!CAComponentText}" reRender="productsSection"  status="fetchStatus" />
+                            </apex:selectList>
+                        </apex:actionRegion>                  </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem rendered="{!case.CA_Product_Component__c != NULL}">
+                    Component Code
+                    <apex:outputPanel >
+                    
+                        {!compText}
+                    
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+
+                <!-- <apex:pageBlockSectionItem rendered="{!case.CA_Product_Controller__c != NULL}">
+                    Operating System
+                    <apex:selectList size="1" multiselect="false" value="{!case.Product_Operating_System__c}" id="OSList">
+                        <apex:selectOptions value="{!CAOperatingSys}"></apex:selectOptions>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem> -->
+            </apex:pageBlockSection>
+
+            <!--<apex:pageBlockSection title="Product Details (Use Below Fields on EDIT ONLY)" columns="1">
+                <apex:outputField value="{!case.Product_Material__c}"/>
+                <apex:outputField value="{!case.Product_Release_Selection__c}"/>
+                <apex:outputField value="{!case.Product_Service_Pack_Selection__c}"/>
+                <apex:outputField value="{!case.Product_Operating_System__c}"/>
+                <apex:outputField value="{!case.Alternate_OS__c}"/>
+            </apex:pageBlockSection>-->
+
+            <apex:pageBlockSection title="Alt contact information" columns="2">
+                <apex:outputField value="{!case.Alt_Contact_First_Name__c}"/>
+                <apex:outputField value="{!case.Alt_Contact_Preferred_Contact_Method__c}"/>
+                <apex:outputField value="{!case.Alt_Contact_Last_Name__c}"/>
+                <apex:outputField value="{!case.Alt_Contact_Preferred_Language__c}"/>
+                <apex:outputField value="{!case.Alternate_email__c}"/>
+                <apex:outputField value="{!case.Alt_Contact_Alternate_Language__c}"/>
+                <apex:outputField value="{!case.Alternate_Phone__c}"/>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Case Audit History" columns="2">
+                <apex:outputField value="{!case.Date_Time_ReOpened__c}"/>
+                <apex:outputField value="{!case.Survey_Sent__c}"/>
+                <apex:outputField value="{!case.Date_Time_ReClosed__c}"/>
+                <apex:outputField value="{!case.Survey_Sent_Date__c}"/>
+                <apex:outputField value="{!case.Next_Action_Date__c}"/>
+                <apex:inputField value="{!case.Reason_for_Reopen__c}"/>
+                <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                <apex:inputField value="{!case.status}" required="true"/>
+
+            </apex:pageBlockSection>
+
+
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!createCase}"  />
+                <a href="{!$site.baseURL}/TPC_ShowAllCases" class="btn" style="text-decoration: none !important;   padding: 4px 3px; vertical-align: middle;" >Cancel</a>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+
+    </apex:form>
+</apex:page>

@@ -1,0 +1,7 @@
+<apex:page controller="KBArticleFeedbackListController" standardStylesheets="false" tabStyle="KBArticle_Average_Rating__c">
+   
+   <c:KBArticleFeedbackListComponent articleNumber="{!articleRecord.Name}" 
+                                      articleTitle="{!articleKnowledgeRecord.Title}"
+                                      articleId="{!articleKnowledgeRecord.Id}"/> 
+       
+</apex:page>

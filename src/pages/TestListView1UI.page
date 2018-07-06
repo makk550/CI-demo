@@ -1,0 +1,112 @@
+<apex:page standardController="Case" recordSetVar="Cases" extensions="TestListViewController">
+   <apex:includeScript value="js/bootstrap.min.js" />
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" />
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" />
+  
+<style>
+   /* .no-close .ui-dialog-titlebar-close {
+           display: none;
+        }
+        .ui-dialog-titlebar {
+          display: none;
+      } */
+
+  .dialogTitle  .ui-dialog-titlebar{
+      background-color: #ffffff;
+      border : none;
+    text-align:right;
+  }
+  .ui-widget.ui-widget-content{border:1px solid #999;}
+  //.ui-dialog-titlebar { background-color: #ffffff; }
+</style>
+
+  <script>  
+       
+    $( document ).ready(function() {
+       
+        var updatableFieldsInJS = '{!updatableFields}';
+        console.log('updatableFieldsInJS:', updatableFieldsInJS);
+        
+        var caseFieldIDNameMap =  JSON.parse('{!jsonFieldIdNameMap}'); 
+        console.log('caseFieldIDNameMap:',caseFieldIDNameMap);
+        
+        ListViewport.prototype.extHandler.cellMouseOver = function(a,b,c,d) {  
+            console.log('***cellMouseOver***');
+            var cellId = d.target.id;
+            var rid = cellId.substring(0, cellId.indexOf('_') );
+            var fid = this.filter.shownColumns[c-3].fieldId;
+            console.log('In cellMouseOver, rid:'+rid + 'fid:'+fid);            
+            
+            var fname = caseFieldIDNameMap[fid];
+            console.log('fname:',fname);
+            
+             if( updatableFieldsInJS.includes(fname) ){
+                 //console.log('cellMouseOver, includes:', fname);
+                  a = 'inlineEditWrite';                 
+             } else{
+                 // console.log('cellMouseOver, does not include:', fname);
+                 a = 'inlineEditLock';
+             }     
+            Ext.fly(this.grid.getView().getCell(b, c)).replaceClass(a + "Hidden", a + "Visible"); 
+        }
+        
+        ListViewport.prototype.extHandler.cellMouseOut = function(a,b,c,d) {    
+            //console.log('***cellMouseOut***');
+            var cellId = d.target.id;
+            var rid = cellId.substring(0, cellId.indexOf('_') );
+            var fid = this.filter.shownColumns[c-3].fieldId;
+            // console.log('In cellMouseOut, rid:'+rid + 'fid:'+fid);            
+            
+            var fname = caseFieldIDNameMap[fid];
+            //console.log('fname:',fname);
+             if( updatableFieldsInJS.includes(fname) ){
+                 //console.log('cellMouseOut, includes:', fname);
+                  a = 'inlineEditWrite';                 
+             } else{
+                 //console.log('cellMouseOut, does not include:', fname);
+                 a = 'inlineEditLock';
+             }     
+           Ext.fly(this.grid.getView().getCell(b, c)).replaceClass(a + "Visible", a + "Hidden"); 
+        }
+      
+        
+        $("#dialog").dialog({
+            'autoOpen': false, 
+            //'dialogClass': "no-close"
+            'dialogClass': 'dialogTitle',
+             'closeText': 'X'
+        });
+        
+              
+        
+        ListViewport.prototype.extHandler.cellDblClick = function(a,b,c,d) {
+             console.log('***cellDblClick***');
+            var cellId = d.target.id;
+            var rid = cellId.substring(0, cellId.indexOf('_') );
+            var fid = this.filter.shownColumns[c-3].fieldId;
+            console.log('rid:'+rid);
+            console.log('fid:'+fid);
+            //inlineEditFn();
+            //openSubTab(rid,fid);
+            var fname = caseFieldIDNameMap[fid];
+            if( updatableFieldsInJS.includes(fname) ){
+                $("#edt").attr("src", 'TestEditCaseUI?rid=' + rid + '&fid='+ fid);        
+                $("#dialog").dialog('open');             
+            }         
+        }        
+        //***********        
+        
+    });    
+    
+    </script>
+    
+    <apex:enhancedList type="Case" height="500" rowsPerPage="10"  />
+    <!-- class="overlayDialog cssDialog inlineEditDialog" -->
+    <div id='dialog' style="height: 550px; width: 350px" > 
+        <iframe id='edt' width="100%" style="display:'none'" frameBorder="0" >
+            
+        </iframe>
+    </div>
+    
+    
+</apex:page>

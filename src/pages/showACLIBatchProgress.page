@@ -1,0 +1,60 @@
+<apex:page extensions="apexJobStatusACLI" id="showNoticeMessage2" standardController="Opportunity" action="{!RedirectPage}">
+       
+<script type="text/javascript">
+    setInterval('window.location.reload()', 10000);
+</script>
+   <!-- Here is the css styles that will be used for the progress bars -->
+    <style>
+        .progressBar{
+            background-color: #f8f8f8;
+            border:1px solid #DDDDDD;
+            height: 19px;
+            width: 300px;
+            -moz-border-radius: 5px; 
+            -webkit-border-radius: 5px;
+        }
+        .progress{
+            background-color: #F7B64B;
+            border:1px solid #E78F08;
+            height: 100%;
+            margin: -1px;
+            text-align: center;
+            -moz-border-radius: 5px; 
+            -webkit-border-radius: 5px;
+            line-height: 18px;
+        }
+    </style>
+    
+<div>
+<br />
+<br />
+<b>A Batch job is currently running on this opportunity; Opportunity products will be unavailable until the job is complete, at which time the user listed below in the Created By field will receive an email notification. Please note that, depending on the total number of batches being processed, this may take some time.</b>
+</div>
+<br />
+<br />
+<apex:form >
+<apex:pageBlock >
+ <apex:outputLink value="/{!$CurrentPage.parameters.Id}">Go back to opportunity page</apex:outputLink>
+        <apex:pageBlockTable value="{!batchJobs}" var="b" id="jobs">            
+            <apex:column value="{!b.CreatedDate}"/>
+            <apex:column value="{!b.CreatedById}"/>
+            <apex:column value="{!b.Status}" id="statusid"/>
+            <apex:column value="{!b.NumberOfErrors}"/>
+            <apex:column value="{!b.TotalJobItems}"/>
+            <apex:column value="{!b.JobItemsProcessed}"/>
+            <!--<apex:column value="{!b.ExtendedStatus}"/> -->
+           <apex:column width="320px" title="status detail" > 
+ 
+               <div class="progressBar">
+                    <div class="progress" style="width:  {! If(batchJobs[0].TotalJobItems == 0 ,0,FLOOR((batchJobs[0].JobItemsProcessed/ batchJobs[0].TotalJobItems) * 100.0))}%;">
+{! If(batchJobs[0].TotalJobItems == 0 ,0,FLOOR((batchJobs[0].JobItemsProcessed/ batchJobs[0].TotalJobItems) * 100.0))}%
+                    </div>
+                </div>
+ 
+            </apex:column>
+            
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+  </apex:form>      
+
+</apex:page>

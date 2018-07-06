@@ -1,0 +1,10 @@
+<apex:page contentType="text/xml" controller="KB_SiteMap" showHeader="false" cache="false" action="{!getArticles}" readonly="true">
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+        <url>
+            <loc>{!siteURL}</loc>
+        </url>
+        <apex:repeat id="repeatId" value="{!urlValue}" var="article">
+            {!article}
+        </apex:repeat>
+    </urlset>
+</apex:page>

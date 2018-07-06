@@ -1,0 +1,33 @@
+<apex:page standardController="Deal_Program_Product_Group__c" extensions="DealProgramProductGroupExt">
+    <apex:form id="addGroupsForm">
+        <apex:pageBlock title="Add Product Groups to Deal Program">
+        <apex:messages />
+        <apex:actionFunction name="getProductGroups" action="{!getProductGroups}" reRender="productGroupsSection1" />
+        <apex:pageBlockSection columns="3">
+                <apex:pageBlockSectionItem ><font color="red">*&nbsp;</font><b>Deal Registration Program</b></apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem ><apex:inputField value="{!Deal_Program_Product_Group__c.Deal_Registration_Program__c}"/></apex:pageBlockSectionItem>                
+        </apex:pageBlockSection>                
+            <apex:pageBlockSection columns="3">
+                <apex:pageBlockSectionItem ><font color="red">*&nbsp;</font><b>BU</b></apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:selectList id="BU" size="1" value="{!buSelected}" onchange="getProductGroups(this.value);" >   
+                        <apex:selectOptions value="{!buValues}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="productGroupsSection1" columns="3">
+                <apex:pageBlockSectionItem ><font color="red">*&nbsp;</font><b>Product Group</b></apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <c:MultiselectComponent AvailableList="{!availableList}" ChosenList="{!chosenList}" AvailableListName="Available Product Groups" ChosenListName="{!selectedListName}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        
+        <apex:pageBlockButtons location="bottom">
+        
+            <apex:commandButton action="{!saveDealProgramProductGroup}" value="  Save  "/>
+            <apex:commandButton action="{!saveDealProgramProductGroupsAndAddMore}" value="  Save and Add More  "/>            
+            <apex:commandButton action="{!Cancel}" value="Cancel"/>
+        </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

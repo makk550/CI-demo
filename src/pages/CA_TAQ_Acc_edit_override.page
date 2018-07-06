@@ -1,0 +1,5 @@
+<apex:page action="{!editPage}" standardController="TAQ_Account__c" extensions="CA_TAQ_Acc_Edit_override">
+
+
+
+</apex:page>

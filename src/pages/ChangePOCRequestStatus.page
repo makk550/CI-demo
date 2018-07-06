@@ -1,0 +1,27 @@
+<apex:page standardController="Trial_Request__c" tabStyle="Trial_Request__c" extensions="ChangePOCRequestStatusController">
+
+    <apex:sectionHeader title="Request Status Edit" subtitle="{!Trial_Request__c.Name}"/>
+    <apex:form >
+    <apex:messages style="color:red;font-size:15px" />
+    <apex:pageBlock mode="edit" >
+            <apex:pageBlockSection columns="1">
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Current POC Status" for="Cha_Req"></apex:outputLabel>
+            <apex:outputText id="Cha_Req" value="{!Trial_Request__c.Request_Status__c}"/>
+            </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="New POC Status" for="Cha_Req_1"></apex:outputLabel>
+                
+                <apex:selectList id="Cha_Req_1" value="{!newStatus}" size="1">
+            <apex:selectOptions value="{!availableValues}"/>
+        </apex:selectList>
+             </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!doSave}" value="Save"/>
+                 <apex:commandButton action="{!doCancel}" value="Return"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+   </apex:form>
+</apex:page>

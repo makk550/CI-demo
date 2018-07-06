@@ -1,0 +1,18 @@
+<apex:page controller="khafa03class" >
+    <apex:form >
+        <apex:sectionHeader title="Title" subtitle="Subtitle"/>
+        <apex:pageBlock title="Faizy" tabStyle="Case" helpTitle="Please help yourself" helpUrl="https://www.google.co.in">
+            <apex:pageBlockSection title="Faizy's First VF Page Hurray!">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Product"> </apex:outputLabel>
+                    <apex:outputText value="{!displayCase.Product__c}"/>
+                </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem >
+                      <apex:outputLabel value="Product Release"> </apex:outputLabel>
+                    <apex:outputText value="{!displayCase.Product_Release__c}" label="Product Release"/>
+                </apex:pageBlockSectionItem>
+              
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

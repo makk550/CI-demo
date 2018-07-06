@@ -1,0 +1,58 @@
+<apex:page standardController="Task" extensions="Dismiss_selected_Callbacks_ext">
+    <apex:includeScript value="/support/console/22.0/integration.js"/>
+    <script type="text/javascript">
+    
+    window.onload = function() {
+        if('{!$CurrentPage.parameters.blkRender}' == 'DC') sforce.console.setTabTitle('Select Tasks');
+        selectOnLoad;
+    }
+    
+    
+    function selectAllCheckboxes(obj,receivedInputID){
+        var inputCheckBox = document.getElementsByTagName("input");
+          
+                   
+              
+        for(var i=0; i<inputCheckBox.length; i++){          
+            if(inputCheckBox[i].id.indexOf(receivedInputID)!=-1){                                     
+                
+                inputCheckBox[i].checked = obj.checked;
+            }
+        }
+    }
+    
+   
+    
+  
+    </script>
+    <apex:form >
+        <apex:pageBlock mode="maindetail" >
+            <apex:pageBlockButtons location="top">
+                
+                <apex:commandButton value="Dismiss" action="{!Save}" />
+                <apex:commandButton value="Cancel" action="{!Cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageMessages />
+            
+            
+            <apex:pageBlockTable value="{!listTasksWrapper}" var="TW" width="100%">
+                <apex:column headerValue="Select">
+                    <apex:facet name="header" >
+                        <apex:outputPanel layout="none">
+                            <apex:inputCheckbox onclick="selectAllCheckboxes(this,'checkboxId')" selected="true" rendered="{!checkAll}"/>
+                            
+                            <apex:outputtext value="Select All" rendered="{!checkAll}"/>
+                        </apex:outputPanel> 
+                    </apex:facet>
+                    <apex:inputCheckbox value="{!TW.bChecked}"  id="checkboxId" />
+                </apex:column>
+                <apex:column value="{!TW.objTask.WhatId}" headerValue="Case" />
+                <apex:column value="{!TW.objTask.Subject}" headerValue="Subject" />
+                <apex:column value="{!TW.objTask.Status}" headerValue="Status" />
+                <apex:column value="{!TW.objTask.ActivityDate}" headerValue="Activity Date" />
+                <apex:column value="{!TW.objTask.OwnerId }" headerValue="Assigned To" />
+            </apex:pageBlockTable>
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

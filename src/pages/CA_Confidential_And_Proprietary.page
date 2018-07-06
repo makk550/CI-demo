@@ -1,0 +1,3 @@
+<apex:page standardController="HVN__c">
+  <center><font size="1" face="verdana">{!$Label.CA_Confidential_And_Proprietary}</font></center>
+</apex:page>

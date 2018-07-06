@@ -1,0 +1,5 @@
+<apex:page standardController="Apttus__APTS_Agreement__c"> 
+    <div style="height: 200px" class="bodyDiv" onclick="resizeFrame();">
+        <c:AgreementHierarchyTree currentId1="{!Apttus__APTS_Agreement__c.id}" />
+    </div>
+</apex:page>

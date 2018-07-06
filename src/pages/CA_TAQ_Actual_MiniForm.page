@@ -1,0 +1,293 @@
+<apex:page id="miniform" sidebar="true" standardcontroller="TAQ_Account__c" extensions="CA_TAQ_Actual_MiniForm" action="{!onLoad}" >
+
+<!-- sfircce connection lib -->
+  <script type="text/javascript" src="/soap/ajax/16.0/connection.js"></script>
+  <!-- sforce apex lib -->
+  <script type="text/javascript" src="/soap/ajax/16.0/apex.js"></script>
+
+
+<script type="text/javascript">
+
+function fun(){
+ var newValSolProvider =document.getElementById("miniform:theform:theblock:theSection:bsectionItem:SolProvider").value;
+ var OldValSolProvider = "{!taqAccount.Solution_Provider_Type__c}" ;
+ 
+ var newVelProvider =document.getElementById("miniform:theform:theblock:theSection:bsectionItem1:VelSell").value;
+ var OldVelProvider = "{!taqAccount.Velocity_Seller_Type__c}" ;
+ var AccType = "{!taqAccount.View_Acc_Record__r.Customer_Category__c}" ;
+ var ResellerId =  "{!taqAccount.Reseller_ID__c}" ;
+
+ if(ResellerId != null)
+ {
+     if(newValSolProvider != OldValSolProvider || newVelProvider != OldVelProvider ){
+       var r = confirm('Are you sure you want to make this change?\nThe Account Type is set up as '+AccType+' during creation. Changing this will not change the Account type in SFDC. ');
+
+         if(r == false){
+              if(newValSolProvider != OldValSolProvider ){
+                 document.getElementById("miniform:theform:theblock:theSection:bsectionItem:SolProvider").value = OldValSolProvider ;
+              }
+              if(newVelProvider != OldVelProvider)
+              {
+                  document.getElementById("miniform:theform:theblock:theSection:bsectionItem1:VelSell").value = OldVelProvider;
+              }
+        
+        
+        
+         }
+    }
+  } 
+ }
+
+</script>
+
+
+    <apex:pageMessages />
+    <apex:outputpanel id="thePanel">
+        <apex:form id="selectionForm" rendered="{!!isDetailStep}">
+            <apex:outputpanel rendered="{!!isError}">
+                <apex:pageBlock title="Record Type Selection" rendered="{!isAccAdd}">
+                    <apex:outputLabel value="Record Type    " for="req_type" />
+                    <apex:selectList id="req_type" size="1" value="{!selected}" > 
+                        <apex:selectOptions value="{!options}"/>
+                    </apex:selectList>
+                    <apex:commandButton value="Proceed" action="{!nextstep}" rerender="thePanel"  />
+                </apex:pageBlock> 
+                
+                <apex:pageBlock title="Request Type Selection" rendered="{!!isAccAdd}">
+                    <apex:outputLabel value="Request Type    " for="req_type2" />
+                    <apex:selectList id="req_type2" size="1" value="{!selected}" > 
+                        <apex:selectOptions value="{!options}"/>
+                    </apex:selectList>
+                    <apex:commandButton value="Proceed" action="{!nextStep}"/>
+                </apex:pageBlock> 
+            </apex:outputpanel>    
+            <apex:pageBlock title="Go Back To Accounts" rendered="{!isError}">
+                <apex:commandButton action="{!cancel}" value="Go Back" /> 
+            </apex:pageBlock>
+        </apex:form>
+     
+        
+        <apex:form id="theform" rendered="{!isDetailStep}" >
+         
+            <apex:pageBlock id="theblock"> 
+                <apex:pageBlockButtons >
+             
+                    <apex:commandButton action="{!saveForm}" value="Save"/> 
+                    <apex:commandButton action="{!cancel}" value="Cancel"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection title="Information For all Requests">
+                    <apex:inputField value="{!taqAccount.Name}" required="true" rendered="{!isAccAdd}"/>
+                    <apex:outputField value="{!taqAccount.Name}" rendered="{!!isAccAdd}"/>                
+                    <apex:outputfield value="{!taqAccount.Approval_Process_Status__c}" />         
+                    <apex:inputHidden />
+                    <apex:inputfield value="{!taqAccount.Reason_for_Rejection__c}" />
+                </apex:pageBlockSection>
+                
+                <apex:outputpanel id="AddEnterprise" rendered="{!isAccAdd}">
+                   <apex:pageBlockSection title="Account Add"  id="accountadd">
+                 
+                 
+               <!-- FY13      <apex:inputfield value="{!taqAccount.Account_Owner_PMF_Key__c}" required="true" rendered="{!isParent}"/>    -->
+                       <apex:inputField value="{!taqAccount.Account_Type__c}" required="true" rendered="{!isParent}"/>
+                 <!--FY13       <apex:inputfield value="{!taqAccount.Account_Owner_Effective_Date__c}" required="true" rendered="{!isParent}"/>
+                        <apex:inputField value="{!taqAccount.Account_Class__c}" required="true" rendered="{!isParent}"/>        
+                        <apex:inputField value="{!taqAccount.Sales_Director_PMF_Key__c}" required="true" rendered="{!isParent}"/>   -->
+                        <apex:pageblocksectionitem rendered="{!isParent}">
+                            <apex:outputlabel value="Size of Company - # of Employees" rendered="{!isParent}"/>
+                            <apex:inputField value="{!taqAccount.Size_of_Company_Employees__c}" rendered="{!isParent}"/> 
+                        </apex:pageblocksectionitem>
+             <!-- FY13          <apex:inputField value="{!taqAccount.SM_Effective_Date__c}" required="true" rendered="{!isParent}"/>   -->
+                        <apex:inputField value="{!taqAccount.Size_of_Company_Annual_Revenue__c}" rendered="{!isParent}"/>                       
+             <!--FY13           <apex:inputField value="{!taqAccount.Parent_or_Subsidiary__c}" rendered="{!isParent}"/>
+                        <apex:inputfield value="{!taqAccount.Where_HQ_is_Located__c}" rendered="{!isParent}"/>
+                        <apex:inputField value="{!taqAccount.If_Sub_who_is_Parent__c}" rendered="{!isParent}"/>   -->
+                        <apex:pageblocksectionitem rendered="{!isParent}">
+                            <apex:outputlabel value="Website" rendered="{!isParent}"/>
+                            <apex:inputField value="{!taqAccount.URL__c}" required="true" rendered="{!isParent}"/>
+                        </apex:pageblocksectionitem>
+                          
+
+                
+                     <!--   <apex:inputfield value="{!taqAccount.Reseller_Account_Director_PMFKey__c}" required="true" rendered="{!isPartner}"/> -->
+                    <!--   <apex:inputfield value="{!taqAccount.Reseller_Account_Director_Effective_Date__c}" required="true" rendered="{!isPartner}"/>    -->
+                        <apex:inputField value="{!taqAccount.Region__c}" id="region"  onblur="if(document.getElementById('miniform:theform:theblock:accountadd:area').options.length== 2){document.getElementById('miniform:theform:theblock:accountadd:area').remove(0); document.getElementById('miniform:theform:theblock:accountadd:area').onchange(); var t=setTimeout('document.getElementById(\'miniform:theform:theblock:accountadd:area\').onblur()',500); } " required="true"/>
+                        <apex:inputField value="{!taqAccount.Physical_Street__c}" required="true"/> 
+                        <apex:inputfield value="{!taqAccount.Area__c}" id="area"  onblur="if(document.getElementById('miniform:theform:theblock:accountadd:territory').options.length== 2){document.getElementById('miniform:theform:theblock:accountadd:territory').remove(0); document.getElementById('miniform:theform:theblock:accountadd:territory').onchange(); var t=setTimeout('document.getElementById(\'miniform:theform:theblock:accountadd:territory\').onblur()',500); } " required="true" /> 
+                        <apex:inputfield value="{!taqAccount.Physical_City__c}" required="true"/>
+                        <apex:inputfield value="{!taqAccount.Territory__c}" id="territory"  onblur="if(document.getElementById('miniform:theform:theblock:accountadd:country').options.length== 2){document.getElementById('miniform:theform:theblock:accountadd:country').remove(0); document.getElementById('miniform:theform:theblock:accountadd:country').onchange(); var t=setTimeout('document.getElementById(\'miniform:theform:theblock:accountadd:country\').onblur()',500);} " required="true"/> 
+                        <apex:inputField value="{!taqAccount.Physical_State_Province__c}" />
+                        <apex:inputfield value="{!taqAccount.Country__c}" id="country" required="true" onblur="if(document.getElementById('miniform:theform:theblock:accountadd:market').options.length== 2){document.getElementById('miniform:theform:theblock:accountadd:market').remove(0); document.getElementById('miniform:theform:theblock:accountadd:market').onchange();} " />
+                        <apex:inputfield value="{!taqAccount.Physical_Zip_Postal_Code__c}" rendered="{!!isPartner}"/> 
+                        <apex:inputfield value="{!taqAccount.Physical_Zip_Postal_Code__c}" rendered="{!isPartner}"/>      
+                        <apex:inputfield value="{!taqAccount.Country_Picklist__c}" id="countryPicklist" required="true" />
+       <!-- FY13                 <apex:inputfield value="{!taqAccount.Market__c}" id="market" required="true"/>          -->      
+                       <!--  <apex:inputField value="{!taqAccount.Reseller_Type__c}" rendered="{!isPartner}" /> -->
+                        <apex:inputfield value="{!taqAccount.Website__c}"  rendered="{!ispartner}" />
+                        <apex:inputfield value="{!taqAccount.PDS_Addendum__c}" rendered="{!isPartner}"/>
+                        <apex:inputfield value="{!taqAccount.PDS_Addendum_Attached__c}" rendered="{!isPartner}"/> 
+                        <apex:inputfield value="{!taqAccount.Eligible_for_MDF__c}" rendered="{!isPartner}"/>
+                    </apex:pageBlockSection>
+                   
+                                     
+                    <apex:pageBlockSection title="RTM" rendered="{!isPartner}">
+                        <apex:inputfield value="{!taqAccount.Alliance__c}" rendered="{!isPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Solution_Provider__c}" rendered="{!isPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Alliance_Type__c}" rendered="{!isPartner}"/>
+                         <apex:pageBlockSectionItem >  
+                         <apex:outputLabel value="Solution Provider Type"/>
+                            <apex:inputfield value="{!taqAccount.Solution_Provider_Type__c}" />
+                        </apex:pageBlockSectionItem>                                 
+                        <apex:inputfield value="{!taqAccount.Alliance_Program_Level__c}" rendered="{!isPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Solution_Provider_Program_Level__c}" rendered="{!isPartner}"/> 
+                                                
+                        <apex:inputfield value="{!taqAccount.Alliance_CAM_PMFKey__c}" rendered="{!isPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Solution_Provider_CAM_PMFKey__c}" rendered="{!isPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Alliance_Designation__c}" rendered="{!isPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Solution_Provider_Designation__c}" rendered="{!isPartner}"/>
+                        
+                        
+                        <apex:inputfield value="{!taqAccount.Service_Provider__c}" rendered="{!isPartner}"/> 
+                        <apex:pageBlockSectionItem >
+                          <apex:outputLabel value=""/>
+                        </apex:pageBlockSectionItem>                           
+                       <!--  <apex:inputfield value="{!taqAccount.Velocity_Seller__c}" rendered="{!isPartner}"/> -->
+                        
+                        <apex:inputfield value="{!taqAccount.Service_Provider_Type__c}" rendered="{!isPartner}"/>
+                        <apex:pageBlockSectionItem >
+                          <apex:outputLabel value=""/>
+                        </apex:pageBlockSectionItem>
+                         <!-- <apex:pageBlockSectionItem >
+                           <apex:outputLabel value="DM Type"/>
+                            <apex:inputfield value="{!taqAccount.Velocity_Seller_Type__c}" rendered="{!isPartner}" />
+                          </apex:pageBlockSectionItem>  -->
+                       
+                        <apex:inputfield value="{!taqAccount.Service_Provider_Program_Level__c}" rendered="{!isPartner}"/> 
+                        <apex:pageBlockSectionItem >
+                          <apex:outputLabel value=""/>
+                        </apex:pageBlockSectionItem>
+                        <!-- <apex:inputfield value="{!taqAccount.Velocity_Seller_Program_Level__c}" rendered="{!isPartner}"/>  -->
+                        <apex:inputfield value="{!taqAccount.Service_Provider_CAM_PMFKey__c}" rendered="{!isPartner}"/>
+                        <apex:pageBlockSectionItem >
+                          <apex:outputLabel value=""/>
+                        </apex:pageBlockSectionItem>
+                        <!-- <apex:inputfield value="{!taqAccount.Velocity_Seller_CAM_PMFKey__c}" rendered="{!isPartner}"/>  -->   
+                        <apex:inputfield value="{!taqAccount.Service_Provider_Designation__c}" rendered="{!isPartner}"/>                
+                       <!--  <apex:inputfield value="{!taqAccount.Velocity_Seller_Designation__c}" rendered="{!isPartner}"/> -->
+                        
+                     </apex:pageBlockSection> 
+             
+                </apex:outputpanel>
+                               
+               <apex:pageBlockSection title="Account Update" rendered="{!isAccUpdate}"> 
+                    <apex:inputField value="{!taqAccount.Account_Name_Change__c}" required="true" rendered="{!isAccUpdate}"/>
+                    <apex:inputField value="{!taqAccount.Account_Type__c}" required="true" rendered="{!!isAccUpdateForPartner}"/>
+            <!-- FY13        <apex:inputfield value="{!taqAccount.Account_Ownership_Change__c}" required="true" rendered="{!!isAccUpdateForPartner}"/>
+                    <apex:inputField value="{!taqAccount.Account_Class__c}" required="true" rendered="{!!isAccUpdateForPartner}"/>
+                    <apex:inputfield value="{!taqAccount.Sales_Director_Name_Change__c}" required="true" rendered="{!!isAccUpdateForPartner}"/> -->
+                    <apex:inputField value="{!taqAccount.URL__c}" required="true" rendered="{!!isAccUpdateForPartner}"/>
+                    <apex:inputField value="{!taqAccount.Region__c}" required="true"/>
+                    <apex:inputField value="{!taqAccount.Physical_Street__c}" required="true"/> 
+                    <apex:inputfield value="{!taqAccount.Area__c}" required="true" /> 
+                    <apex:inputfield value="{!taqAccount.Physical_City__c}" required="true"/>
+                    <apex:inputfield value="{!taqAccount.Territory__c}" required="true"/> 
+                    <apex:inputField value="{!taqAccount.Physical_State_Province__c}" required="true" rendered="{!!isAccUpdateForPartner}"/>
+                    <apex:inputField value="{!taqAccount.Physical_State_Province__c}" rendered="{!isAccUpdateForPartner}"/>
+                    <apex:inputfield value="{!taqAccount.Country__c}" required="true"/>
+                    <apex:inputfield value="{!taqAccount.Physical_Zip_Postal_Code__c}" rendered="{!!isAccUpdateForPartner}"/> 
+                    <apex:inputfield value="{!taqAccount.Physical_Zip_Postal_Code__c}" rendered="{!isAccUpdateForPartner}"/>                        
+                    <apex:inputfield value="{!taqAccount.Country_Picklist__c}" required="true" />
+        <!-- FY13            <apex:inputfield value="{!taqAccount.Market__c}" required="true"/> -->
+                 <!--   <apex:inputField value="{!taqAccount.Reseller_Type__c}" rendered="{!isAccUpdateForPartner}"/>   -->
+                    <apex:inputfield value="{!taqAccount.Website__c}"  rendered="{!isAccUpdateForPartner}" />
+                    <apex:inputfield value="{!taqAccount.PDS_Addendum__c}" rendered="{!isAccUpdateForPartner}"/>
+                    <apex:inputfield value="{!taqAccount.PDS_Addendum_Attached__c}" rendered="{!isAccUpdateForPartner}"/>  
+                     <apex:inputfield value="{!taqAccount.Eligible_for_MDF__c}" rendered="{!isAccUpdateForPartner}"/> 
+                                   
+                </apex:pageBlockSection> 
+            
+            <!--
+                <apex:pageBlockSection title="Account Update - Partner Milestone Section" rendered="{!isAccUpdateForPartner}">
+                        <apex:inputfield value="{!taqAccount.Provide_Partner_Kit__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Agreement_Number__c}" rendered="{!isAccUpdateForPartner}"/>    
+                        <apex:inputfield value="{!taqAccount.Agreement__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Agreement_Attached__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Agreement_Start_Date__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Agreement_End_Date__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Business_Plan__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Business_Plan_Attached__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Business_Plan_Start_Date__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Business_Plan_End_Date__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.PDS_Addendum__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.PDS_Addendum_Attached__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Partner_Enablement_Addendum__c}" rendered="{!isAccUpdateForPartner}"/>
+                        <apex:inputfield value="{!taqAccount.Partner_Enablement_Addendum_Attached__c}" rendered="{!isAccUpdateForPartner}"/>
+                </apex:pageBlockSection>
+               
+               --> 
+   
+    
+                <apex:pageBlockSection title="RTM" rendered="{!isAccUpdateForPartner}" id="theSection">
+                  
+                  <apex:inputfield value="{!taqAccount.Alliance__c}" rendered="{!isAccUpdateForPartner}"/>
+                  <apex:inputfield value="{!taqAccount.Solution_Provider__c}" rendered="{!isAccUpdateForPartner}"/>
+                  <apex:inputfield value="{!taqAccount.Alliance_Type__c}" rendered="{!isAccUpdateForPartner}"/>
+                   <apex:pageBlockSectionItem id="bsectionItem">
+                    <apex:outputLabel value="Solution Provider Type"/>
+                    <apex:inputfield value="{!taqAccount.Solution_Provider_Type__c}" rendered="{!isAccUpdateForPartner}" id="SolProvider" onchange="fun()"/>
+                   </apex:pageBlockSectionItem> 
+                  <apex:inputfield value="{!taqAccount.Alliance_Program_Level__c}" rendered="{!isAccUpdateForPartner}"/>
+                  <apex:inputfield value="{!taqAccount.Solution_Provider_Program_Level__c}" rendered="{!isAccUpdateForPartner}"/>
+                  <apex:inputfield value="{!taqAccount.Alliance_CAM_PMFKey__c}" rendered="{!isAccUpdateForPartner}"/>
+                  <apex:inputfield value="{!taqAccount.Solution_Provider_CAM_PMFKey__c}" rendered="{!isAccUpdateForPartner}"/>
+                  <apex:inputfield value="{!taqAccount.Alliance_Designation__c}" rendered="{!isAccUpdateForPartner}"/> 
+                  <apex:inputfield value="{!taqAccount.Solution_Provider_Designation__c}" rendered="{!isAccUpdateForPartner}"/>
+                                   
+                  <apex:inputfield value="{!taqAccount.Service_Provider__c}" rendered="{!isAccUpdateForPartner}"/>
+                  <apex:pageBlockSectionItem >
+                    <apex:outputLabel value=""/>
+                  </apex:pageBlockSectionItem>
+                 <!--  <apex:inputfield value="{!taqAccount.Velocity_Seller__c}" rendered="{!isAccUpdateForPartner}"/> -->
+                  <apex:inputfield value="{!taqAccount.Service_Provider_Type__c}" rendered="{!isAccUpdateForPartner}"/>
+                  <apex:pageBlockSectionItem >
+                    <apex:outputLabel value=""/>
+                  </apex:pageBlockSectionItem>
+                  <!-- <apex:pageBlockSectionItem id="bsectionItem1">
+                    <apex:outputLabel value="DM Type"/>
+                    <apex:inputfield value="{!taqAccount.Velocity_Seller_Type__c}" rendered="{!isAccUpdateForPartner}" id="VelSell" onchange="fun()"/>
+                   </apex:pageBlockSectionItem>  -->
+                  <apex:inputfield value="{!taqAccount.Service_Provider_Program_Level__c}" rendered="{!isAccUpdateForPartner}"/>
+                  <apex:pageBlockSectionItem >
+                    <apex:outputLabel value=""/>
+                  </apex:pageBlockSectionItem>
+              <!--     <apex:inputfield value="{!taqAccount.Velocity_Seller_Program_Level__c}" rendered="{!isAccUpdateForPartner}"/> -->
+                  <apex:inputfield value="{!taqAccount.Service_Provider_CAM_PMFKey__c}" rendered="{!isAccUpdateForPartner}"/>
+                  <!-- <apex:inputfield value="{!taqAccount.Velocity_Seller_CAM_PMFKey__c}" rendered="{!isAccUpdateForPartner}"/>   -->
+                  <apex:pageBlockSectionItem >
+                    <apex:outputLabel value=""/>
+                  </apex:pageBlockSectionItem>
+                  <apex:inputfield value="{!taqAccount.Service_Provider_Designation__c}" rendered="{!isAccUpdateForPartner}"/><!--                        
+                  <apex:inputfield value="{!taqAccount.Velocity_Seller_Designation__c}" rendered="{!isAccUpdateForPartner}"/> -->
+                                               
+                </apex:pageBlockSection>  
+            
+                <apex:pageBlockSection title="Account Release" rendered="{!isAccRelease}" > 
+    <!-- FY13                <apex:inputField value="{!taqAccount.Open_Opportunities_Sites_move_to_another__c}" />   -->
+                    <apex:inputfield value="{!taqAccount.Reason_for_Release__c}" /> 
+    <!-- FY13                <apex:inputfield value="{!taqAccount.If_Yes_New_Account_ID__c}" rendered="{!!isAccReleaseForPartner}"/> -->
+                    <!-- <apex:inputfield value="{!taqAccount.If_Yes_New_Reseller_Account_ID__c}" rendered="{!isAccReleaseForPartner}"/> -->
+                    <apex:inputfield value="{!taqAccount.Program_Level__c}" required="true" rendered="{!isPartner}"/> <!-- Jon Jan-20-2011 only show if partner -->
+                                    
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Account Merge" rendered="{!isAccMerge}" > 
+                    <!--<apex:inputField value="{!taqAccount.Name}"/>-->
+                   <!-- <apex:inputField value="{!taqAccount.Enterprise_Account__c}" required="true"/>-->                     
+                   <apex:inputField value="{!taqAccount.Prevailiing_Account_ID__c}"/>
+                   <!--<apex:inputField value="{!taqAccount.Prevailiing_Reseller_Account_ID__c}" rendered="{!isAccMergeForPartner}"/>-->
+                   <apex:inputfield value="{!taqAccount.Reason_for_Merger__c}" />                                                  
+                </apex:pageBlockSection>
+                
+            </apex:pageBlock>        
+        </apex:form>
+    </apex:outputpanel>
+</apex:page>

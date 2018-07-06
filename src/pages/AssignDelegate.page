@@ -1,0 +1,23 @@
+<apex:page standardController="DelegateLeadChampion__c" extensions="DelegateLeadChampion">
+    <apex:form >
+    <apex:pagemessages ></apex:pagemessages>
+     <apex:pageBlock mode="edit">
+
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveDR}" value="Save"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Assign Delegate Lead Champion" columns="2">
+                  
+                   <apex:inputField value="{!DlcRecord.DelegateLeadChampion__c}" required="true" /><br/>
+                   <apex:inputField value="{!DlcRecord.StartDate__c}" required="true" /><br/>
+                   <apex:inputField value="{!DlcRecord.EndDate__c}" required="true" /><br/>
+                  
+            </apex:pageBlockSection>
+
+        </apex:pageBlock>
+
+        
+    </apex:form>
+    </apex:page>

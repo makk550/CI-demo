@@ -1,0 +1,200 @@
+<apex:page standardController="Executive_Profile__c" extensions="ExecProfControllerExtension" action="{!insertLogoDoc}">
+<style>
+.headerClass {
+            background: white url('/img/alohaSkin/grid_headerbg.gif') 0 bottom repeat-x;
+            background-image: url(/img/alohaSkin/grid_headerbg.gif);
+            background-repeat-x: repeat;
+            background-repeat-y: no-repeat;
+            background-attachment: initial;
+            background-position-x: 0px;
+            background-position-y: 100%;
+            background-origin: initial;
+            background-clip: initial;
+            background-color: #cfeef8;
+            border: 1px solid black;
+            border-width: 0 0 1px 1px;
+            border-top-width: 0px;
+            border-right-width: 0px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            color: black;
+            font-size: .9em;
+            font-weight: bold;
+            padding: 5px 2px 4px 5px;
+            padding-top: 5px;
+            padding-right: 2px;
+            padding-bottom: 4px;
+            padding-left: 5px;
+            text-align:left;
+            vertical-align:bottom;
+           }
+           
+       .trBG
+           {
+                    background-color:white;
+                  
+            }
+                
+          .trBG:hover
+            {
+                    background-color:#cfeef8;
+                  //  border: solid black 1px;
+            }
+         .requiredField
+         {
+            background-color: #C00;
+            width: 3px;
+            bottom: 1px;
+         }        
+</style>
+<apex:sectionHeader title="Executive Profile" subtitle="{!Executive_Profile__c.Name}"/>
+<apex:form >
+  <apex:pageBlock title="Executive Profile Edit" mode="edit">
+      <apex:outputField value="{!Executive_Profile__c.Customer__r.Name}" rendered="false"/>
+      <apex:outputField value="{!Executive_Profile__c.Account_Owner_Name__c}" rendered="false"/>
+
+      <apex:pageMessages />
+      <apex:pageBlockButtons >
+          <apex:commandButton action="{!edit}" value="Edit"/>
+          <apex:commandButton action="{!cancel}" value="Cancel"/>
+          <apex:commandButton value="Clone" action="{!URLFOR($Action.Executive_Profile__c.edit, Executive_Profile__c.id, [clone='1'])}"/>
+          <apex:commandButton value="Print" action="{!printView}"/>
+          <apex:commandButton action="{!URLFOR($Action.Executive_Profile__c.submit, Id)}" value="Submit For Approval"/>          
+          <!--<apex:commandButton value="PrintPDF" action="{!printViewPDF}"/>-->          
+      </apex:pageBlockButtons>
+      
+      <apex:pageBlockSection title="Meeting Summary" columns="2">
+          <apex:outputField value="{!Executive_Profile__c.Meeting_Type__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.Meeting_Status__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.Event_Name__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.Meeting_Date__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.CA_Executive_Name__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.Location__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.Approval_Status__c}"/>
+      </apex:pageBlockSection>
+      
+      <apex:pageBlockSection title="Account Summary" columns="2">
+          <apex:outputField value="{!Executive_Profile__c.Account_Name__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.Customer__r.Account.OwnerId}"/>   
+          <apex:outputField value="{!Executive_Profile__c.Account_Segment__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.Account_Area__c}"/>             
+          <apex:outputField value="{!Executive_Profile__c.Customer__r.Account.Company_Logo__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.Customer__r.Account.Company_Overview__c}"/> 
+          <apex:outputField value="{!myAccountPlan.Stated_Business_Priorities__c}"/>                
+          <apex:outputField value="{!myAccountPlan.Capex_Budget__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.CA_Spend_Current__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.CA_Spend_History__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.CA_Products_Not_In_Use__c}"/> 
+    </apex:pageBlockSection>
+
+    <apex:pageBlockSection title="Recent Significant Wins/Loss" columns="1">
+          
+        <apex:outputLabel value="Won Opportunities" styleClass="labelCol first "/>  
+        <apex:pageBlockTable title="Recent Significant Won Opps" value="{!wonOpps}" var="won">
+          <apex:column headerValue="Opportunity Name" value="{!won.Name}"/>
+          <apex:column headerValue="Amount" value="{!won.Amount}"/>
+          <apex:column headerValue="Close Date" value="{!won.CloseDate}"/>
+        </apex:pageBlockTable>      
+        
+        
+        <apex:outputLabel value="Lost Opportunities" styleClass="labelCol first "/>
+        <apex:pageBlockTable title="Recent Significant Lost Opps" value="{!lostOpps}" var="lost">
+          <apex:column headerValue="Opportunity Name" value="{!lost.Name}"/>
+          <apex:column headerValue="Amount" value="{!lost.Amount}"/>
+          <apex:column headerValue="Loss Reason" value="{!lost.ReasonField__c}"/>
+          <apex:column headerValue="Deal Lost To" value="{!lost.Deal_Lost_to__c}"/>
+          <apex:column headerValue="Close Date" value="{!lost.CloseDate}"/>
+        </apex:pageBlockTable>              
+          
+      </apex:pageBlockSection>
+      
+    <apex:pageBlockSection title="Top 5 PNCV Opportunities - Rolling Four Quarters" columns="1">
+        <apex:panelGrid columns="2">
+            <apex:outputLabel value="Total Current Fiscal Year PNCV Pipeline (Internal View)" styleClass="labelCol first "/>
+            <apex:outputField value="{!Executive_Profile__c.Total_PNCV_Pipeline__c}" styleClass="dataCol first "/>
+          </apex:panelGrid>
+        
+        <apex:pageBlockTable value="{!topOpps}" var="opp">
+          <apex:column headerValue="Opportunity Name">
+            <apex:outputLink value="/{!opp.Id}">{!Opp.Name}</apex:outputLink>
+          </apex:column>
+          <apex:column headerValue="Opportunity Owner" value="{!opp.OwnerId}"/>
+          <apex:column headerValue="Opportunity Number" value="{!opp.Opportunity_Number__c}"/>
+          <apex:column headerValue="Sales Milestone" value="{!opp.Sales_Milestone_Search__c}"/>
+          <apex:column headerValue="PNCV Amount" value="{!opp.PNCV__c}"/>
+          <apex:column headerValue="Inside/Outside" value="{!opp.Inside_Outside__c}"/>
+          <apex:column headerValue="Total Upfront Lic. Fee" value="{!opp.Total_Upfront_Lic_Fee__c}"/>
+          <apex:column headerValue="Forecast">
+              <apex:outputField value="{!opp.RoadmapToPlan__c}"/>
+          </apex:column>          
+          <apex:column headerValue="Close Date" value="{!opp.CloseDate}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>      
+
+      <apex:pageBlockSection title="Contact Information (Blank fields will not appear on word document)" columns="2">
+          <apex:outputField value="{!Executive_Profile__c.Customer__c}"/>      
+          <apex:outputField value="{!Executive_Profile__c.Customer_Title__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.HVN_Contact_Photo__c}"/>  
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Awards_Recognition__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Birthday_Year__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Birthday_Month__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.College_Fraternity_Sorority__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Family_Information__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Favorite_Charity__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Favorite_Movie__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Favorite_TV_Show__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Hobbies__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Hobbies_Other__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Holiday_Celebrations__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Holiday_Celebrated_Other__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Military_Service__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Movie_Genre__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Music_Style__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Public_Speaker__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Sport_Other__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Sports__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Subscription__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Subscription_Other__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.TV_Genre__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Book_Preference__c}"/>
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Culinary_Preference__c}"/>       
+
+        <apex:pageBlockTable title="Education Background" value="{!myHVNEdu}" var="Edu">
+          <apex:column headerValue="Alma Mater" value="{!Edu.Alma_Mater__c}"/>
+          <apex:column headerValue="Field of Study" value="{!Edu.Field_of_Studies__c}"/>
+          <apex:column headerValue="Year" value="{!Edu.Year__c}"/>
+        </apex:pageBlockTable>
+        
+        <apex:pageBlockTable title="Professional Experience" value="{!myHVNProfExp}" var="Prof">
+          <apex:column headerValue="Company Name" value="{!Prof.Company_Name__c}"/>
+          <apex:column headerValue="Role Description" value="{!Prof.Role_Description__c}"/>                              
+          <apex:column headerValue="Status" value="{!Prof.Status__c}"/>
+          <apex:column headerValue="Tenure" value="{!Prof.Tenure__c}"/>
+          <apex:column headerValue="Title" value="{!Prof.Title__c}"/>
+        </apex:pageBlockTable>        
+
+        <apex:pageBlockTable title="Boards & Organizations" value="{!myHVNAff}" var="Aff">
+          <apex:column headerValue="Board / Group Name" value="{!Aff.Name}"/>
+        </apex:pageBlockTable>
+
+      </apex:pageBlockSection>
+      
+      <apex:pageBlockSection title="Relationship and Purpose of Meeting" columns="2">
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Relationship_Status_Graphic__c}"/> 
+          <apex:outputField value="{!Executive_Profile__c.HVN__r.Relationship_Status__c}"/>       
+          <apex:outputField value="{!Executive_Profile__c.CA_Executive_Relationships__c}" style="width: 360px;"/>
+          <apex:outputField value="{!Executive_Profile__c.Invitation_Reason__c}" rendered="{!showCIOEvent}" style="width: 360px;"/>
+          <apex:outputField value="{!Executive_Profile__c.Meeting_Reason__c}" rendered="{!showExecMeeting}" style="width: 360px;"/>
+          <apex:outputField value="{!Executive_Profile__c.Briefing_Reason__c}" rendered="{!showEBC}" style="width: 360px;"/>
+      </apex:pageBlockSection>
+      
+      <apex:pageBlockSection title="Follow Up" columns="1">
+          <apex:outputField value="{!Executive_Profile__c.Action_Items__c}" style="width: 360px;"/>
+      </apex:pageBlockSection>      
+
+   </apex:pageBlock>
+  </apex:form>    
+      <apex:relatedList id="noteslist" list="NotesAndAttachments"/>   
+      <apex:relatedList list="ProcessSteps"/> 
+      
+</apex:page>

@@ -1,0 +1,190 @@
+<apex:page id="thePage" controller="CaseArchivalEmailContentController" sidebar="false" showHeader="false">
+    <script src="{!$Resource.CaseArchival}/CaseArchival/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="{!$Resource.CaseArchival}/CaseArchival/css/caseArchivalCSS.css"/>
+    <script type="text/javascript">
+        var htmlContent;
+        $(document).ready(function(){
+           $('.imageLoadingClass').hide();
+        });
+                
+        function checkBooleanValue(dynamicValue,span,sourceName){
+           var fieldValue;
+           if(dynamicValue =='true')
+               fieldValue ='<img src="/img/checkbox_checked.gif" width="21" height="16">';
+           else if(dynamicValue =='false')
+               fieldValue ='<img src="/img/checkbox_unchecked.gif"  width="21" height="16">';
+           else if(span == 'HTML Body' && sourceName == 'Layer7' && dynamicValue != ''){
+               fieldValue  = '<a href="#" onclick="showHtmlEmail();" title="Click here to view HTML version (New Window)">Click here to view HTML version</a>';
+               htmlContent = dynamicValue.split('+newLineCharcter+').join('\n');  
+           }else
+               fieldValue = dynamicValue.split('+newLineCharcter+').join('<br>');
+           document.getElementById(span).innerHTML = fieldValue;
+        }
+        
+        function showHtmlEmail(){
+           if(htmlContent != undefined){
+               console.log(htmlContent);
+               var newWindow = window.open('','Preview','width=600, height=600, scrollbars=yes, resizable=yes');
+               var documentVar = newWindow.document;
+               document.title = 'Email HTML Content';
+               documentVar.open('text/html');   
+               documentVar.write(unescapeHTML(htmlContent));
+               documentVar.onload = changeImageSrc(documentVar);
+               documentVar.close();
+               return false;
+           }
+        }
+        
+        function changeImageSrc(documentVar){
+           console.log(documentVar);
+           var imageTags = documentVar.getElementsByTagName('img');
+           if(imageTags != null){
+               for(var i = 0; i<imageTags.length; i++) {
+                   if(imageTags[i].id != null && imageTags[i].id !='' && imageTags[i].id != undefined && imageTags[i].src != null && imageTags[i].src !='' && imageTags[i].src != undefined){
+                       var sliceImageId = imageTags[i].id.slice(1, -1);
+                       documentVar.getElementById(imageTags[i].id).parentNode.id = sliceImageId+i;
+                       documentVar.getElementById(imageTags[i].id).id = sliceImageId;
+                       var imageSrc = imageTags[i].src.split('/');
+                       imageSrc = imageSrc[imageSrc.length -1];
+                       imageSrc = imageSrc.slice(3, -3);
+                       documentVar.getElementById(imageTags[i].id).src = imageSrc;
+                       var fileName = imageSrc.split(':');
+                       fileName = fileName[1].split('@');
+                       var divElement = documentVar.createElement('div');
+                       divElement.setAttribute('id',sliceImageId+'0'+i);
+                       divElement.innerHTML = '<h4><font color="#0000ff">Embedded image: '+fileName[0]+'</font></h4>';//<a id="'+fileName[0]+'"href="#" onclick="AWSFunction(this.id);">'+fileName[0]+'</a></font></h2>';
+                       imageTags[i].parentNode.appendChild(divElement);
+                       documentVar.getElementById(sliceImageId).style.display = 'none';
+                   }
+               }
+           }
+            /*var head= documentVar.getElementsByTagName('head')[0];
+           var scriptTag = documentVar.createElement('script');
+           scriptTag.setAttribute('type','text/javascript');
+           scriptTag.text = 'function AWSFunction(attachmentId){javascript:top.window.opener.callAWSClass(attachmentId);self.close();}';
+           head.appendChild(scriptTag);*/
+       }
+    	
+    	function displayRelatedList(imageID, urlVal, S3URL, source){
+          var images = $('#'+imageID).attr("src");
+          var relatedID = $('#'+imageID).attr("id");
+               
+          if(images == '{!$Resource.CaseArchival}/CaseArchival/images/Plus.png'){
+              $('#'+imageID).attr("src", "{!$Resource.CaseArchival}/CaseArchival/images/minus.png");
+              relatedChild(relatedID, urlVal,S3URL, source);
+          }else{
+              $('#'+imageID).attr("src", "{!$Resource.CaseArchival}/CaseArchival/images/Plus.png");
+              $('#'+relatedID+'_id').hide();
+          }
+        }
+    
+        function relatedChild(parameterValue, urlVal, S3URL, source){
+          $('#'+parameterValue+'_img').show();
+          var spanID = $('#'+parameterValue+'_id').attr("id");  
+          Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.CaseArchivalEmailContentController.getRelatedChildDetails}',
+                parameterValue,urlVal,S3URL,source,
+                function(result, event){
+                    if(event.status){
+                        $('#'+parameterValue+'_img').hide();
+                        var wrapperListLength = result.length;
+                        var tableFormat = '<table id="records" width="100%" style="background: #fff; border: 1px solid #e0e3e5;border-collapse: collapse;"><tr><br/><br/>';
+                        if(wrapperListLength>0){
+                            for(var i=0; i<wrapperListLength; i++){
+                                if(result[i].headername ==undefined || result[i].headername == null){
+                                     tableFormat += '<td  style="background: #f8f8f8; font-size:1em; font-family:Arial,Helvetica,sans-serif; border-style: solid !important;border-width: 0px 0px 1px 0px !important;border-color: #e0e3e5 !important;border-collapse: collapse;padding: 5px 2px 4px 5px !important;"> No records to display</td></tr>';
+                                }else{
+                                    var headerList = result[i].headername.length;
+                                    for(var j=0;j<headerList;j++){
+                                        tableFormat += '<th style="background: #f2f3f3;border: 1px solid #e0e3e5;border-collapse: collapse;padding: 5px 2px 4px 5px !important; font-size: .9em !important;font-weight: bold !important;">'+result[i].headername[j]+'</th>';
+                                    }
+                                    tableFormat += '</tr>';
+                                    var valueWrapper = result[i].mylist.length;
+                                    for(var k=0;k<valueWrapper;k++){
+                                        var subWrapper =  result[i].mylist[k].mylist.length;
+                                        for(var l=0;l<subWrapper;l++){
+                                            if(result[i].mylist[k].mylist[l].variablevalue =="true")
+                                                tableFormat +='<td  style="background: #fff; vertical-align:top; border-style: solid !important;border-width: 0px 0px 1px 0px !important;border-color: #e0e3e5 !important;border-collapse: collapse;padding: 5px 2px 4px 5px !important;"><img src="/img/checkbox_checked.gif" width="21" height="16"></td>';
+                                            else if(result[i].mylist[k].mylist[l].variablevalue =="false")
+                                                tableFormat +='<td  style="background: #fff; vertical-align:top; border-style: solid !important;border-width: 0px 0px 1px 0px !important;border-color: #e0e3e5 !important;border-collapse: collapse;padding: 5px 2px 4px 5px !important;"><img src="/img/checkbox_unchecked.gif"  width="21" height="16"></td>';
+                                            else if(parameterValue == 'Attachments' && source == 'Layer7' && result[i].mylist[k].mylist[l].variablevalue.includes('uniqueAttachmentContent')){
+                                                var attachmentContentURL = result[i].mylist[k].mylist[l].variablevalue.split('uniqueAttachmentContent');
+                                                tableFormat +='<td style="background: #fff; vertical-align:top; border-style: solid !important;border-width: 0px 0px 1px 0px !important;border-color: #e0e3e5 !important;border-collapse: collapse;padding: 5px 2px 4px 5px !important;"><a id="'+attachmentContentURL[0]+'"href="#" onClick="callAWSClass(this.id);">'+attachmentContentURL[1]+'</a></td>';
+                                            }else{
+                                                var fieldValueContainSpace = result[i].mylist[k].mylist[l].variablevalue;
+                                                fieldValueContainSpace = fieldValueContainSpace.split('+newLineCharcter+').join('<br>');
+                                                tableFormat +='<td style="background: #fff; vertical-align:top; border-style: solid !important;border-width: 0px 0px 1px 0px !important;border-color: #e0e3e5 !important;border-collapse: collapse;padding: 5px 2px 4px 5px !important;">'+fieldValueContainSpace+'</td>';  
+                                            }
+                                        }
+                                        tableFormat += '</tr>';
+                                    }
+                                }
+                            }
+                        }else{
+                            tableFormat += '<td  style="background: #f8f8f8; font-size:1em; font-family:Arial,Helvetica,sans-serif; border-style: solid !important;border-width: 0px 0px 1px 0px !important;border-color: #e0e3e5 !important;border-collapse: collapse;padding: 5px 2px 4px 5px !important;"> No records to display</td></tr>';
+                        }
+                        $('#'+parameterValue+'_id').show();
+                        document.getElementById(spanID).innerHTML = tableFormat;
+                        
+                    }else if(event.type === 'exception'){
+                       alert('exception'+parameterValue+urlVal);
+                    }else{
+                       alert('fail'); 
+                    }
+                },
+                {escape:false}
+            ); 
+        }
+    
+        function callAWSClass(attachmentId){
+           returnAttachmentURL(attachmentId);
+        }
+    </script>
+    <apex:pageMessages id="messages" escape="false"/>    
+    <apex:form id="theForm" rendered="{!showBlock}">
+    <!-- Case Archival header -- Start-->
+    <div class="headerClass"><br/>&nbsp;
+        <h1 class="mainHeading" id="commonId">CA Support Case Archive</h1> 
+        <br/><br/>
+        <div>
+           &nbsp;&nbsp;<h1 class="subHeading" id="commonId">Archive Source : {!source}</h1>  
+           <h1 class="userDetail" id="commonId">Welcome {!username}</h1> <br/>
+        </div>
+    </div>  
+    <br/>
+    <!-- Case Archival header -- End -->
+    
+    <!--Parse XML and create UI similar to the Case UI -- Start -->
+    
+         <apex:pageBlock title="Email Message Detail" mode="maindetail" >
+             <apex:repeat value="{!Casebasicdetails}" var="caseTable">              
+                <apex:pageBlockSection columns="{!caseTable.columnValue}" title="{!caseTable.sectionName}" collapsible="true" >
+                    <apex:repeat value="{!caseTable.mylist}" var="caseValues">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel id="labelID" value="{!caseValues.variablename}" style="font-color:#4a4a56;"/>
+                        <span id="{!caseValues.variablename}"/>
+                        <script type="text/javascript">
+                                  checkBooleanValue('{!caseValues.variablevalue}','{!caseValues.variablename}','{!sourceName}');
+                        </script>
+                    </apex:pageBlockSectionItem>
+                        </apex:repeat>
+                 </apex:pageBlockSection>
+                </apex:repeat>
+           </apex:pageBlock>
+            <apex:repeat value="{!relatedlists}" var="section" rendered="{!showBlock}">           
+              <apex:pageBlock id="pageBlock">
+                <b id="fontStyle">
+                    <h3 style="font-size:14.96px;font-weight:bold;font-family:Arial,Helvetica,sans-serifbody">{!section.listname}</h3>&nbsp;&nbsp;&nbsp;<img id="{!section.apiName}" onClick="displayRelatedList(this.id,'{!section.listurl}','{!emailContentURL}','{!sourceName}');" src="{!$Resource.CaseArchival}/CaseArchival/images/Plus.png" height="14" width="14"/>
+                  </b>
+                <span id="{!section.apiName}_id"/>
+                  <div id="{!section.apiName}_img" class="imageLoadingClass"> 
+                  <center><img src="{!$Resource.CaseArchival}/CaseArchival/images/loading2.gif" height="10%" width="10%"/></center>
+                </div>
+              </apex:pageBlock>                 
+           </apex:repeat>
+           <apex:actionFunction name="returnAttachmentURL" action="{!returnAttachmentURL}" reRender="theForm">
+                <apex:param name="attachmentId" value=""/>
+           </apex:actionFunction>
+           
+    </apex:form>
+</apex:page>

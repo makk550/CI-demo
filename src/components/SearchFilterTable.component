@@ -1,0 +1,175 @@
+<apex:component allowDML="true" id="filterRegion" >
+    <apex:attribute name="fields" description="This is the list of filter fields passed to the component"
+        type="SetOfThreeSearchFields[]" required="true"/>
+
+    <table class="advanced_search" cellspacing="0" cellpadding="0" border="0" width="875">
+        <tbody>
+
+            <apex:repeat var="fieldSet" value="{!fields}">
+
+                <tr>
+                    <td align="left" width="290" valign="top">
+                        <apex:outputText rendered="{!NOT(ISNULL(fieldSet.field1))}" value="{!fieldSet.field1.label}"/>
+                    </td>
+                    <td align="left" valign="top">
+                        <apex:outputText rendered="{!NOT(ISNULL(fieldSet.field2))}" value="{!fieldSet.field2.label}"/>
+                    </td>
+                    <td align="left" valign="top" colspan="2">
+                        <apex:outputText rendered="{!NOT(ISNULL(fieldSet.field3))}" value="{!fieldSet.field3.label}"/>
+                    </td>
+                </tr> 
+                <tr>
+                    <th align="left" valign="top">
+                        <apex:outputPanel rendered="{!NOT(ISNULL(fieldSet.field1))}"  
+                            style="float: left; width:100%;" layout="block">
+                            <apex:outputPanel styleClass="textbox_filter" 
+                                rendered="{!NOT(fieldSet.field1.fieldType=='MULTIPICKLIST')}" 
+                                style="float: left; width:90%;" 
+                                layout="block">
+                                <apex:inputText style="width:100%; background:transparent none repeat scroll 0 0;border-style:none;"
+                                    value="{!fieldSet.field1.value}" 
+                                    rendered="{!OR(fieldSet.field1.fieldType=='STRING',
+                                    fieldSet.field1.fieldType=='INTEGER',
+                                    fieldSet.field1.fieldType=='LONG',
+                                    fieldSet.field1.fieldType=='DOUBLE',
+                                    fieldSet.field1.fieldType=='URL',
+                                    fieldSet.field1.fieldType=='CURRENCY',
+                                    fieldSet.field1.fieldType=='EMAIL',
+                                    fieldSet.field1.fieldType=='PERCENT',
+                                    fieldSet.field1.fieldType=='PHONE',
+                                    fieldSet.field1.fieldType=='TEXTAREA'
+                                    )}" onkeypress="keypressed(event)"/>
+
+                                <apex:selectList style="width:100%;border-style:none;" value="{!fieldSet.field1.value}"                   
+                                    rendered="{!fieldSet.field1.fieldType=='PICKLIST'}" 
+                                    multiselect="false"
+                                    size="1" >
+                                    <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                                    <apex:selectOptions value="{!fieldSet.field1.pickListValues}"/>
+                                </apex:selectList>
+
+                                <apex:selectList style="width:100%;border-style:none;" value="{!fieldSet.field1.value}" size="1" 
+                                    rendered="{!fieldSet.field1.fieldType=='BOOLEAN'}">
+                                    <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                                    <apex:selectOption itemValue="false" itemLabel="{!$Label.no}" />
+                                    <apex:selectOption itemValue="true" itemLabel="{!$Label.yes}" />
+                                </apex:selectList>
+                            </apex:outputPanel>
+                            <apex:outputPanel styleClass="multi_filter" rendered="{!fieldSet.field1.fieldType=='MULTIPICKLIST'}" style="float: left; width:90%;" layout="block">
+                                <apex:selectList style="width:100%;border-style:none;background:transparent none repeat scroll 0 0;" value="{!fieldSet.field1.values}"                   
+                                    rendered="{!fieldSet.field1.fieldType=='MULTIPICKLIST'}" 
+                                    multiselect="true"
+                                    size="3" >
+                                <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                                <apex:selectOptions value="{!fieldSet.field1.pickListValues}"/>
+                            </apex:selectList>
+                                <span align="left" style="float:left;" class="search_tip">({!$Label.ctrl_click_to_select_multiple})</span>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </th>
+
+                    <th align="left" width="297" valign="top">
+                        <apex:outputPanel rendered="{!NOT(ISNULL(fieldSet.field2))}"  style="float: left; width:100%;" layout="block">
+                            <apex:outputPanel styleClass="textbox_filter" 
+                                rendered="{!NOT(fieldSet.field2.fieldType=='MULTIPICKLIST')}" 
+                                style="float: left; width:90%;" 
+                                layout="block">
+
+                                <apex:inputText style="width:100%; background:transparent none repeat scroll 0 0;border-style:none;"
+                                    value="{!fieldSet.field2.value}" 
+                                    rendered="{!OR(fieldSet.field2.fieldType=='STRING',
+                                    fieldSet.field2.fieldType=='INTEGER',
+                                    fieldSet.field2.fieldType=='LONG',
+                                    fieldSet.field2.fieldType=='DOUBLE',
+                                    fieldSet.field2.fieldType=='URL',
+                                    fieldSet.field2.fieldType=='CURRENCY',
+                                    fieldSet.field2.fieldType=='EMAIL',
+                                    fieldSet.field2.fieldType=='PERCENT',
+                                    fieldSet.field2.fieldType=='PHONE',
+                                    fieldSet.field2.fieldType=='TEXTAREA'
+                                )}"/>
+
+                                <apex:selectList style="width:100%;border-style:none;" value="{!fieldSet.field2.value}"                   
+                                    rendered="{!fieldSet.field2.fieldType=='PICKLIST'}" 
+                                    multiselect="false"
+                                    size="1" >
+                                <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                                    <apex:selectOptions value="{!fieldSet.field2.pickListValues}"/>
+                                </apex:selectList>
+
+                                <apex:selectList style="width:100%;border-style:none;" value="{!fieldSet.field2.value}" size="1" 
+                                    rendered="{!fieldSet.field2.fieldType=='BOOLEAN'}">
+                                    <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                                    <apex:selectOption itemValue="false" itemLabel="{!$Label.no}" />
+                                    <apex:selectOption itemValue="true" itemLabel="{!$Label.yes}" />
+                                </apex:selectList>
+
+                            </apex:outputPanel>
+                            <apex:outputPanel styleClass="multi_filter" rendered="{!fieldSet.field2.fieldType=='MULTIPICKLIST'}" style="float: left; width:90%;" layout="block">
+                                <apex:selectList style="width:100%;border-style:none;background:transparent none repeat scroll 0 0;" value="{!fieldSet.field2.values}"                   
+                                rendered="{!fieldSet.field2.fieldType=='MULTIPICKLIST'}" 
+                                multiselect="true"
+                                size="3" >
+                                <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                                    <apex:selectOptions value="{!fieldSet.field2.pickListValues}"/>
+                                </apex:selectList>
+                                <span align="left" style="float:left;" class="search_tip">({!$Label.ctrl_click_to_select_multiple})</span>
+                            </apex:outputPanel>
+
+                        </apex:outputPanel>
+                    </th>
+
+                    <th align="left" valign="top" colspan="2">
+                        <apex:outputPanel rendered="{!NOT(ISNULL(fieldSet.field3))}"  style="float: left; width:100%;" layout="block">
+                            <apex:outputPanel styleClass="textbox_filter" 
+                                rendered="{!NOT(fieldSet.field3.fieldType=='MULTIPICKLIST')}" 
+                                style="float: left; width:90%;" 
+                                layout="block">
+                                <apex:inputText style="width:100%; background:transparent none repeat scroll 0 0;border-style:none;"
+                                    value="{!fieldSet.field3.value}" 
+                                    rendered="{!OR(fieldSet.field3.fieldType=='STRING',
+                                    fieldSet.field3.fieldType=='INTEGER',
+                                    fieldSet.field3.fieldType=='LONG',
+                                    fieldSet.field3.fieldType=='DOUBLE',
+                                    fieldSet.field3.fieldType=='URL',
+                                    fieldSet.field3.fieldType=='CURRENCY',
+                                    fieldSet.field3.fieldType=='EMAIL',
+                                    fieldSet.field3.fieldType=='PERCENT',
+                                    fieldSet.field3.fieldType=='PHONE',
+                                    fieldSet.field3.fieldType=='TEXTAREA'
+                                )}"/>
+
+                                <apex:selectList style="width:100%;border-style:none;" value="{!fieldSet.field3.value}"                   
+                                    rendered="{!fieldSet.field3.fieldType=='PICKLIST'}" 
+                                    multiselect="false"
+                                    size="1" >
+                                <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                                    <apex:selectOptions value="{!fieldSet.field3.pickListValues}"/>
+                                </apex:selectList>
+
+                                <apex:selectList style="width:100%;border-style:none;" value="{!fieldSet.field3.value}" size="1" 
+                                    rendered="{!fieldSet.field3.fieldType=='BOOLEAN'}">
+                                    <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                                    <apex:selectOption itemValue="false" itemLabel="{!$Label.no}" />
+                                    <apex:selectOption itemValue="true" itemLabel="{!$Label.yes}" />
+                                </apex:selectList>
+                            </apex:outputPanel>
+                            <apex:outputPanel styleClass="multi_filter" rendered="{!fieldSet.field3.fieldType=='MULTIPICKLIST'}" style="float: left; width:90%;" layout="block">
+                                <apex:selectList style="width:100%;border-style:none;background:transparent none repeat scroll 0 0;" value="{!fieldSet.field3.values}"                   
+                                rendered="{!fieldSet.field3.fieldType=='MULTIPICKLIST'}" 
+                                multiselect="true"
+                                size="3" >
+                                <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                                    <apex:selectOptions value="{!fieldSet.field3.pickListValues}"/>
+                                </apex:selectList>
+                                <span align="left" style="float:left;" class="search_tip">({!$Label.ctrl_click_to_select_multiple})</span>
+                            </apex:outputPanel>
+
+                        </apex:outputPanel>
+                    </th>
+                </tr>
+            </apex:repeat>
+        </tbody>
+    </table>
+    <br/>
+</apex:component>

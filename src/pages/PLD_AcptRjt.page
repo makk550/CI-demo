@@ -1,0 +1,102 @@
+<apex:page standardController="Lead" >
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+    <link rel="stylesheet" href="/resources/demos/style.css"/>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+ <script>
+   
+    $( function() {
+        var buttonval = $( "[id*='xxxif2']" ).val();
+         $( "[id*='xxxpbs1']" ).hide();
+    $( "#dialog-message" ).dialog({
+        autoOpen: false,
+      modal: true,
+     
+    });
+       
+  } );
+    
+    function opendail()
+    {
+         $( "#dialog-message" ).dialog( "open" );
+        return false;
+        }
+    
+    function chnagereject(){
+        
+       var buttonval = $( "[id*='xxxif1']" ).val();
+        if (buttonval=="Reject"){
+        $( "[id*='xxxpbs1']" ).show();
+        }
+        else
+            {
+            $( "[id*='xxxpbs1']" ).hide();
+              $( "[id*='xxxif2']" ).val("");  
+            }
+       
+    
+    }
+    
+    function closedail()
+    {
+          var buttonval = $( "[id*='xxxif1']" ).val();
+        var buttonval1 = $( "[id*='xxxif2']" ).val();
+        if (buttonval=="" )
+            {
+            alert("please provide vale for required fields");
+                return false;
+            }
+         if (buttonval=="Reject"&& buttonval1=="" )
+            {
+            alert("please provide vale for required fields");
+                return false;
+            }
+        else{
+     $( "#dialog-message" ).dialog( "close" );
+            window.location.reload();
+            }
+    }
+    
+  </script>
+
+
+ <apex:form >
+     <apex:commandButton id="opener" onclick="opendail();" value="open" reRender="tstpopup1"/>
+     <apex:actionRegion >
+        
+<div id="dialog-message" title="Download complete">
+    <apex:outputPanel id="tstpopup1"/>
+  <apex:outputPanel id="tstpopup">
+      
+        <apex:outputPanel />
+            <apex:outputPanel >
+                This is where I would put whatever information I needed to show to my end user.
+                <apex:pageBlock id="xxxpb1">
+                
+                <apex:pageBlockSection >
+                <apex:pageblocksectionitem >
+                 <apex:outputLabel value="Type of Change" for="xxxif1"  style="font-weight:bold"/> 
+                 <apex:actionRegion >              
+                 <apex:inputField id="xxxif1" value="{!lead.AcceptReject__c}" onchange="chnagereject();return false;" required="true" >
+               
+                 </apex:inputField>
+                </apex:actionRegion>
+                </apex:pageblocksectionitem>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection id="xxxpbs1" rendered="true" >
+
+              <apex:inputField id="xxxif2" value="{!lead.Rejection_Reason__c }"  required="True"/>
+
+            </apex:pageBlockSection>
+                </apex:pageBlock>
+                <br/><br/><br/>
+                
+                <apex:commandbutton action="{!save}" id="button" onclick="closedail(); " value="Update"/>
+             
+            </apex:outputPanel>
+        </apex:outputPanel>
+     </div>
+         </apex:actionRegion>
+</apex:form>    
+</apex:page>

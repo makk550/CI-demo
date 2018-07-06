@@ -1,0 +1,39 @@
+<apex:page extensions="TSOProductExtension" standardController="TSO_Request_Product_Selection__c" tabstyle="TSO_Request__c">
+<style>
+table {cellspacing:20;cellpadding:20;}
+</style>
+    <apex:form id="CustomEditPage"> 
+        <apex:pageBlock mode="edit" id="pgBlock" rendered="{!showForm}">
+                <apex:pageBlockButtons >                    
+                    <apex:commandButton value="Save" action="{!doSave}"/>
+                    <apex:commandButton value="Cancel" action="{!doCancel}"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection title="Product Add/Edit" columns="2" id="pgBlockSec1">
+
+                    <apex:outputLabel value="Product Family" for="Product_Family__c"/>
+                    <apex:selectList value="{!selectedLevel1}" id="Product_Family__c" size="1">                    
+                        <apex:selectOptions value="{!level1items}"/>                    
+                        <apex:actionSupport event="onchange" rerender="BU__c,Product__c"/>
+                    </apex:selectList>
+
+                    <apex:outputLabel value="Business Unit" for="BU__c"/>
+                     <apex:selectList value="{!selectedLevel2}" id="BU__c" size="1" disabled="{!disableBU}">                    
+                        <apex:selectOptions value="{!level2items}"/>                    
+                        <apex:actionSupport event="onchange" rerender="Product__c"/>               
+                     </apex:selectList>             
+
+                    <apex:outputLabel value="Product" for="Product__c"/>
+                     <apex:selectList value="{!selectedLevel3}" id="Product__c" size="1" disabled="{!disableBU}">
+                        <apex:selectOptions value="{!level3items}"/>                    
+                        <apex:actionSupport event="onchange" rerender="lblSelected"/>                
+                     </apex:selectList>
+                </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:outputPanel rendered="{!NOT(showForm)}">
+        	Cannot add more than 3 products. <apex:commandButton value="Go back" action="{!doCancel}"/>
+        </apex:outputPanel>
+    </apex:form> 
+    <script>
+        //alert("{!eventId}");
+    </script>
+</apex:page>

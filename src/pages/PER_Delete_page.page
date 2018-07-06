@@ -1,0 +1,5 @@
+<apex:page standardController="Partner_Engagement_Program__c" extensions="PER_checkDelete" action="{!PER_checkDelete}">
+     <h6>Insufficient Access</h6>
+       This content is not available for deletion.
+         Click <apex:outputLink value="/{!oppId}"> here</apex:outputLink> to return to the opportunity.
+</apex:page>

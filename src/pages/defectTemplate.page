@@ -1,0 +1,32 @@
+<apex:page controller="defectTemplateController" showHeader="false" sidebar="false">
+    <script>
+    	var defectSubjectVal = '';
+        function passDescription(idVal, templateName){
+            var descriptionVal = 'Defect Template: '+templateName + '\n\n'+ document.getElementById(idVal+'_description').value;
+            if(descriptionVal.indexOf('caseDefectSubject')!=-1 && defectSubjectVal!= undefined && defectSubjectVal!=''){
+            	var splitDescriptionVal = descriptionVal.split('caseDefectSubject').join(defectSubjectVal);
+                window.opener.setDefectDescription(splitDescriptionVal);
+            }else{
+            	 window.opener.setDefectDescription(descriptionVal);
+            }
+            window.close();
+        }
+    
+    	function onPageLoad(){
+        	defectSubjectVal = window.opener.getSubjectValue();
+        }
+    	
+    	onPageLoad();
+    </script>
+    <apex:pageMessages escape="false"/>
+    <div rerender="{!IF(showBlock,true,false)}">
+        <apex:pageblock title="Defect Template">
+            <apex:pageblockTable value="{!defectTem}" var="temp">
+                <apex:column headerValue="Defect Template Name" width="20px;">
+                    <a href="#" id="{!temp.Id}" onclick="passDescription(this.id,'{!temp.Name}');">{!temp.Name}</a>
+                    <input type="hidden" id="{!temp.Id}_description" value="{!temp.Description__c}"></input>
+                </apex:column>
+            </apex:pageblockTable>
+        </apex:pageblock>
+    </div>
+</apex:page>

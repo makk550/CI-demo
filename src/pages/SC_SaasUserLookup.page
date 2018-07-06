@@ -1,0 +1,434 @@
+<apex:page controller="SC_SaasUserLookupController" doctype="html-5.0" showheader="false" sidebar="false" standardstylesheets="false">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+<body ng-app="sul">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                SaaS User Lookup
+            </h3>
+        </div>
+        <div class="panel-body">
+            <ui-view>
+            </ui-view>
+        </div>
+    </div>
+</body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.js" type="text/javascript">
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+    (function(){
+        'use strict';
+
+        var app = angular.module('sul', ['ui.router']);
+
+        app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider){
+            $stateProvider.state({
+                name: 'search',
+                url: '/search',
+                template: '<sul-user-search></sul-user-search>',
+            });
+
+            $stateProvider.state({
+                name: 'results',
+                url: '/results',
+                template: '<sul-results-list></sul-results-list>',
+                params: {
+                    users: undefined
+                }
+            });
+
+            $urlRouterProvider.otherwise('/search');
+        }]);
+
+            // visualforce configuration
+            app.constant('vfrConfig', {
+                defaultOptions: {
+                    timeout: 10000,
+                    escape: false
+                },
+                actions: {
+                    search: {
+                        action: '{!$RemoteAction.SC_SaasUserLookupController.search}'
+                    },
+                    fetchSubscriptionInfo: {
+                        action: '{!$RemoteAction.SC_SaasUserLookupController.fetchSubscriptionInfo}'
+                    },
+                    fetchSubscriptionAdminInfo: {
+                        action: '{!$RemoteAction.SC_SaasUserLookupController.fetchSubscriptionAdminInfo}'
+                    }
+                }
+            });
+        })();
+    </script>
+    <!-- sul search component -->
+    <script type="text/javascript">
+        (function(){
+            'use strict';
+
+            var app = angular.module('sul');
+
+            app.component('sulUserSearch', {
+                templateUrl: 'sulUserSearch.tpl.html',
+                controller: function(vfrActionFactory, utils, $q, $state) {
+                    var ctrl = this;
+                    var searchVfr = vfrActionFactory.build('search');
+
+                    ctrl.searchParams = {
+                        searchType: 'username'
+                    };
+
+                    ctrl.submit = function(){
+                        searchVfr(ctrl.searchParams)
+                        .then(function(res){
+                            var result = JSON.parse(res);
+                            console.log(result);
+                            var users = result.QueryResult.Results;
+                                // redirect to list view
+                                $state.go('results', {users: users});
+                                
+                            })
+                        .catch(function(err) {
+                            utils.handleError(err);
+                        });
+
+                        
+
+                    };
+
+                    ctrl.reset = function(){
+                        ctrl.searchParams = {};
+                    };
+                }
+            });
+        })();
+    </script>
+    <!-- user search template -->
+    <script id="sulUserSearch.tpl.html" type="text/ng-template">
+        <div class="container">
+            <form name="sulUserSearch" ng-submit="$ctrl.submit()">
+
+             <!--     
+                <div class="btn-group" data-toggle="buttons">
+                    <div class="row">
+                        <input type="radio" name="options" id="optionUserName" autocomplete="off" checked ng-model="$ctrl.searchParams.searchType" value="username"> Search by Username:
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="username" ng-show="$ctrl.searchParams.searchType === 'username'">Username:</label>
+                            <input id="username" type="text" name="username" ng-model="$ctrl.searchParams.username" class="form-control" ng-required="$ctrl.searchParams.searchType === 'username'" ng-show="$ctrl.searchParams.searchType === 'username'">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input type="radio" name="options" id="optionEmail" autocomplete="off" ng-model="$ctrl.searchParams.searchType" value="email"> Search by Email:
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="email" ng-show="$ctrl.searchParams.searchType === 'email'">Email:</label>
+                            <input id="email" type="text" name="email" ng-model="$ctrl.searchParams.emailAddress" class="form-control" ng-required="$ctrl.searchParams.searchType === 'email'" ng-show="$ctrl.searchParams.searchType === 'email'">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input type="radio" name="options" id="optionNames" autocomplete="off" ng-model="$ctrl.searchParams.searchType" value="firstlast"> Search by Name:
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="firstName" ng-show="$ctrl.searchParams.searchType === 'firstlast'">First Name:</label>
+                            <input id="firstName" type="text" name="firstName" ng-model="$ctrl.searchParams.firstName" class="form-control" ng-required="$ctrl.searchParams.searchType === 'firstlast'" ng-show="$ctrl.searchParams.searchType === 'firstlast'">                          
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName" ng-show="$ctrl.searchParams.searchType === 'firstlast'">Last Name:</label>
+                            <input id="lastName" type="text" name="lastName" ng-model="$ctrl.searchParams.lastName"  class="form-control" ng-required="$ctrl.searchParams.searchType === 'firstlast'" ng-show="$ctrl.searchParams.searchType === 'firstlast'">
+                        </div>
+                    </div>                       
+                </div>
+                <div class="row">
+                    <button type="submit" class="btn btn-info">Search</button>
+                    <button type="button" class="btn btn-default" ng-click="$ctrl.reset()">Reset</button>
+                </div>
+            </form>   --> 
+
+
+          <!--       <div class="row">
+                    Search By: 
+                    
+                    <div class="radio">
+                        <label><input type="radio" name="options" ng-model="$ctrl.searchParams.searchType" value="username"> Username</label>
+                    </div>
+                    <div class="radio">
+                        <label><input type="radio" name="options" ng-model="$ctrl.searchParams.searchType" value="email"> Email</label>
+                    </div>
+                    <div class="radio">
+                        <label><input type="radio" name="options" ng-model="$ctrl.searchParams.searchType" value="firstlast"> Name</label>
+                    </div>
+                </div> -->
+
+                <div class="row">
+                    Search By: 
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-primary" ng-class="{ active: $ctrl.searchParams.searchType === 'username' }">
+                            <input type="radio" name="options" ng-model="$ctrl.searchParams.searchType" value="username"> Username
+                        </label>
+                        <label class="btn btn-primary" ng-class="{ active: $ctrl.searchParams.searchType === 'email' }">
+                            <input type="radio" name="options" ng-model="$ctrl.searchParams.searchType" value="email"> Email
+                        </label>
+                        <label class="btn btn-primary" ng-class="{ active: $ctrl.searchParams.searchType === 'firstlast' }">
+                            <input type="radio" name="options" ng-model="$ctrl.searchParams.searchType" value="firstlast"> Name
+                        </label>
+                    </div>  
+                </div>
+
+                
+                <div>
+                    <div class="row">
+                        <div class="form-group" ng-show="$ctrl.searchParams.searchType === 'username'">
+                            <label for="username" >Username:</label>
+                            <input id="username" type="text" name="username" ng-model="$ctrl.searchParams.username" class="form-control" ng-required="$ctrl.searchParams.searchType === 'username'" style="width:250px;" >
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group" ng-show="$ctrl.searchParams.searchType === 'email'">
+                            <label for="email">Email:</label>
+                            <input id="email" type="text" name="email" ng-model="$ctrl.searchParams.emailAddress" class="form-control" ng-required="$ctrl.searchParams.searchType === 'email'" style="width:250px;">
+                        </div>
+                    </div>
+                    <div class="row" ng-show="$ctrl.searchParams.searchType === 'firstlast'">
+                        <div class="form-group">
+                            <label for="firstName">First Name:</label>
+                            <input id="firstName" type="text" name="firstName" ng-model="$ctrl.searchParams.firstName" class="form-control" ng-required="$ctrl.searchParams.searchType === 'firstlast'" style="width:250px;">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name:</label>
+                            <input id="lastName" type="text" name="lastName" ng-model="$ctrl.searchParams.lastName"  class="form-control" ng-required="$ctrl.searchParams.searchType === 'firstlast'" style="width:250px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <button type="submit" class="btn btn-info">Search</button>
+                    <button type="button" class="btn btn-default" ng-click="$ctrl.reset()">Reset</button>
+                </div>   
+            </form> 
+
+            
+        </div>
+    </script>
+    <!-- results list component -->
+    <script type="text/javascript">
+        (function(){
+            'use strict';
+
+            var app = angular.module('sul');
+
+            app.component('sulResultsList', {
+                templateUrl: 'sulResultsList.tpl.html',
+                controller: function(vfrActionFactory, utils, $q, $state, $stateParams) {
+                    var ctrl = this;
+
+                    ctrl.$onInit = function(){
+                        console.log($stateParams);
+                        ctrl.users = $stateParams.users;
+                    };
+
+                    ctrl.goToSearch = function(){
+                       $state.go('search');
+
+                   }
+                   ctrl.selectUser = function(user){
+                    ctrl.selectedUser = user;
+                }
+                ctrl.clearUser = function(){
+                    ctrl.selectedUser = undefined;
+                }
+            }
+        });
+        })();
+    </script>
+    <!-- results list template -->
+    <script id="sulResultsList.tpl.html" type="text/ng-template">
+        <div class="container">
+            <table class="table table-condensed" ng-if="$ctrl.users.length > 0">
+                <thead>
+                    <tr>
+                        <th>User Name</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Subscription ID</th>
+                        <th>Is Locked</th>
+                        <th>Is Disabled</th>
+                        <th>Is Subscription Admin</th>
+                        <th>Creation Date</th>
+                        <th>Last Login Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="user in $ctrl.users">
+                        <td><a role="button" ng-click="$ctrl.selectUser(user)">{{ user.UserName }}</a></td>
+                        <td>{{ user.FirstName }}</td>
+                        <td>{{ user.LastName }}</td>
+                        <td>{{ user.EmailAddress }}</td>
+                        <td>{{ user.SubscriptionID }}</td>
+                        <td>{{ user.AccountLockedUntil !== null ? 'Yes' : 'No' }}</td>
+                        <td>{{ user.Disabled === true ? 'Yes' : 'No' }}</td>
+                        <td>{{ user.SubscriptionAdmin === true ? 'Yes' : 'No' }}</td>
+                        <td>{{ user.CreationDate | date:'medium'}}</td>
+                        <td>{{ user.LastLoginDate | date:'medium'}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+            <div ng-if="$ctrl.selectedUser !== undefined">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-default btn-xs" ng-click="$ctrl.clearUser()"><i class="glyphicon glyphicon-remove"></i></button>
+                        </div>
+                        <h4 class="panel-title">
+                            Details for {{ $ctrl.selectedUser.UserName }} 
+                        </h4>
+                    </div>
+                    <div class="panel-body">
+                        <sul-user-details user="$ctrl.selectedUser"></sul-user-details>
+                    </div>
+                </div>
+                
+            </div>
+            <div ng-if="$ctrl.users.length === 0">
+                No user found 
+            </div>
+            <button class="btn btn-default" ng-click="$ctrl.goToSearch()">Back</button>
+        </div>
+    </script>
+    <!-- user detail component -->
+    <script type="text/javascript">
+        (function(){
+            'use strict';
+            var app = angular.module('sul');
+            app.component('sulUserDetails', {
+                bindings: {
+                    user: '<'
+                },
+                templateUrl: 'sulUserDetails.tpl.html',
+                controller: ['vfrActionFactory', 'utils', '$q', function(vfrActionFactory, utils, $q) {
+                    var ctrl = this;
+                    var fetchSubscriptionInfoVfr = vfrActionFactory.build('fetchSubscriptionInfo');
+                    var fetchSubscriptionAdminInfoVfr = vfrActionFactory.build('fetchSubscriptionAdminInfo');
+                    ctrl.$onInit = function() {
+                        var subId = ctrl.user.SubscriptionID;
+                        $q.all([fetchSubscriptionInfoVfr(subId), fetchSubscriptionAdminInfoVfr(subId)])
+                        .then(function(results) {
+                            ctrl.subInfo = JSON.parse(results[0]).QueryResult.Results[0];
+                            ctrl.subAdmins = JSON.parse(results[1]).QueryResult.Results;
+                            console.log(ctrl.subInfo);
+                            console.log(ctrl.subAdmins);
+                        })
+                        .catch(utils.handleError);
+                    };
+
+                }]
+            });
+
+            app.component('sulFrouFrou', {
+                template:   '<div class="col-md-6">'+
+                '<div class="form-group">'+
+                '<label for="{{ $ctrl.label }}">{{ $ctrl.label }}</label>'+
+                '<input type="text" id="{{ $ctrl.label }}" ng-model="$ctrl.model" class="form-control" readonly>'+
+                '</div>'+
+                '</div>',
+                bindings: {
+                    model: '<',
+                    label: '@'
+                }
+            })
+        })();
+    </script>
+    <!-- user detail template -->
+    <script id="sulUserDetails.tpl.html" type="text/ng-template">
+        <div class="container-fluid">
+            <sul-frou-frou model="$ctrl.user.FirstName" label="First Name"></sul-frou-frou>
+            <sul-frou-frou model="$ctrl.user.LastName" label="Last Name"></sul-frou-frou>
+            <sul-frou-frou model="$ctrl.user.UserName" label="User Name"></sul-frou-frou>
+            <sul-frou-frou model="$ctrl.user.EmailAddress" label="Email Address"></sul-frou-frou>
+            <sul-frou-frou model="$ctrl.user.SubscriptionID" label="Subscription ID"></sul-frou-frou>
+            <sul-frou-frou model="$ctrl.subInfo.Name" label="Subscription Name"></sul-frou-frou>
+        </div>
+        <div class="container-fluid">
+            <h4>Sub Admins:</h4>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="subAdmin in $ctrl.subAdmins">
+                        <td>{{ subAdmin.DisplayName }}</td>
+                        <td>{{ subAdmin.EmailAddress }}</td>                                           
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+    <!-- utility functions -->
+    <script type="text/javascript">
+        (function(){
+            'use strict';
+            var app = angular.module('sul');
+            app.factory('utils', function(){
+                return {
+                    handleError: function(err) {
+                        console.error(err);
+                    }
+                }
+            });
+        })();
+    </script>
+    <!-- visualforce remoting library -->
+    <script type="text/javascript">
+        (function(){
+            'use strict';
+            var app = angular.module('sul');
+            app.factory('vfrActionFactory', ['$q', '$log', 'vfrConfig', function VfrActionFactory($q, $log, vfrConfig) {
+                return {
+                  build: createVfrAction
+              };
+
+              function createVfrAction(actionName) {
+                var config = vfrConfig.actions[actionName];
+                var remoteAction = config.action;
+                var options = config.options || vfrConfig.defaultOptions;
+                return function() {
+                    var deferred = $q.defer();
+                    var args;
+                    if (arguments.length) {
+                        args = Array.prototype.slice.apply(arguments);
+                    } else {
+                        args = [];
+                    }
+                    $log.debug('invoking action: ' + remoteAction + ' with args: ' + JSON.stringify(args) + ' and options: ' + JSON.stringify(options));
+                    args.splice(0, 0, remoteAction);
+                    args.push(function(result, event) {
+                        handleResult(result, event);
+                    });
+                    args.push(options);
+                    var Manager = Visualforce.remoting.Manager;
+                    Manager.invokeAction.apply(Manager, args);
+                    return deferred.promise;
+
+                    function handleResult(result, event) {
+                        $log.debug(result);
+                        if (event.status) {
+                            deferred.resolve(result);
+                        } else {
+                            deferred.reject(event);
+                        }
+                    }
+                };
+            }
+        }]);
+        })();
+    </script>
+</apex:page>

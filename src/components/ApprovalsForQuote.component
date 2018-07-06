@@ -1,0 +1,7 @@
+<apex:component controller="getApprovalsForQuote" access="global">
+    <apex:attribute name="quoteid" type="String" description="Quote Id" assignTo="{!Quote}"  />
+    <apex:dataTable cellpadding="10" border="1" value="{!Approvals}" var="approval">
+        <apex:column ><apex:facet name="header">Trigger</apex:facet>{!approval.Approval_Rule_Name__c}</apex:column>
+        <apex:column ><apex:facet name="header">Assignee</apex:facet>{!approval.ApproverName__c}</apex:column>
+    </apex:dataTable>
+</apex:component>

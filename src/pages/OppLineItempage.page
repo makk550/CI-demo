@@ -1,0 +1,327 @@
+<apex:page id="opplipage" standardcontroller="OpportunityLineItem" extensions="OppLineItemcontroller" sidebar="false"> 
+    <apex:form id="form1" >
+        <apex:sectionHeader subtitle="{!oppName}" title="Add/Edit Products"/>
+        <apex:outputLink value="/{!oppId}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb1">
+            <apex:outputPanel id="error">
+                <apex:pageMessages /> 
+            </apex:outputPanel>
+            <script>
+            
+            function calculateUFLicenseFee(isNonUpfront,pos,isOverrideFee)
+            {
+                if(isOverrideFee == 'true') {
+                    console.log('came to NO load'+isOverrideFee);
+                    return false;
+                }
+                else if(isNonUpfront != 'false')
+                {   
+                    console.log('came to else IF'+isOverrideFee);
+                    calculateUFLicenseFee_action(pos);
+                }
+                    else{
+                        console.log('came to ELSE'+isOverrideFee);
+                        calculateUFLicenseFee_action(pos);
+                    }
+                
+            }
+            function CalcSalesPrice(pos){
+                CalcSalesPrice(pos);
+            }
+            
+            function calculatemonthsbtwn(pos){
+                
+                
+                calculatemonthsbtwn_action(pos);
+            }
+            
+          
+            
+            //samtu01 - US387241
+            function CalcStretch(pos){
+                CalcStretch_action(pos);
+            }
+             //samtu01 - US387241 -end
+            
+            </script>
+            
+            <apex:actionFunction name="calculateUFLicenseFee_action" action="{!calculateUFLicenseFee}" status="myStatus" rerender="pbt1">
+                <apex:param name="positionvalue" value="" assignTo="{!pos}" />
+            </apex:actionFunction>
+            
+            <apex:actionFunction name="CalcSalesPrice" action="{!CalcSalesPrice}" status="myStatus" rerender="pbt1">
+                <apex:param name="positionvalue" value="" assignTo="{!pos}" />
+            </apex:actionFunction>
+            
+            <apex:actionFunction name="overideCall" action="{!resetIsOverrideChecked}" status="myStatus" rerender="pbt1">
+                <apex:param name="positionvalue" value="" assignTo="{!pos}" />
+            </apex:actionFunction>
+            <!--  //samtu01 - US387241 -->
+            <apex:actionFunction name="CalcStretch_action" action="{!calculateStretch}" status="myStatus" rerender="pbt1">
+                <apex:param name="positionvalue" value="" assignTo="{!pos}" />
+            </apex:actionFunction>
+             <!--  //samtu01 - US387241 end -->
+            
+            <apex:actionFunction name="calculatemonthsbtwn_action" action="{!getMonthsBetween}" status="myStatus" rerender="pbt1,error">
+                <apex:param name="positionvalue" value="" assignTo="{!pos}" />
+            </apex:actionFunction>
+           
+            <!-- samap01 US377325-->
+            <apex:pageBlockSection id="pbs5" title="Opportunity Details" rendered="{!isProduct}">
+            
+                <apex:pageblockSectionItem >
+                    <apex:outputLabel value="Product Sales Price/Stretch Gap Reason" for="SalesPriceStretchGap"/>
+                    <apex:inputField id="SalesPriceStretchGap" value="{!opp_temp.Product_Sales_Price_Stretch_Gap_Reason__c}"/>                       
+                </apex:pageblockSectionItem>
+               <!-- samap01 US377325 END-->
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pbs2" title="Product Details" rendered="{!isProduct}">
+                <apex:pageBlockTable id="pbt1" value="{!lst_prd}" var="prd" rendered="{!isProduct}">
+                    <apex:column headervalue="Business Unit">
+                        <apex:selectList disabled="{!prd.isBUDisabled}" value="{!prd.strbu}" id="prd_bu" size="1"  onchange="getprds(this.value,'{!prd.position}','Product');">   
+                            <apex:selectOptions value="{!selbu}"/>
+                        </apex:selectList>
+                        <apex:actionFunction name="getprds" action="{!fetchproducts}" rerender="pbt1">
+                            <apex:param name="buvalue" value="" assignTo="{!bu_value}" />
+                            <apex:param name="positionvalue" value="" assignTo="{!pos}" />
+                            <apex:param name="familyvalue" value="" assignTo="{!prdfamily}" />
+                        </apex:actionFunction>
+                    </apex:column>
+                    <apex:column headervalue="Product">
+                        <apex:selectList disabled="{!prd.isPrdDisabled}" value="{!prd.strproduct}" id="prd_prd" onchange="getOnDemand('{!prd.position}');" size="1" >   
+                            <apex:selectOptions value="{!prd.selproduct}"/>
+                        </apex:selectList>
+                        <apex:actionFunction name="getOnDemand" action="{!recalculate}" status="myStatus" rerender="pbt1">
+                            <apex:param name="tabName" value="" assignTo="{!lineCounter}"/>
+                        </apex:actionFunction>
+                    </apex:column>
+                    <apex:column headervalue="License Type">
+                        <apex:inputField value="{!prd.oppli.License__c}" rendered="{!prd.oppli.Override_Fees__c}" id="prd_LicenseFee"/>
+                        <apex:inputField onchange="calculateUFLicenseFee('{!prd.isUFLisenceDisabled}','{!prd.position}','{!prd.oppli.Override_Fees__c}')" value="{!prd.oppli.License__c}" rendered="{!!prd.oppli.Override_Fees__c}" id="prd_LicenseFee1"/>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_LicenseFee}');
+                        inputElem.disabled=true;
+                        </script> 
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Business_Type__c.label}
+                        </apex:facet>
+                        <apex:selectList value="{!prd.strbustype}" id="prd_bustype" size="1"  >   
+                            <apex:selectOptions value="{!prd.selprdbustype}"/>
+                        </apex:selectList>
+                        
+                    </apex:column>
+                      <!--samap01-Revrec LicenseClassification -->
+                    <apex:column rendered="{! If((((prd.oppli.License__c !='Ratable') && prd.strbu == 'Mainframe') || prd.strbu != 'Mainframe') ,true,false)}">
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.License_Classification__c.label}
+                        </apex:facet>
+                        <apex:selectList value="{!prd.strlicenseclassification}" id="prd_License_Classification__c" size="1"  >   
+                            <apex:selectOptions value="{!LicenseClassification}"/>
+                        </apex:selectList>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_License_Classification__c}');
+                        inputElem.disabled=true;
+                        </script> 
+                    </apex:column>
+                        <apex:column rendered="{! If(((prd.oppli.License__c =='Ratable') && prd.strbu == 'Mainframe')  ,true,false)}" >
+                        <apex:facet name="header" >
+                            {!$ObjectType.OpportunityLineItem.fields.License_Classification__c.label}
+                        </apex:facet>
+                        <apex:selectList value="{!prd.strlicenseclassification}" id="prd_License_Classificationoverride" size="1"  >   
+                            <apex:selectOptions value="{!LicenseClassificationOverride}"/>
+                        </apex:selectList>
+                            
+                      </apex:column>
+                    <!--samap01 -->
+                    
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.UnitPrice.label}
+                        </apex:facet>
+                        <apex:inputField value="{!prd.oppli.UnitPrice}" rendered="{!prd.oppli.Override_Fees__c}" id="prd_unitprice"/>
+                        <apex:inputField onchange="calculateUFLicenseFee('{!prd.isUFLisenceDisabled}','{!prd.position}','{!prd.oppli.Override_Fees__c}')"  value="{!prd.oppli.UnitPrice}" id="prd_salesprice" rendered="{!!prd.oppli.Override_Fees__c}"/>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_unitprice}');
+                        inputElem.disabled=true;
+                        </script>  
+                    </apex:column>
+                    
+                    <!--  //samtu01 - US387241 -->
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Stretch__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!prd.oppli.Stretch__c}" id="prd_stretch2" rendered="{!!prd.oppli.Override_Fees__c}" onchange="calculateUFLicenseFee('{!prd.isUFLisenceDisabled}','{!prd.position}','{!prd.oppli.Override_Fees__c}')" />
+                        <apex:inputField value="{!prd.oppli.Stretch__c}" id="prd_stretch3" rendered="{!prd.oppli.Override_Fees__c}" html-disabled="True"/>
+                    </apex:column>
+                     <!--  //samtu01 - US387241 end -->
+                    
+                   
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Start_Date__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!prd.oppli.Start_Date__c}" onchange="calculatemonthsbtwn('{!prd.position}')" id="prd_startdate" />
+                    </apex:column>
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.End_Date__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!prd.oppli.End_Date__c}" onchange="calculatemonthsbtwn('{!prd.position}')" id="prd_enddate" />
+                    </apex:column>
+                    
+                    
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Term_Month__c.label}
+                        </apex:facet> 
+                        <apex:outputField value="{!prd.oppli.Term_Month__c}" id="prd_term" />
+                    </apex:column>
+                    
+                    <!--samap01 US377325-->
+                     
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Stretch_Duration__c.label}
+                        </apex:facet> 
+                        <apex:inputField value="{!prd.oppli.Stretch_Duration__c}" id="prd_stretchduration" onchange="calculateUFLicenseFee('{!prd.isUFLisenceDisabled}','{!prd.position}','{!prd.oppli.Override_Fees__c}')" /> <!--Modified by SAMTU01 - US387241 --> 
+                    </apex:column> 
+                    
+                    
+                    <apex:column rendered="false">
+                        <apex:facet name="header">
+                            <apex:outputLabel rendered="{!showOnDemandHeader}" >{!$ObjectType.OpportunityLineItem.fields.On_Demand__c.label}</apex:outputLabel> 
+                        </apex:facet> 
+                        <apex:inputCheckbox value="{!prd.on_demand}"  rendered="{!(prd.show_ondemand)}" id="prd_ondemand" />
+                    </apex:column>
+                    
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.UF_License_Fee__c.label}
+                        </apex:facet> 
+                        <apex:inputField value="{!prd.oppli.UF_License_Fee__c}" id="prd_uflic1" rendered="{!prd.oppli.Override_Fees__c}" onchange="CalcSalesPrice('{!prd.position}');"/>
+                        <apex:inputField value="{!prd.oppli.UF_License_Fee__c}" id="prd_uflic" rendered="{!!prd.oppli.Override_Fees__c}"/>  
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_uflic}');
+                        inputElem.disabled=true;
+                        </script>                                                
+                    </apex:column>
+                    
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Total_Maintenance__c.label}
+                        </apex:facet> 
+                        <apex:inputField value="{!prd.oppli.Total_Maintenance__c}" id="skg_totmain1" rendered="{!prd.oppli.Override_Fees__c}" onchange="CalcSalesPrice('{!prd.position}');"/>
+                        <apex:inputField value="{!prd.oppli.Total_Maintenance__c}" id="skg_totmain" rendered="{!!prd.oppli.Override_Fees__c}"/>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.skg_totmain}');
+                        inputElem.disabled=true;
+                        </script>                                               
+                    </apex:column>
+                    
+                    <!--  //samtu01 - US387241 -->
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Stretch_License_Fee__c.label}
+                        </apex:facet> 
+                        <apex:inputField value="{!prd.oppli.Stretch_License_Fee__c}"  rendered="{!prd.oppli.Override_Fees__c}" onchange="CalcStretch('{!prd.position}');"/>
+                        <apex:inputField value="{!prd.oppli.Stretch_License_Fee__c}" id="skg_totmain2" rendered="{!!prd.oppli.Override_Fees__c}"/>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.skg_totmain2}');
+                        inputElem.disabled=true;
+                        </script>                                               
+                    </apex:column>
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Stretch_Total_Maintenance__c.label}
+                        </apex:facet> 
+                        <apex:inputField value="{!prd.oppli.Stretch_Total_Maintenance__c}"  rendered="{!prd.oppli.Override_Fees__c}" onchange="CalcStretch('{!prd.position}');"/>
+                        <apex:inputField value="{!prd.oppli.Stretch_Total_Maintenance__c}" id="skg_totmain3" rendered="{!!prd.oppli.Override_Fees__c}"/>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.skg_totmain3}');
+                        inputElem.disabled=true;
+                        </script>                                               
+                    </apex:column>
+                     <!--  //samtu01 - US387241 end  -->
+                    
+                     <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                    <apex:column style="text-align:right;" headerValue="ARR" >
+                        <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                            <apex:param value="{!prd.oppli.Corporate_ARR__c}" />
+                        </apex:outputtext>  
+                    </apex:column>
+                    <apex:column style="text-align:right;" headerValue="ARR Stretch" >
+                        <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                            <apex:param value="{!prd.oppli.Stretch_Corporate_ARR__c}" />
+                        </apex:outputtext>
+                    </apex:column>
+                     <!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Override_Fees__c.label}
+                        </apex:facet>
+                        <apex:inputField value="{!prd.oppli.Override_Fees__c}" id="prd_overrideFee" rendered="{! If(prd.oppli.id != null && (prd.oppli.License__c =='Subscription'||prd.oppli.License__c =='SAAS' ) ,true,false) }" />
+                        <apex:inputField value="{!prd.oppli.Override_Fees__c}"  rendered="{! If(prd.oppli.id != null && (prd.oppli.License__c =='Upfront'||prd.oppli.License__c =='Ratable')  ,true,false) }" onchange="overideCall('{!prd.position}');"/>
+                        <script type="text/javascript">
+                        var inputElem = document.getElementById('{!$Component.prd_overrideFee}');
+                        inputElem.disabled=true;
+                        </script>                   
+                    </apex:column>
+                    <!-- added by danva01 for Release4  -->
+                    <apex:column >
+                        <apex:facet name="header">
+                            {!$ObjectType.OpportunityLineItem.fields.Partner_Added__c.label}
+                        </apex:facet>                         
+                        <apex:OutputField value="{!prd.oppli.Partner_Added__c}" id="part_partner_Added" />
+                    </apex:column>
+                    
+                    <apex:column rendered="false">
+                        <apex:facet name="header">
+                            <apex:outputLabel rendered="{!showOnDemandHeader}" >{!$ObjectType.OpportunityLineItem.fields.On_Demand__c.label}</apex:outputLabel> 
+                        </apex:facet> 
+                        <apex:inputCheckbox value="{!prd.on_demand}"  rendered="{!(prd.show_ondemand)}" id="part_prd_ondemand" />
+                    </apex:column>
+                    
+                    <!-- End -->
+                    
+                    
+                    
+                    
+                    
+                </apex:pageBlockTable><br/>
+                <apex:commandbutton value="Add More" action="{!addmore_prds}" rerender="pbt1" rendered="{!isProduct}" />
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockButtons location="top" >
+                <apex:actionStatus id="myStatus">
+                    <apex:facet name="start">
+                        <apex:outputPanel >
+                            <apex:commandButton value="Processing..." status="myStatus" disabled="true"/>
+                            
+                            <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 20px; position: absolute; left:50%;top:50%;"/></div>
+                        </apex:outputPanel>
+                    </apex:facet>
+                    <apex:facet name="stop"> 
+                        <apex:outputPanel >
+                            <apex:commandButton value="Save" action="{!saveproducts}" />
+                            <apex:commandButton value="Cancel" action="{!cancel}" />
+                        </apex:outputPanel>
+                    </apex:facet>
+                    
+                </apex:actionStatus>   
+            </apex:pageBlockButtons>
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

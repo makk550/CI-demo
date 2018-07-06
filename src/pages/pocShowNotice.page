@@ -1,0 +1,14 @@
+<apex:page standardController="Trial_Request__c" id="showNoticeMessage">
+       
+
+<script> 
+ window.onload = new function() { checkCondition(); };
+function checkCondition()
+{
+if('{!(Trial_Request__c.End_Date__c -Trial_Request__c.Start_Date__c)}' > 90)
+  document.write('<div align=right><font color=\"red\">Notice: VP Sales Approval is required for a POC Request greater than 90 days.<\/font><\/div>');
+}
+
+</script>
+
+</apex:page>

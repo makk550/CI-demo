@@ -1,0 +1,90 @@
+<apex:page standardController="Account" extensions="Renewal_Collabrativeworkspace_extension">
+ <apex:form >
+  <apex:sectionHeader title="Collaborative Workspace" subtitle="{!account.name}" />  
+  <apex:pageblock title="Account Details">  
+     <apex:pageblockSection columns="2" title="Account Information">
+       <apex:pageBlockSectionItem >
+         <apex:outputlabel value="Account Name" for="account__name"/>
+         <apex:outputfield value="{!account.name}" id="account__name"/>
+     </apex:pageBlockSectionItem>
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Account Owner" for="account__owner"/>
+        <apex:outputfield value="{!account.OwnerId}" id="account__owner"/>
+    </apex:pageBlockSectionItem>
+    <apex:pageBlockSectionItem >
+     <!--   <apex:outputlabel value="Region" for="GEO"/> -->
+        <apex:outputlabel value="{!$ObjectType.Account.Fields.GEO__c.Label}" for="GEO"/>
+        <apex:outputfield value="{!account.GEO__c}" id="GEO"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Enterprise ID" for="EnterpriseId"/>
+        <apex:outputfield value="{!account.Enterprise_ID__c}" id="EnterpriseId"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+       <!-- <apex:outputlabel value="Area" for="area"/> -->
+        <apex:outputlabel value="{!$ObjectType.Account.Fields.Sales_Area__c.Label}" for="area"/>
+        <apex:outputfield value="{!account.Sales_Area__c}" id="area"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Enterprise Account Name" for="EntAccName"/>
+        <apex:outputfield value="{!account.Enterprise_Account_Name__c}" id="EntAccName"/>
+    </apex:pageBlockSectionItem>
+
+    <apex:pageBlockSectionItem >
+       <!-- <apex:outputlabel value="Territory/Country" for="salesregion"/> -->
+        <apex:outputlabel value="{!$ObjectType.Account.Fields.Sales_Region__c.Label}" for="salesregion"/>
+        <apex:outputfield value="{!account.Sales_Region__c}" id="salesregion"/>
+    </apex:pageBlockSectionItem>
+
+    <apex:pageBlockSectionItem >
+      <!--  <apex:outputlabel value="Country" for="Country"/> -->
+        <apex:outputlabel value="{!$ObjectType.Account.Fields.Region_Country__c.Label}" for="Country"/>
+        <apex:outputfield value="{!account.Region_Country__c}" id="Country"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Annual Sales" for="sales"/>
+        <apex:outputfield value="{!account.Annual_Sales__c}" id="sales"/>
+    </apex:pageBlockSectionItem>     
+ 
+  </apex:pageblockSection>
+ </apex:pageblock>
+ 
+ <apex:pageblock id="ListContracts" title="Active Contracts" >
+  <apex:pageBlockButtons location="top">
+        <apex:commandButton action="{!URLFOR($Action.Active_Contract__c.New)}" value="New Active Contract" />
+    </apex:pageBlockButtons>
+     <apex:pageBlockTable value="{!contractsbysoldoparty}" var="contract" rendered="{!NOT(ISNULL(contractsbysoldoparty))}">
+        <apex:column headervalue="Action">
+        <apex:commandlink action="{!URLFOR($Action.Active_Contract__c.Edit,contract.id)}" value="Edit">        
+        </apex:commandlink>|
+        <apex:commandlink action="{!URLFOR($Action.Active_Contract__c.Delete,contract.id)}" value="Del">        
+        </apex:commandlink>
+        </apex:column>
+        <apex:column headerValue="Sales Document">
+        <apex:commandlink action="{!URLFOR($Action.Active_Contract__c.View,contract.id)}" value="{!contract.Name}"></apex:commandlink>
+        </apex:column>
+        
+        <apex:column value="{!contract.Status_Formula__c}"/>
+        <apex:column value="{!contract.Valuation_Tier__c}"/>
+        <apex:column value="{!contract.Contract_Start_Date__c}"/>
+        <apex:column value="{!contract.Contract_End_Date__c}"/>
+        <apex:column value="{!contract.Raw_Maint_Calc_LC__c}"></apex:column>
+        <apex:column value="{!contract.ATTRF_CRV__c}"/>
+        <apex:column value="{!contract.AOCV__c}"/>
+        <apex:column value="{!contract.OCV__c}"/>
+        <!--<apex:column value="{!contract.Region__c}"/>-->
+        <apex:column value="{!contract.Area__c}"/>
+        <apex:column value="{!contract.Territory_Country__c}"/>
+        <apex:column value="{!contract.Territory__c}"/>
+     </apex:pageBlockTable>
+     <apex:commandLink action="{!previous}" rerender="ListContracts" rendered="{!contractHasPrevious}"   value="Previous Page"></apex:commandLink>|
+     <apex:commandLink action="{!next}" rerender="ListContracts" rendered="{!contractHasNext}"  value="Next Page"></apex:commandLink>
+    <apex:outputLabel value="No records to display" rendered="{!(ISNULL(contractsbysoldoparty))}" styleClass="noRowsHeader"></apex:outputLabel>
+  </apex:pageblock>
+  
+ </apex:form> 
+</apex:page>

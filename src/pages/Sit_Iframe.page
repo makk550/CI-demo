@@ -1,0 +1,138 @@
+<apex:page standardController="Case" extensions="Sit_IframeController" showHeader="false" sidebar="false">
+
+    <script src="/support/console/37.0/integration.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        console.log(window.location.href);
+
+        var hostingType = 'standalone';
+        if(getParameterByName('inContextPane') === 'true') {
+            hostingType = 'sidebar';
+        } else if (getParameterByName('caseTabId')) {
+            hostingType = 'subtab';
+        } else if (isEmbedded()) {
+            hostingType = 'embedded';
+        }
+
+
+        if (hostingType === 'subtab') {
+            sforce.console.setTabTitle('SearchIt: ' + '{!case.caseNumber}');
+        }
+
+        function refreshCaseTab() {
+            var caseTabId = getParameterByName('caseTabId');
+            if (caseTabId) {
+                refreshTab(caseTabId);
+            }
+            // else {
+            //     sforce.console.getFocusedSubtabId(function(result) {
+            //         refreshTab(result.id);
+            //     });
+            // }
+
+            function refreshTab(tabId) {
+                sforce.console.refreshSubtabById(tabId, false, logResult, true);
+            }
+        }
+
+        function logResult (result) {
+            console.log(result);
+        }
+
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        function isEmbedded() {
+            return window.location.pathname === '/servlet/servlet.Integration';
+        }
+    </script>
+
+    <apex:form id="theForm" >
+      <button id="openSearchItButton" onclick="callOpenSearchIt();return false;" style="display:none" >Open SearchIt</button>
+      <apex:actionFunction action="{!writeToCaseRelated}" name="writeToRelatedContent" reRender="" oncomplete="refreshCaseTab();" >
+        <apex:param name="firstParam" assignTo="{!knowledgeData}" value="" />
+      </apex:actionFunction>
+    </apex:form>
+
+    <iframe src="" frameborder="0" scrolling="auto" id="theIframe" style="display:none" width="100%" height="100%" />
+
+    <script>
+
+        if (hostingType === 'embedded') {
+            document.getElementById('openSearchItButton').style.display = "inherit";
+        }
+		var searchTerm = '{!searchTerm}';//This value to be set with subject of the case detail at SFDC end
+    	searchTerm = searchTerm.replace(/"/g, '\\"');
+    	var product = '{! product}';  //This value to be set with the selected product of the case at SFDC end
+        var searchDomain = '{! $label.Search_it_domain}';//This value is static and pointing to respective Search URL
+        var defaultHeight = hostingType === 'embedded' ? 650 : 1000;
+		function callOpenSearchIt() {
+            var uRLToSetToIframe = createInternalSearchURL(searchTerm, product, searchDomain);
+            var theIframe = document.getElementById('theIframe');
+            var offsetHeight = document.getElementById('{! $Component.theForm }').offsetHeight;
+            theIframe.src = uRLToSetToIframe;
+            theIframe.height = ((window.innerHeight || defaultHeight) - offsetHeight) + 'px';
+            theIframe.style.display = "inherit";
+        }
+
+        function createInternalSearchURL(searchQuery, product, searchDomain) {
+            var prodHEX = stringToHexConverter(product);
+            //searchQuery = 'tes\'t @';
+            console.log(searchQuery+'******'+encodeURIComponent(searchQuery));
+            var url = searchDomain + '/Pages/ServiceCloud.aspx?k='+ encodeURIComponent(searchQuery) +'#Default={"k":"' + encodeURIComponent(searchQuery)+'"}';//remove product details US320276
+            //searchDomain + '/Pages/ServiceCloud.aspx?k='+ encodeURIComponent(searchQuery) +'#Default={"k":"' + encodeURIComponent(searchQuery) + '","r":[{"n":"products","t":["\\"ǂǂ' + prodHEX + '\\""],"o":"OR","k":false,"m":{"\\"ǂǂ' + prodHEX + '\\"":"' + product + '"}}]}'
+            console.log(url+'******'+encodeURIComponent(searchQuery));
+            function stringToHexConverter(prod) {
+                var str = '';
+                var i = 0;
+                var tmp_len = prod.length,
+                c;
+                for (; i < tmp_len; i += 1) {
+                    c = prod.charCodeAt(i);
+                    str += d2h(c) + ' ';
+                }
+                str = str.replace(/ /g, '');
+                return str;
+            }
+
+            function d2h(d) {
+                return d.toString(16);
+            }
+
+            return url;
+        }
+
+        window.onload = function() {
+            var messageEle = document.getElementById('message');
+            var postResponse = true;
+            function receiveMessage(e) {
+                window.myEvent = e;
+                if ( e.origin !== searchDomain){
+                    return;
+                }
+                if (Array.isArray(e.data)) {
+                    var dataArray = JSON.stringify(e.data);
+                    writeToRelatedContent(dataArray);
+                    e.source.postMessage(postResponse, e.origin);
+
+                }
+            }
+
+            // receives a new MessageEvent
+            window.addEventListener('message', receiveMessage);
+
+            if (hostingType !== 'embedded') {
+                setTimeout(callOpenSearchIt, 1);
+            }
+        }
+
+    </script>
+
+</apex:page>

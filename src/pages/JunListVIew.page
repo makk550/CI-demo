@@ -1,0 +1,36 @@
+<apex:page >
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" />
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" />
+
+  <script>  
+$( document ).ready(function() {
+        $("#dialog").dialog({'autoOpen': false});
+    ListViewport.prototype.extHandler.cellDblClick = function(a,b,c,d) {
+        var cellId = d.target.id;
+        var rid = cellId.substring(0, cellId.indexOf('_') );
+        var fid = this.filter.shownColumns[c-3].fieldId
+        $("#edt").attr("src", 'JunEditCase?rid=' + rid + '&fid='+ fid);
+        
+        $("#dialog").dialog('open');
+    }
+
+    ListViewport.prototype.extHandler.cellMouseOver = function(a,b,c,d) {
+            a = 'inlineEditWrite';
+            Ext.fly(this.grid.getView().getCell(b, c)).replaceClass(a + "Hidden", a + "Visible") 
+    }
+
+    ListViewport.prototype.extHandler.cellMouseOut = function(a,b,c,d) {
+            a = 'inlineEditWrite';
+            Ext.fly(this.grid.getView().getCell(b, c)).replaceClass(a + "Visible", a + "Hidden")
+    }
+    
+});    
+  </script>
+    <apex:enhancedList type="Case" height="300" rowsPerPage="10"  />
+    <div id='dialog' >
+        <iframe id='edt'>
+            
+        </iframe>
+    </div>
+    
+</apex:page>

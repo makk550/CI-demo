@@ -1,0 +1,192 @@
+<apex:page controller="AdminUiMassUpdateController" >
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"/> 
+  <script>
+    function cvCheckAllOrNone(allOrNoneCheckbox) {
+
+        var container = allOrNoneCheckbox;
+        while (container.tagName != "TABLE") {
+            container = container.parentNode;
+        }
+    var inputs = container.getElementsByTagName("input");
+    var checked = allOrNoneCheckbox.checked;
+    for (var i = 0; i < inputs.length; i++) { 
+        var input = inputs.item(i);
+        if (input.type == "checkbox") {
+            if (input != allOrNoneCheckbox) {
+                input.checked = checked;
+            }
+        }
+    }
+}
+</script>
+    <apex:form >
+         <div id="backarrowdiv" style="width:100px;min-width:100px;">
+            <apex:commandLink id="backarrow" action="{!redirectBack}" style="text-decoration:none;">
+                <apex:image id="back" url="{!$Resource.ProdInstBackArrow}" height="25" width="25" />
+                <span id="arrow-text">
+                Back    
+                </span>
+                <p>
+                    
+                </p>
+            </apex:commandLink>
+            
+     </div>
+     <div id="overlay_div" class="waiting" style="position:fixed; top:0; left:0; height:100%; width:100%; z-index:2000; background-color:#999; opacity:.6; display:none;" />
+        <div style="position:fixed; top:35%; left:45%; width:150px; height:115px; background-color:#FFF; border:#FF0000 thin solid; z-index:2001; display:none;" align="center" class="ui-corner-all waiting">
+            <div align="center" style="margin-top:17px;">
+                <img src="{!$Resource.loadingGif}" />
+            </div>
+                <div align="center" id="waiting_msg">Working...</div>
+         </div>
+                <apex:actionStatus id="overlayStatus" onstart="$('.waiting').show();" onstop="$('.waiting').hide();" />
+        
+       <apex:pageBlock title="Admin for Manual Information" >
+                     <apex:pageMessages ></apex:pageMessages>
+            <apex:pageBlockSection >
+                
+                  <apex:selectList label="Which Status do you like to update?" multiselect="false" size="1"  value="{!selectStatus}">
+                         <apex:selectOptions value="{!listStatus}" >
+                               
+                         </apex:selectOptions>
+                               <apex:actionSupport event="onchange" reRender="SampleView" status="overlayStatus"/>
+
+                   </apex:selectList>
+              
+            
+             </apex:pageBlockSection> 
+           <apex:pageBlockSection columns="2"  id="SampleView">
+                 <!-- <apex:inputText value="{!prodctInstanceId}" styleClass="adminUIStyle" style="width:80px; height: 20px" label="Product Instance Id"/>-->
+                  <apex:selectList value="{!fuilfilmentStatus}" size="1"   required="true" styleClass="adminUIStyle" style="width:180px; height: 20px" label=" Fulfillment Status:" rendered="{!if(selectStatus=='Fulfillment Status',true,false)}">
+                        <apex:selectOption itemValue="--None--" itemLabel="--None--"/>
+                        <apex:selectOption itemValue="fulfillment ready" itemLabel="fulfillment ready"/>
+                        <apex:selectOption itemValue="fulfillment denied" itemLabel="fulfillment denied"/>
+                        <apex:selectOption itemValue="fulfillment started" itemLabel="fulfillment started"/>
+                        <apex:selectOption itemValue="fulfillment complete" itemLabel="fulfillment complete"/>
+                        <apex:selectOption itemValue="manual fulfillment notified" itemLabel="manual fulfillment notified"/>
+                    </apex:selectList>
+                
+                   <apex:selectList value="{!Status}" size="1"   required="true" styleClass="adminUIStyle" style="width:100px; height: 20px"  label="Status:" rendered="{!if(selectStatus=='Status',true,false)}">
+                        <apex:selectOption itemValue="--None--" itemLabel="--None--"/>
+                        <apex:selectOption itemValue="under review" itemLabel="under review"/>
+                        <apex:selectOption itemValue="active" itemLabel="active"/>
+                        <apex:selectOption itemValue="denied" itemLabel="denied"/>
+                        <apex:selectOption itemValue="expired" itemLabel="expired"/>
+                        <apex:selectOption itemValue="cancelled" itemLabel="cancelled"/>
+                    </apex:selectList>
+             
+           
+                        
+           </apex:pageBlockSection>
+              
+           <apex:pageBlockSection columns="3">
+               
+           </apex:pageBlockSection>
+        
+        </apex:pageBlock>
+        
+      <apex:pageBlock title="Admin for Manual Fulfillment" id="lineitemsection">
+            <apex:pageBlockTable value="{!admUiWrplist}" var="adminRecord" columnsWidth="20%,35%,35%,45%,45%"> 
+                 <apex:column >
+                <apex:facet name="header">
+                    <apex:inputCheckBox id="main" value="{!allchecked}"  onclick="cvCheckAllOrNone(this);"/>
+                </apex:facet>
+                     <apex:inputCheckBox value="{!adminRecord.selectedItem}" id="contactCb"/>
+                    
+                </apex:column>
+                <apex:column headerValue="Product Instance Id">                   
+                    <apex:outputfield value="{!adminRecord.adminUi.product_instance_id__c}" styleClass="adminUIStyle" style="width:80px; height: 20px"/>
+
+                </apex:column>
+                <apex:column headerValue="Product Descrption">
+                    <apex:outputfield value="{!adminRecord.adminUi.name__c}"/>
+                </apex:column> 
+
+                <apex:column headerValue="Email Id">
+                    <apex:outputField value="{!adminRecord.adminUi.email__c}"/>
+                    
+                </apex:column>
+                
+           
+                
+                <apex:column headerValue="Start Date">
+                    <apex:outputText value="{0,date,yyyy/MM/dd}">
+                        <apex:param value="{!adminRecord.adminUi.entitlement_start_date__c}" />
+                    </apex:outputText>
+                </apex:column>
+                
+             
+                
+                <apex:column headerValue="End Date">
+                    <apex:outputText value="{0,date,yyyy/MM/dd}">
+                        <apex:param value="{!adminRecord.adminUi.entitlement_end_date__c}" />
+                    </apex:outputText>
+                </apex:column>
+                
+                 <apex:column headerValue="Last Update Date">
+                    <apex:outputText value="{0,date,yyyy/MM/dd}">
+                        <apex:param value="{!adminRecord.adminUi.last_update_time__c}" />
+                    </apex:outputText>
+                </apex:column>
+                
+                
+                <apex:column headerValue="Fulfillment Status">
+                    
+                  
+                        <apex:outputfield value="{!adminRecord.adminUi.fulfillment_status__c}" styleClass="adminUIStyle" style="width:120px; height: 20px"/>
+
+                      
+                    
+                </apex:column>
+                <apex:column headerValue="Status">
+                    
+                   
+                    
+               <apex:outputfield value="{!adminRecord.adminUi.status__c}" styleClass="adminUIStyle" style="width:120px; height: 20px"/>
+
+                    
+                </apex:column>
+                <apex:column headerValue="Object Id">
+            <apex:outputfield value="{!adminRecord.adminUi.object_id__c}" styleClass="adminUIStyle" style="width:120px; height: 20px"/>
+ 
+                </apex:column>
+                <apex:column headerValue="Auto Deactivate">
+                    
+                    <apex:outputField value="{!adminRecord.adminUi.auto_deactivate__c }"/>
+                    
+                </apex:column>
+                
+               <apex:column headerValue="Product Insatnce Detail">
+
+                   <apex:outputfield value="{!adminRecord.adminUi.product_detail__c}" styleClass="adminUIStyle" style="width:80px; height: 20px" />
+                </apex:column>
+                
+               
+                  <apex:column headerValue="Data Center">
+              
+                    
+                   <apex:outputField value="{!adminRecord.adminUi.tech_stack__c}" rendered="{!if(adminRecord.adminUi.entitlement_type__c!='trial'||adminRecord.adminUi.entitlement_type__c=='trial',true,false)}"/>
+                </apex:column>
+                <apex:column headerValue="Provisioning Request">
+                    <apex:outputLink value="/{!prId}">{!prName}</apex:outputLink>                  
+                </apex:column>
+                
+            </apex:pageBlockTable>
+           <apex:pageBlockButtons location="bottom">
+               <apex:commandButton value="Save" action="{!Save}" status="overlayStatus">
+                      <apex:actionSupport event="onclick" reRender="SampleView" status="overlayStatus"/>
+
+
+               </apex:commandButton>
+              <apex:commandButton value="Cancel" action="{!Cancel}" status="overlayStatus">
+                  <apex:actionSupport event="onclick" reRender="SampleView" status="overlayStatus"/>
+
+               </apex:commandButton>
+        </apex:pageBlockButtons>
+    </apex:pageBlock>
+    
+    
+    </apex:form>
+    
+    
+</apex:page>

@@ -1,0 +1,24 @@
+<apex:component >
+<apex:attribute name="fieldvalue" description="Value attribute"
+                    type="Opportunity_Plan__c" required="true"/>
+<apex:attribute name="id" description="Id attribute"
+                    type="String" required="true"/>
+<div class="pbSubsection">
+<table width="100%" class="detailList" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td class="labelCol first ">
+            <apex:outputLabel value="Account Name"></apex:outputLabel>&nbsp;&nbsp;&nbsp;
+        </td>
+        <td class="dataCol  first ">
+            <apex:outputLabel id="Account__c" value="{!fieldvalue.Account__r.Name}"/>
+        </td>
+        <td class="labelCol first ">
+            <apex:outputLabel value="Account Owner"></apex:outputLabel>
+        </td>
+        <td class="dataCol  first ">
+            <apex:outputLabel id="AccountOwner" value="{!fieldvalue.Account__r.Owner.Name}"/>
+        </td>
+    </tr>
+</table>
+</div>
+</apex:component>

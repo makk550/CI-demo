@@ -1,0 +1,160 @@
+<apex:page standardController="scpq__SciQuote__c" extensions="ApprovalByPass">
+    <apex:form >
+        <apex:detail subject="{!scpq__SciQuote__c.Id}" relatedList="true" showchatter="true" inlineEdit="true" />        
+    </apex:form>
+    
+    
+    <apex:includeScript value="{!URLFOR($Resource.JQueryUiLibrary, '/js/jquery-1.4.2.min.js')}"/>
+    <script src="/js/functions.js" type="text/javascript"></script> 
+
+    <script type="text/javascript" src="/soap/ajax/16.0/connection.js"></script>    
+
+    <script type="text/javascript" src="/soap/ajax/16.0/ajax.js"></script>   
+
+    <script type="text/javascript">
+    
+    window.onload = init1; 
+    
+    function init1(){
+        console.log('Type'+'{!scpq__SciQuote__c.CA_Quote_Type__c}');
+        
+        if('{!scpq__SciQuote__c.CA_Quote_Type__c}'==='Services'){
+        $(".btn[name$='quick_contract']").hide();
+          
+        }
+        
+        if ('{!$User.Id}' != '{!scpq__SciQuote__c.CPQ_Quote_Creator_Id__c}'){           
+            hideRecallApprovalRequest("pbButton");
+        }
+        
+        
+        if ({!showApprovalBypassButton} == false){
+           
+            hideApprovalBypass("pbButton");
+            
+        }
+        if ('{!scpq__SciQuote__c.CA_Quote_Type__c}'== 'Renewal'){
+
+            
+        }
+        else if ('{!scpq__SciQuote__c.CA_CPQ_Quote_Status__c}'!= 'Approved'){
+
+            hideSendWithDocusign("pbButton");
+        }
+        hideSubmitForApproval("pbButton");
+
+        // Added as part of FY14 Jan release
+        try
+        {  
+            var buttons = document.getElementsByName("piRemove");
+            buttons[0].style.visibility = "hidden";
+        }
+        catch(e)
+        {
+        }
+     }
+
+    function hideApprovalBypass(btnName) {
+
+        try{
+
+            var buttons = document.getElementsByName("approval_bypass");
+
+                  buttons[0].className="btnDisabled";
+
+                  buttons[0].disabled=true;
+
+                  buttons[1].className="btnDisabled";
+
+                  buttons[1].disabled=true;
+
+                }
+
+        catch(e) {
+
+            // var ee = e.message || 0; alert('Error: \n\n'+e+'\n'+ee);
+
+        }
+
+    }
+
+   
+
+    function hideSendWithDocusign(btnName) {
+
+        try{
+
+            var buttons = document.getElementsByName("send_with_docusign");
+
+                  buttons[0].className="btnDisabled";
+
+                  buttons[0].disabled=true;
+
+                  buttons[1].className="btnDisabled";
+
+                  buttons[1].disabled=true;
+
+                }
+
+        catch(e) {
+
+            // var ee = e.message || 0; alert('Error: \n\n'+e+'\n'+ee);
+
+        }
+
+    }
+
+
+
+    function hideSubmitForApproval(btnName) {
+
+        try{
+
+            var buttons = document.getElementsByName("piSubmit");
+
+                  buttons[0].className="btnDisabled";
+
+                  buttons[0].disabled=true;
+
+                  buttons[1].className="btnDisabled";
+
+                  buttons[1].disabled=true;
+
+                }
+
+        catch(e) {
+
+            // var ee = e.message || 0; alert('Error: \n\n'+e+'\n'+ee);
+
+        }
+
+    }
+    
+    function hideRecallApprovalRequest(btnName) {
+
+        try{
+
+            var buttons = document.getElementsByName("recall_approval_request");
+
+                  buttons[0].className="btnDisabled";
+
+                  buttons[0].disabled=true;
+
+                  buttons[1].className="btnDisabled";
+
+                  buttons[1].disabled=true;
+
+                }
+
+        catch(e) {
+
+            // var ee = e.message || 0; alert('Error: \n\n'+e+'\n'+ee);
+
+        }
+
+    }
+    
+
+    </script>
+    
+</apex:page>

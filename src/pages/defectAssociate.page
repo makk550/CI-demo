@@ -1,0 +1,36 @@
+<apex:page controller="DefectAssociateController">
+<apex:sectionHeader title="SE Engagement / Related Defect"/>
+<script>
+         
+         function disableOnSubmit(input) {
+            var btn = document.getElementById('{!$Component.formId.pageBlockId.pageBlockButtons.submitID}'); 
+            var btn2 = document.getElementById('{!$Component.formId.pageBlockId.pageBlockButtons.continueID}');
+            setTimeout(function(){ 
+                btn.disabled = 'disabled';
+                // Use the Salesforce CSS style to make the button appear disabled
+                btn.className = 'btnDisabled';
+                btn.value = "Saving..."; 
+                btn2.disabled = 'disabled';
+                // Use the Salesforce CSS style to make the button appear disabled
+                btn2.className = 'btnDisabled';
+      
+            }, 50);
+        }
+    </script>
+    <apex:form id="formId">
+    <apex:pageMessages escape="false"/>
+    <apex:pageBlock title="Associate" mode="edit" id="pageBlockId">
+     <apex:pageBlockButtons location="bottom" id="pageBlockButtons">
+          <apex:commandButton value="Submit" action="{!submitDefectAssociate}" onclick="disableOnSubmit(this);" rendered="{!submitRecord}" id="submitID"/>
+          <apex:commandButton value="Continue" action="{!continueSubmitAssocaite}" rendered="{!continueSubmitRecord}"/>
+          <apex:commandButton value="Cancel" action="{!cancelAssociation}" rendered="{!submitRecord}" id="continueID"/>
+     </apex:pageBlockButtons>         
+      <apex:pageBlockSection title="Information" columns="1" >
+          <apex:inputText label="Defect ID" value="{!defectName}"  rendered="{!submitRecord}"/>
+          <apex:outputtext label="Defect ID" value="{!defectName}" rendered="{!continueSubmitRecord}"/>
+          <!--<apex:outputText label="R&D System" value="{!systemName}"/>-->
+          <apex:outputText label="Type" value="{!defectType}"/>
+      </apex:pageBlockSection>  
+   </apex:pageBlock>
+   </apex:form>
+</apex:page>

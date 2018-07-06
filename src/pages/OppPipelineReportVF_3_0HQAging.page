@@ -1,0 +1,195 @@
+<apex:page controller="VOppPipelineReportHelper_3_0CoreHQAging">
+    <script>
+        function getData() {
+            alert("Fetching data, Click OK to continue.");
+        }
+    </script>
+
+    <style>
+    .header TABLE{
+        BACKGROUND-COLOR: #FFFFFF;
+        FONT-WEIGHT: normal; 
+        FONT-SIZE: 1.0em; 
+        COLOR: #000; 
+        FONT-FAMILY: 'Verdana', 'Geneva', sans-serif
+    }
+    .header TH{
+        BACKGROUND-COLOR: #AAAAAA
+    }
+
+    .header TD{
+        BACKGROUND-COLOR: #EEEEEE;
+        BORDER-TOP: #dddddd 1px solid;
+        BORDER-BOTTOM: #dddddd 1px solid
+    }
+
+    TABLE {
+        FONT-WEIGHT: normal; 
+        FONT-SIZE: 1.0em; 
+        COLOR: #333; 
+        FONT-FAMILY: 'Verdana', 'Geneva', sans-serif
+    }
+
+    </style>
+
+        <apex:form >
+                <apex:pageBlock title="Pipeline Reporting" mode="edit">
+                    
+                    Select Date :<apex:selectList style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedDate}" multiselect="flase" size="1">
+                    <apex:selectOptions value="{!dateItems}"/>
+                    </apex:selectList>
+                    &nbsp;&nbsp;
+                    
+                    <apex:outputLabel value="Select:" for="theAreaType"/>
+                    <apex:selectList style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedField}" multiselect="false" size="1" id="theAreaType" >
+                    <apex:selectOptions value="{!fieldItems}"/>
+                    </apex:selectList>
+                    <apex:commandButton value="Go!" id="Go" action="{!populateFieldList}"/>
+                    &nbsp;
+                  
+                    <apex:outputLabel value="Select Region:" rendered="{!showRegionList}"  for="theRegion"/>
+                    <apex:selectList rendered="{!showRegionList}" style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedRegion}" multiselect="true" size="5" id="theRegion">
+                    <apex:selectOptions value="{!regionItems}"/>
+                    </apex:selectList>
+
+                    
+                    <apex:outputLabel value="Select Area:" rendered="{!showAreaList}"  for="theArea"/>
+                    <apex:selectList rendered="{!showAreaList}" style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedArea}" multiselect="true" size="5" id="theArea">
+                    <apex:selectOptions value="{!areaItems}"/>
+                    </apex:selectList>
+
+                    <apex:outputLabel value="Select Territory/Country:" rendered="{!showTerritoryList}"  for="theTerritory"/>
+                    <apex:selectList rendered="{!showTerritoryList}" style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedTerritory}" multiselect="true" size="5" id="theTerritory">
+                    <apex:selectOptions value="{!territoryItems}"/>
+                    </apex:selectList>
+
+
+
+                    <apex:commandButton value="Generate Report" id="GenerateReport" action="{!populateData}"/>
+                </apex:pageBlock>
+			 	<apex:outputText rendered="{!showDataTable}" style="FONT-WEIGHT: bold;" value="USD in thousands(000's)"></apex:outputText>	
+               <apex:pageBlock rendered="{!showDataTable}" mode="edit" title="3.5 Region Aging by Milestone - Avg Oppty Age Days">
+                    <apex:pageBlockTable value="{!oppPipeLineBeanForAvgAgeRegion}" var="bean" id="theTable" rowClasses="odd,even" styleClass="tableClass">
+                        <apex:column width="10%">
+                            <apex:facet name="header">{!selectedColumn}</apex:facet>
+                            <apex:outputText value="{!bean.region}" style="{!if(bean.region='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">30%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM30Pipelines}" style="{!if(bean.region='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">50%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM50Pipelines}" style="{!if(bean.region='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">70%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM70Pipelines}" style="{!if(bean.region='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">90%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM90Pipelines}" style="{!if(bean.region='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">Won</apex:facet>
+                            <apex:outputText value="{!bean.totalSMWonPipelines}" style="{!if(bean.region='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+
+               <apex:pageBlock rendered="{!showDataTable}" mode="edit" title="3.6 Region Aging by Milestone - Oppty Value $'s">
+                    <apex:pageBlockTable value="{!oppPipeLineBeanForAvgPriceRegion}" var="bean" id="theTable" rowClasses="odd,even" styleClass="tableClass">
+                        <apex:column width="10%">
+                            <apex:facet name="header">{!selectedColumn}</apex:facet>
+                            <apex:outputText value="{!bean.region}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">30%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM30Pipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">50%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM50Pipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">70%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM70Pipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">90%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM90Pipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">Won</apex:facet>
+                            <apex:outputText value="{!bean.totalSMWonPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+
+               <apex:pageBlock rendered="{!showDataTable}" mode="edit" title="3.7 BU Aging by Milestone - Avg Oppty Age Days">
+                    <apex:pageBlockTable value="{!oppPipeLineBeanForAvgAgeBU}" var="bean" id="theTable" rowClasses="odd,even" styleClass="tableClass">
+                        <apex:column width="10%">
+                            <apex:facet name="header">Business Unit</apex:facet>
+                            <apex:outputText value="{!bean.bu}" style="{!if(bean.bu='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                    		<apex:facet name="header">NCV Driver</apex:facet>
+                    		<apex:outputText value="{!bean.ncv}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                		</apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">30%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM30Pipelines}" style="{!if(bean.bu='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">50%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM50Pipelines}" style="{!if(bean.bu='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">70%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM70Pipelines}" style="{!if(bean.bu='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">90%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM90Pipelines}" style="{!if(bean.bu='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">Won</apex:facet>
+                            <apex:outputText value="{!bean.totalSMWonPipelines}" style="{!if(bean.bu='Avg','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+
+               <apex:pageBlock rendered="{!showDataTable}" mode="edit"  title="3.8 BU Aging by Milestone - Oppty Value $'s">
+                    <apex:pageBlockTable value="{!oppPipeLineBeanForAvgPriceBU}" var="bean" id="theTable" rowClasses="odd,even" styleClass="tableClass">
+                        <apex:column width="10%">
+                            <apex:facet name="header">Business Unit</apex:facet>
+                            <apex:outputText value="{!bean.bu}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                    		<apex:facet name="header">NCV Driver</apex:facet>
+                    		<apex:outputText value="{!bean.ncv}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                		</apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">30%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM30Pipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">50%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM50Pipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">70%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM70Pipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">90%</apex:facet>
+                            <apex:outputText value="{!bean.totalSM90Pipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                        <apex:column width="5%">
+                            <apex:facet name="header">Won</apex:facet>
+                            <apex:outputText value="{!bean.totalSMWonPipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+        </apex:form>
+</apex:page>

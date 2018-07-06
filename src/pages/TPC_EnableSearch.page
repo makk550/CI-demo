@@ -1,0 +1,10 @@
+<apex:page >
+    <script>
+        window.parent.$(".icon-home").hide();
+        window.parent.$(".icon-contact").hide();
+    
+        window.parent.$("td:contains('Created By')").next().children().contents().unwrap();
+        window.parent.$("td:contains('Last Modified By')").next().children().contents().unwrap();
+        window.parent.$("td:contains('Internal Contact')").next().children().contents().unwrap()
+    </script>
+</apex:page>

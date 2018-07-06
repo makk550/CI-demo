@@ -1,0 +1,53 @@
+<apex:page standardcontroller="contact">
+    <apex:detail subject="{!contact.Id}" relatedList="true" title="true" inlineEdit="true" showChatter="true">
+    </apex:detail>
+    <!--AR 3749 ALLHA02 hide Delete button for non-admin profiles -->   
+    <apex:includeScript value="/soap/ajax/9.0/connection.js" />
+    <apex:includeScript value="{!URLFOR($Resource.JQueryUiLibrary, '/js/jquery-1.4.2.min.js')}"/>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        console.log("Step 1");
+        sforce.connection.sessionId = '{!$Api.Session_ID}';
+        if('{!$Profile.Id}' !== '00e30000000oou3AAA' && '{!$Profile.Id}' !=='00e30000001Fm6VAAS' && '{!$Profile.Id}' !=='00ea00000021or8AAA' ){
+            console.log('Not an Admin -- Hiding Delete button  ');
+            $(".btn[name='delete_custom']").hide();
+            $(".btn[name='del']").hide();
+        } 
+        if('{!$Profile.Id}' !== '00ea00000021zqwAAA' && '{!$Profile.Id}' !=='00ea00000021zqvAAA' && '{!$Profile.Id}' !=='00ea00000021zquAAA' && '{!$Profile.Id}' !=='00ea00000021zqkAAA' 
+           && '{!$Profile.Id}' !=='00ea00000021zqbAAA' && '{!$Profile.Id}' !=='00ea00000021zqjAAA'  && '{!$Profile.Id}' !=='00ea0000001duDnAAI' && '{!$Profile.Id}' !=='00e30000000oou3AAA'
+        && '{!$Profile.Id}' !=='00ea00000021zqyAAA' && '{!$Profile.Id}' !=='00ea00000021zqyAAA'){console.log('Not an Admin -- Hiding Enable as Partner button  ');
+            $(".btn[name='enable_as_partner']").hide();
+            
+        } 
+        else {
+            var result = sforce.connection.query("SELECT UserName FROM User where ContactId= '{!Contact.Id}'");
+            var records = result.getArray("records");
+            if(records.length > 0){
+                $(".btn[name='enable_as_partner']").attr("disabled",true);
+                $(".btn[name='enable_as_partner']").css({"opacity":"0.5","pointer-events":"none"});
+            }
+        }  
+        
+        $(".btn[name='enable_as_partner']").click(function(){
+                     document.querySelector(".btn[name='enable_as_partner']").value ="Saving User...";
+        });
+    }); 
+    
+        var user_collapse = {!$User.Expand_All_Sections_on_Contact_Page__c};
+        if(user_collapse == false){
+            
+            [].forEach.call(document.querySelectorAll("img.hideListButton"), function(v) {   v.click() });
+           if ($("img[name='Contact Relationship Fields']").length ){
+            $("img[name='Contact Relationship Information']").click();
+           }
+        }else{
+             [].forEach.call(document.querySelectorAll("img.showListButton"), function(v) { v.click() });
+
+        }
+     if ($("img[name='Contact Relationship Fields']").length ){
+   $("img[name='Contact Relationship Fields']").parent().hide();
+        
+    }
+    
+    </script> 
+</apex:page>

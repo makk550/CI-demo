@@ -1,0 +1,64 @@
+<apex:page action="{!initPlan}" renderAs="{!$CurrentPage.parameters.renderAs}" showHeader="false" sidebar="false" standardController="Account" extensions="OpportunityGridExt" tabStyle="Account">
+<style>
+.alignCenter = {text-align:center;}
+.capitalize = {text-transform: capitalize;}
+</style>
+<script>
+    function setURL(theUrl){
+        //alert(theUrl);
+        window.top.location.href = theUrl;      
+    }
+</script>
+<apex:form >
+ <table>
+  <tr>
+   <td>
+    <apex:commandButton value="Printable View" onclick="window.open('/apex/OpportunityGrid?id={!AccountId}&renderAs=pdf'); return false;"  rendered="{!NOT(isSecAcc)}"/>
+   </td>
+   <td> 
+    <apex:commandButton value="Go to Primary Account" onclick="window.open('/{!primAccountId}'); return false;" rendered="{!isSecAcc}"/>
+   </td>
+  </tr>
+ </table> 
+<apex:pageBlock tabStyle="Account" title="{!IF($CurrentPage.parameters.renderAs=='pdf','Opportunity Grid for ' + account.Name,'')}">                                            
+        <apex:dataTable width="100%" value="{!lstOpportunityGrid}" var="opp" id="theTable" rowClasses=" dataRow even first, dataRow odd"
+        styleClass="list" rendered="{!NOT(isSecAcc)}">
+            <apex:column headerValue="Business Unit">
+                <apex:outputText value="{!opp.BusinessUnit}"/>
+            </apex:column>
+            <apex:column headerValue="NCV Driver">
+                <apex:outputLink onclick="setURL('/apex/OpportunityPlan?pdId={!opp.pDId}&ncvId={!opp.NcvId}&Driver={!opp.NCVDriver}&BU={!opp.BusinessUnit}&AccId={!opp.AccountId}&PlanId={!planId}&Id={!planId}');" >{!opp.NCVDriver}</apex:outputLink>
+             </apex:column>
+            <apex:column headerValue="CA License" styleClass="alignCenter" headerClass="alignCenter">
+                <apex:image url="{!$Resource.greenCircle}" rendered="{!IF(opp.CALicenseCount>0,true,false)}"></apex:image>  
+                <apex:image url="{!$Resource.redCircle}" rendered="{!IF(opp.CALicenseCount<=0,true,false)}"></apex:image>
+            </apex:column>
+            <apex:column headerValue="Competitor License" styleClass="alignCenter" headerClass="alignCenter">
+                <apex:image url="{!$Resource.greenCircle}" rendered="{!IF(opp.CompetitorLicenseIcon=='green',true,false)}"></apex:image>  
+                <apex:image url="{!$Resource.redCircle}" rendered="{!IF(opp.CompetitorLicenseIcon=='red',true,false)}"></apex:image>  
+                <apex:image url="{!$Resource.grayCircle}" rendered="{!IF(opp.CompetitorLicenseIcon=='grey',true,false)}"></apex:image>  
+            </apex:column>
+            <apex:column headerValue="Opportunity" styleClass="alignCenter" headerClass="alignCenter">
+                    <apex:image url="{!$Resource.grayCircle}" rendered="{!IF(opp.Opportunity==null || opp.Opportunity=='',true,false)}"></apex:image>  
+                    <apex:image url="{!$Resource.greenCircle}" rendered="{!IF(opp.Opportunity='Yes',true,false)}"></apex:image>  
+                    <apex:image url="{!$Resource.redCircle}" rendered="{!IF(opp.Opportunity='No',true,false)}"></apex:image>  
+            </apex:column>
+            <apex:column headerValue="Potential Upsell">
+                <apex:outputText escape="false" value="{!IF(opp.PotentialUpsell==null || opp.PotentialUpsell=='','&nbsp;',opp.PotentialUpsell)}"/>
+            </apex:column>
+            <apex:column headerValue="Open Opportunities" styleClass="alignCenter" headerClass="alignCenter">
+                <apex:outputPanel rendered="{!IF(opp.OpenOppsCount>0,true,false)}">
+                    <a target="top" href="/00O300000048DVf?pv0={!LEFT(opp.AccountId,15)}&pv1={!opp.NCVDriver}&pv2={!LEFT(opp.AccountId,15)}&pv3={!Entid}"  id="reportLink">{!opp.OpenOppsCount}</a>
+                </apex:outputPanel>
+                <apex:outputText rendered="{!IF(opp.OpenOppsCount=0,true,false)}" value="{!opp.OpenOppsCount}"/>
+            </apex:column>
+        </apex:dataTable>
+        
+        <apex:outputText rendered="{!isSecAcc}" Value="Please visit Primary Account for CILL Information."  style="color : red;font-weight: bold"/> 
+        
+            </apex:pageBlock>
+</apex:form>    
+<script>
+    //alert("{!planId}");
+</script>
+</apex:page>

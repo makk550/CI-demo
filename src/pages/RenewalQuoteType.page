@@ -1,0 +1,1169 @@
+<apex:page controller="QuoteOrderFormController" language="{!LangCode}"  cache="true"  showHeader="False" contentType="application/vnd.msword#QuickContract.doc">
+<html Content-Type="application/vnd.msword#QuickContract.doc" xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+<meta name="ProgId" content="Word.Document"></meta>
+<meta name="Generator" content="Microsoft Word 7"></meta>
+<meta name="Originator" content="Microsoft Word 7"></meta>
+<title></title>
+
+<style>   
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}         
+body{font-family:Arial Unicode MS;font-size:9px;}
+@page Section1{    
+    margin : .5in 1in 1in .5in; 
+    mso-header-margin:.5in;
+    mso-footer-margin:.5in;    
+    mso-header: h1;
+    mso-footer: f1;   
+    mso-paper-source:0;
+    font-size:9px;    
+}
+div.Section1{
+page:Section1;
+}
+p.MsoFooter, li.MsoFooter, div.MsoFooter{
+    margin:0in;
+    margin-bottom:.0001pt;
+    mso-pagination:widow-orphan;
+}
+p.MsoHeader, li.MsoHeader, div.MsoHeader{
+    margin:0in;
+    margin-top:0px;
+    mso-pagination:widow-orphan;
+}
+table#hrdftrtbl
+{ margin:0in 0in 0in 900in;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+}
+td.data{border-style:solid;border-width:1px 1px 1px 1px;border-color:#000000;border-collapse:collapse;}
+
+</style>
+</head>
+<body>
+<div class="Section1"> 
+<!--table width="100%"  border-collapse="collapse" bgcolor="black" style="border:0px solid black;border-collapse:collapse;"></table -->
+<table width="100%" bgcolor="black" style="border:0px solid black;border-collapse:collapse;"><tr></tr></table>
+<table width="90%"  align="Center">    
+    <tr width="100%">
+        <td width="25%" align="Left"><b>{!$Label.CA_Reno_Standard_Quote_Number}&nbsp;:&nbsp;<font style="color:white;size:10px;">a</font>{!CPQQuoteNum}</b></td>      
+        <td width="60%" align="Center"><b>{!$Label.If_issuing_a_PO_please_ensure_Quote_is_referenced}</b></td>
+        <apex:outputpanel rendered="{!showQuoteExpirydateForEnglish || isAPJLocalizedTemplate}">
+        <td width="15%" align="Left"><b>{!$Label.Quote_Expiration_Date}</b></td>
+        </apex:outputpanel> 
+    </tr>
+</table>
+
+<!-- <apex:outputPanel rendered="{!showEffectiveOnSigDateNotice}">
+    <table width="90%" align="Center">
+        <tr><td align="Left">
+            <b>{!$Label.Order_Form_is_effective_on_the_date_of_signature}</b>        </td></tr>
+    </table>
+</apex:outputPanel> -->
+
+<br></br>
+
+<table width="90%"  align="Center">
+    <tr><td colspan="3"><b>{!$Label.CA_Contact_Information}</b></td></tr>
+    <tr>
+        <td width="30%" align="Left">{!$Label.Name}&nbsp;:&nbsp;  {!$User.FirstName} {!$User.LastName}</td>
+        <td width="30%" align="Left">{!$Label.Phone_Number}&nbsp;:&nbsp;  {!$User.Phone}</td>
+        <td width="40%" align="Left">{!$Label.E_mail}&nbsp;:&nbsp;  {!$User.Email}</td>
+    </tr>
+    <tr>
+        <td width="30%" align="Left">{!$Label.Title}&nbsp;:&nbsp; {!$User.title}</td>
+        <td width="30%" align="Left">{!$Label.Fax_Number}&nbsp;:&nbsp;  {!$User.Fax}</td>
+        <td width="40%" align="Left"></td>
+    </tr>
+</table>
+<br></br>
+<apex:outPutPanel rendered="{!OnDemandAdminLabel}">
+    <table  width="90%" align="center">
+        <tr>
+            <td width="30%"><b>{!$Label.On_Demand_Administrator_if_applicable}</b></td>
+            <td><b>{!$Label.Name}&nbsp;:&nbsp;</b> <apex:outputtext rendered="{!!isAPJLocalizedTemplate}"> {!QuoteRec.CA_Technical_Contact_Name__c}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}"> {!QuoteRec.CA_Technical_Contact_Name_Lcl__c}</apex:outputtext>
+            <b>{!$Label.E_mail}&nbsp;:&nbsp;</b> {!QuoteRec.Technical_Contact_Email_Address__c}</td>
+        </tr>
+    </table>
+</apex:outputpanel>
+
+
+<apex:outputPanel rendered="{! AND(!AND(isAPJ,isIndirectQuote),showContactSection)}">
+<table width="90%"  align="Center">
+    <tr><td colspan="3"><b>{!$Label.Client_Contact_Information}</b></td></tr>
+    <tr>       
+        <td align="Left" style="width:70%;">{!$Label.Technical_Contact_Name} &nbsp;:&nbsp; <apex:outputtext > {!technicalDept}</apex:outputtext><font style="color:white;size:10px;">a</font></td>
+        <td width="30%" align="Left"  colspan="2">{!$Label.Phone_Number}&nbsp;:&nbsp; {!QuoteRec.Technical_Contact_Phone__c}</td>        
+    </tr>
+    <tr>
+        <td colspan="3">{!$Label.Billing_Department_Name}&nbsp;:&nbsp;<apex:outputtext >{!billingDept}</apex:outputtext></td>                  
+    </tr>
+     <tr>
+        <td colspan="3">{!$Label.Bill_To_Address}&nbsp;:&nbsp;;<apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!billingAddress}</apex:outputtext><apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!billingAddressLcl}</apex:outputtext></td>                
+    </tr>
+     <tr>
+        <td colspan="3">{!$Label.Shipping_Department_Name}&nbsp;:&nbsp;<apex:outputtext >{!shippingDept}</apex:outputtext></td>                    
+    </tr>
+     <tr>
+        <td colspan="3">{!$Label.Ship_To_Address}&nbsp;:&nbsp;<apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!ShipmentAddress}</apex:outputtext><apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!shipmentAddressLcl}</apex:outputtext></td>                  
+    </tr>
+</table>
+<table  width="90%" align="center">
+<tr>
+<td><b> <apex:outputtext rendered="{!!showContactSection}">{!$Label.Sold_To_ID}&nbsp;:&nbsp;    </apex:outputtext> 
+<apex:outputtext rendered="{!showContactSection}">{!$Label.Site_ID}&nbsp;:&nbsp;    </apex:outputtext>  </b> </td>
+<td>{!QuoteRec.CA_Sold_To_ID__c}</td>
+<td><b>{!$Label.Site}&nbsp;:&nbsp;</b></td>
+<td align="Left"><apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To__c}</apex:outputtext>&nbsp;&nbsp;<apex:outputtext rendered="{!showCompanyNumber}">({!QuoteRec.Company_Number__c})</apex:outputtext><apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To_Lcl__c}</apex:outputtext></td>
+<td><apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!customerAddress}</apex:outputtext><apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!customerAddressLcl}</apex:outputtext></td>
+</tr></table>
+</apex:outputPanel>
+
+
+<apex:outputPanel rendered="{! AND(!AND(isAPJ,isIndirectQuote),!showContactSection)}">
+<table width="90%"  align="Center">
+    <tr><td colspan="3"><b>{!$Label.Client_Contact_Information}</b></td></tr>
+    <tr>       
+        <td align="Left" style="width:70%;">{!$Label.Contact_Name_Email} &nbsp;:&nbsp; <apex:outputtext rendered="{!!isAPJLocalizedTemplate}"> {!QuoteRec.CA_Technical_Contact_Name__c}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}"> {!QuoteRec.CA_Technical_Contact_Name_Lcl__c}</apex:outputtext>,<font style="color:white;size:10px;">a</font>{!QuoteRec.Technical_Contact_Email_Address__c}</td>
+        <td width="30%" align="Left"  colspan="2">{!$Label.Phone_Number}&nbsp;:&nbsp; {!QuoteRec.Technical_Contact_Phone__c}</td>        
+    </tr>
+    <tr>
+        <td colspan="3">{!$Label.Bill_To_Contact}&nbsp;:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_Billing_Contact_Name__c}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_Billing_Contact_Name_Lcl__c}</apex:outputtext></td>                  
+    </tr>
+     <tr>
+        <td colspan="3">{!$Label.Bill_To_Address}&nbsp;:&nbsp;;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!billingAddress}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!billingAddressLcl}</apex:outputtext></td>                
+    </tr>
+     <tr>
+        <td colspan="3">{!$Label.Ship_To_Contact}&nbsp;:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_Shipping_Contact_Name__c}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_Shipping_Contact_Name_Lcl__c}</apex:outputtext></td>                    
+    </tr>
+     <tr>
+        <td colspan="3">{!$Label.Ship_To_Address}&nbsp;:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!ShipmentAddress}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!shipmentAddressLcl}</apex:outputtext></td>                  
+    </tr>
+</table>
+
+<table  width="90%" align="center">
+<tr>
+<td><b><apex:outputtext rendered="{!!showContactSection}">{!$Label.Sold_To_ID}&nbsp;:&nbsp;    </apex:outputtext> 
+<apex:outputtext rendered="{!showContactSection}">{!$Label.Site_ID}&nbsp;:&nbsp;    </apex:outputtext></b> </td>
+<td>{!QuoteRec.CA_Sold_To_ID__c}</td>
+<td><b>{!$Label.Site}&nbsp;:&nbsp;</b></td>
+<td align="Left"><apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To__c}</apex:outputtext>&nbsp;&nbsp;<apex:outputtext rendered="{!showCompanyNumber}">({!QuoteRec.Company_Number__c})</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To_Lcl__c}</apex:outputtext></td>
+<td><apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!customerAddress}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!customerAddressLcl}</apex:outputtext></td>
+</tr></table>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{! AND(AND(isAPJ,isIndirectQuote),!showContactSection)}">
+<table width="90%"  align="Center">
+    <tr><td><b> <apex:outputPanel rendered="{!!tier1OppQuote}">{!$Label.Distributor_Reseller_and_End_User_Contact_Information} </apex:outputPanel>
+    <apex:outputPanel rendered="{!tier1OppQuote}">{!$Label.Reseller_and_End_User_Contact_Information}</apex:outputPanel></b></td></tr>
+    <apex:variable rendered="{!!tier1OppQuote}" var="HideDistiSection" value="">
+    <tr>
+        <td>{!$Label.Distributor_name_and_address}&nbsp;:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_Distributor_Name__c}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_Distributor_Name_Lcl__c}</apex:outputtext></td>                  
+    </tr>
+     <tr>
+        <td>{!$Label.DRDistributor}&nbsp;{!$Label.Sold_To_ID}:&nbsp;<apex:outputtext >{!QuoteRec.CA_Distributor_ID__c}</apex:outputtext></td>                
+    </tr>
+     <tr>
+        <td>{!$Label.DRDistributor}&nbsp;{!$Label.Bill_To_Contact}:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_Billing_Contact_Name__c}</apex:outputtext>
+        <apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_Billing_Contact_Name_Lcl__c}</apex:outputtext>
+        </td>                
+    </tr>
+    <tr>
+        <td>{!$Label.DRDistributor}&nbsp;{!$Label.Bill_To_Address}:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.Bill_To_Address__c}</apex:outputtext>
+        <apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.Bill_To_Address_Lcl__c}</apex:outputtext>
+        </td>                
+    </tr>
+    <tr> <td></td> <td></td></tr>
+    </apex:variable>
+    <tr>
+        <td>{!$Label.Reseller_name_and_address}&nbsp;:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_Reseller_Name__c}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_Reseller_Name_Lcl__c}</apex:outputtext></td>                  
+    </tr>
+     <tr>
+        <td>{!$Label.Reseller}&nbsp;{!$Label.Sold_To_ID}:&nbsp;<apex:outputtext >{!QuoteRec.CA_Sold_To_ID__c}</apex:outputtext></td>                
+    </tr>
+     <tr>
+        <td>{!$Label.Reseller}&nbsp;{!$Label.Bill_To_Contact}:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_Billing_Contact_Name__c}</apex:outputtext>
+        <apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_Billing_Contact_Name_Lcl__c}</apex:outputtext>
+        </td>                
+    </tr>
+    <tr>
+        <td>{!$Label.Reseller}&nbsp;{!$Label.Bill_To_Address}:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.Bill_To_Address__c}</apex:outputtext>
+        <apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.Bill_To_Address_Lcl__c}</apex:outputtext>
+        </td>                
+    </tr>
+    <tr> <td></td> <td></td></tr>
+    <tr>
+        <td>{!$Label.End_User_Customer_name_and_address}&nbsp;:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_End_User_Name__c}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_End_User_Name_Lcl__c}</apex:outputtext></td>                  
+    </tr>
+     <tr>
+        <td>{!$Label.End_User}&nbsp;{!$Label.Sold_To_ID}:&nbsp;<apex:outputtext >{!QuoteRec.CA_End_User_ID__c}</apex:outputtext></td>                
+    </tr>
+     
+    <tr>
+        <td>{!$Label.End_User}&nbsp;{!$Label.Ship_To_Address}:&nbsp;<apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.Ship_To_Address__c}</apex:outputtext>
+        <apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.Ship_To_Address_Lcl__c}</apex:outputtext>
+        </td>                
+    </tr>
+    
+     
+</table>
+
+<table  width="90%" align="center">
+<tr>
+<td><b><apex:outputtext rendered="{!!showContactSection}">{!$Label.Sold_To_ID}&nbsp;:&nbsp;    </apex:outputtext> 
+<apex:outputtext rendered="{!showContactSection}">{!$Label.Site_ID}&nbsp;:&nbsp;    </apex:outputtext></b> </td>
+<td>{!QuoteRec.CA_Sold_To_ID__c}</td>
+<td><b>{!$Label.Site}&nbsp;:&nbsp;</b></td>
+<td align="Left"><apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To__c}</apex:outputtext>&nbsp;&nbsp;<apex:outputtext rendered="{!showCompanyNumber}">({!QuoteRec.Company_Number__c})</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To_Lcl__c}</apex:outputtext></td>
+<td><apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!customerAddress}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!customerAddressLcl}</apex:outputtext></td>
+</tr></table>
+
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{! AND(AND(isAPJ,isIndirectQuote),showContactSection)}">
+<table width="90%"  align="Center">
+    <tr><td><b> <apex:outputPanel rendered="{!!tier1OppQuote}">{!$Label.Distributor_Reseller_and_End_User_Contact_Information} </apex:outputPanel>
+    <apex:outputPanel rendered="{!tier1OppQuote}">{!$Label.Reseller_and_End_User_Contact_Information}</apex:outputPanel></b></td></tr>
+    <apex:variable rendered="{!!tier1OppQuote}" var="HideDistiSection" value="">
+    <tr>
+        <td>{!$Label.Distributor_name_and_address}&nbsp;:&nbsp;<apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!QuoteRec.CA_Distributor_Name__c}</apex:outputtext><apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!QuoteRec.CA_Distributor_Name_Lcl__c}</apex:outputtext></td>                  
+    </tr>
+     <tr>
+        <td>{!$Label.DRDistributor}&nbsp;{!$Label.Sold_To_ID}:&nbsp;<apex:outputtext >{!QuoteRec.CA_Distributor_ID__c}</apex:outputtext></td>                
+    </tr>
+     <tr>
+        <td>{!$Label.DRDistributor}&nbsp;{!$Label.Billing_Department_Name}:&nbsp;<apex:outputtext >{!billingDept}</apex:outputtext>
+       
+        </td>                
+    </tr>
+    <tr>
+        <td>{!$Label.DRDistributor}&nbsp;{!$Label.Bill_To_Address}:&nbsp;<apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!billingAddress}</apex:outputtext>
+        <apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!billingAddressLcl}</apex:outputtext>
+        </td>                
+    </tr>
+    <tr> <td></td> <td></td></tr>
+    </apex:variable>
+    <tr>
+        <td>{!$Label.Reseller_name_and_address}&nbsp;:&nbsp;<apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!QuoteRec.CA_Reseller_Name__c}</apex:outputtext><apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!QuoteRec.CA_Reseller_Name_Lcl__c}</apex:outputtext></td>                  
+    </tr>
+     <tr>
+        <td>{!$Label.Reseller}&nbsp;{!$Label.Sold_To_ID}:&nbsp;<apex:outputtext >{!QuoteRec.CA_Sold_To_ID__c}</apex:outputtext></td>                
+    </tr>
+     <tr>
+        <td>{!$Label.Reseller}&nbsp;{!$Label.Billing_Department_Name}:&nbsp;<apex:outputtext >{!billingDept}</apex:outputtext>
+        
+        </td>                
+    </tr>
+    <tr>
+        <td>{!$Label.Reseller}&nbsp;{!$Label.Bill_To_Address}:&nbsp;<apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!billingAddress}</apex:outputtext>
+        <apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!billingAddressLcl}</apex:outputtext>
+        </td>                
+    </tr>
+    <tr> <td></td> <td></td></tr>
+    <tr>
+        <td>{!$Label.End_User_Customer_name_and_address}&nbsp;:&nbsp;<apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!QuoteRec.CA_End_User_Name__c}</apex:outputtext><apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!QuoteRec.CA_End_User_Name_Lcl__c}</apex:outputtext></td>                  
+    </tr>
+     <tr>
+        <td>{!$Label.End_User}&nbsp;{!$Label.Sold_To_ID}:&nbsp;<apex:outputtext >{!QuoteRec.CA_End_User_ID__c}</apex:outputtext></td>                
+    </tr>
+     
+    <tr>
+        <td>{!$Label.End_User}&nbsp;{!$Label.Shipping_Department_Name_and_Address}:&nbsp;<apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!shippingDept}, {!ShipmentAddress}</apex:outputtext>
+        <apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!shippingDept}, {!shipmentAddressLcl}</apex:outputtext>
+        </td>                
+    </tr>
+    <tr>
+        <td>{!$Label.End_User}&nbsp;{!$Label.Technical_Contact_Name}:&nbsp;<apex:outputtext >{!technicalDept} 
+        </apex:outputtext>
+        
+        </td>                
+    </tr>
+
+    
+     
+</table>
+
+<table  width="90%" align="center">
+<tr>
+<td><b><apex:outputtext rendered="{!!showContactSection}">{!$Label.Sold_To_ID}&nbsp;:&nbsp;    </apex:outputtext> 
+<apex:outputtext rendered="{!showContactSection}">{!$Label.Site_ID}&nbsp;:&nbsp;    </apex:outputtext></b> </td>
+<td>{!QuoteRec.CA_Sold_To_ID__c}</td>
+<td><b>{!$Label.Site}&nbsp;:&nbsp;</b></td>
+<td align="Left"><apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To__c}</apex:outputtext>&nbsp;&nbsp;<apex:outputtext rendered="{!showCompanyNumber}">({!QuoteRec.Company_Number__c})</apex:outputtext><apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To_Lcl__c}</apex:outputtext></td>
+<td><apex:outputtext rendered="{!!isJapanLocalizedTemplate}">{!customerAddress}</apex:outputtext><apex:outputtext rendered="{!isJapanLocalizedTemplate}">{!customerAddressLcl}</apex:outputtext></td>
+</tr></table>
+
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{!mainframeTbl}">
+    <table  width="90%" align="center">        
+        <tr><td align="Left">
+            <b>{!$Label.Mainframe}<font style="color:white;size:10px;">a</font> <apex:outputText rendered="{!!showContactSection}"> ({!QuoteRec.CurrencyIsoCode}) </apex:outputText></b> 
+            <table width="100%" style="border:1px solid black;border-collapse:collapse;"  align="Left">     
+                <tr style="border:1px solid black;border-collapse:collapse;">
+                    <td width="15%"  style="border:1px solid black;padding-left:3px;">{!$Label.Contract_No}</td>
+                    <td width="15%"  style="border:1px solid black;padding-left:3px;">{!$Label.Product_Code}</td>
+                    <td width="25%"  style="border:1px solid black;padding-left:3px;">{!$Label.Product_Name}</td>        
+                    <td width="15%"  style="border:1px solid black;padding-left:3px;">{!$Label.Authorized_Use_Limitation}</td>
+                    <td width="15%"  style="border:1px solid black;padding-left:3px;">{!$Label.Start_Date}</td>
+                    <td width="15%"  style="border:1px solid black;padding-left:3px;">{!$Label.End_Date}</td>       
+                    
+                </tr>
+                <apex:repeat value="{!MainframeList}" var="quotePdctRpt">
+                    <tr style="border:1px solid black;border-collapse:collapse;">
+                        <td width="15%"  style="border:1px solid black;padding-left:3px" class="data">{!quotePdctRpt.Old_SAP_Contract_Number__c}</td>
+                        <td width="15%"  style="border:1px solid black;padding-left:3px" class="data">{!quotePdctRpt.Product_Material__r.name}</td>
+                        <td width="25%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Product_Name__c}</td>  
+                        <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c==$Label.Auth_use_model_value,TRUE,FALSE)}">
+                        <!-- Added by SAMTU01 - US356104 -->
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Special_Metric_Usage_Qty_Existing__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c!=$Label.Auth_use_model_value,TRUE,FALSE)}">
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Total_Quantity__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>         
+                        <!-- Added by SAMTU01 - US356104 --ends here -->
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Effective_Date_Text__c}</td>
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.End_Date_Text__c}</td> 
+                    </tr>    
+                </apex:repeat>
+            </table>  
+            <br></br>                       
+        </td></tr>
+        <tr>
+            <td></td>
+        </tr>
+        <tr>
+            <td align="Left"><b><apex:outputText rendered="{!!showContactSection}">   {!$Label.Usage_and_Maintenance_Fee}&nbsp;:&nbsp;</apex:outputText>
+            <apex:outputText rendered="{!showContactSection}">{!$Label.Subscription_Fee} / {!$Label.Usage_and_Maintenance_Fee} / {!$Label.Maintenance_Fees} </apex:outputText></b>
+            <apex:outputText rendered="{!!showContactSection}" > {!QuoteRec.CurrencyIsoCode} </apex:outputText><font style="color:white;size:10px;">a</font>
+                <apex:outputText rendered="{!isSuppressDecimal}" value="{0,number,#,##0}"><apex:param value="{!UsageMaintanaceFee}" /></apex:outputText>
+                <apex:outputText rendered="{!!isSuppressDecimal}" value="{0,number,#,###,###.00}"><apex:param value="{!UsageMaintanaceFee}" /></apex:outputText>
+                <apex:outputText rendered="{!showContactSection}" > {!QuoteRec.CurrencyIsoCode} </apex:outputText>
+            </td>
+        </tr>
+    </table>
+</apex:outputpanel>
+<apex:outputPanel rendered="{!mainframeCPUTbl}">
+    <table align="Center" width="90%">
+        <tr>
+            <td  align="Left">
+                 <b>{!$Label.Mainframe_CPU_Information}</b>
+            </td>
+        </tr>       
+        <tr>
+            <td  align="Left">
+                {!$Label.CA_Reno_Standard_Mainframe_Para}
+            </td>
+        </tr>       
+        <tr><td align="Left">
+        <br></br>
+        <table width="85%" style="border:1px solid black;border-collapse:collapse;"  align="Left"> 
+            <tr style="border:1px solid black;border-collapse:collapse;">
+                <td width="30%"  style="border:1px solid black;padding-left:3px;">{!$Label.Make}</td>
+                <td width="20%"  style="border:1px solid black;padding-left:3px;">{!$Label.Model}</td>
+                <td width="20%"  style="border:1px solid black;padding-left:3px;">{!$Label.Serial_Number}</td>        
+                <td width="30%"  style="border:1px solid black;padding-left:3px;">{!$Label.Location}</td>
+            </tr>    
+            <tr style="border:1px solid black;border-collapse:collapse;">
+                <td width="30%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>            
+                <td width="20%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>
+                <td width="20%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>
+                <td width="30%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>
+            </tr> 
+            <tr style="border:1px solid black;border-collapse:collapse;">
+                <td width="30%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>            
+                <td width="20%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>
+                <td width="20%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>
+                <td width="30%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>
+            </tr>
+            <tr style="border:1px solid black;border-collapse:collapse;">
+                <td width="30%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>            
+                <td width="20%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>
+                <td width="20%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>
+                <td width="30%"  style="border:1px solid black;padding-left:3px;"><font style="color:white;size:2px;">......</font></td>
+            </tr>   
+        </table>
+        <br></br>
+        </td></tr>
+         <tr><td style="align:Left;">
+           <apex:outputPanel rendered="{!isLineNeed}"><br></br>           
+                {!$Label.Such_products_may_have_been_converted_to_successor_products_in_connection_with_a}
+           </apex:outputPanel>
+           <apex:outputPanel rendered="{!isLanguageEng}"><br></br>           
+                {!$Label.All_products_were_previously_delivered_and_therefore_will_not_require_shipment}
+           </apex:outputPanel>           
+        </td></tr>
+    </table>
+</apex:outputpanel>
+
+<apex:outputPanel rendered="{!distrinutedTbl}">
+<table align="Center" width="90%">
+<tr><td align="Left">
+<b>{!$Label.Distributed}<font style="color:white;size:10px;">a</font>({!QuoteRec.CurrencyIsoCode})</b>
+<table width="100%" style="border:1px solid black;border-collapse:collapse;" align="Left">    
+   <tr style="border:1px solid black;border-collapse:collapse;">
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Contract_No}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Product_Code}</td>
+        <td width="22%"  style="border:1px solid black;padding-left:3px;">{!$Label.Product_Name}</td>        
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Authorized_Use_Limitation}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Start_Date}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.End_Date}</td>        
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Maintenance_Fees}({!QuoteRec.CurrencyIsoCode})</td>
+    </tr>
+    <apex:repeat value="{!DistributedList}" var="quotePdctRpt">
+     <tr style="border:1px solid black;border-collapse:collapse;">
+        <td width="13%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Old_SAP_Contract_Number__c}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Product_Material__r.name}</td>
+        <td width="22%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Product_Name__c}</td>
+        <!-- Added by SAMTU01 - US356104 -->
+         <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c==$Label.Auth_use_model_value,TRUE,FALSE)}">
+         
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Special_Metric_Usage_Qty_Existing__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c!=$Label.Auth_use_model_value,TRUE,FALSE)}">
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Total_Quantity__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>  
+                <!-- Added by SAMTU01 - US356104 --ends here -->            
+        
+        <td width="13%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Effective_Date_Text__c}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.End_Date_Text__c}</td>           
+        <td width="13%"  style="border:1px solid black;padding-left:3px">
+        <apex:outputText rendered="{!!showContactSection}" >{!QuoteRec.CurrencyIsoCode}&nbsp; </apex:outputText><!-- ALLHA02 SAP ROW-->
+        <font style="color:white;size:10px;">a</font>
+        <apex:outputText rendered="{!isSuppressDecimal}" value="{0,number,#,##0}"><apex:param value="{!quotePdctRpt.Proposed_Maint_Fee__c}" /></apex:outputText>
+        <apex:outputField rendered="{!!isSuppressDecimal}" value="{!quotePdctRpt.Proposed_Maint_Fee__c}"/>
+        <apex:outputText rendered="{!showContactSection}" >&nbsp; {!QuoteRec.CurrencyIsoCode} </apex:outputText>
+        </td>
+    </tr>  
+    </apex:repeat>
+</table> 
+<br></br>
+</td></tr>
+<tr><td style="align:Left;">
+    <apex:outputPanel rendered="{!isLineNeed}">
+        <br></br>
+        {!$Label.Such_products_may_have_been_converted_to_successor_products_in_connection_with_a}
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!isLanguageEng}"><br></br>           
+        {!$Label.All_products_were_previously_delivered_and_therefore_will_not_require_shipment}
+    </apex:outputPanel>
+</td></tr>
+</table>
+</apex:outputpanel>
+
+
+<apex:outputPanel rendered="{!distributedOnDemandTbl}">
+<table align="Center" width="90%">
+<tr><td  align="Left">
+<b><apex:outputPanel rendered="{!showDistributorOrOnDemand}">{!$Label.Distributed_or_On_Demand}</apex:outputPanel>
+<apex:outputPanel rendered="{!showDistributorCASoftware}">{!$Label.Distributed_CA_Software}</apex:outputPanel>
+<apex:outputPanel rendered="{!showSAASOnDemand}">{!$Label.SaaS_On_Demand}</apex:outputPanel><font style="color:white;size:10px;">a</font>({!QuoteRec.CurrencyIsoCode})</b>
+<table width="100%" style="border:1px solid black;border-collapse:collapse;">     
+   <tr style="border:1px solid black;border-collapse:collapse;">
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Contract_No}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Product_Code}</td>
+        <td width="22%"  style="border:1px solid black;padding-left:3px;"><apex:outputPanel rendered="{!showProductName}">{!$Label.Product_Name}</apex:outputPanel><apex:outputPanel rendered="{!showAvailableFunctionality}">{!$Label.Available_Functionality}</apex:outputPanel></td>        
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Authorized_Use_Limitation}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Subscription_Start_Date}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Subscription_End_Date}</td>        
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Subscription_Fee}</td>
+    </tr> 
+      <apex:repeat value="{!distributedOnDemandList}" var="quotePdctRpt">
+        <tr style="border:1px solid black;border-collapse:collapse;">
+            <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.Old_SAP_Contract_Number__c}</td>
+            <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.Product_Material__r.name}</td>
+            <td width="22%"  style="padding-left:3px" class="data">{!quotePdctRpt.Product_Name__c}</td>  
+            <!-- Added by SAMTU01 - US356104 -->
+             <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c==$Label.Auth_use_model_value,'TRUE','FALSE')}">
+             
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Special_Metric_Usage_Qty_Existing__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c!=$Label.Auth_use_model_value,'TRUE','FALSE')}">
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Total_Quantity__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>  
+                        
+                        <!-- Added by SAMTU01 - US356104 --ends here -->          
+            
+            <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.Effective_Date_Text__c}</td>
+            <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.End_Date_Text__c}</td>           
+            <td width="13%"  style="padding-left:3px" class="data">
+            <apex:outputText rendered="{!!showContactSection}" >{!QuoteRec.CurrencyIsoCode}&nbsp; </apex:outputText><!-- ALLHA02 SAP ROW-->
+            <font style="color:white;size:10px;">a</font> 
+            <apex:outputText rendered="{!isSuppressDecimal}" value="{0,number,#,##0}"><apex:param value="{!quotePdctRpt.Proposed_Lic_Sub_Fee__c}" /></apex:outputText>
+            <apex:outputField rendered="{!!isSuppressDecimal}" value="{!quotePdctRpt.Proposed_Lic_Sub_Fee__c}"/>
+            <apex:outputText rendered="{!showContactSection}" >&nbsp; {!QuoteRec.CurrencyIsoCode} </apex:outputText>
+            </td>
+        </tr>
+    </apex:repeat>
+</table>
+<br></br>
+</td></tr>
+<tr><td align="Left">
+<apex:outputPanel rendered="{!isLineNeed}"> <br></br><br></br>
+{!$Label.Such_products_may_have_been_converted_to_successor_products_in_connection_with_a}</apex:outputPanel>
+</td></tr>
+</table>
+</apex:outputpanel>
+
+<!-- New section added for CA Product Reno Templates -->
+
+
+<apex:outputPanel rendered="{!nonSubscriptionProductsGrid}">
+<table align="Center" width="90%">
+<tr><td align="Left">
+<b>{!$Label.Distributed}<font style="color:white;size:10px;">a</font>({!QuoteRec.CurrencyIsoCode})</b>
+<table width="100%" style="border:1px solid black;border-collapse:collapse;" align="Left">    
+   <tr style="border:1px solid black;border-collapse:collapse;">
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Contract_No}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Product_Code}</td>
+        <td width="22%"  style="border:1px solid black;padding-left:3px;">{!$Label.Product_Name}</td>        
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Authorized_Use_Limitation}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Start_Date}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.End_Date}</td>        
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Maintenance_Fees}({!QuoteRec.CurrencyIsoCode})</td>
+    </tr>
+    <apex:repeat value="{!nonSubscriptionProductsList}" var="quotePdctRpt">
+     <tr style="border:1px solid black;border-collapse:collapse;">
+        <td width="13%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Old_SAP_Contract_Number__c}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Product_Material__r.name}</td>
+        <td width="22%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Product_Name__c}</td> 
+        <!-- Added by SAMTU01 - US356104 -->
+         <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c==$Label.Auth_use_model_value,'TRUE','FALSE')}">
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Special_Metric_Usage_Qty_Existing__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c!=$Label.Auth_use_model_value,'TRUE','FALSE')}">
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Total_Quantity__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>  
+                        <!-- Added by SAMTU01 - US356104 --ends here -->           
+        
+        <td width="13%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Effective_Date_Text__c}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.End_Date_Text__c}</td>           
+        <td width="13%"  style="border:1px solid black;padding-left:3px">
+        <apex:outputText rendered="{!!showContactSection}" >{!QuoteRec.CurrencyIsoCode}&nbsp; </apex:outputText><!-- ALLHA02 SAP ROW-->
+        <font style="color:white;size:10px;">a</font>
+        <apex:outputText rendered="{!isSuppressDecimal}" value="{0,number,#,##0}"><apex:param value="{!quotePdctRpt.Proposed_Maint_Fee__c}" /></apex:outputText>
+        <apex:outputField rendered="{!!isSuppressDecimal}" value="{!quotePdctRpt.Proposed_Maint_Fee__c}"/>
+         <apex:outputText rendered="{!showContactSection}" >&nbsp; {!QuoteRec.CurrencyIsoCode} </apex:outputText>
+        </td>
+    </tr>  
+    </apex:repeat>
+</table> 
+<br></br>
+</td></tr>
+</table>
+</apex:outputpanel>
+
+
+<apex:outputPanel rendered="{!subscriptionProductsGrid}">
+<table align="Center" width="90%">
+<tr><td  align="Left">
+<b>{!$Label.Distributed}<font style="color:white;size:10px;">a</font>({!QuoteRec.CurrencyIsoCode})</b>
+<table width="100%" style="border:1px solid black;border-collapse:collapse;">     
+   <tr style="border:1px solid black;border-collapse:collapse;">
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Contract_No}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Product_Code}</td>
+        <td width="22%"  style="border:1px solid black;padding-left:3px;"><apex:outputPanel rendered="{!showProductName}">{!$Label.Product_Name}</apex:outputPanel><apex:outputPanel rendered="{!showAvailableFunctionality}">{!$Label.Available_Functionality}</apex:outputPanel></td>        
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Authorized_Use_Limitation}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Subscription_Start_Date}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Subscription_End_Date}</td>        
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Subscription_Fee}</td>
+    </tr> 
+      <apex:repeat value="{!subscriptionProductsList}" var="quotePdctRpt">
+        <tr style="border:1px solid black;border-collapse:collapse;">
+            <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.Old_SAP_Contract_Number__c}</td>
+            <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.Product_Material__r.name}</td>
+            <td width="22%"  style="padding-left:3px" class="data">{!quotePdctRpt.Product_Name__c}</td> 
+            <!-- Added by SAMTU01 - US356104  --> 
+             <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c==$Label.Auth_use_model_value,'TRUE','FALSE')}">
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Special_Metric_Usage_Qty_Existing__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c!='$Label.Auth_use_model_value','TRUE','FALSE')}">
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Total_Quantity__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>   
+                        <!-- Added by SAMTU01 - US356104 --ends here -->         
+                       <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.Effective_Date_Text__c}</td>
+            <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.End_Date_Text__c}</td>           
+            <td width="13%"  style="padding-left:3px" class="data">
+            <apex:outputText rendered="{!!showContactSection}" >{!QuoteRec.CurrencyIsoCode}&nbsp; </apex:outputText><!-- ALLHA02 SAP ROW-->
+            <font style="color:white;size:10px;">a</font>
+            <apex:outputText rendered="{!isSuppressDecimal}" value="{0,number,#,##0}"><apex:param value="{!quotePdctRpt.Proposed_Lic_Sub_Fee__c}" /></apex:outputText>
+            <apex:outputField rendered="{!!isSuppressDecimal}" value="{!quotePdctRpt.Proposed_Lic_Sub_Fee__c}"/>
+            <apex:outputText rendered="{!showContactSection}" >&nbsp; {!QuoteRec.CurrencyIsoCode} </apex:outputText>
+            </td>
+        </tr>
+    </apex:repeat>
+</table>
+<br></br>
+</td></tr>
+</table>
+</apex:outputpanel>
+
+<apex:outputPanel rendered="{!subscriptionProductsGrid || nonSubscriptionProductsGrid}">
+<table align="Center" width="90%">
+<tr><td align="Left">
+<apex:outputPanel rendered="{!isLineNeed}"><br></br><br></br>
+{!$Label.Such_products_may_have_been_converted_to_successor_products_in_connection_with_a}</apex:outputPanel>
+</td></tr>
+</table>
+</apex:outputpanel>
+
+<apex:outputPanel rendered="{!MRenewOnNimsoftPerpetual}">
+<table align="Center" width="90%">
+<tr><td  align="Left">
+<b>{!$Label.Distributed}<font style="color:white;size:10px;">a</font>({!QuoteRec.CurrencyIsoCode})</b>
+<table width="100%" style="border:1px solid black;border-collapse:collapse;">     
+   <tr style="border:1px solid black;border-collapse:collapse;">
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Contract_No}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Product_Code}</td>
+        <td width="22%"  style="border:1px solid black;padding-left:3px;">{!$Label.Product_Name}</td>        
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Authorized_Use_Limitation}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Maintenance_Start_Date}</td>
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Maintenance_End_Date}</td>        
+        <td width="13%"  style="border:1px solid black;padding-left:3px;">{!$Label.Maintenance_Fees}</td>
+    </tr> 
+      <apex:repeat value="{!distributedOnDemandList}" var="quotePdctRpt">
+        <tr style="border:1px solid black;border-collapse:collapse;">
+            <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.Old_SAP_Contract_Number__c}</td>
+            <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.Product_Material__r.name}</td>
+            <td width="22%"  style="padding-left:3px" class="data">{!quotePdctRpt.Product_Name__c}</td>  
+            <!-- Added by SAMTU01 - US356104  -->  
+             <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c==$Label.Auth_use_model_value,'TRUE','FALSE')}">
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Special_Metric_Usage_Qty_Existing__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(quotePdctRpt.Auth_Use_Model__c!=$Label.Auth_use_model_value,'TRUE','FALSE')}">
+                        <td width="15%"  style="border:1px solid black;padding-left:3px">{!quotePdctRpt.Total_Quantity__c}<font style="color:white;size:10px;">a</font>{!quotePdctRpt.License_Metric__c}</td>
+                        </apex:outputText>   
+                        <!-- Added by SAMTU01 - US356104 --ends here -->       
+                        <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.Effective_Date_Text__c}</td>
+            <td width="13%"  style="padding-left:3px" class="data">{!quotePdctRpt.End_Date_Text__c}</td>           
+            <td width="13%"  style="padding-left:3px" class="data">
+            <apex:outputText rendered="{!!showContactSection}" >{!QuoteRec.CurrencyIsoCode}&nbsp; </apex:outputText><!-- ALLHA02 SAP ROW-->
+            <font style="color:white;size:10px;">a</font> 
+            <apex:outputText rendered="{!isSuppressDecimal}" value="{0,number,#,##0}"><apex:param value="{!quotePdctRpt.Proposed_Maint_Fee__c}" /></apex:outputText>
+            <apex:outputField rendered="{!!isSuppressDecimal}" value="{!quotePdctRpt.Proposed_Maint_Fee__c}"/>
+             <apex:outputText rendered="{!showContactSection}" >&nbsp; {!QuoteRec.CurrencyIsoCode} </apex:outputText>
+            </td>
+        </tr>
+    </apex:repeat>
+</table>
+<br></br>
+</td></tr>
+<tr><td align="Left">
+<apex:outputPanel rendered="{!isLineNeed}"><br></br><br></br>
+{!$Label.Such_products_may_have_been_converted_to_successor_products_in_connection_with_a}</apex:outputPanel>
+</td></tr>
+</table>
+</apex:outputpanel>
+
+ <table align="Center" width="90%">    
+    <tr><td>
+     <b>{!$Label.Payment_Schedule}<font style="color:white;size:10px;">a</font> <apex:outputText rendered="{!!showcontactSection}" > ({!QuoteRec.CurrencyIsoCode}) </apex:outputText></b> <font style="color:white;size:10px;">a</font>{!$Label.tax_not_included}:
+        <table width="60%" style="border:1px solid black;border-collapse:collapse;" >  
+            <tr style="border:1px solid black;border-collapse:collapse;">
+                <td style="border:1px solid black;width:50%;padding-left:3px;">{!$Label.Due_Date}</td>
+                <td style="border:1px solid black;width:50%;padding-left:3px;">{!$Label.Amount_Due}</td>
+            </tr>
+           <apex:repeat value="{!PaymentProfile}" var="pay">
+                <tr style="border:1px solid black;border-collapse:collapse;">
+                    <td width="50%"  style="border:1px solid black;padding-left:3px;">{!pay.Date_Text__c}</td>            
+                    <td width="50%"  style="border:1px solid black;padding-left:3px;">
+                    <apex:outputText rendered="{!!showContactSection}" >{!QuoteRec.CurrencyIsoCode}&nbsp; </apex:outputText><!-- ALLHA02 SAP ROW-->
+                    <font style="color:white;size:10px;">a</font> 
+                    <apex:outputText rendered="{!isSuppressDecimal}" value="{0,number,#,##0}"><apex:param value="{!pay.Payment_Total__c}" /></apex:outputText>
+                    <apex:outputField rendered="{!!isSuppressDecimal}" value="{!pay.Payment_Total__c}"/>
+                     <apex:outputText rendered="{!showContactSection}" >&nbsp; {!QuoteRec.CurrencyIsoCode} </apex:outputText> 
+                    </td>
+                </tr>
+            </apex:repeat>
+        </table> 
+        <br></br>      
+    </td></tr>
+    </table>
+    
+
+    
+    <table  width="90%" align="center">
+<tr><td width="30%"><b>{!$Label.CPQ_Quote_Total}</b> </td>
+<td width="70%">
+<apex:outputText rendered="{!isSuppressDecimal}" value="{0,number,#,##0}"><apex:param value="{!QuoteRec.CA_CPQ_Quote_Total__c}" /></apex:outputText>
+<apex:outputField rendered="{!!isSuppressDecimal}" value="{!QuoteRec.CA_CPQ_Quote_Total__c}"/>
+<apex:outputText rendered="{!showContactSection}"> {!QuoteRec.CurrencyIsoCode} </apex:outputText>
+</td></tr>
+</table>
+    
+    
+    <br></br><br></br>
+    <apex:outputPanel rendered="{!isRemittenceNeeded}">
+    <table  width="90%" style="border:1px solid black;border-collapse:collapse;" align="center"> 
+        <tr>
+            <td style="border:1px solid black;width:100%;padding-left:3px;">{!$Label.Remittance_Info}&nbsp;:&nbsp; 
+            <br></br>
+            <apex:repeat value="{!RemittanceInfoList}" var="rem"> 
+            {!rem}<br></br>    
+            </apex:repeat>
+            
+            </td>
+        </tr>    
+    </table>
+</apex:outputPanel>
+    <table width="90%" align="center">          
+        <tr>
+            <td  align="Left">               
+            <b>{!$Label.All_payment_amounts_are_hereby_committed_through_the_Renewal_Period_defined_belo}</b>
+            </td>
+        </tr>
+    </table>
+
+    <apex:outputPanel rendered="{!RenewalDatePanelStd}">
+        <table width="90%" align="center">          
+            <tr>
+                <td  align="Left">               
+                <b>{!$Label.Renewal_Period}: </b> {!QuoteRec.Effective_Date_Text__c} {!$Label.through}  {!QuoteRec.Contract_End_Date_Text__c} <apex:outputText rendered="{!showContactSection}"> まで </apex:outputText>
+                </td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!RenewalDatePanelSub}">       
+        <table width="90%" align="center">          
+            <tr>
+                <td  align="Left">               
+                <b>{!$Label.Subscription_Term} : </b>  {!QuoteRec.Effective_Date_Text__c} {!$Label.through}  {!QuoteRec.Contract_End_Date_Text__c}
+                </td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!RenewalDatePanelMain}"> 
+        <table width="90%" align="center">          
+            <tr>
+                <td  align="Left"><b>{!$Label.Maintenance_Term} {!$Label.Renewal_Period}&nbsp;:&nbsp; </b> {!QuoteRec.Effective_Date_Text__c} {!$Label.through}  {!QuoteRec.Contract_End_Date_Text__c}
+                </td>
+            </tr>
+        </table>
+    </apex:outputPanel> 
+    
+    <!-- Added as part of Education QQ HTFT Reno Order Form Changes -->
+    <apex:outputPanel rendered="{!isHTFTTemplate}"> 
+        <table width="90%" align="center">          
+            <tr>
+                <td  align="Left">
+                    {!$Label.CA_Product_Reno_CommonFY15_Para}
+                </td>
+            </tr>
+        </table>
+    </apex:outputPanel>  
+ 
+    <apex:outputPanel rendered="{!OR(EMEA_RENO_Standard,EMEA_RENO_Subscription,EMEA_RENO_SupportTxtBox)}">
+            <table width="90%" style="border:1px solid black;border-collapse:collapse;" align="center">             
+                <tr>
+                    <td style="border:1px solid black;width:100%;padding-left:3px;">[Please fill potentially including product conversion mapping]</td>
+                </tr>    
+            </table>       
+    </apex:outputpanel>  
+    
+<apex:outputPanel rendered="{!EMEA_RENO_Support}">
+        <table width="90%" style="border:1px solid black;border-collapse:collapse;" align="center">             
+            <tr>
+                <td style="width:100%;padding-left:3px;">{!$Label.Nimsoft_EMEA_Support_RENO_para_1_and_2} <br></br><br></br></td>
+            </tr>   
+            <tr>
+                <td style="width:100%;padding-left:3px;"> {!$Label.Nimsoft_EMEA_Support_RENO_para_3_part1}{!$Label.Nimsoft_EMEA_Support_RENO_para_3_part2}
+                <br></br>
+                   {!$Label.Nimsoft_EMEA_Support_RENO_para_3_part3_italian}
+                   <br></br><br></br></td>
+            </tr> 
+          
+             <tr>
+                <td style="width:100%;padding-left:3px;">{!$Label.Nimsoft_EMEA_Support_RENO_para_4}<br></br><br></br></td>
+            </tr>    
+             <tr>
+                <td style="width:100%;padding-left:3px;">{!$Label.Nimsoft_EMEA_Support_RENO_para_5_part1}{!$Label.Nimsoft_EMEA_Support_RENO_para_5_part2}<br></br><br></br></td>
+            </tr>     
+           
+            <tr>
+                <td style="width:100%;padding-left:3px;">{!$Label.Nimsoft_EMEA_Support_RENO_para_6}<br></br><br></br></td>
+            </tr>   
+                 <tr>
+                <td style="width:100%;padding-left:3px;"><apex:outputtext rendered="{!EMEARenoItalianPara7}">{!$Label.EMEA_Nimsoft_Perpetual_Renos_Italian_para7}</apex:outputtext></td>
+            </tr>          
+        </table>       
+    </apex:outputpanel>
+    
+    
+    <apex:outputPanel rendered="{!showRenewalOnDemandPara}">        
+        <table width="90%" align="center">
+            <tr>
+                <td>{!$Label.Renewal_On_Demand_Para} {!$Label.Nimsoft_Renewal_On_Demand_Para1_Part2}  </td>
+            </tr> 
+        </table>        
+    </apex:outputpanel>
+    
+    <!--<br/>-->
+     <apex:outputPanel rendered="{!OR(showEmptyTableForFrench,showEmptyTable)}">
+        <table width="90%" style="border:1px solid black;border-collapse:collapse;" align="center">             
+            <tr>
+                <td>&nbsp;</td>                
+            </tr>    
+        </table>       
+    </apex:outputpanel>
+
+     <apex:outputPanel rendered="{!NON_EMEA_RENO_Subscription}">        
+        <table width="90%" align="center">
+            <tr>
+                <!--<br></br><br></br>-->
+                <td>{!$Label.Nimsoft_Subscription_RENO_non_EMEA}  {!QuoteRec.Net_Payment_Terms__c}  {!$Label.Governing_Contract_Reno_Support_continuation_part2}</td>
+            </tr> 
+        </table>        
+        <table width="90%" style="border:1px solid black;border-collapse:collapse;" align="center">             
+            <tr>
+                <td style="border:1px solid black;width:100%;padding-left:3px;">[Please fill potentially including product conversion mapping]</td>
+            </tr>    
+        </table>
+        <!--<br clear="all" style="page-break-after:always"/> --> 
+    </apex:outputpanel>
+    <apex:outputPanel rendered="{!NON_EMEA_RENO_Support}">        
+        <table width="90%" align="center">
+            <tr>
+                <td>{!$Label.Nimsoft_Support_RENO_non_EMEA} {!QuoteRec.Net_Payment_Terms__c}  {!$Label.Governing_Contract_Reno_Support_continuation_part2}</td>
+            </tr> 
+        </table>        
+        <table width="90%" style="border:1px solid black;border-collapse:collapse;" align="center">             
+            <tr>
+                <td style="border:1px solid black;width:100%;padding-left:3px;">[Please fill potentially including product conversion mapping]</td>
+            </tr>    
+        </table>
+      <!--<br clear="all" style="page-break-after:always"/> --> 
+    </apex:outputpanel>
+   
+    <apex:outputPanel rendered="{!  AND(isAPJ,isIndirectQuote)}">
+    <table width="90%" align="center">
+        <tr> 
+        <td align="Left" ><apex:outputPanel rendered="{!!showContactSection}"> {!$Label.Renewal_Terms2} </apex:outputPanel> 
+         <apex:outputPanel rendered="{! AND(tier1OppQuote,showContactSection)}"> {!$Label.Renewal_Terms2a}</apex:outputPanel>
+         <apex:outputPanel rendered="{! AND(!tier1OppQuote,showContactSection)}"> {!$Label.Renewal_Terms2b}</apex:outputPanel>
+        </td>
+        </tr>
+        <tr> 
+        <td align="Left" ><apex:outputPanel rendered="{!tier1OppQuote}"> {!$Label.Renewal_Terms3}</apex:outputPanel>
+        <apex:outputPanel rendered="{!!tier1OppQuote}"> {!$Label.Renewal_Terms4}</apex:outputPanel></td>
+        </tr>
+   
+    </table>    
+    </apex:outputPanel>
+    
+    <table width="90%" align="center">
+    <tr><td>
+    <apex:outputPanel rendered="{!  AND(isAPJ,isDirectQuote)}">
+    {!$Label.Renewal_Terms1}
+    </apex:outputPanel></td></tr>
+     </table>
+    
+    <apex:outputPanel rendered="{!checkBoxPanel}">
+        <table width="90%" align="center">    
+            <tr>
+                <td align="Left" >{!$Label.Check_box_if_applicable}:</td>      
+            </tr>
+            <tr width="100%">
+                <td align="Left" style="width:100%;">
+                <p>
+                <label><input type="checkbox" name="checkbox" value="value" style="width:20px;height:20px;padding: 0 0 0 0;display:inline;border:1px solid black;" /> {!$Label.Please_cancel_maintenance_license_for_the_following_contract_numbers_s}:</label>
+               </p>
+               </td>
+            </tr>   
+            <tr>
+                <td align="Left" >{!$Label.Please_furnish_cancellation_reason}</td>
+            </tr>
+            <tr>
+                <td align="Left"  style="border:1px solid black; height:50px  "> <apex:outputText rendered="{!!showContactSection}">  {!$Label.Please_fill_here}:  </apex:outputText>   &nbsp; </td>
+            </tr>  
+        </table>
+    </apex:outputpanel> 
+           <!--
+           <apex:outputPanel rendered="{!checkBoxPanel}">
+           
+            
+        <table width="90%" align="center" ><tr><td>{!$Label.Check_box_if_applicable}:</td></tr></table>
+            
+         <table width="90%" align="center" style="float:left" ><tr><td width="3%">
+         <table style="width:2% ; border-collapse:collapse; float:left; border: 1px solid black ">
+          <tr style="padding:5px" height="2" ><td style="padding:5px" height="2"></td></tr></table>
+          </td><td width="97%" align="left"><table><tr><td>{!$Label.Please_cancel_maintenance_license_for_the_following_contract_numbers_s}: </td></tr></table> </td>
+
+          </tr></table>
+
+         
+         <table width="90%" align="center" ><tr><td>{!$Label.Please_furnish_cancellation_reason}</td></tr></table>
+           
+          
+                <table width="90%" align="center" > <tr><td align="Left" style="border:1px solid black; width:100%" >{!$Label.Please_fill_here}:</td></tr>
+             </table>
+    </apex:outputpanel>
+
+    -->
+
+
+    <!--<br></br>-->
+     <apex:outputText rendered="{!!showContactSection}" > 
+     <table width="90%" align="center" >    
+            <tr>
+                <td align="Left">{!$Label.Please_sign_and_return_by_fax_or_email_to_your_CA_Contact}
+                </td>      
+            </tr>           
+        </table>
+       </apex:outputText>
+      <br></br>
+    <apex:outputPanel rendered="{! AND(!AND(displaySignAPAC,isAPJ),!showContactSection)}">  
+    <table width="90%" align="center">
+    <tr>
+        <td align="left" width="10%">{!$Label.Authorized_Signature}&nbsp;:&nbsp;</td>
+        <td align="left" width="60%"><font style="color:white;size:1px;">\s1\</font>_____________________________________________________</td>
+        <td align="left" width="5%">{!$Label.Date}&nbsp;:&nbsp;</td>
+        <td align="left" width="25%"><font style="color:white;size:1px;">\d1\</font>_________________________</td>
+    </tr>
+    <tr>
+        <td><font style="color:white;size:1px;">......</font></td>            
+        <td><font style="color:white;size:1px;">......</font></td>
+        <td><font style="color:white;size:1px;">......</font></td>
+        <td><font style="color:white;size:1px;">......</font></td>
+    </tr>
+    <tr>
+        <td align="left" width="10%">{!$Label.Print_Name}&nbsp;:&nbsp;</td>
+        <td align="left" width="60%"><font style="color:white;size:1px;">\n1\</font>_____________________________________________________</td>
+        <td align="left" width="5%">{!$Label.Title}&nbsp;:&nbsp;</td>
+        <td align="left" width="25%"><font style="color:white;size:1px;">\t1\</font>_________________________</td>
+    </tr>
+    <tr>
+        <td><font style="color:white;size:1px;">......</font></td>            
+        <td><font style="color:white;size:1px;">......</font></td>
+        <td><font style="color:white;size:1px;">......</font></td>
+        <td><font style="color:white;size:1px;">....</font></td>
+    </tr>
+    
+    <tr>
+        <td align="left" width="10%">{!$Label.company_name}&nbsp;:&nbsp;</td>
+        <td align="left" width="60%"><apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To__c}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To_Lcl__c}</apex:outputtext>&nbsp;&nbsp;<apex:outputtext rendered="{!showCompanyNumber}">({!QuoteRec.Company_Number__c})</apex:outputtext></td>
+       <!--  <td align="left" width="5%">&nbsp;</td>
+        <td align="left" width="25%">{!CAEntityName}</td>
+        <td align="left" width="25%"><font style="color:white;size:1px;">......</font>_________________________</td>-->
+    </tr>
+    <tr>
+        <td><font style="color:white;size:1px;">......</font></td>            
+        <td><font style="color:white;size:1px;">......</font></td>
+        <td><font style="color:white;size:1px;">......</font></td>
+        <td><font style="color:white;size:1px;">....</font></td>
+    </tr>
+    <!--<tr>
+        <td align="left">{!$Label.Email_Address}:</td>
+        <td><font style="color:white;size:1px;">......</font>________________________________________</td>
+        <td></td>
+        <td></td>
+    </tr>-->
+  </table> 
+  </apex:outputPanel>
+
+  <apex:outputPanel rendered="{! AND(AND(displaySignAPAC,isAPJ),!showContactSection)}">
+  <table width="90%" align="Center"> 
+  
+    <tr>
+    <td style="font-size:10px;width:50%;"  colspan="4"> <apex:outputtext >{!$Label.CA_Perpetual_On_Premise_Para_4}</apex:outputtext> </td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:50%;"  colspan="2"><b><apex:outputtext rendered="{!!isAPJLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To__c}</apex:outputtext><apex:outputtext rendered="{!isAPJLocalizedTemplate}">{!QuoteRec.CA_Customer_Name_Sold_To_Lcl__c}</apex:outputtext><apex:outputtext >{!blankSpace}</apex:outputtext><apex:outputtext rendered="{!showCompanyNumber}">({!QuoteRec.Company_Number__c})</apex:outputtext></b></td>
+        <td style="font-size:10px;width:50%;"  colspan="2"><b>{!CAEntityName}</b></td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Signature}</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\s1\</font>________________________________________</td>
+        <td style="font-size:10px;width:20%;">{!$Label.Signature}</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\s2\</font>________________________________________</td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Name}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\n1\</font>________________________________________</td>
+        <td style="font-size:10px;width:20%;">{!$Label.Name}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\n2\</font>________________________________________</td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Title}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\t1\</font>________________________________________</td>
+        <td style="font-size:10px;width:20%;">{!$Label.Title}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\t2\</font>________________________________________</td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+    </tr>
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Date}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\d1\</font>________________________________________</td>
+        <td style="font-size:10px;width:20%;">{!$Label.Date}:</td>
+        <td style="font-size:10px;width:40%;"><font style="color:white;size:2px;">\d2\</font>________________________________________</td>
+    </tr>
+    </table>
+    </apex:outputPanel>  
+
+<apex:outputpanel rendered="{!showContactSection}">
+    
+<table width="90%" align="Center"> 
+    <tr>
+        <td style="font-size:10px;width:50%;"  colspan="2">
+        <b><apex:outputtext rendered="{!isDirectQuote}">{!$Label.Customer}</apex:outputtext>
+           <apex:outputtext rendered="{!isIndirectQuote}">{!$Label.Reseller}</apex:outputtext>
+           <apex:outputtext rendered="{! AND(!isDirectQuote,!isIndirectQuote)}">{!$Label.DRDistributor}</apex:outputtext>
+        </b>
+        <apex:outputtext >{!blankSpace}</apex:outputtext>
+        </td>
+        <td style="font-size:10px;width:50%; align:left "  colspan="2"><b>CA :</b></td>
+    </tr>
+
+    <!--tr>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+        <td style="font-size:10px;width:20%;"></td>
+        <td style="font-size:10px;width:40%;"></td>
+    </tr-->
+
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Address}: </td>
+        <td style="font-size:10px;width:30%;"><font style="color:white;size:2px;">\s1\</font></td>
+        <td style="font-size:10px;width:20%;">{!$Label.Address}:</td>
+        <td style="font-size:10px;width:30%;"><font style="color:white;size:2px;">\s2\</font></td>
+    </tr>
+    
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.company_name}:</td>
+        <td style="font-size:10px;width:30%;"><font style="color:white;size:2px;">\n1\</font></td>
+        <td style="font-size:10px;width:20%;">{!$Label.company_name}:</td>
+        <td style="font-size:10px;width:30%;"><font style="color:white;size:2px;">\n2\</font></td>
+    </tr>
+    
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Title}:</td>
+        <td style="font-size:10px;width:30%;"><font style="color:white;size:2px;">\t1\</font></td>
+        <td style="font-size:10px;width:20%;">{!$Label.Title}:</td>
+        <td style="font-size:10px;width:30%;"><font style="color:white;size:2px;">\t2\</font></td>
+    </tr>
+    
+
+     <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Name}:</td>
+        <td style="font-size:10px;width:30%;"><font style="color:white;size:2px;">\t1\</font></td>
+        <td style="font-size:10px;width:20%;">{!$Label.Name}:</td>
+        <td style="font-size:10px;width:30%;"><font style="color:white;size:2px;">\t2\</font></td>
+     </tr>
+    
+    
+
+    <tr>
+        <td style="font-size:10px;width:20%;">{!$Label.Date}:</td>
+        <td style="font-size:10px;width:30%;"><font style="color:white;size:2px;">\d1\</font></td>
+        <td style="font-size:10px;width:20%;">{!$Label.Date}:</td>
+        <td style="font-size:10px;width:30%;"><font style="color:white;size:2px;">\d2\</font></td>
+    </tr>
+    
+    </table>
+    </apex:outputpanel>
+<apex:outputText rendered="{!showContactSection}" > 
+       <br/> <br/>
+     <table width="90%" align="center" >    
+            <tr>
+                <td align="Left">{!$Label.Please_sign_and_return_by_fax_or_email_to_your_CA_Contact}
+                </td>      
+            </tr>           
+        </table>
+       </apex:outputText>
+
+
+</div>
+
+    
+<table id='hrdftrtbl' border='0' cellspacing='0' cellpadding='0'>
+    <tr>
+         <td>
+        <div style="mso-element:header" id="h1">  
+            <p>
+             <table width="100%" align="Center">
+                <tr width="100%" align="Right">  
+                    
+                    <td style="align:Left;" width="10%"> 
+           <table>
+               <tr>
+                   <td style="align:center;">
+                    <apex:image url="{!$Label.CA_Header_Logo}" width="70" height="60">
+                    </apex:image>
+                   </td>
+               </tr>
+           </table>            
+       </td>
+                    
+                    
+                    
+                    
+                    
+                    <td width="60%" align="Center"  style="color:#000000;font-family: Arial Unicode MS;font-size:9px;mso-ansi-language:EN-US;" class="header">
+                        <table  width="100%"> 
+                            <tr>
+                                <td style="font-size:9px;" align="center">{!CAEntityName}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size:9px;"  align="center" width="100%">{!CAEntityAddress}</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="20%" align="Right" style="font-size:10px;color:#000000;">{!$Label.Product_Renewal_Notification}</td>   
+                </tr>    
+            </table>
+            </p> 
+        </div>
+        </td> 
+        <td>
+            <div style="mso-element:footer" id="f1">
+                <p><hr/>
+                    <table  width="100%">
+                        <tr>
+                            <td width="33%" style="text-align:Left;color:#000000;font-size:9px;">
+                            {!FooterString}
+                            </td>
+                            <td width="33%" style="text-align:Center;color:#000000;font-size:9px;">
+                                <p class="MsoFooter"><span style="mso-tab-count:2"></span>
+                                Page <span style="mso-field-code:PAGE"><span style="mso-no-proof:yes"></span></span> of <span style="mso-field-code:NUMPAGES"></span>
+                            </p>
+                            </td>
+                            <td  width="33%" style="text-align:Center;"></td>
+                        </tr>               
+                    </table>
+                </p>
+            </div>
+          </td>
+      </tr>
+  </table> 
+  
+  
+    
+</body>
+</html>
+</apex:page>

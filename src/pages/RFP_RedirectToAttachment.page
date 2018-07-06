@@ -1,0 +1,2 @@
+<apex:page controller="RFP_RedirectToAttachment" action="{!redirectURL}" >
+</apex:page>

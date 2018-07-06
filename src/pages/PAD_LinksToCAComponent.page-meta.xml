@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>19.0</apiVersion>
+    <availableInTouch>false</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <description>PAD R2: page to show the CA links to partners
+
+Link updated CR:190055408
+Link updated CR:190101068 - to update education portal link</description>
+    <label>PAD_LinksToCAComponent</label>
+</ApexPage>

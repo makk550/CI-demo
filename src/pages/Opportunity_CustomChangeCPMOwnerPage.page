@@ -1,0 +1,21 @@
+<apex:page standardController="Opportunity" extensions="Opportunity_CustomChangeCPMOwner" tabStyle="Opportunity">
+  <apex:sectionHeader title="Mass CPM Ownership Edit"/>  
+  <style>
+    .dmlError { color: red; font-weight: strong;}
+  </style>
+  This screen allows you to transfer an opportunity from one CPM user to another.
+  
+  <apex:form >
+  <apex:pageBlock >
+  <apex:messages styleClass="dmlError"/>
+  <apex:pageBlockSection title="Select New CPM Owner" collapsible="false" >
+      <apex:inputField value="{!newCPMOwner.CPM_Owner__c}" required="true">
+      </apex:inputField>
+  </apex:pageBlockSection><br/>
+  <center>
+      <apex:commandButton value="Save" action="{!save}"/>
+      <apex:commandButton value="Cancel" action="{!cancel}"/>
+  </center>
+  </apex:pageBlock>  
+  </apex:form>
+</apex:page>

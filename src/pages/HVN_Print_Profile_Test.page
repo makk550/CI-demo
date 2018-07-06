@@ -1,0 +1,429 @@
+<apex:page Controller="HVNReportController" renderAs="PDF">
+<style>
+    th {background:lightgrey;text-align:center;}
+    .btm {border-bottom:1px solid black;}
+    .aums {font-family:Arial Unicode MS;}
+    body {font-family:Verdana;}
+    .colClass{width:25%;vertical-align: top;}
+    .colClass2{width:25%;}
+</style>
+<!-- beginning added By Heena - Accenture IDC as part of SFDC CRM 7.1 Req 501  -->
+<!-- Heena added field Relationship_Status_Graphic__c after Relationship_Status__c  and 
+moved field Secondary_HVN_Contact_Owner_1__r.Name to next line -->
+    <apex:repeat var="hvn" value="{!hvnRecord}" id="rptList">
+        <table width="100%">
+            <tr>
+                <td width="30%"><apex:outputText value="{!hvn.HVN_Contact_Photo__c}" escape="false"/></td>
+                <td align="center">
+                    <h1><font size="25">{!hvn.Contact__r.Name}</font></h1><br>
+                    {!hvn.Contact__r.Title}
+                </td>
+                <td width="30%" align="right" valign="bottom">
+                <apex:image value="/servlet/servlet.FileDownload?file=01530000001WOs8" height="32px" width="32px" style="valign:middle"/><br>
+                    <apex:outputText value="{!hvn.Contact__r.Account.Company_Logo__c}" escape="false"/>
+                </td>
+            </tr>
+        </table>
+        <hr>
+        <table width="100%">
+            <tr><td width="25%" align="left" valign="top"><b>Account Name: </b></td><td>{!hvn.Contact__r.Account.Name}</td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>Company Overview: </b></td><td>{!hvn.Contact__r.Account.Company_Overview__c}</td></tr>
+        </table>
+        <hr>
+        <!--table width="100%">
+            <tr>
+                <td width="25%" align="left" valign="top"><b>Account Owner: </b></td><td>{!hvn.Contact__r.Account.Owner.Name}</td>
+                <td width="25%" align="left" valign="top"><b>Sales Area: </b></td><td>{!hvn.Contact__r.Account.Sales_Area__c}</td>
+            </tr>
+            <tr>
+                <td width="25%" align="left" valign="top"><b>IT Budget: </b></td><td>&nbsp;</td>
+                <td width="25%" align="left" valign="top"><b>CA Spend: </b></td><td>&nbsp;</td>
+            </tr>
+            <tr><td width="25%" align="left" valign="top"><b>Current Pipeline: </b></td><td colspan="3"></td></tr>
+            <tr><td colspan="4"><hr></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>Customer Name: </b></td><td>{!hvn.Contact__r.Name}</td><td width="25%" align="left" valign="top"><b>Customer Cell Phone: </b></td><td>{!hvn.Contact__r.MobilePhone}</td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>Customer Title: </b></td><td>{!hvn.Contact__r.Title}</td><td width="25%" align="left" valign="top"><b>Role: </b></td><td>{!hvn.Role__c}</td></tr>
+            <tr><td colspan="4"><hr></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Relationship_Status__c.Label}: </b></td><td colspan="3">{!hvn.Relationship_Status__c}</td></tr>
+            <tr>
+                <td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Primary_HVN_Owner__c.Label}: </b></td><td>{!hvn.Primary_HVN_Owner__r.Name}</td>
+                <td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Secondary_HVN_Contact_Owner_1__c.Label}: </b></td><td>{!hvn.Secondary_HVN_Contact_Owner_1__r.Name}</td>
+            </tr>
+            <tr>
+                <td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Secondary_HVN_Contact_Owner_2__c.Label}: </b></td><td>{!hvn.Secondary_HVN_Contact_Owner_2__r.Name}</td>
+                <td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Secondary_HVN_Contact_Owner_3__c.Label}: </b></td><td>{!hvn.Secondary_HVN_Contact_Owner_3__r.Name}</td>
+            </tr>
+            <tr><td colspan="4"><hr></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Birthday_Month__c.Label}: </b></td><td>{!hvn.Birthday_Month__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Public_Speaker__c.Label}: </b></td><td>{!hvn.Public_Speaker__c}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Birthday_Year__c.Label}: </b></td><td>{!hvn.Birthday_Year__c}</td>}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Subscription__c.Label}: </b></td><td>{!hvn.Subscription__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Family_Information__c.Label}: </b></td><td>{!hvn.Family_Information__c}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Subscription_Other__c.Label}: </b></td><td>{!hvn.Subscription_Other__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Additional_Information__c.Label}: </b></td><td>{!hvn.Additional_Information__c}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Military_Service__c.Label}: </b></td><td>{!hvn.Military_Service__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Community_Involvement__c.Label}: </b></td><td>{!hvn.Community_Involvement__c}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.College_Fraternity_Sorority__c.Label}: </b></td><td colspan="3">{!hvn.College_Fraternity_Sorority__c}</td></tr>
+            <tr><td colspan="4"><hr></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Hobbies__c.Label}: </b></td><td>{!hvn.Hobbies__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Movie_Genre__c.Label}: </b></td><td>{!hvn.Movie_Genre__c}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Hobbies_Other__c.Label}: </b></td><td>{!hvn.Hobbies_Other__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Favorite_Movie__c.Label}: </b></td><td>{!hvn.Favorite_Movie__c}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Music_Style__c.Label}: </b></td><td>{!hvn.Music_Style__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.TV_Genre__c.Label}: </b></td><td>{!hvn.TV_Genre__c}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Holiday_Celebrations__c.Label}: </b></td><td>{!hvn.Holiday_Celebrations__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Favorite_TV_Show__c.Label}: </b></td><td>{!hvn.Favorite_TV_Show__c}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Holiday_Celebrated_Other__c.Label}: </b></td><td>{!hvn.Holiday_Celebrated_Other__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Book_Preference__c.Label}: </b></td><td>{!hvn.Book_Preference__c}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Culinary_Preference__c.Label}: </b></td><td>{!hvn.Culinary_Preference__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Sports__c.Label}: </b></td><td>{!hvn.Sports__c}</td><td></td></tr>
+            <tr><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Favorite_Charity__c.Label}: </b></td><td>{!hvn.Favorite_Charity__c}</td><td width="25%" align="left" valign="top"><b>{!$ObjectType.HVN__c.Fields.Sport_Other__c.Label}: </b></td><td>{!hvn.Sport_Other__c}</td><td></td></tr>
+        </table>
+        <hr -->
+        <apex:panelGrid columns="4" width="100%" columnClasses="colClass">
+                <apex:outputPanel ><colgroup width="25%" valign="top"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%" valign="top"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%"></colgroup></apex:outputPanel>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Contact__r.Account.Owner.Name))}" value="Account Owner:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Contact__r.Account.Owner.Name))}" value="{!hvn.Contact__r.Account.Owner.Name}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Contact__r.Account.Sales_Area__c))}" value="Sales Area:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Contact__r.Account.Sales_Area__c))}" value="{!hvn.Contact__r.Account.Sales_Area__c}"/>
+        </apex:panelGrid>
+        <hr>
+        <apex:panelGrid columns="4" width="100%" columnClasses="colClass">
+                <apex:outputPanel ><colgroup width="25%" valign="top"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%" valign="top"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%"></colgroup></apex:outputPanel>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Contact__r.Name))}" value="Customer Name:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Contact__r.Name))}" value="{!hvn.Contact__r.Name}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Contact__r.MobilePhone))}" value="Customer Cell Phone:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Contact__r.MobilePhone))}" value="{!hvn.Contact__r.MobilePhone}"/>
+        
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Contact__r.Title))}" value="Customer Title:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Contact__r.Title))}" value="{!hvn.Contact__r.Title}"/>
+        
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Role__c))}" value="Role:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Role__c))}" value="{!hvn.Role__c}"/>
+        </apex:panelGrid>
+        <hr>
+        <apex:panelGrid columns="4" width="100%" columnClasses="colClass">
+                <apex:outputPanel ><colgroup width="25%" valign="top"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%" valign="top"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%"></colgroup></apex:outputPanel>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Relationship_Status__c))}" value="{!$ObjectType.HVN__c.Fields.Relationship_Status__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Relationship_Status__c))}" value="{!hvn.Relationship_Status__c}"/>
+                
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Relationship_Status__c))}" value="{!hvn.Relationship_Status_Graphic__c}" escape="false"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Relationship_Status__c))}"/>
+                
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Primary_HVN_Owner__r.Name))}" value="{!$ObjectType.HVN__c.Fields.Primary_HVN_Owner__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Primary_HVN_Owner__r.Name))}" value="{!hvn.Primary_HVN_Owner__r.Name}"/>
+                
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Primary_HVN_Owner__r.Name))}"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Primary_HVN_Owner__r.Name))}" />
+                
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Secondary_HVN_Contact_Owner_1__r.Name))}" value="{!$ObjectType.HVN__c.Fields.Secondary_HVN_Contact_Owner_1__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Secondary_HVN_Contact_Owner_1__r.Name))}" value="{!hvn.Secondary_HVN_Contact_Owner_1__r.Name}"/>
+        
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Secondary_HVN_Contact_Owner_2__r.Name))}" value="{!$ObjectType.HVN__c.Fields.Secondary_HVN_Contact_Owner_2__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Secondary_HVN_Contact_Owner_2__r.Name))}" value="{!hvn.Secondary_HVN_Contact_Owner_2__r.Name}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Secondary_HVN_Contact_Owner_3__r.Name))}" value="{!$ObjectType.HVN__c.Fields.Secondary_HVN_Contact_Owner_3__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Secondary_HVN_Contact_Owner_3__r.Name))}" value="{!hvn.Secondary_HVN_Contact_Owner_3__r.Name}"/>
+        </apex:panelGrid>
+       <apex:outputPanel rendered="{!NOT(ISNULL(hvn.Birthday_Month__c)&&(ISNULL(hvn.Public_Speaker__c))&&(ISNULL(hvn.Subscription__c))&&(ISNULL(hvn.Community_Involvement__c))&&(ISNULL(hvn.Military_Service__c))&&(ISNULL(hvn.Awards_Recognition__c))&&(ISNULL(hvn.College_Fraternity_Sorority__c))&&(ISNULL(hvn.Additional_Information__c))&&(ISNULL(hvn.Family_Information__c)))}">
+                
+        <hr>
+        <apex:panelGrid columns="2" width="100%" columnClasses="colClass">
+                <apex:outputPanel ><colgroup width="25%" valign="top"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="75%"></colgroup></apex:outputPanel>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Birthday_Year__c))}" value="Birthday: "/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Birthday_Month__c))}" value="{!hvn.Birthday_Month__c} {!hvn.Birthday_Year__c}"/>
+
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Public_Speaker__c))}" value="{!$ObjectType.HVN__c.Fields.Public_Speaker__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Public_Speaker__c))}" value="{!hvn.Public_Speaker__c}"/>
+
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Subscription__c))}" value="{!$ObjectType.HVN__c.Fields.Subscription__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Subscription__c))}" value="{!hvn.Subscription__c}"/>
+
+                <apex:outputText style="font-weight:bold;vertical-align:text-top;" rendered="{!NOT(ISNULL(hvn.Family_Information__c))}" value="{!$ObjectType.HVN__c.Fields.Family_Information__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Family_Information__c))}" value="{!hvn.Family_Information__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Subscription_Other__c))}" value="{!$ObjectType.HVN__c.Fields.Subscription_Other__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Subscription_Other__c))}" value="{!hvn.Subscription_Other__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Community_Involvement__c))}" value="{!$ObjectType.HVN__c.Fields.Community_Involvement__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Community_Involvement__c))}" value="{!hvn.Community_Involvement__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Military_Service__c))}" value="{!$ObjectType.HVN__c.Fields.Military_Service__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Military_Service__c))}" value="{!hvn.Military_Service__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Awards_Recognition__c))}" value="{!$ObjectType.HVN__c.Fields.Awards_Recognition__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Awards_Recognition__c))}" value="{!hvn.Awards_Recognition__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.College_Fraternity_Sorority__c))}" value="{!$ObjectType.HVN__c.Fields.College_Fraternity_Sorority__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.College_Fraternity_Sorority__c))}" value="{!hvn.College_Fraternity_Sorority__c}"/>
+                              
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Additional_Information__c))}" value="{!$ObjectType.HVN__c.Fields.Additional_Information__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Additional_Information__c))}" value="{!hvn.Additional_Information__c}"/>                                
+        </apex:panelGrid>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!NOT(ISNULL(hvn.Hobbies__c)&&(ISNULL(hvn.Movie_Genre__c))&&(ISNULL(hvn.Hobbies_Other__c))&&(ISNULL(hvn.Favorite_Movie__c))&&(ISNULL(hvn.Music_Style__c))&&(ISNULL(hvn.TV_Genre__c))&&(ISNULL(hvn.Holiday_Celebrations__c))&&(ISNULL(hvn.Favorite_TV_Show__c))&&(ISNULL(hvn.Holiday_Celebrated_Other__c))&&(ISNULL(hvn.Book_Preference__c))&&(ISNULL(hvn.Culinary_Preference__c))&&(ISNULL(hvn.Sports__c))&&(ISNULL(hvn.Favorite_Charity__c))&&(ISNULL(hvn.Sport_Other__c)))}">
+        
+        <hr>
+        <apex:panelGrid columns="4" width="100%" columnClasses="colClass">
+                <apex:outputPanel ><colgroup width="25%"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%"></colgroup></apex:outputPanel>
+                <apex:outputPanel ><colgroup width="25%"></colgroup></apex:outputPanel>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Hobbies__c))}" value="{!$ObjectType.HVN__c.Fields.Hobbies__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Hobbies__c))}" value="{!hvn.Hobbies__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Movie_Genre__c))}" value="{!$ObjectType.HVN__c.Fields.Movie_Genre__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Movie_Genre__c))}" value="{!hvn.Movie_Genre__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Hobbies_Other__c))}" value="{!$ObjectType.HVN__c.Fields.Hobbies_Other__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Hobbies_Other__c))}" value="{!hvn.Hobbies_Other__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Favorite_Movie__c))}" value="{!$ObjectType.HVN__c.Fields.Favorite_Movie__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Favorite_Movie__c))}" value="{!hvn.Favorite_Movie__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Music_Style__c))}" value="{!$ObjectType.HVN__c.Fields.Music_Style__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Music_Style__c))}" value="{!hvn.Music_Style__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.TV_Genre__c))}" value="{!$ObjectType.HVN__c.Fields.TV_Genre__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.TV_Genre__c))}" value="{!hvn.TV_Genre__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Holiday_Celebrations__c))}" value="{!$ObjectType.HVN__c.Fields.Holiday_Celebrations__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Holiday_Celebrations__c))}" value="{!hvn.Holiday_Celebrations__c}" id="theThird"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Favorite_TV_Show__c))}" value="{!$ObjectType.HVN__c.Fields.Favorite_TV_Show__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Favorite_TV_Show__c))}" value="{!hvn.Favorite_TV_Show__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Holiday_Celebrated_Other__c))}" value="{!$ObjectType.HVN__c.Fields.Holiday_Celebrated_Other__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Holiday_Celebrated_Other__c))}" value="{!hvn.Holiday_Celebrated_Other__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Book_Preference__c))}" value="{!$ObjectType.HVN__c.Fields.Book_Preference__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Book_Preference__c))}" value="{!hvn.Book_Preference__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Culinary_Preference__c))}" value="{!$ObjectType.HVN__c.Fields.Culinary_Preference__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Culinary_Preference__c))}" value="{!hvn.Culinary_Preference__c}" id="theFourth"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Sports__c))}" value="{!$ObjectType.HVN__c.Fields.Sports__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Sports__c))}" value="{!hvn.Sports__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Favorite_Charity__c))}" value="{!$ObjectType.HVN__c.Fields.Favorite_Charity__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Favorite_Charity__c))}" value="{!hvn.Favorite_Charity__c}"/>
+
+                <apex:outputText style="font-weight:bold;" rendered="{!NOT(ISNULL(hvn.Sport_Other__c))}" value="{!$ObjectType.HVN__c.Fields.Sport_Other__c.Label}:"/>
+                <apex:outputText rendered="{!NOT(ISNULL(hvn.Sport_Other__c))}" value="{!hvn.Sport_Other__c}"/>
+        </apex:panelGrid>
+        </apex:outputPanel>        
+        </apex:repeat>
+    <hr>
+    <apex:outputPanel rendered="{!IF(ExecContactListSize>0, true, false)}">
+        <table bgcolor="white" style="border:1px solid lightgrey" width="100%" >
+            <tr>
+                <th>CA Executive Relationships</th>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <th>Notes</th>           
+            </tr>
+
+            <apex:repeat var="Exec" value="{!ExecContact}" id="rptExec">
+            <tr>
+                <td valign="top" width=31%>
+                    {!Exec.Name}
+                </td>
+                <td valign="top">
+                    {!Exec.Notes__c}
+                </td>
+            </tr>
+           
+            </apex:repeat>
+        </table>        
+        <hr>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF(AffiliationsListSize>0, true, false)}">
+        <table bgcolor="white" style="border:1px solid lightgrey" width="100%" >
+            <tr>
+                <th>Board / Group Affiliations</th>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <th>Notes</th>           
+            </tr>            
+
+            <apex:repeat var="Aff" value="{!Affiliations}" id="rptAff">
+            <tr>
+                <td valign="top" width=31%>
+                    {!Aff.Name}
+                </td>
+                <td valign="top">
+                    {!Aff.Notes__c}
+                </td>
+            </tr>
+            </apex:repeat>
+        </table>        
+        <hr>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF(MembershipsListSize>0, true, false)}">
+        <table bgcolor="white" style="border:1px solid lightgrey" width="100%" >
+            <tr>
+                <th>Social Networking / Site Memberships</th>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <th>Notes</th>           
+            </tr>
+            <apex:repeat var="Mbr" value="{!Memberships}" id="rptMbr">
+            <tr>
+                <td valign="top" width=31%>
+                    {!Mbr.Name}
+                </td>
+                <td valign="top">
+                    {!Mbr.Notes__c}
+                </td>
+            </tr>
+            </apex:repeat>
+        </table>        
+        <hr>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF(ProfessionalListSize>0, true, false)}">
+        <table bgcolor="white" style="border:1px solid lightgrey" width="100%" >
+            <tr>
+                <th colspan="4">Professional Experience</th>
+            </tr>
+            <tr>
+                <th>Company Name</th>
+                <th>Status</th>
+                <th>Title</th>
+                <th>Tenure</th>
+                <th>Role Description</th>
+            </tr>
+            <apex:repeat var="exp" value="{!ProExp}" id="rptProExp">
+            <tr>
+                <td valign="top">
+                    {!exp.Company_Name__c}
+                </td>
+                <td valign="top">
+                    {!exp.Status__c}
+                </td>
+                <td valign="top">
+                    {!exp.Title__c}
+                </td>
+                <td valign="top">
+                    {!exp.Tenure__c}
+                </td>
+                <td valign="top">
+                    {!exp.Role_Description__c}
+                </td>
+            </tr>
+            </apex:repeat>
+        </table>        
+        <hr>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF(EducationsListSize>0, true, false)}">
+        <table bgcolor="white" style="border:1px solid lightgrey" width="100%" >
+            <tr>
+                <th colspan="3">Educational Background</th>
+            </tr>
+            <tr>
+                <th>Alma Mater</th>
+                <th>Field of Studies</th>
+                <th>Year</th>
+            </tr>
+            <apex:repeat var="edu" value="{!Educations}" id="rptEducation">
+            <tr>
+                <td>
+                    {!edu.Alma_Mater__c}
+                </td>
+                <td>
+                    {!edu.Field_of_Studies__c}
+                </td>
+                <td>
+                    {!edu.Year__c}
+                </td>
+            </tr>
+            </apex:repeat>
+        </table>            
+        <hr>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF(ActivitiesListSize>0, true, false)}">
+        <table bgcolor="white" style="border:1px solid lightgrey" width="100%" >
+            <tr>
+                <th colspan="6">HVN Contact Event Activities</th>
+            </tr>
+            <tr>
+                <th>Event Name</th>
+                <th>If Other, Specify</th>
+                <th>Date</th>
+                <th>Invited</th>
+                <th>Participation Status</th>
+                <th>Speaker</th>
+                <th>If yes, topic covered</th>
+            </tr>
+            <apex:repeat var="Act" value="{!Activities}" id="rptAct">
+            <tr>
+                <td>{!Act.Event_Name__c}</td>
+                <td>{!Act.Event_Other__c}</td>                
+                <td>
+                    <apex:outputText value="{0,date,MM/dd/yyyy}">
+                        <apex:param value="{!Act.Date__c}" />
+                        </apex:outputText>
+                </td>
+                <td align="center"><apex:image url="{!IF(Act.Participation_Invitation__c,$Resource.checkbox_checked,$Resource.checkbox_unchecked)}"/></td>
+                <td>{!Act.Participation_Status__c}</td>
+                <td align="center"><apex:image url="{!IF(Act.Speaker__c,$Resource.checkbox_checked,$Resource.checkbox_unchecked)}"/></td>
+                <td>{!Act.Topic_Covered__c}</td>
+            </tr>
+            </apex:repeat>
+        </table>        
+        <hr>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF(SurveysListSize>0, true, false)}">
+        <table bgcolor="white" style="border:1px solid lightgrey" width="100%" >
+            <tr>
+                <th colspan="6">HVN Surveys</th>
+            </tr>
+            <tr>
+                <th>Year</th>
+                <th>Quarter</th>
+                <th>Completion Status</th>
+                <th>Current Relationship</th>
+                <th>Desired Relationship</th>
+                <th>Recommend CA</th>
+            </tr>
+            <apex:repeat var="Sur" value="{!Surveys}" id="rptSur">
+            <tr>
+                <td>{!Sur.Survey_Period__c}</td>
+                <td>{!Sur.Survey_Period_Quarter__c}</td>
+                <td>{!Sur.Completion_Status__c}</td>
+                <td>{!Sur.Current_Relationship__c}</td>
+                <td>{!Sur.Desired_Relationship__c}</td>
+                <td>{!Sur.Recommend_CA__c}</td>
+            </tr>
+            </apex:repeat>
+        </table>        
+        <hr>
+    </apex:outputPanel>
+    <table bgcolor="white" style="border:1px solid lightgrey" width="100%">
+        <tr>
+            <td align="center">
+              <font size=6>CA confidential and proprietary for CA internal use only.<br>No unauthorized copying or distribution permitted.</font>
+            </td>
+            <td align="right" width=10%>
+                <apex:image url="{!$Resource.ca_logo_footer}"/>
+            </td>
+        </tr>
+    </table>
+    <div style="visibility:hidden">
+        <apex:pageBlock title="">
+        </apex:pageBlock>
+    </div>
+   
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

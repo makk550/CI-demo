@@ -1,0 +1,7 @@
+<apex:page controller="Banner_Image_Class" sidebar="false" showHeader="false">
+<apex:outputLink value="http://www.ca.com/us/partners/technology-partners/technology-partner-program" title="Google" target="_blank">
+  <apex:repeat value="{!ImageURL}" var="ImageURL" id="theRepeat"> 
+        <apex:image url="{!ImageURL}" /><br/>
+  </apex:repeat>
+</apex:outputLink>
+</apex:page>

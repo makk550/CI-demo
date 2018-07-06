@@ -1,0 +1,14 @@
+<apex:page standardController="Opportunity">
+  <script type="text/javascript" src="/js/functions.js"></script> 
+    <script src="/soap/ajax/15.0/connection.js" type="text/javascript"></script> 
+    <script>
+        window.onload = new function(){
+            executeOnloadFunction();
+        }
+        function executeOnloadFunction(){
+            var Oppid = '{!Opportunity.Id}'; 
+            
+            window.parent.location.href = "{!$Site.prefix}/"+Oppid+"/e?retURL={!$Site.prefix}/"+Oppid+"&nooverride=1"; 
+        }
+    </script>     
+</apex:page>

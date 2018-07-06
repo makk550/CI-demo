@@ -1,0 +1,87 @@
+<apex:page standardController="Case" extensions="CaseRelatedArticleListController" showHeader="true">
+    <apex:includeScript value="/support/console/41.0/integration.js"/>
+    <script type="text/javascript">
+    function openPrimaryTab() {
+        sforce.console.openPrimaryTab(undefined, 
+                                      'http://www.example.com', true, 'example');
+    }
+    
+    //The callback function that openSubtab will call once it has the ID for its primary tab
+    var callOpenSubtab=function callOpenSubtab(result) {
+        sforce.console.openSubtab(result.id, 
+                                  'http://www.example.com', true, 'example');
+    };
+    
+    function openSubtab() {
+        sforce.console.getEnclosingPrimaryTabId(callOpenSubtab);
+    }
+    
+    //Sets the title of the current tab to "Example"
+    function setTitle() {
+        sforce.console.setTabTitle('Example');
+    }
+    
+    //The callback function that closeTab will call once it has the ID for its tab
+    var callCloseTab= function callCloseTab(result) {
+        sforce.console.closeTab(result.id);
+    }
+    
+    function closeTab() {
+        sforce.console.getEnclosingTabId(callCloseTab);
+    }
+    </script>
+    <apex:form >
+        <apex:pageMessages />
+        <apex:pageBlock id="CustomList" title="Related Articles">
+            <!--apex:pageBlockButtons-->
+            <div style="margin-top:-40px;margin-left:200px;margin-bottom:18px;">
+                <apex:commandbutton value="KB Attach" action="{!findArticles}" rendered="{!NOT(isSearch)}"/>
+                <apex:commandbutton value="Attach Selected" action="{!attachSelected}" rendered="{!isSearch}"/>
+                <apex:commandbutton value="Cancel" action="{!cancelFindArticles}" rendered="{!isSearch}" />
+                <apex:selectList id="artType" value="{!newArticleType}" size="1" rendered="{!NOT(isSearch)}" style="margin-left:5px;">
+                    <apex:actionSupport event="onchange" action="{!makeCreateButtonActive}" reRender="CustomList"/>
+                    <apex:selectOptions value="{!newArticleTypes}"/>
+                </apex:selectList> 
+                <apex:outputText rendered="{!AND(createButtonActive,NOT(isSearch))}">
+                    <apex:commandLink value="New Article" action="{!createNewArticle}" target="_parent" styleClass="btn" style="text-decoration: none;"/> 
+                </apex:outputText>
+            </div>
+            <!--/apex:pageBlockButtons-->
+            <apex:pageBlockTable value="{!caseArticleWrappers}" var="rel" rendered="{!AND(NOT(ISNULL(caseArticleWrappers)),NOT(isSearch))}">    
+                <apex:column >
+                    <apex:commandLink value="Detach" action="{!rel.detach}" reRender="CustomList"/>
+                    <a href="/apex/CustomKnowledgeEdit?articleId={!rel.kav.Id}" target="_blank">View</a>
+                </apex:column>
+                <!--apex:column value="{!rel.ca.KnowledgeArticleID}"/-->
+                <apex:column value="{!rel.kav.Title}"/>
+                <apex:column value="{!rel.kav.ArticleNumber}"/>
+                <apex:column value="{!rel.kav.PublishStatus}"/>
+                <apex:column value="{!rel.kav.ValidationStatus}" />
+                <apex:column value="{!rel.ka.CaseAssociationCount}" />
+                <apex:column value="{!rel.kav.LastModifiedDate}" />
+                
+                <apex:column value="{!rel.ca.CreatedDate}">
+                    <apex:facet name="header">Attached At</apex:facet>      
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">New/Known</apex:facet>  
+                    {!IF(rel.kav.Case__c == c.Id,"New","Known")}    
+                </apex:column>
+                
+            </apex:pageBlockTable>
+            <apex:outputText rendered="{!isSearch}">
+                <apex:inputText value="{!searchString}" />
+                <apex:commandButton value="Search By Article Number" action="{!doSearch}"/>
+                <apex:pageBlockTable value="{!searchResults}" var="sr" rendered="{!NOT(ISNULL(searchResults))}">  
+                    <apex:column >
+                        <apex:inputCheckbox value="{!sr.attach}" />      
+                    </apex:column>
+                    <apex:column value="{!sr.kav.title}"/>
+                    <apex:column value="{!sr.kav.ArticleNumber}"/>
+                    <apex:column value="{!sr.kav.PublishStatus}"/>
+                </apex:pageBlockTable>
+            </apex:outputText>
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

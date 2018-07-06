@@ -1,0 +1,87 @@
+<apex:component controller="getQuoteLinesForQuote" access="global">
+    
+    <apex:attribute name="quoteid" type="String" description="Quote Id" assignTo="{!Quote}"  />
+
+    <apex:dataTable cellpadding="7" border="1" value="{!QuoteLines}" var="quoteline">
+    <apex:column >
+        <apex:facet name="header">Product</apex:facet>
+        <apex:outputText value="{!quoteline.SBQQ__ProductName__c}"/>
+    </apex:column>
+
+    <apex:column >
+        <apex:facet name="header">Start Date</apex:facet>
+        <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                <apex:param value="{!quoteline.Start_Date__c}" /> 
+        </apex:outputText>
+    </apex:column>
+
+    <apex:column >
+        <apex:facet name="header">End Date</apex:facet>
+        <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                <apex:param value="{!quoteline.End_Date__c}" /> 
+        </apex:outputText>
+    </apex:column>
+    
+    <apex:column >
+        <apex:facet name="header">Quantity</apex:facet>
+        <apex:outputText value="{!quoteline.Quantity_Output_Document__c}"/>
+    </apex:column>
+
+    <apex:column >
+        <apex:facet name="header">Amendment Quantity</apex:facet>
+        <apex:outputText value="{!quoteline.Change_Quantity_Output_Document__c}" />
+    </apex:column>  
+
+    <apex:column >
+        <apex:facet name="header">Discount (Vol. Adj.)</apex:facet>
+        <apex:outputText value="{!quoteline.Disc_Vol_Adj_form_final__c}"/>
+    </apex:column>
+
+    <apex:column >
+        <apex:facet name="header">Approval Thresholds</apex:facet>
+        <apex:outputText value="{!quoteline.Approval_Threshold_Percentages__c}"/>
+    </apex:column>
+
+    <apex:column >
+        <apex:facet name="header">Discount Amount</apex:facet>
+        <apex:outputText value="{!discountMap[quoteline.id]}"/>
+    </apex:column>
+    
+    <apex:column >
+        <apex:facet name="header">Partner Disc.</apex:facet>
+        <apex:outputText value="{!quoteline.Partner_Discount_Percentage__c}"/>
+    </apex:column>
+
+    <apex:column >
+        <apex:facet name="header">Volume Discount Price</apex:facet>
+        <apex:outputText value="{!vDiscountMap[quoteline.id]}"/>
+    </apex:column>
+
+    <apex:column >
+        <apex:facet name="header">Monthly Unit Price</apex:facet>
+        <apex:outputText value="{!mUnitMap[quoteline.id]}"/>
+    </apex:column>
+
+    <apex:column >
+        <apex:facet name="header">Net Total</apex:facet>
+        <apex:outputText value="{!nTotalMap[quoteline.id]}"/>
+    </apex:column>
+
+    <apex:column >
+        <apex:facet name="header">Reason for Disc.</apex:facet>
+        <apex:outputText value="{!quoteline.Reason_for_Disc__c}" />
+    </apex:column>  
+
+    <apex:column >
+        <apex:facet name="header">Competitor</apex:facet>
+        <apex:outputText value="{!quoteline.Competitor_name__c}"/>
+    </apex:column>
+
+    <apex:column >
+        <apex:facet name="header">Product/Discount Reason</apex:facet>
+        <apex:outputText value="{!quoteline.Product_Discount_Reason__c}"/>
+    </apex:column>
+
+    </apex:datatable>
+
+</apex:component>

@@ -1,0 +1,127 @@
+<apex:page sidebar="false" controller="scm_ValidatePermission">
+   <apex:form >
+      <apex:sectionHeader title="Permissions Validation Service "/>
+      <apex:pagemessages />
+      <apex:outputLink value="{!$Resource.Permission}" style="margin-left: 50%;"> Download Sample Files </apex:outputLink>
+      <br/>
+      <apex:pageBlock title="Object Permission">
+          <apex:outputpanel >
+             
+              <apex:inputFile value="{!contentFile}" filename="{!nameFile}" /> <apex:commandButton action="{!ReadObjectPermissionFile}" value="Validate" id="theButton" style="width:70px;"/>
+              <br/> <br/> <!-- <font color="red"> <b>Note: Please use the standard template to upload Accounts. <a href="{!URLFOR($Resource.AccountUploadTemplate)}" target="_blank"> Click here </a> to download the template. </b> </font>-->
+            </apex:outputpanel> 
+      
+      <apex:pageblocktable title="Uploaded File Contents" columnsWidth="25%,25%"  value="{!ObjectPermissions}" var="acc" rendered="{!NOT(ISNULL(ObjectPermissions))}" captionStyle="text-align:left;font-weight:bold;">
+      <apex:facet name="caption"> Uploaded File Contents <br/> </apex:facet>
+          <apex:column headerValue="Profile Name">
+              <apex:outputText value="{!acc.profileName}"/>
+          </apex:column>
+          <apex:column headerValue="Object Name">
+              <apex:outputText value="{!acc.objectName}"/>
+          </apex:column>
+          <apex:column headerValue="Permission">
+              <apex:outputText value="{!acc.permission}"/>
+          </apex:column>
+          
+      </apex:pageblocktable> 
+      
+      <br/>
+      <apex:pageblocktable title="Conflicts" columnsWidth="25%,25%" value="{!errObjectPermissions}" var="acc" rendered="{!NOT(ISNULL(errObjectPermissions))}" captionStyle="text-align:left;font-weight:bold;">
+          <apex:facet name="caption"> Conflicts  <br/> </apex:facet>
+          <apex:column headerValue="Profile Name">
+              <apex:outputLink value="/{!acc.profileId}" id="theLink">{!acc.profileName}</apex:outputLink>
+          </apex:column>
+          <apex:column headerValue="Object Name">
+              <apex:outputText value="{!acc.objectName}"/>
+          </apex:column>
+          <apex:column headerValue="Permission">
+              <apex:outputText value="{!acc.permission}"/>
+          </apex:column>
+          
+      </apex:pageblocktable> 
+      
+      </apex:pageBlock> 
+        
+      <apex:pageBlock title="Field Level Permission">
+          <apex:outputpanel >
+             <apex:outputLabel value=""/>
+              <apex:inputFile value="{!contentFile}" filename="{!nameFile}" /> <apex:commandButton action="{!ReadFieldPermissionFile}" value="Validate" id="theButton" style="width:70px;"/>
+              <br/> <br/> <!-- <font color="red"> <b>Note: Please use the standard template to upload Accounts. <a href="{!URLFOR($Resource.AccountUploadTemplate)}" target="_blank"> Click here </a> to download the template. </b> </font>-->
+           </apex:outputpanel> 
+      
+      
+     <apex:pageblocktable columnsWidth="25%,25%,25%" value="{!fieldPermissions}" var="acc" rendered="{!NOT(ISNULL(fieldPermissions))}" captionStyle="text-align:left;font-weight:bold;">
+          <apex:facet name="caption"> Uploaded File Contents <br/> </apex:facet>
+          <apex:column headerValue="Profile Name">
+              <apex:outputText value="{!acc.profileName}"/>
+          </apex:column>
+          <apex:column headerValue="Object Name">
+              <apex:outputText value="{!acc.objectName}"/>
+          </apex:column>
+          <apex:column headerValue="Field Name">
+              <apex:outputText value="{!acc.fieldName}"/>
+          </apex:column>
+          <apex:column headerValue="Permission">
+              <apex:outputText value="{!acc.permission}"/>
+          </apex:column>
+          
+      </apex:pageblocktable> 
+      <br/> 
+      <apex:pageblocktable columnsWidth="25%,25%,25%" value="{!errFieldPermissions}" var="acc" rendered="{!NOT(ISNULL(errFieldPermissions))}" captionStyle="text-align:left;font-weight:bold;">
+          <apex:facet name="caption"> Conflicts  <br/> </apex:facet>
+          <apex:column headerValue="Profile Name">
+              <apex:outputLink value="/{!acc.profileId}" id="theLink">{!acc.profileName}</apex:outputLink>
+          </apex:column>
+          <apex:column headerValue="Object Name">
+              <apex:outputText value="{!acc.objectName}"/>
+          </apex:column>
+          <apex:column headerValue="Field Name">
+              <apex:outputText value="{!acc.fieldName}"/>
+          </apex:column>
+          <apex:column headerValue="Permission">
+              <apex:outputText value="{!acc.permission}"/>
+          </apex:column>
+          
+      </apex:pageblocktable> 
+      
+      </apex:pageBlock>  
+      
+      <apex:pageBlock title="User/Admin Permission">
+          <apex:outputpanel >
+             <apex:outputLabel value=""/>
+              <apex:inputFile value="{!contentFile}" filename="{!nameFile}" /> <apex:commandButton action="{!ReadUserOrAdminPermissionFile}" value="Validate" id="theButton" style="width:70px;"/>
+              <br/> <br/> <!-- <font color="red"> <b>Note: Please use the standard template to upload Accounts. <a href="{!URLFOR($Resource.AccountUploadTemplate)}" target="_blank"> Click here </a> to download the template. </b> </font>-->
+            </apex:outputpanel> 
+      
+      <apex:pageblocktable columnsWidth="33%,33%" value="{!UserOrAdminPermissions}" var="acc" rendered="{!NOT(ISNULL(UserOrAdminPermissions))}" captionStyle="text-align:left;font-weight:bold;">
+          <apex:facet name="caption"> Uploaded File Contents <br/> </apex:facet>
+          <apex:column headerValue="Profile Name">
+              <apex:outputLink value="/{!acc.profileId}" id="theLink">{!acc.profileName}</apex:outputLink>
+          </apex:column>
+          <apex:column headerValue="Permission Name">
+              <apex:outputText value="{!acc.permissionName}"/>
+          </apex:column>
+          <apex:column headerValue=" Can Have?">
+              <apex:outputText value="{!acc.permission}"/>
+          </apex:column>
+      </apex:pageblocktable> 
+     <br/> 
+      <apex:pageblocktable columnsWidth="33%,33%" value="{!errUserOrAdminPermissions}" var="acc" rendered="{!NOT(ISNULL(errUserOrAdminPermissions))}" captionStyle="text-align:left;font-weight:bold;">
+          <apex:facet name="caption"> Conflicts  <br/> </apex:facet>
+          <apex:column headerValue="Profile Name">
+              <apex:outputLink value="/{!acc.profileId}" id="theLink">{!acc.profileName}</apex:outputLink>
+          </apex:column>
+          <apex:column headerValue="Permission Name">
+              <apex:outputText value="{!acc.permissionName}"/>
+          </apex:column>
+          <apex:column headerValue=" Can Have?">
+              <apex:outputText value="{!acc.permission}"/>
+          </apex:column>
+          
+          
+      </apex:pageblocktable> 
+     
+      
+      </apex:pageBlock>        
+   </apex:form>   
+</apex:page>

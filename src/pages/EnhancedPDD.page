@@ -1,0 +1,21 @@
+<apex:page title="Customer DNA" controller="EnhancedPDDController" >
+    
+    <!-- apex:pageBlock title="Customer DNA" >
+        
+        <apex:pageBlockTable value="{!customerDNAList}" var="cdna" title="{!accountId}">
+            <!-- apex:column headerValue="Account" value="{!cdna.Account__c}"/ -------
+            <apex:column headerValue="CA Product" value="{!cdna.CA_Product_Controller__c}" />
+           
+            <apex:column headerValue="GA Level" value="{!cdna.GA_Level__c}" />
+            <apex:column headerValue="Instance Name" value="{!cdna.Instance_Name__c}" />
+            <apex:column headerValue="Scale of Adoption" value="{!cdna.Scale_of_Adoption__c}" />
+            <apex:column headerValue="Segment" value="{!cdna.Segment__c}" />
+        </apex:pageBlockTable>
+        
+        <-------------apex:pageBlockSection columns="1">            
+                <apex:outputField value="{! Customer_DNA__c.Account__c}"/>
+                <apex:outputField value="{! Customer_DNA__c.CA_Product_Controller__c}"/>           
+        </apex:pageBlockSection ---------------- 
+    </apex:pageBlock -->
+    
+</apex:page>

@@ -1,0 +1,62 @@
+<apex:page standardStylesheets="true" docType="html-5.0" showHeader="false" controller="ReferralPortalPageController">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+         <style>
+             
+        .ReferralPortal{
+        	    margin: 80px 200px 50px 200px;
+                padding: 50px;
+                min-width: 980px;
+                border: 1px solid #b0b0b0;
+                box-shadow: inset 0 20px 20px -20px rgba(0,0,0,0.3);
+        }
+         a {
+            color: #00A9E0;
+            text-decoration: none;
+        }
+         .ReferralPortal h1{
+             font: 34px/44px "HelveticaNeueW01-55Roma", Helvetica;
+             letter-spacing: 0.6px;
+             padding: 10px;
+             }
+         .ReferralPortal .Manageleadclass{
+             padding: 10px;
+             }
+         .ReferralPortal .Manageleadclass .PendingLeadlabel{
+             	padding:20px 0px 10px 0px;
+             	margin-bottom:20px;
+             	border-bottom:1px solid #b0b0b0;
+             	font-size:20px;
+             } 
+        .ReferralPortallink{
+             	float:right;
+             }     
+    </style>
+        
+    </head>
+   
+  
+    <div Class="ReferralPortal">
+        <apex:form styleClass="ReferralPortallink">
+            <apex:commandLink action="{!redirectpage}" value="Refer a Lead" id="theCommandLink"/>
+        </apex:form>
+        <!--<a href="{!$Site.Prefix}/secur/logout.jsp">Logout</a>-->
+        <h1>
+            {!$Label.Referral_Manage_Your_Leads}
+        </h1>
+        <div class="Manageleadclass">
+            <div class="PendingLeadlabel">
+                {!$Label.Referral_Pending_Lead_Referrals}
+            </div>
+            <c:ReferralPortalPagination ></c:ReferralPortalPagination>
+        </div>
+        <div class="Manageleadclass">
+            <div class="PendingLeadlabel">
+                {!$Label.Referral_Accepted_Opportunities}
+            </div>
+            <c:ReferralOppPagination ></c:ReferralOppPagination>
+            
+        </div>
+        
+    </div>
+</apex:page>

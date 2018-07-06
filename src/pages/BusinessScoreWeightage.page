@@ -1,0 +1,25 @@
+<apex:page standardController="Lead__c"  tabStyle="LeadRoutingMatrix__c" extensions="BusinessWeightageController">
+ <apex:form >
+    <apex:pageMessages ></apex:pageMessages>
+		
+        <apex:pageBlock title="Business Weightage">
+            <apex:outputText style="font-style:italic" value="The existing values are Loyality Historial: {0}   Partner Program Score:{1}   Product Competency:{2}">
+       			<apex:param value="{!pre_lhs}"/>
+                 <apex:param value="{!pre_pc}"/>
+       			<apex:param value="{!pre_pps}"/>
+    		   </apex:outputText>
+
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!UpdateScores}" value="Save"/>
+               <!-- <apex:commandButton value="Save" action="{!save}"/> -->
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="details">
+              
+                <apex:inputText value="{!score_LH}" label="Loyality Historial:"/>
+                <apex:inputText value="{!score_PPS}" label="Partner Program Score:"/>
+                <apex:inputText value="{!score_PC}" label="Product Competency:"/>
+                
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

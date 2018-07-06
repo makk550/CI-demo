@@ -1,0 +1,5 @@
+<apex:page standardcontroller="SFDC_Budget__c">
+<apex:detail subject="{!SFDC_Budget__c.Id}" relatedList="true" title="true" inlineEdit="true" showChatter="true">
+     </apex:detail>
+     
+</apex:page>

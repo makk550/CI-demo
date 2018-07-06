@@ -1,0 +1,71 @@
+<apex:page id="popUpPage2" showHeader="false" sidebar="false" controller="HomePageControllerClass" action="{!init}">
+        <!-- custom styles used within the application -->
+        <style>
+          .addNL {font-weight: bold}
+          .inactiveTab { background-color: lightgrey; color:black; background-image:none}
+          .secondaryPalette { 
+                background-color:#638658;
+                border-color:#638658;
+            }
+          .pbSubheader {
+                background-color:#222;
+                font-weight:bold;
+                font-size: 91%;
+                padding:2px 2px 2px 5px;
+                margin-top: 15px;
+                overflow: hidden;
+                margin-bottom: 2px;
+            }
+          .pbSubheader.first {
+                margin-top: 0;
+            }
+            body .bDashboard .tertiaryPalette {
+                background-color: #638658;
+                border-color: #638658;
+            }       
+            .apexp .detailList .list td, .apexp .detailList .list th, .apexp .editPage .bPageBlock .detailList .list tr td, .apexp .editPage .bPageBlock .detailList .list tr th {
+                border-bottom:1px solid #E3DEB8;
+                color:#333333;
+                padding:4px 2px 4px 5px;
+            }
+            .Custom18Tab .tertiaryPalette, .individualPalette .Custom18Block .tertiaryPalette {
+                background-color:#638658;
+                border-color:#638658;
+            }
+        </style>
+        <div class="bPageTitle">
+            <div class="ptBody secondaryPalette">
+                <div class="content">
+                    <apex:image value="/s.gif" alt="Home" styleClass="pageTitleIcon"/>
+                        <h1 class="pageType">Opportunity List<span class="titleSeparatingColon1"></span></h1>
+                        <h2 class="pageDescription"></h2> 
+                        <div class="blank">&nbsp; </div>
+                </div>      
+            </div>
+         </div>
+    <apex:form id="popUpForm">
+        <apex:outputPanel rendered="true" id="popUpPanel">
+            <apex:pageBlock id="popUpPB" title="New Open Opportunities">
+                <apex:pageBlockTable var="pbOppTab" value="{!newOpenOppList}" id="pbOppTabId" width="100%">
+                    <apex:column headerValue="Opportunity Name">
+                        <apex:outputLink value="/{!pbOppTab.oppObj.Id}" target="_blank"  title="Click to view the Opportunity details">{!pbOppTab.oppObj.Name}</apex:outputLink>
+                    </apex:column>
+                    <apex:column headerValue="Partner Name">
+                        <apex:outputText value="{!pbOppTab.oppObj.Account.Name}"/>
+                    </apex:column>
+                    <apex:column headerValue="End User Name">
+                        <apex:outputText value="{!pbOppTab.oppObj.Ent_Comm_Account__r.Name}"/>
+                    </apex:column>
+                    <apex:column style="text-align: right;vertical-align:middle;">
+                         <apex:facet name="header">                     
+                            <div style="text-align: right;vertical-align:middle;">
+                                Amount
+                            </div>
+                         </apex:facet>
+                         <apex:outputText value="{!(pbOppTab.Amt)}" style="text-align:right"/>
+                    </apex:column>              
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

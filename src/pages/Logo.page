@@ -1,0 +1,49 @@
+<apex:page showHeader="{!IF($CurrentPage.parameters.showHeader == 'false','false','true')}" 
+    sidebar="{!IF($CurrentPage.parameters.showHeader == 'false','false','true')}" 
+    standardController="Logo__c" extensions="LogoExtension"
+    action="{!doOnLoad}"
+    language="{!preferredLanguageCode}">
+    
+    <apex:outputPanel rendered="{!AND(errorOccurred,error == INVALID_PAGE_FLOW)}">
+        <apex:pageMessage title="{!$Label.invalid_page_flow}" severity="error" strength="3" />
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!NOT(errorOccurred)}">
+        <apex:form >
+            <apex:commandLink action="{!doReturn}" value="{!$Label.go_back}"/>
+            &nbsp;|&nbsp;
+            <apex:commandLink action="{!doCancel}" value="{!$Label.cancel}"/>
+        </apex:form>
+        <br/>
+        <apex:sectionHeader title="{!$Label.logo}" subtitle="{!Logo__c.name}"/>
+        <apex:pageMessages />   
+        <apex:form >
+            <apex:pageMessage title="{!$Label.no_logo_exists_for_account} {!account.name}"
+                detail="{!$Label.to_add_a_logo_click_browse_and_select_an} {!MAX_BLOB_SIZE_IN_KB} KB.  {!$Label.for_best_results_ensure_logo_is_150_pixe}"
+                severity="info" strength="2"
+                rendered="{!ISNULL(logoAttachment)}" />
+            <apex:pageMessage title="{!$Label.the_below_logo_is_active_for_account}{!account.name}"
+                detail="{!$Label.to_add_a_logo_click_browse_and_select_an} {!MAX_BLOB_SIZE_IN_KB} KB.  {!$Label.for_best_results_ensure_logo_is_150_pixe}"
+                severity="info" strength="2"
+                rendered="{!NOT(ISNULL(logoAttachment))}" />
+            <apex:inputFile contentType="{!attachmentContentType}" 
+                size="60" fileName="{!attachmentFileName}" value="{!attachmentFile}"/>
+            <apex:commandButton value="{!$Label.replace}" action="{!doReplaceLogo}"/>
+        </apex:form>
+        <br/>
+        <apex:pageBlock title="{!$Label.logo_detail}" mode="view" rendered="{!NOT(ISNULL(logoAttachment))}">
+            <apex:pageBlockSection showHeader="false" title="" columns="1">
+                <apex:outputField value="{!Logo__c.name}"/>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$Label.logo}" for="account__name"/>
+                    <apex:image height="50" width="150" rendered="{!NOT(ISNULL(logoAttachment.id))}" value="{!URLFOR($Action.Attachment.Download, logoAttachment.id)}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <br/>
+        <apex:form >
+            <apex:commandLink action="{!doReturn}" value="{!$Label.go_back}"/>
+            &nbsp;|&nbsp;
+            <apex:commandLink action="{!doCancel}" value="{!$Label.cancel}"/>
+        </apex:form>
+    </apex:outputPanel>
+</apex:page>

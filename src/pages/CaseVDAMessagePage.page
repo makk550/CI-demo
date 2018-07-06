@@ -1,0 +1,7 @@
+<apex:page standardController="Case"   sidebar="false" showHeader="false" showChat="false">
+<apex:pageMessage summary="Warning:  The VDA fields require an update on the Resolve Case page" 
+                  severity="warning" 
+                  strength="2"
+                  rendered="{!If(((Case.Status=='Verify' || Case.Status=='Closed') && (Case.Root_Cause_Category_Text__c==null || Case.Root_Cause_Category_Text__c==null || Case.Function_text__c == null) ),true,false)}" />
+
+</apex:page>

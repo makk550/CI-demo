@@ -1,0 +1,67 @@
+<apex:page standardController="Account_Plan3__c" extensions="AccountPlanControllerExtension">
+<apex:form >
+  <apex:pageBlock title="Recent CA Executive Interactions (Players, Timing)">
+  <apex:outputField value="{!Account_Plan3__c.Account__r.Name}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.selected_tasks__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.CA_Executive_Sponsors__c }" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Recent_CA_Executive_Interactions__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Upcoming_Events__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Account__c}" rendered="false"/>
+  
+  <apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_1__r.HVN__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_2__r.HVN__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_3__r.HVN__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_4__r.HVN__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_5__r.HVN__c}" rendered="false"/>
+  <apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_1__r.HVN_ID__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_2__r.HVN_ID__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_3__r.HVN_ID__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_4__r.HVN_ID__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_5__r.HVN_ID__c}" rendered="false"/>
+  
+  <apex:pageMessages />
+  <apex:pageBlockButtons >
+      <apex:commandButton value="Save Activities" action="{!saveActivities}"/>
+      <apex:commandButton action="{!edit}" value="Cancel"/>
+  </apex:pageBlockButtons>
+    <apex:pageBlockTable value="{!Activities}" var="a">
+      <apex:column headerValue="Selected">
+        <apex:inputCheckbox value="{!a.selected2}"/>
+      </apex:column>
+      <!--
+      <apex:column headerValue="Id">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Id, a.anEvent.Id)}"/>
+        </apex:column>
+        -->
+        <apex:column headerValue="Subject">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.subject, a.anEvent.subject)}"/>
+        </apex:column>
+        <apex:column headerValue="Name">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.who.name, a.anEvent.who.name)}"/>
+        </apex:column>
+        <apex:column headerValue="Related To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.WhatId, a.anEvent.WhatId)}">
+              {!IF(a.isTask, a.aTask.What.Name, a.anEvent.What.Name)}
+            </apex:outputLink>
+        </apex:column>
+        <apex:column headerValue="Task">
+          <apex:inputCheckbox value="{!a.isTask}" disabled="true"/>
+        </apex:column>
+        <apex:column headerValue="Due Date">
+            <apex:outputText value="{!a.formattedDate}"/>
+        </apex:column>
+        <apex:column headerValue="Status">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Status, null)}"/>
+        </apex:column>
+        <apex:column headerValue="Priority">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Priority, null)}"/>
+        </apex:column>
+        <apex:column headerValue="Assigned To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.OwnerId, a.anEvent.OwnerId)}">
+              {!IF(a.isTask, a.aTask.Owner.Name, a.anEvent.Owner.Name)}
+            </apex:outputLink>
+        </apex:column>
+    </apex:pageBlockTable>
+  </apex:pageBlock>
+</apex:form>
+</apex:page>

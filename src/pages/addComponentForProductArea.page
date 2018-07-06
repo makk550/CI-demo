@@ -1,0 +1,191 @@
+<apex:page standardController="Product_Area__c" extensions="productAreaControllerExtension" id="pageId">
+    <script src="{!$Resource.CaseArchival}/CaseArchival/js/jquery.min.js"></script>
+    <apex:form id="formId">
+        <span id="errorMessage" style="font-size:14px;color:red;"/>
+        <apex:actionStatus id="loadingStatus">
+            <!-- loading message -->
+            <apex:facet name="start">
+                <apex:outputPanel >
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                        <div style="display: inline-block; padding: 2px; width: 125px;">
+                            <apex:image value="/img/loading32.gif" style="float: left; margin: 8px;"/>
+                            <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+            </apex:facet>
+            <apex:facet name="stop"> </apex:facet>
+        </apex:actionStatus>
+        
+        <apex:pageBlock title="CA PRODUCT: {!productName}" id="blockId">
+            <apex:outputPanel id="show" rendered="{!IF(listOfCaProductComp<>null && listOfCaProductComp.size>0 && listForErrorMsg<>null && listForErrorMsg.size>0,true,false)}">
+                <apex:pageBlockSection title="Product Area: {!productAreaName}" collapsible="false"></apex:pageBlockSection><br/>
+                <apex:outputPanel id="inner">
+                    <apex:pageBlockSection columns="1">
+                        <span style="font-size:14px;color:blue;">All Active Components that are not already mapped to Product Area <b>{!productAreaName}</b> are displayed.</span><br/><br/>  
+                    </apex:pageBlockSection>
+                </apex:outputPanel>   
+                <center>
+                    <apex:commandButton value="Save" onclick="submitFunc();return false;" id="saveId"/>
+                    <apex:commandButton value="Cancel" onclick="cancelFunc();return false;" id="cancelId"/>
+                </center>
+                <!--apex:outputPanel id="Read_Only" rendered="{!IF(showDefault,false,true)}">
+                    <br/>
+                        <span style="font-size:14px;color:red;"><b>Default Components are read only:</b> Product area already has a default component. Please use the <b>Update Product Component Associations</b>  button to change the default component</span>
+                    <br/>
+                    <br/>
+                </apex:outputPanel-->    
+                <apex:pageBlockSection columns="1" id="blockSectionId">
+                    <apex:pageBlockTable value="{!listOfCaProductComp}" var="comp" id="apexTable" >
+                        <apex:column id="colId" headerValue="Add Component">
+                            <!--apex:facet name="header"><input type="checkbox" id="allId" onclick="checkAll(this.id,'')"/></apex:facet-->
+                            <input type="checkbox" id="allId_select_{!comp.id}" onclick="checkAll(this.id,'{!comp.id}')"/>
+                        </apex:column>
+                        <apex:column headerValue="Default Component" id="colId2" rendered="{!IF(showDefault,true,false)}">
+                            <input type="checkbox" id="allId_default_{!comp.id}" onclick="onlyOneDefault(this.id,'{!comp.id}')"/>
+                        </apex:column>
+                        <apex:column headerValue="Default Component (Read Only)" id="colId3" rendered="{!IF(showDefault,false,true)}">
+                            <input type="checkbox" id="allId_default_{!comp.id}" class="byDefaultCheck" disabled="true"/>
+                        </apex:column>
+                        <apex:column value="{!comp.Component_Code__c}"/>
+                        <apex:column value="{!comp.Name}" />
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+                <script>
+                     $('#loadingImage').show();       
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel id="hide" rendered="{!IF(listForErrorMsg==null || listForErrorMsg.size==0,true,false)}" >
+                <apex:pageBlockSection >
+                    <br/><span style="font-size:14px;color:red;">No Component is associated with <b>{!productName}</b> product.</span><br/><br/>  
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+
+            <apex:outputPanel id="hide1" rendered="{!IF(listForErrorMsg<>null && listForErrorMsg.size>0 && (listOfCaProductComp==null || listOfCaProductComp.size==0),true,false)}" >
+                <apex:pageBlockSection columns="1">
+                    <br/><span style="font-size:14px;color:red;">All Components for CA Product <b>{!productName}</b> are already mapped to other Product Areas.</span><br/><br/>  
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:pageBlock>
+        <div id="loadingImage"> 
+            <center><img src="{!$Resource.CaseArchival}/CaseArchival/images/loading2.gif" height="10%" width="10%"/></center>
+        </div> 
+        <apex:outputPanel id="output">
+            <apex:actionFunction name="submitRecords" action="{!submitRecords}" reRender="output" status="loadingStatus">
+                <apex:param name="selectedRecords" value=""/>
+                <apex:param name="defaultRecords" value=""/>
+            </apex:actionFunction>
+        </apex:outputPanel>
+
+        <apex:outputPanel id="output1">
+            <apex:actionFunction name="cancelRecords" action="{!cancelRecords}" reRender="output1" status="loadingStatus">
+            </apex:actionFunction>
+        </apex:outputPanel>
+        
+    </apex:form>
+    <script>
+        var componentIdArray = [];
+        var defaultComponentIdArray = []; 
+        
+
+        function onloadFunction(){
+            $('#loadingImage').hide();
+            defaultComponentIdArray = [];
+            componentIdArray = [];
+        }
+        
+        function checkAll(idVal, compId){
+            if(compId!=undefined && compId!=''){
+                if(componentIdArray.length>0){
+                    if($('#'+idVal).is(':checked')){
+                        $('#'+idVal).prop('checked',true);
+                        if(componentIdArray.indexOf(idVal)==-1){
+                            componentIdArray.push(idVal);
+                        }
+                    }else{
+                        $('#'+idVal).prop('checked',false);
+                        var splitDefaultComp = idVal.split('allId_select_');
+                        if(componentIdArray.indexOf(idVal)>=0){
+                            componentIdArray.splice(componentIdArray.indexOf(idVal),1);
+                        }
+                        if(defaultComponentIdArray.indexOf(splitDefaultComp[1])>=0){
+                            $('#allId_default_'+splitDefaultComp[1]).prop('checked',false);
+                            defaultComponentIdArray.splice(defaultComponentIdArray.indexOf(splitDefaultComp[1]),1);
+                        }
+                    }
+                }else{
+                    //componentIdArray = [];
+                    if($('#'+idVal).is(':checked')){
+                        $('#'+idVal).prop('checked',true);
+                        componentIdArray.push(idVal);
+                    }else{
+                        $('#'+idVal).prop('checked',false);
+                        var splitDefaultComp = idVal.split('allId_select_');
+                        if(defaultComponentIdArray.indexOf(splitDefaultComp[1])>=0){
+                            $('#allId_default_'+splitDefaultComp[1]).prop('checked',false);
+                            defaultComponentIdArray.splice(defaultComponentIdArray.indexOf(splitDefaultComp[1]),1);
+                        }
+                        if(componentIdArray.indexOf(idVal)>=0){
+                            $('#allId_default_'+idVal).prop('checked',false);
+                            componentIdArray.splice(componentIdArray.indexOf(idVal),1);
+                        }
+                    }
+                }
+                    
+            }/*else{
+                if($('#'+idVal).is(':checked')){
+                    var allSelectedId = $('input[id^='+idVal+'_select_]');
+                    for(var i=0;i<allSelectedId.length;i++){
+                        $('#'+allSelectedId[i].id).prop('checked',true);    
+                        componentIdArray.push(allSelectedId[i].id);
+                    }
+                }else{
+                    $('input[id^='+idVal+'_]').prop('checked',false);
+                    componentIdArray=[];
+                    defaultComponentIdArray = [];
+                }
+            }*/
+        }
+    
+        function onlyOneDefault(defaultId, componentId){
+            var defaultComp = defaultId.split('allId_default_');
+            var selectComp = 'allId_select_'+defaultComp[1];
+            if($('#'+defaultId).is(':checked')){
+                $('#'+defaultId).prop('checked',true);
+                $('#'+selectComp).prop('checked',true);
+                defaultComponentIdArray.push(componentId);
+                if(componentIdArray.indexOf(selectComp)==-1){
+                    componentIdArray.push(selectComp);
+                }
+            }else{
+                $('#'+defaultId).prop('checked',false);
+                if(defaultComponentIdArray.indexOf(componentId)>=0){
+                    defaultComponentIdArray.splice(defaultComponentIdArray.indexOf(componentId),1);
+                }
+            }
+        }
+        
+        
+        function submitFunc(){
+            if((componentIdArray.length>0 && defaultComponentIdArray.length==1) || (componentIdArray.length>0 && {!showDefault}==false)){
+                if({!showDefault}==false && defaultComponentIdArray.length<1){
+                    defaultComponentIdArray.push('{!defaultComp}');
+                }
+                submitRecords(JSON.stringify(componentIdArray),defaultComponentIdArray[0]);
+            }else if(componentIdArray.length<=0){
+                document.getElementById('errorMessage').innerHTML = '<b><br/>Please select atleast one component.<br/><br/></b>';
+            }else if((defaultComponentIdArray.length<1 || defaultComponentIdArray.length>1) && {!showDefault}==true){
+                document.getElementById('errorMessage').innerHTML = '<b><br/>Please select one Default Component for Product Area <i>{!productAreaName}</i>.<br/><br/></b>';
+            }
+        }
+
+        function cancelFunc(){
+            cancelRecords();
+        }
+        
+        onloadFunction();
+    </script>            
+</apex:page>

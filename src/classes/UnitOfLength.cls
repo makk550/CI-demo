@@ -1,0 +1,1 @@
+global enum UnitOfLength {MILES,KILOMETERS}

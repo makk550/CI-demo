@@ -1,0 +1,335 @@
+<apex:page controller="BP_EndUserContactSearchController" id="thePage"  showHeader="false"  sidebar="false" applyHtmlTag="false" applyBodyTag="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+            <apex:slds />
+            <style>
+                .msgIcon {
+                    display: none!important
+                }
+                .customMessage * {
+                    color: #fff!important
+                }
+                .customMessage {
+                    margin: 5px 0!important;
+                    max-width: 1280px;
+                    opacity: 1!important;
+                    width: 100%;
+                    font-size: 12px;
+                    border: 0px;
+                    padding-left: 10px;
+                }
+                .message {
+                    opacity: .1
+                }
+                .hederSD{
+                    font-weight:bold;
+                    color: #0070d2;
+                }
+            </style>
+            <script>
+                    $(window).load(function() {
+                            $(".VPloader").fadeOut("slow");
+                     });
+                    $(document).ready(function(){
+                       overridePageMessages();    
+                    });
+                    function overridePageMessages(){    
+                        var textureEffect = 'slds-theme--alert-texture';
+                        //Uncomment below line for texture effect on page messages
+                        //textureEffect = 'slds-theme--alert-texture';
+                                     
+                        $('.warningM3').addClass('slds-notify slds-notify--toast slds-theme--warning customMessage '+textureEffect);          
+                        $('.confirmM3').addClass('slds-notify slds-notify--alert slds-theme--success  customMessage '+textureEffect);    
+                        $('.errorM3').addClass('slds-notify slds-notify--alert slds-theme--error customMessage '+textureEffect);                  
+                        $('.infoM3').addClass('slds-notify slds-notify--toast customMessage '+textureEffect);    
+                                         
+                        $('.errorM3').removeClass('errorM3'); 
+                        $('.confirmM3').removeClass('confirmM3'); 
+                        $('.infoM3').removeClass('infoM3');   
+                        $('.warningM3').removeClass('warningM3');  
+                    }
+                </script>
+        </head>
+        <body class="slds-scope">  
+            <apex:pagemessages ></apex:pagemessages>
+            <div class="VPloader">
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                                &nbsp;
+                            </div>
+                            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                                <div style="display: inline-block; padding: 2px; width: 125px;">
+                                    <img src="{!URLFOR($Asset.SLDS, '/assets/images/spinners/slds_spinner_brand.gif')}" style="float: left; margin: 8px;" />
+                                    <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                                </div>
+                            </div>
+            </div>
+            <script>
+
+             winMain=window.opener;       
+             function fillIn(name, id, email, phone, mobile, fax, title,local1,local2,certilevel)    {       
+                   
+                    if (null==winMain)       
+                    {          
+                        winMain=window.parent.opener; 
+                            
+                    }    
+                console.debug('certilevel'+certilevel);
+                    var ele=winMain.document.getElementById('{!$CurrentPage.parameters.namef}'); 
+                  
+                    ele.value=name;
+                    ele=winMain.document.getElementById('{!$CurrentPage.parameters.idf}'); 
+                    ele.value=id; 
+                    
+                    if({!$CurrentPage.parameters.isBP != null})
+                    {
+                        ele=winMain.document.getElementById('{!$CurrentPage.parameters.targetf}');       
+                        ele.innerHTML=name;
+                        console.debug('ele-----{!$CurrentPage.parameters.targetf}');
+                        ele=winMain.document.getElementById('{!$CurrentPage.parameters.tstCont}');
+                        ele.value=name;
+                        console.debug('{!$CurrentPage.parameters.certarget}');
+                        ele=winMain.document.getElementById('{!$CurrentPage.parameters.certarget}');
+                        ele.value=certilevel;
+                        console.debug('ssssss{!$CurrentPage.parameters.certi}');
+                        ele=winMain.document.getElementById('{!$CurrentPage.parameters.certi}');
+                        ele.innerHTML=certilevel;
+                    }
+                    else
+                    {
+                    ele=winMain.document.getElementById('targetContact');       
+                    ele.innerHTML=name;         
+               
+                    }
+            
+                    CloseWindow();    
+            
+                }      
+                function CloseWindow()    { 
+            
+                    winMain=window.opener;       
+                    if (null==winMain)       
+                    {          
+                        winMain=window.parent.opener;       
+                    }       
+                winMain.closeLookupPopup();  
+                 
+                }
+                   
+                function validateContact()
+                {
+                   if(document.getElementById('thePage:theForm:TablePanel:FirstName').value.length <= 0)
+                    {
+                        alert("Please enter the First Name");
+                        return false;
+                    }
+                    else if(document.getElementById('thePage:theForm:TablePanel:LastName').value.length <= 0)
+                    {
+                        alert("Please enter the Last Name");
+                        return false;
+                    }
+                    else if(document.getElementById('thePage:theForm:TablePanel:Email').value.length <= 0)
+                    {
+                        alert("Please enter the Email");
+                        return false;
+                    }
+                    else
+                        return true;
+                }
+        </script>
+
+  <apex:form id="theForm" styleClass="hasMotif lookupTab  LookupSearchFrame">
+      <apex:pageBlock id="TablePanel">
+          <apex:actionStatus id="TableUpdateStatus">
+                    <!-- loading message -->
+                    <apex:facet name="start">
+                       <apex:outputPanel >
+                            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                                &nbsp;
+                            </div>
+                            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                                <div style="display: inline-block; padding: 2px; width: 125px;">
+                                    <img src="{!URLFOR($Asset.SLDS, '/assets/images/spinners/slds_spinner_brand.gif')}" style="float: left; margin: 8px;" />
+                                    <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                                </div>
+                            </div>
+                       </apex:outputPanel>
+                    </apex:facet>
+              <apex:facet name="stop"> </apex:facet>
+          </apex:actionStatus>
+        <div class="slds-page-header">
+          <div class="slds-grid">
+            <div class="slds-col slds-has-flexi-truncate">
+              <div class="slds-media slds-no-space slds-grow">
+                <div class="slds-media__figure">
+                  <svg class="slds-icon slds-icon-standard-account" aria-hidden="true">
+                    <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#search')}"></use>
+                  </svg>
+                </div>
+                <div class="slds-media__body">
+                  <p class="slds-text-title--caps slds-line-height--reset">Account</p>
+                  <h1 class="slds-page-header__title slds-m-right--small slds-align-middle slds-truncate" title="this should match the Record Title"><apex:outputLabel value="{!accountName}"></apex:outputLabel></h1>
+                </div>
+              </div>
+            </div>
+             <!--Search Header-->
+            <apex:outputPanel id="thesearch" rendered="{!showCreate}">
+                <div class="slds-col slds-no-flex slds-grid slds-align-top">
+                
+                        <apex:inputText id="searchtext" value="{!searchcon}" styleClass="slds-input" html-placeholder="search contact here....."/>
+                        <apex:commandButton action="{!SearchContacts}" value="Search" styleClass="slds-button slds-button--neutral" reRender="TablePanel" status="TableUpdateStatus"/>
+                    
+                  </div>
+              
+              </apex:outputPanel>
+            </div>
+          </div>
+      
+        <!--End Search Header-->
+
+        <!--Contact Create Block--->
+        <apex:outputPanel id="theCreate" rendered="{!showCreateBlock}" >
+        <div style="margin:10px;">
+            <fieldset class="slds-form--compound">
+              <legend class="slds-form-element__label slds-text-title--caps">Contact Information</legend>
+              <div class="slds-form-element__group">
+                <div class="slds-form-element__row">
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label">First Name</label>
+                    <apex:inputtext id="FirstName" value="{!firstName}" styleClass="slds-input"/>
+                  </div>
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label">Last Name</label>
+                    <apex:inputtext id="LastName" value="{!lastName}" styleClass="slds-input"/>
+                  </div>
+                </div>
+                <div class="slds-form-element__row">
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label">E-mail</label>
+                    <apex:inputtext id="Email" value="{!email}" styleClass="slds-input"/>
+                  </div>
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label" >Title</label>
+                    <apex:inputtext id="Title" value="{!title}" styleClass="slds-input"/>
+                  </div>
+                </div>
+                <div class="slds-form-element__row">
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label">Functional Role</label>
+                    <div class="slds-select_container">
+                      <apex:selectList value="{!selectedFunctionalRole}" size="1" id="selCountry" styleClass="slds-select">
+                                        <apex:selectoptions value="{!functionalRoles}"></apex:selectoptions>
+                      </apex:selectList>
+                    </div>
+                            
+                  </div>
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label" >Phone</label>
+                    <apex:inputtext id="Phone" value="{!phone}" styleClass="slds-input"/>
+                  </div>
+                </div>
+                <div class="slds-form-element__row">
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label">Mobile</label>
+                    <apex:inputtext id="Mobile" value="{!mobile}" styleClass="slds-input"/>
+                  </div>
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label" >Fax</label>
+                    <apex:inputtext id="Fax" value="{!fax}" styleClass="slds-input"/>
+                  </div>
+                </div>
+                <div class="slds-form-element__row">
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label">Firstname local</label>
+                    <apex:inputtext id="firstnamelocal" value="{!firstnamelocal}" styleClass="slds-input"/>
+                  </div>
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label" >LastName local</label>
+                    <apex:inputtext id="lastnamelocal" value="{!lastnamelocal}" styleClass="slds-input"/>
+                  </div>
+                </div>
+                <div class="slds-form-element__row">
+                    <apex:commandButton value="CreateContact" onclick="return validateContact()" action="{!CreateContact}" styleClass="slds-button slds-button--brand slds-container--center" />
+                </div>
+              </div>
+            </fieldset>
+         </div>
+        </apex:outputPanel>
+        <!--End Contact Create Block-->
+        <!--Contact Results Block-->
+         <apex:outputPanel rendered="{!showResults}">
+             <br/>
+             <br/>
+                    <apex:dataTable value="{!Dataresult}" var="a" cellspacing="2" headerClass="headerRow"  width="100%" styleClass="slds-table slds-table--bordered slds-table--cell-buffer">
+                     
+                       <apex:column >
+                         <apex:facet name="header">   
+                           <apex:commandLink action="{!ViewData}" value="Name{!IF(sortExpression=='name',IF(sortDirection='ASC','▼','▲'),'')}" id="cmdSort" styleClass="hederSD" reRender="TablePanel" status="TableUpdateStatus">
+                             <apex:param value="name" name="column" assignTo="{!sortExpression}" ></apex:param>
+                           </apex:commandLink>
+                         </apex:facet>
+                           <apex:outputLink value="#" onclick="fillIn('{!JSENCODE(a.contactdetails.Name)}', '{!a.contactdetails.id}','{!JSENCODE(a.contactdetails.Email)}','{!a.contactdetails.Phone}','{!a.contactdetails.MobilePhone}','{!a.contactdetails.Fax}','{!JSENCODE(a.contactdetails.Title)}','{!JSENCODE(a.contactdetails.FirstNameLocal)}','{!JSENCODE(a.contactdetails.LastNameLocal)}','{!a.certificateDetails.badge__c}')">{!a.contactdetails.Name}</apex:outputLink>
+                       </apex:column>
+                          <apex:column value="{!a.contactdetails.Active_User__c}">
+                         <apex:facet name="header">
+                             <apex:commandLink action="{!ViewData}" value="Partner User{!IF(sortExpression=='Active_User__c',IF(sortDirection='ASC','▼','▲'),'')}" styleClass="hederSD" reRender="TablePanel" status="TableUpdateStatus">
+                             <apex:param value="Active_User__c" name="Active_User__c" assignTo="{!sortExpression}" ></apex:param>
+                           </apex:commandLink>
+                           
+                         </apex:facet>
+                              
+
+                       </apex:column>
+                       <apex:column value="{!a.certificateDetails.badge__c}">
+                         <apex:facet name="header">
+                             <apex:commandLink action="{!ViewData}" value="Certification Level{!IF(sortExpression=='certificate',IF(sortDirection='ASC','▼','▲'),'')}"  styleClass="hederSD" reRender="TablePanel" status="TableUpdateStatus">
+                                 <apex:param value="certificate" name="column" assignTo="{!sortExpression}" ></apex:param>
+                               </apex:commandLink>
+                           
+                         </apex:facet>
+                       </apex:column>
+                       <apex:column value="{!a.contactdetails.Title}">
+                          <apex:facet name="header">
+                           <apex:commandLink action="{!ViewData}" value="Title{!IF(sortExpression=='Title',IF(sortDirection='ASC','▼','▲'),'')}" styleClass="hederSD" reRender="TablePanel" status="TableUpdateStatus">
+                             <apex:param value="Title" name="column" assignTo="{!sortExpression}" ></apex:param>
+                           </apex:commandLink>
+                         </apex:facet>
+                       </apex:column>
+                         <apex:column >
+                         <apex:facet name="header">
+                             <apex:commandLink action="{!ViewData}" value="Email{!IF(sortExpression=='Email',IF(sortDirection='ASC','▼','▲'),'')}" styleClass="hederSD" reRender="TablePanel" status="TableUpdateStatus">
+                             <apex:param value="Email" name="Email" assignTo="{!sortExpression}" ></apex:param>
+                           </apex:commandLink>
+                         </apex:facet>
+                              
+                           {!a.contactdetails.Email}
+
+                       </apex:column>
+                       <apex:column value="{!a.contactdetails.FirstNameLocal}">
+                          <apex:facet name="header">
+                           <apex:commandLink action="{!ViewData}" value="First Name (Local){!IF(sortExpression=='FirstNameLocal',IF(sortDirection='ASC','▼','▲'),'')}" styleClass="hederSD" reRender="TablePanel" status="TableUpdateStatus">
+                             <apex:param value="FirstNameLocal" name="column" assignTo="{!sortExpression}" ></apex:param>
+                           </apex:commandLink>
+                         </apex:facet>
+                       </apex:column>
+                       <apex:column value="{!a.contactdetails.LastNameLocal}">
+                          <apex:facet name="header">
+                           <apex:commandLink action="{!ViewData}" value="Last Name (Local){!IF(sortExpression=='LastNameLocal',IF(sortDirection='ASC','▼','▲'),'')}" styleClass="hederSD" reRender="TablePanel" status="TableUpdateStatus">
+                             <apex:param value="LastNameLocal" name="column" assignTo="{!sortExpression}" ></apex:param>
+                           </apex:commandLink>
+                         </apex:facet>
+                       </apex:column>
+                  </apex:dataTable>
+           </apex:outputPanel>
+        <!--END contact results Block-->
+        <apex:outputPanel id="createLinkBlock" rendered="{!showCreate}">
+                <br/>
+                <div class="slds-box slds-box--x-small slds-theme--shade">
+                   Click &nbsp;<apex:commandLink id="createLink" action="{!showCreateContact}" value="here" reRender="TablePanel" status="TableUpdateStatus"></apex:commandLink> to create a New Contact.
+                </div>
+        </apex:outputPanel>  
+      </apex:pageBlock>
+  </apex:form>
+        </body>         
+    </html>
+</apex:page>

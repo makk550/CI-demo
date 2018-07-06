@@ -1,0 +1,202 @@
+<apex:page standardController="Lead" sidebar="false" showHeader="false"> 
+    <apex:stylesheet value="{!$Resource.digitalfootprint}"/>
+    <script type="text/javascript">
+        var footprintData = {!Lead.DigitalIntentRawData__c};
+    </script>
+    <div class="digitalfootprint">
+        <div class="digitalfootprint__left">
+            <canvas id="chart-barHorizontal"></canvas>
+        </div>
+        <div class="digitalfootprint__right">
+            <canvas id="chart-area"></canvas>
+            <div id="digitalfootprintOverview"></div>
+        </div>
+        <div class="digitalfootprint__middle" id="digitalfootprintOverview">
+            <!-- stats loaded here -->
+        </div>
+	</div>
+	<div>
+	</div>
+	<p>&nbsp;</p>
+	<div>
+    	<canvas id="chart-bar"></canvas>
+	</div>
+	<p>&nbsp;</p>
+	<div>
+	</div>
+    <!--<apex:includeScript value="{!$Resource.digitalfootprintjs}"/>-->
+    <script type="text/javascript">
+    var chartColors = [
+        'rgb(68, 54, 143)', //indigo
+        'rgb(0, 140, 255)', //blue
+        'rgb(102, 255, 255)', //cyan
+        'rgb(55, 248, 193)', //teal
+        'rgb(216, 254, 89)', //green
+        'rgb(149, 69, 216)', //violet
+        'rgb(247, 33, 117)', //pink
+        'rgb(56, 54, 77)', //slate
+        'rgb(214, 214, 220)' //gray
+    ],
+    occurrences = {},
+    chartDataLabels = [],
+    chartDataValues = [],
+    chartDataColors = [],
+    occurrenceCounter = 0,
+    tags = [],
+    footprintDrivers = footprintData.store.behavioral_intent.global['bu-drivers'],
+    footprintMostInterested = footprintDrivers.mostInterested,
+    footprintMostInterestedCount = footprintDrivers.mostInterestedCount,
+    footprintPointerIndex = footprintDrivers.pointerIndex,
+    footprintMostRecent = footprintDrivers.mostRecent;
+
+// pull tags from footprintData object
+for (var property in footprintDrivers) {
+    if (footprintDrivers.hasOwnProperty(property) && parseInt(property)) {
+        var currentTag = footprintDrivers[property]['.gbu-driver']
+        tags.push(currentTag);
+        // Keep count
+        occurrences[currentTag] = (occurrences[currentTag] || 0) + 1;
+    }
+}
+// sort based on counts
+var keysSorted = Object.keys(occurrences).sort(function (a, b) {
+    return occurrences[b] - occurrences[a];
+});
+var tagColorMapping = {};
+// separate data based on sort
+for (var i = 0; i <= keysSorted.length - 1; i++) {
+    chartDataLabels.push(keysSorted[i]);
+    chartDataValues.push(occurrences[keysSorted[i]]);
+    chartDataColors.push(chartColors[occurrenceCounter]);
+    tagColorMapping[keysSorted[i]] = chartColors[occurrenceCounter];
+    occurrenceCounter++;
+}
+console.log(tagColorMapping);
+
+var doughnutConfig = {
+    type: 'doughnut', // or pie
+    data: {
+        datasets: [{
+            data: chartDataValues,
+            backgroundColor: chartDataColors
+        }],
+        labels: chartDataLabels
+    },
+    options: {
+        responsive: true,
+        legend: {
+            position: 'left',
+            display: false
+        },
+        title: {
+            display: false,
+            text: 'Intent Overview'
+        },
+        animation: {
+            animateScale: true,
+            animateRotate: true
+        }
+        // , pieceLabel: {
+        //     render: 'label',
+        //     showZero: true,
+        //     fontSize: 12,
+        //     arc: false,
+        //     position: 'outside',
+        //     overlap: true,
+        //     showActualPercentages: true
+        // }
+    }
+};
+
+// var barConfig = {
+//     type: 'bar',
+//     data: {
+//         labels: chartDataLabels,
+//         datasets: [{
+//             "data": chartDataValues,
+//             "fill": false,
+//             "backgroundColor": chartDataColors
+//         }]
+//     },
+//     options: {
+//         responsive: true,
+//         legend: {
+//             position: 'left',
+//             display: false
+//         },
+//         scales: {"yAxes": [{"ticks": {"beginAtZero": true}}]},
+//         title: {
+//             display: false,
+//             text: 'Intent Overview'
+//         },
+//         animation: {
+//             animateScale: true,
+//             animateRotate: true
+//         }
+//     }
+// };
+
+var horizontalBarConfig = {
+    type: "horizontalBar",
+    data: {
+        "labels": chartDataLabels,
+        "datasets": [{
+            "label": "Impressions",
+            "data": chartDataValues,
+            "fill": false,
+            "backgroundColor": chartDataColors,
+            "borderWidth": 0
+        }]
+    },
+    options: {
+        animation: {
+            animateScale: true,
+            animateRotate: true
+        },
+        legend: {
+            display: false
+        },
+        scales: {"xAxes": [{"ticks": {"beginAtZero": true}}]}
+    },
+
+};
+
+window.onload = function () {
+    new Chart(
+        document.getElementById("chart-area").getContext("2d"),
+        doughnutConfig
+    );
+    // new Chart(
+    //     document.getElementById("chart-bar").getContext("2d"),
+    //     barConfig
+    // );
+    new Chart(
+        document.getElementById("chart-barHorizontal").getContext("2d"),
+        horizontalBarConfig
+    );
+
+    var overviewNode = document.getElementById('digitalfootprintOverview');
+    var mostInterestedElement = document.createElement("p");
+    mostInterestedElement.className = "digitalfootprint__overview";
+    mostInterestedElement.innerHTML = '<span>Most&nbsp;Interested:</span> <span class="label" style="background: ' + tagColorMapping[footprintMostInterested] + '">' + footprintMostInterested + '</span> (' + footprintMostInterestedCount + ')';
+    overviewNode.appendChild(mostInterestedElement);
+
+    // var mostInterestedElement = document.createElement("p");
+    // mostInterestedElement.className = "digitalfootprint__overview";
+    // mostInterestedElement.innerHTML = '<span>Most Interested Count:</span> ' + footprintMostInterestedCount;
+    // overviewNode.appendChild(mostInterestedElement);
+
+    var mostInterestedElement = document.createElement("p");
+    mostInterestedElement.className = "digitalfootprint__overview";
+    mostInterestedElement.innerHTML = '<span>Most Recent:</span> <span class="label" style="background: ' + tagColorMapping[footprintMostRecent] + '">' + footprintMostRecent + '</span>';
+    overviewNode.appendChild(mostInterestedElement);
+
+    // var mostInterestedElement = document.createElement("span");
+    // mostInterestedElement.className = "digitalfootprint__overview";
+    // mostInterestedElement.innerHTML = '<span class="label">Pointer Index:</span> ' + footprintPointerIndex;
+    // overviewNode.appendChild(mostInterestedElement);
+
+};
+    </script>
+	<apex:includeScript value="{!$Resource.chartbundlejs}"/>
+</apex:page>

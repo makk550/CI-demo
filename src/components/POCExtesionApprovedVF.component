@@ -1,0 +1,22 @@
+<apex:component controller="PocMaterialVFController" access="global">
+    <apex:attribute name="pocID" id="Id" type="Id" description="POC Id" assignTo="{!pocReqId}"/>
+
+<b>Materials :  </b><br /> 
+<table border='1'>
+<tr>
+    <td>CA SAP Product Code</td>
+    <td>Product Name</td>
+    <td>Quantity</td>
+</tr>
+    <apex:repeat value="{!tPocProductMaterials}" var="cts" >
+     <tr>        
+        <td><apex:outputText value="{!cts.Product_Material__r.SAP_Product_Mapping__c}" id="theValue"/></td>
+         <td><apex:outputText value="{!cts.Product_Material__r.Material_Text__c}" id="theprodName"/></td>
+        <td><apex:outputText value="{!cts.quantity__c}" id="theQty"/></td>        
+     </tr>
+       
+        
+
+    </apex:repeat>
+ </table>   
+</apex:component>

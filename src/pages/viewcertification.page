@@ -1,0 +1,55 @@
+<apex:page controller="viewCertificationController" action="{!getviewCertificationDetails}" title="View Certifications">
+    <apex:form >
+    <script type="text/javascript">
+          $(document).ready(function(){
+                $('#searchListNames').keyup(function(){
+                    searchTable($(this).val());
+                });
+            });
+         function searchTable(searchText)
+            {
+                /*get Table using its Id */
+                var table = $('table[id$=tblData]');
+                table.find('tr').each(function(index, row){
+                    var allCells = $(row).find('td');
+                    if(allCells.length > 0)
+                    {
+                        var found = false;
+                        allCells.each(function(index, td)
+                        {
+                            var regExp = new RegExp(searchText, 'gim');
+                            if(regExp.test($(td).text()))
+                            {
+                                found = true;
+                                return false;
+                            }
+                        });
+                        if(found == true)$(row).show();else $(row).hide();
+                    }
+                });
+            }   
+        </script>
+        <apex:pageMessages id="errors" />
+        <apex:pageBlock title="Certifications" rendered="{!isDetailsPresent}">            
+             <!---<div style="width:600px;margin:10px auto;">
+                        <table cellpadding="2" cellspacing="2" width="100%">
+                            <tr><td style="width:105px"><b>Filter By Any Text:</b></td>
+                                <td style="width:400px"><input type="text" id="searchListNames" /></td> 
+                            </tr>  
+                        </table>
+                    </div>  --->    
+            
+            <apex:pageblockTable value="{!cbrListView}" var="cbrView" columnsWidth="10%,10%,10%,10%,10%,5%,10%,10%" id="tblData">
+                <apex:column headerValue="Name" value="{!cbrView.Employee_Name__c}"/>
+                   <apex:column headerValue="Badge" value="{!cbrView.badge__c}"/>
+                 <apex:column headerValue="CA Product Name" value="{!cbrView.ca_product_name__c}"/>
+                <apex:column headerValue="Certified" value="{!cbrView.certified__c}"/>
+                <apex:column headerValue="Certification Status" value="{!cbrView.certified_status_text__c}"/>
+                <apex:column headerValue="Status Reason" value="{!cbrView.status_reason__c}"/>
+                <apex:column headerValue="Product Certification Effective Date" value="{!cbrView.valid_from__c}"/>
+                <apex:column headerValue="Product Certification End Date" value="{!cbrView.valid_to__c}"/>
+                <apex:column headerValue="FTK Certified" value="{!cbrView.FTK_Certified__c}"/>
+            </apex:pageblockTable>  
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

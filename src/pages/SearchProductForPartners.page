@@ -1,0 +1,134 @@
+<apex:page id="thePage" standardController="Contact" extensions="Ext_SearchProduct_partner"  tabStyle="Pricing__tab">
+   
+<apex:pagemessages rendered="{!showErrorMsg}"  ></apex:pagemessages>
+
+<apex:form id="theForm">
+  <DIV id="divSearchFilter" style="width:1200px">
+               <apex:pageBlock title="Find Products" id="searchFiletersBlock">        
+            <apex:panelGrid columns="6" id="theGrid" >
+                <apex:outputLabel value="{!$Label.Product_Name}" />
+                <apex:inputText value="{!selectedProductName}" />
+                
+                <apex:outputLabel value="{!$Label.Business_Unit}" />
+                <apex:selectList value="{!selectedBU}" size="1">
+                    <apex:selectOptions value="{!businessUnitList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock"
+                        action="{!ProductGroupsPick}"  />
+                 </apex:selectList>
+                
+                <apex:outputLabel value="{!$Label.Product_Group}" />
+                <apex:selectList value="{!selectedPG}" size="1">
+                    <apex:selectOptions value="{!productGroupList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock"
+                        action="{!getSKUList}"  />
+                </apex:selectList>
+                
+                <apex:outputLabel value="{!$Label.Currency}" />
+                <apex:selectList size="1" value="{!selectedCurrency}" >
+                    <apex:selectOptions value="{!currenciesList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock" />
+                        
+                </apex:selectList>
+                                                              
+                <apex:outputLabel value="{!$Label.Region}" />
+                <apex:selectList size="1" value="{!selectedRegion}">
+                    <apex:selectOptions value="{!regionList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock"
+                        action="{!getSKUList}"  />
+                </apex:selectList>
+                <apex:outputLabel value="{!$Label.Program}" />
+                <apex:selectList value="{!selectedProgram}" size="1">
+                    <apex:selectOptions value="{!programList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock"
+                        action="{!getSKUList}"  />
+                </apex:selectList>
+                <apex:outputLabel value="{!$Label.SKU}" ></apex:outputLabel>
+                <apex:inputText value="{!selectedSKU}" >       
+                </apex:inputText>
+                
+                <apex:outputLabel value="{!$Label.SKU_Type}" />
+                <apex:selectList size="1" value="{!selectedSKUType}">
+                    <apex:selectOptions value="{!skuTypeList}"></apex:selectOptions>
+                    <apex:actionSupport event="onchange" rerender="searchFiletersBlock"
+                        action="{!getSKUList}"  />
+                </apex:selectList>
+                
+                <apex:outputLabel value="{!$Label.Route_to_Market}" />
+                <apex:selectList size="1" value="{!selectedRTMType}">
+                    <apex:selectOptions value="{!RTMList}"></apex:selectOptions>
+                </apex:selectList>                                
+            </apex:panelGrid>
+            <center>            
+            <apex:commandButton value="Search"  disabled="{!showSearchbutton}"  action="{!calldoSearch1}"/>
+            <apex:commandButton value="Clear" action="{!doClear}" />
+            <apex:commandButton value="ExportToExcel" rendered="{!showExport}" action="{!ExportToExcel}" />
+              <apex:commandButton value="EmailExcel" rendered="{!showExport}" action="{!showEmailSection}" />
+            </center>
+        </apex:pageBlock>
+
+</DIV>
+        <apex:pageBlock title="Email Section" rendered="{!showEmail}" id="EmailSection">        
+            <apex:panelGrid columns="2"   id="theEmailGrid" width="10%">
+                <apex:outputLabel value="To"/>
+                <apex:inputText disabled="true" value="{!currentUserAccount.Email}" />
+                <apex:outputLabel value="CC"/>
+                <apex:inputText value="{!ccList}" />                
+                <apex:outputLabel value="Subject" />
+                <apex:inputTextarea value="{!subject}" rows="1" cols="120"/>
+                 <apex:outputLabel value="" />
+                                 <apex:outputLabel value="" />
+                <apex:outputLabel value="Body"/>
+                <apex:inputTextarea value="{!Body}" rows="15" cols="120"/>
+                <center>
+               <apex:commandButton value="Send Email" action="{!emailExcel}"  />
+               </center>
+            </apex:panelGrid>    
+         </apex:pageBlock>    
+         
+       <apex:pageBlock title="Search Results" rendered="{!showResultsBlock}"  >             
+        <div align='left'>
+             <apex:commandLink style="color:blue" value="<Previous Page" action="{!PreviousPage}"  rendered="{!showPrevious}" /> 
+             |
+             <apex:commandLink style="color:blue" value="Next Page>" action="{!NextPage}" rendered ="{!showNext}" />  
+             Total Number Of Rows : {!totRecordCount}
+
+          </div>
+          <apex:pageBlockTable border="true" value="{!searchResults}"  width="100%" var="priceBook" id="ProductSearchResults">                          
+                <apex:column width="20%" headerValue="CA Technologies Product Name"    value="{!priceBook.cProduct.name}"/>
+                <apex:column lang="zh_CN" headerValue="Product Family"       value="{!priceBook.cProduct.Family}" />
+                <apex:column headerValue="Platform"        value="{!priceBook.cProduct.Mainframe_or_Distributed__c}" />
+                <apex:column headerValue="Product Group"        value="{!priceBook.cProduct.Product_Group__c}" />
+                <apex:column headerValue="Sales Coverage Business Unit"  value="{!priceBook.cProduct.Market_Focus_Area__c}" />
+                <apex:column headerValue="Time/Capacity/NCV"             value="{!priceBook.cProduct.Time_Capacity_NCV__c}" />
+                <apex:column headerValue="Upfront Revenue Eligible" value="{!priceBook.cProduct.Upfront_Revenue_Eligible__c}" />               
+                <apex:column headerValue="SKU" value="{!priceBook.cProduct.SKU__c}" />               
+                <apex:column headerValue="SKU Type" value="{!priceBook.cProduct.SKU_Type__c}" />               
+                <apex:column headerValue="GEO" value="{!selectedRegion}" />               
+                <apex:column headerValue="Status" value="{!priceBook.cProduct.Status__c}" />               
+                <apex:column headerValue="Encrypted" value="{!priceBook.cProduct.Encrypted__c}" />               
+                <apex:column headerValue="Product Class" value="{!priceBook.cProduct.Product_Class__c}" />               
+                <apex:column headerValue="Disti Discount%" rendered="{!showifDM}" value="{!priceBook.cProduct.Disti_Discount__c}" />               
+                <apex:column headerValue="Version" value="{!priceBook.cProduct.Version__c}" />               
+                <apex:column headerValue="License Fee" value="{!priceBook.cProduct.License_fee__c}" />               
+                <apex:column headerValue="Maintenance %" value="{!priceBook.cProduct.maintenance__c}" />               
+                <apex:column headerValue="Royalty Product" value="{!priceBook.cProduct.Royalty_product__c}" />               
+                <apex:column headerValue="Royalty Description" value="{!priceBook.cProduct.Royalty_Description__c}" />               
+                <apex:column headerValue="Program" value="{!priceBook.cProduct.program__c}" />               
+                <apex:column headerValue="Route To Market" value="{!priceBook.cProduct.Partner_Approved__c}" />               
+                <apex:column headerValue="Disti Price"  rendered="{!showifDM}"  value="{!priceBook.cProduct.Dist_Price__c}" />               
+                <apex:column headerValue="CA Technologies Product Description" value="{!priceBook.cProduct.Description}" />               
+                <apex:column headerValue="TOPS Code" value="{!priceBook.cProduct.TOPS_Code__c}" />               
+                <apex:column headerValue="License Metric" value="{!priceBook.cProduct.License_metric__c}" />               
+                <apex:column headerValue="Media Language" value="{!priceBook.cProduct.Media_Language__c}" />               
+                <apex:column headerValue="Currency" value="{!selectedCurrency}" />               
+                <apex:column headerValue="List Price" value="{!priceBook.salesPrice}" />               
+                <apex:column headerValue="SAP ID" value="{!priceBook.cProduct.SAP_ID__c}" />               
+                <apex:column headerValue="Active" value="{!priceBook.cProduct.IsActive}" />               
+                <apex:column headerValue="Start Of Life Date" value="{!priceBook.cProduct.Start_of_Life_Date__c}" />               
+                <apex:column headerValue="End Of Life Date" value="{!priceBook.cProduct.End_Of_Life_Date__c}" />               
+                <apex:column headerValue="Price Book Authorized" value="{!priceBook.cProduct.Price_Book_Authorized__c}" />                                     
+            </apex:pageBlockTable>
+
+        </apex:pageBlock>       
+       </apex:form>
+</apex:page>

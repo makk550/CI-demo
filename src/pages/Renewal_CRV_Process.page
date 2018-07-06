@@ -1,0 +1,321 @@
+<apex:page standardController="Active_Contract__c" extensions="Renewal_CRVController" title="Contract Valuation Page"
+showHeader="false" sidebar="false" id="activecontract" action="{!onload}">
+ <script>
+ var refreshPage;
+      function selUnsel(ctrl){
+        var chks = document.getElementsByTagName('input'); 
+        for(var i = 0; i<chks.length ;i++){
+          if(chks[i].type == 'checkbox' && chks[i].id.indexOf('chkACP') > 0 ){
+            chks[i].checked = ctrl.checked;
+          } 
+        } 
+      } 
+      
+      function selUnselACL(ctrl){
+        var chks = document.getElementsByTagName('input'); 
+        for(var i = 0; i<chks.length ;i++){
+          if(chks[i].type == 'checkbox' && chks[i].id.indexOf('chkACL') > 0 ){
+            chks[i].checked = ctrl.checked;
+          } 
+        } 
+      }
+  </script>
+
+  
+ <style>.dateFormat{display :none}</style>  
+
+    <apex:sectionHeader title="Active Contract Finance Valuation"   subtitle="{!Active_Contract__c.Name}" />
+    
+    <apex:pageBlock id="detail" >
+    <apex:pageBlockButtons >
+    </apex:pageBlockButtons>
+    
+      <apex:pageBlockSection title="Account Information" id="pbS" >
+          <apex:outputField value="{!Active_Contract__c.Account__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Sold_To_ID__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Region__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Sold_To_Name__c}"/> 
+          <apex:outputField value="{!Active_Contract__c.Area__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Ship_To_ID__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Territory_Country__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Ship_To_Name__c}"/>   
+          <apex:outputtext value=""/>
+          <apex:outputField value="{!Active_Contract__c.Site_ID__c}"/>
+          <apex:outputtext value=""/>
+          <apex:outputField value="{!Active_Contract__c.Site_ID_New__c}"/>          
+      </apex:pageBlockSection>
+      
+      <apex:pageBlockSection title="Contract Information" id="pbS1">
+          <apex:outputField value="{!Active_Contract__c.Name}"/>
+          <apex:outputField value="{!Active_Contract__c.Contract_Signed_Date__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Sales_Document_Type_Text__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Agreement_Acceptance_Date__c}"/> 
+          <apex:outputField value="{!Active_Contract__c.Contract_Term_Months__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Contract_Start_Date__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Segmentation__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Contract_End_Date__c}"/>          
+          <apex:outputField value="{!Active_Contract__c.Valuation_Tier__c}"/>
+          <!-- <apex:outputField value="{!Active_Contract__c.Original_Valuation_Tier__c}"/> 
+          <apex:outputField value="{!Active_Contract__c.Valuation_Tier_Override__c}"/>-->  
+          <apex:outputField value="{!Active_Contract__c.Contract_Exp_FY__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Valuation_Tier_Override__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Contract_FY_QTR__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Original_Valuation_Tier__c}"/>
+          
+           <apex:outputField value="{!Active_Contract__c.OwnerId}"/>                     
+          <apex:outputField value="{!Active_Contract__c.Status_Formula__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Comments__c}"/> 
+          <apex:outputField value="{!Active_Contract__c.In_Progress__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Description__c}"/> 
+          
+          <apex:outputField value="{!Active_Contract__c.CRV_Process_completed__c}"/>
+           
+           <apex:outputField value="{!Active_Contract__c.Finance_Owner__c}"/>
+           <apex:outputField value="{!Active_Contract__c.Invalid__c}"/>
+           
+           <apex:outputText value=""/>
+                 
+      </apex:pageBlockSection>
+      
+       <apex:pageBlockSection title="Contract Values" id="pbconvalues">
+          <apex:outputField value="{!Active_Contract__c.Local_Currency__c}"/>
+          <apex:outputField value="{!Active_Contract__c.USD_Conversion_Rate__c}"/>
+          <apex:outputField value="{!Active_Contract__c.OCV__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Calculated_OCV_USD__c}"/> 
+          <apex:outputField value="{!Active_Contract__c.AOCV__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Calculated_AOCV_USD__c}"/>
+          <apex:outputField value="{!Active_Contract__c.ATTRF_CRV__c}"/>
+          <apex:outputField value="{!Active_Contract__c.ATTRF_USD__c}"/>          
+          <apex:outputField value="{!Active_Contract__c.Raw_Maint_Calc_LC__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Raw_Maint_USD__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Current_Ann_Existing_Maintenance_LC__c}"/> 
+           <apex:outputField value="{!Active_Contract__c.Calculated_Curr_Ann_Existing_Maint_USD__c}"/>
+         <!-- <apex:pageBlockSectionItem >
+                    {!$ObjectType.Active_Contract__c.fields.Financed_TRR_LC__c.label}
+                    <apex:outputField value="{!Active_Contract__c.Financed_TRR_LC__c}"/>
+          </apex:pageBlockSectionItem>-->
+         <!-- <apex:outputField value="{!Active_Contract__c.Calculated_Financed_TRR_USD__c}"/>-->
+          <apex:outputField value="{!Active_Contract__c.Revenue_Per_Day__c}"/> 
+           <apex:outputField value="{!Active_Contract__c.Calculated_Revenue_Per_Day_USD__c}"/> 
+           <apex:outputField value="{!Active_Contract__c.Total_TARR_LC__c}"/> <!--US388344 MERHA02-->
+           <apex:outputField value="{!Active_Contract__c.Total_TARR_USD__c}"/> <!--US388344 MERHA02-->
+         
+           <apex:outputField value="{!Active_Contract__c.Adjusted_ATTRF_LC__c}"/> 
+           <apex:outputField value="{!Active_Contract__c.Adjusted_ATTRF_USD__c}"/> 
+           
+         <apex:outputField value="{!Active_Contract__c.Financed_OCV__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Financed_OCV_USD__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Financed_TRR_LC__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Financed_TRR_USD__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Finance_ATTRF__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Financed_ATTRF_USD__c}"/>
+        
+        </apex:pageBlockSection>
+       
+        <apex:pageBlockSection title="Contract Header Details" id="conhdrinfo">
+          <apex:outputField value="{!Active_Contract__c.Paper_contract_description__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Special_Metric__c}"/>
+          <apex:outputField value="{!Active_Contract__c.CPQ__c}"/> 
+          <apex:outputField value="{!Active_Contract__c.SpecialMetrics__c}"/>
+           <apex:outputField value="{!Active_Contract__c.CML_Number__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Committed_Payment__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Externally_Financed__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Credit__c}"/>            
+           <apex:outputField value="{!Active_Contract__c.Upfront_Payment__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Credit_Amount__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Unlimited_Licenses__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Specific_Supplement_Fees_during_the_term__c}"/>
+          <apex:outputField value="{!Active_Contract__c.MSU__c}"/>
+           <apex:outputField value="{!Active_Contract__c.SLF_value_if_one_fee_includes_all_produc__c}"/> 
+           <apex:outputField value="{!Active_Contract__c.GSA_Pricing__c}"/>
+           <apex:outputField value="{!Active_Contract__c.Supplemental_Subscription_Fee_if_one_fee__c}"/>
+           <!-- <apex:outputField value="{!Active_Contract__c.Price_Book_Deal__c}"/> --> 
+           <apex:outputField value="{!Active_Contract__c.Phased_Usage__c}"/>
+          <apex:outputField value="{!Active_Contract__c.SUMF_value_if_one_fee_includes_all_produ__c}"/>
+          <apex:outputField value="{!Active_Contract__c.Important_Notes__c}"/>
+          <apex:outputField value="{!Active_Contract__c.GSA_BPA_No__c}"/>
+          <apex:outputField value="{!Active_Contract__c.GSA_Schedule_No__c}"/>
+          <apex:outputField value="{!Active_Contract__c.GSA_Special_Item_No__c}"/>
+                     
+      </apex:pageBlockSection>
+      
+              <script>
+                if(refreshPage != 0 && refreshPage != 1)
+                    refreshPage = 0;
+                else
+                {
+                    if(refreshPage == 1)
+                        {
+                            refreshPage =0;
+                            window.parent.location.href = window.parent.location.href + '&reDir=1';
+                        }
+                }    
+                
+               function fn()
+               {
+                   refreshPage =1;
+               }                               
+        </script>   
+     </apex:pageBlock> 
+ 
+  <apex:relatedList list="NotesandAttachments" /> 
+    
+   <apex:form id="frm" >
+ 
+  
+   <apex:pageBlock title="Active Contract Line Items" helpUrl="{!$Label.HelpForFinanceValuation}" helpTitle="Help" id="pbLineItems" >
+    
+    <apex:pageBlockButtons location="top" >
+    
+    <apex:actionStatus id="SaveACL">
+    <apex:facet name="stop">
+        <apex:commandButton value="Save Line Items" onClick="fn()" action="{!saveACL}" status="SaveACL" reRender="detail,block2"/>
+        </apex:facet>
+    <apex:facet name="start">
+       <apex:commandButton value="Processing....." disabled="true" action="{!saveACL}" status="SaveACL"/>      
+       </apex:facet> 
+       </apex:actionStatus>      
+           <apex:actionStatus id="SaveACL2">
+            <apex:facet name="stop">
+            <apex:commandButton action="{!editHeaderValuation}" value="Edit Header Valuation" id="headervaluation"/>
+  </apex:facet>
+    <apex:facet name="start">
+       <apex:commandButton value="Processing....." disabled="true" action="{!saveACL}" status="SaveACL"/>      
+       </apex:facet> 
+       </apex:actionStatus> 
+       <apex:commandButton action="/{!active_contract__c.id}/e?retURL=/apex/Renewal_CRV_Process?id={!active_contract__c.id}" value="Edit Contract Details" id="editcontract"/>
+  </apex:pageBlockButtons>
+<div style="margin: 0pt; padding: 0pt; width:75%; " >
+<apex:pageBlockSection columns="5" >                 
+<apex:actionRegion >
+                             <apex:outputText value=" Display Records per page: "></apex:outputText>
+                             <apex:selectList value="{!pages}" size="1">
+                                 <apex:selectOptions value="{!Pageno}"/>
+                                 <apex:actionSupport event="onchange" rerender="pbLineItems" status="procesingstatus" />
+                             </apex:selectList>&nbsp;&nbsp;
+                             <apex:actionStatus id="procesingstatus" startstyle="color:#15428B;" >
+                                 <apex:facet name="start"><apex:outputlabel >Please wait...</apex:outputlabel><apex:image url="{!URLFOR($Resource.process)}"/>
+                                 </apex:facet>
+                             </apex:actionStatus>
+                             <apex:outputPanel id="test">
+                                     <div align="left"> 
+                                          Page #:&nbsp;<apex:outputLabel id="pg" value="{!acpage}"/>&nbsp;out of&nbsp;<apex:outputLabel value="{!TotalPagesDisp}"/>&nbsp;&nbsp;&nbsp;&nbsp;<font size="1pt"></font>
+                                     </div>
+                             </apex:outputPanel>
+                     </apex:actionRegion> 
+                      <apex:outputText value=""></apex:outputText>
+                      <apex:outputText value=""></apex:outputText>
+   
+             <apex:actionStatus id="mySaveStatus1">
+                     
+                       <apex:facet name="stop">
+                        <apex:commandButton action="{!previous}" status="mySaveStatus1" value="Previous Page" rendered="{!ACLHasPrevious}"  disabled="false"  rerender="pbLineItems" />
+                        </apex:facet>
+                        <apex:facet name="start">
+                        <apex:commandButton action="{!previous}" status="mySaveStatus1" rendered="{!ACLHasPrevious}" value="Processing..." disabled="true"/> </apex:facet>
+                       
+                       </apex:actionStatus>
+                     
+                     
+                       <apex:actionStatus id="mySaveStatus2">
+                      
+                       <apex:facet name="stop">
+                      
+                        <apex:commandButton action="{!next}" status="mySaveStatus2" value="Next Page" rendered="{!ACLHasNext}"  disabled="false"  rerender="pbLineItems" />
+                        
+                        </apex:facet>
+                      
+                      
+                        <apex:facet name="start">
+                       
+                        <apex:commandButton action="{!next}" status="mySaveStatus2" rendered="{!ACLHasNext}" value="Processing..." disabled="true"/> </apex:facet>
+                      
+                      </apex:actionStatus>
+     
+    </apex:pageBlockSection>
+    </div>
+
+
+   <div style="margin: 0pt; padding: 0pt; width:100%; height:450px" id="divACl" >
+   <apex:pageBlockSection columns="1" id="block2" >
+   
+                   <apex:outputpanel style="color:red;font-weight:bold;margin-left:15%">{!errMesg}</apex:outputpanel>
+
+                    <apex:pageblockTable value="{!lstACL}" var="renACL" rows="{!pages}" id="tblACL">
+                  
+                                        <apex:column headervalue="Item">
+                                        <apex:outputfield Value="{!renACL.acl.Sales_Document_Item__c}"/>
+                                        </apex:column>   
+                                        <apex:column HeaderValue="Material Text">
+                                               <apex:outputLink value="/{!renACL.acl.Id}"  target="_blank" id="Aclid">{!renACL.acl.Name}           
+                                               </apex:outputLink>
+                                        </apex:column> 
+                                        <!--Change for abbreviated field names and Hover Text -Vaich01-->
+                                        <apex:column Value="{!renACL.acl.Material__c}"/>
+                                        <apex:column >
+                                        <Apex:facet name="header"><a Title="Annual Raw Maintenance (LC)">Raw Maint (LC)</a></Apex:facet>
+                                          <apex:inputField value="{!renACL.acl.Raw_Maintenance_LC__c}" id="colRawMaint"/>
+                                        </apex:column> 
+                                        
+                                        <apex:column >
+                                        <Apex:facet name="header"><a Title="Annual Contracted Renewal (LC)">Contr Ren (LC)</a></Apex:facet>
+                                          <apex:inputField value="{!renACL.acl.Contracted_Renewal_Amount__c}"/>
+                                        </apex:column>      
+                                        <apex:column headerValue="{!$ObjectType.Active_Contract_Line_Item__c.fields.Renewal_Valuation_Type__c.label}">
+                                          <apex:inputField value="{!renACL.acl.Renewal_Valuation_Type__c}"/>
+                                        </apex:column> 
+                                        <apex:column >
+                                          <Apex:facet name="header"><a Title="% Increase">% Inc &nbsp;  </a> </Apex:facet>
+                                          <apex:inputField value="{!renACL.acl.Increase_formula__c}"/>
+                                        </apex:column>
+                                        <apex:column >
+                                        <Apex:facet name="header"><a Title="Contractual Cap %">Cap %</a></Apex:facet>
+                                          <apex:inputField value="{!renACL.acl.Contractual_Cap_Percentage__c}"/>
+                                        </apex:column>
+                                        <apex:column Value="{!renACL.acl.Current_Annu_Existing_Maintenance__c}">
+                                         <Apex:facet name="header"><a Title="Current Annual Maintenance (LC)">CAM (LC)</a></Apex:facet>
+                                        </apex:column>    
+                                        <apex:column >
+                                        <Apex:facet name="header"><a Title="ATTRF (LC)">ATTRF (LC)</a> </Apex:facet>
+                                         <apex:outputfield Value="{!renACL.acl.Orig_ATTRF_LC__c}"/>
+                                        </apex:column>
+                                        <apex:column >
+                                        <Apex:facet name="header"><a Title="Transaction Run Rate (LC)">TRR (LC)</a></Apex:facet>     
+                                          <apex:inputField value="{!renACL.acl.AOCV__c}"/>
+                                        </apex:column>  
+                                        <apex:column >
+                                        <Apex:facet name="header"><a Title="Original Contract Value (LC)">OCV (LC)</a></Apex:facet>
+                                           <apex:inputField value="{!renACL.acl.OCV__c}"/>
+                                        </apex:column>
+                                        <apex:column headerValue="{!$ObjectType.Active_Contract_Line_Item__c.fields.Installation_Date__c.label}" >
+                                          <apex:inputField id="effDate" value="{!renACL.acl.Installation_Date__c}" />
+                                        </apex:column>
+                                        <apex:column headerValue="{!$ObjectType.Active_Contract_Line_Item__c.fields.Dismantling_Date__c.label}">
+                                          <apex:inputField value="{!renACL.acl.Dismantling_Date__c}"/>
+                                        </apex:column>
+                                        <apex:column headerValue="{!$ObjectType.Active_Contract_Line_Item__c.fields.Business_Transaction_Type_for_FT_text__c.label}">
+                                          <apex:inputField value="{!renACL.acl.Business_Transaction_Type_for_FT_text__c}"/>
+                                        </apex:column>     
+                                        <apex:column headerValue="{!$ObjectType.Active_Contract_Line_Item__c.fields.Description__c.label}">
+                                           <apex:inputField value="{!renACL.acl.Description__c}"/>
+                                        </apex:column>
+                                        <apex:column >
+                                        <Apex:facet name="header"><a Title="Adjusted ATTRF (LC)">Adj ATTRF (LC)</a></Apex:facet>
+                                          <apex:inputField value="{!renACL.acl.Adjusted_ATTRF_LC__c}"/>
+                                        </apex:column> 
+                       <!--US388344--> <apex:column >
+                                        <!-- Begin US486140 TARR to ACV LEEA04 -->
+                                        <Apex:facet name="header"><a Title="Material ACV (LC)">Material ACV (LC)</a></Apex:facet>
+                                        <!-- End US486140 TARR to ACV LEEAN04 
+                                        <Apex:facet name="header"><a Title="Material TARR (LC)">Material TARR (LC)</a></Apex:facet>
+                                        --> 
+                                          <apex:inputField value="{!renACL.acl.Material_TARR_LC__c}"/>
+                       <!--MERHA02-->   </apex:column>
+                                    
+                                        
+                     </apex:pageblockTable>     
+      </apex:pageBlockSection>
+    </div>    
+  </apex:pageBlock>
+ </apex:form>
+</apex:page>

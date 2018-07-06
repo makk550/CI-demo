@@ -1,0 +1,70 @@
+<apex:page standardController="Renewal__c" extensions="Renewal_CurrencyConversion" showHeader="false" sidebar="false">
+  <apex:form >
+  <apex:pageBlock >
+  <apex:pageMessages />
+  <apex:pageBlockButtons >
+          <apex:commandButton value="Save" action="{!Conversion}"/>
+      </apex:pageBlockButtons>
+      <apex:pageBlockSection title="Enter Amount:">
+       <!-- <apex:pageBlockSectionItem >
+          <apex:outputLabel value="ATTRF (USD)" for="ATTRF"/>
+          <apex:inputText value="{!ATTRFUSD}" id="ATTRF" />
+        </apex:pageBlockSectionItem>  
+       
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="Raw Maint. Calc (USD)" for="ATTRF"/>
+          <apex:inputText value="{!RawMaintUSD}" id="ATTRF" />
+        </apex:pageBlockSectionItem> 
+         <apex:pageBlockSectionItem >
+          <apex:outputLabel value="OCV (USD)" for="ATTRF"/>
+          <apex:inputText value="{!OCVUSD}" id="ATTRF" />
+        </apex:pageBlockSectionItem>  
+        
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="AOCV (USD)" for="ATTRF"/>
+          <apex:inputText value="{!AOCVUSD}" id="ATTRF" />
+        </apex:pageBlockSectionItem> -->
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="Proj. Renewal (USD)" for="projRenewal"/>
+          <apex:inputText value="{!projRenewalUSD}" id="projRenewal" />
+        </apex:pageBlockSectionItem>  
+     </apex:pageBlockSection>
+  </apex:pageBlock>
+  </apex:form>
+  <!--
+  {!REQUIRESCRIPT("/soap/ajax/19.0/connection.js")} 
+{!REQUIRESCRIPT("/soap/ajax/19.0/apex.js")} 
+
+var name=prompt("Please enter Projected Renewal","");
+var newRecords = []; 
+if (name!=null && name!="")
+{
+               // alert(name);
+                // alert({!Renewal__c.Renewal_Currency_Conversion_Rate__c});
+                sforce.connection.sessionId = '{!$Api.Session_ID}'; 
+                       
+                 if({!Renewal__c.Renewal_Currency_Conversion_Rate__c} != 0){ 
+                           // alert(name * {!Renewal__c.Renewal_Currency_Conversion_Rate__c});
+
+var c = new sforce.SObject("Renewal__c");
+c.id ="{!Renewal__c.Id}";
+c.Projected_Renewal__c = name * {!Renewal__c.Renewal_Currency_Conversion_Rate__c};
+newRecords.push(c);
+
+               } 
+  var resultUpdate = sforce.connection.update(newRecords);
+              if (resultUpdate [0].getBoolean("success")) { 
+                        alert("Projected Renewal has been updated"); 
+               } else { 
+                         alert("Failed to update Projected Renewal " +resultUpdate [0]); 
+               }            
+            
+
+window.location.reload();
+
+
+         
+
+}
+  -->
+</apex:page>

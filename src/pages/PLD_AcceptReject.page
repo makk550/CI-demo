@@ -1,0 +1,108 @@
+<apex:page controller="PLD_AcptRjtController">
+<script>
+function setVar(){
+    jQuery('[id$=myHiddenField]').val('holla');
+    console.log('haa haa');
+    console.log( document.getElementById(myHiddenField));
+    passStringToController();
+}
+</script>
+    <apex:form >
+<apex:pageBlock >
+    <!-- Hidden field to store a new value of the variable -->
+<apex:inputHidden value="{!myString}" id="myHiddenField"/>
+
+<!-- Action function for the rerendering -->
+<apex:actionFunction name="passStringToController" action="{!myMethod}" rerender="myHiddenField"/>
+
+<!-- A command button for sending a call to the function -->
+<apex:commandButton value="Test me" onclick="setVar(); return false;" />
+
+    </apex:pageBlock>
+        </apex:form>
+</apex:page>
+<!--
+<apex:page standardController="lead" extensions="PLD_AcceptRejectCntrllr">
+    <apex:form >
+    <apex:pageMessages ></apex:pageMessages>
+        <apex:commandButton value="Show Pop up" action="{!showPopup}" rerender="tstpopup"/>
+        <apex:pageBlock >
+            This is just filler text from the Salesforce General. 
+        </apex:pageBlock>
+ 
+        <apex:outputPanel id="tstpopup">
+        
+        <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+            <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">
+                This is where I would put whatever information I needed to show to my end user.
+                <apex:pageBlock id="xxxpb1">
+                
+                <apex:pageBlockSection >
+                <apex:pageblocksectionitem >
+                 <apex:outputLabel value="Type of Change" for="xxxif1"  style="font-weight:bold"/> 
+                 <apex:actionRegion >              
+                 <apex:inputField id="xxxif1" value="{!lead.AcceptReject__c}"  required="true">
+                 <apex:actionSupport event="onchange" rerender="xxxpb1" />
+                 </apex:inputField>
+                </apex:actionRegion>
+                </apex:pageblocksectionitem>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection id="xxxpbs1" rendered="true" >
+
+              <apex:inputField id="xxxif2" value="{!lead.Rejection_Reason__c }" rendered="{!IF(lead.AcceptReject__c='Reject',true,false)}" required="true"/>
+
+            </apex:pageBlockSection>
+                </apex:pageBlock>
+                <br/><br/><br/>
+                
+                <apex:commandbutton action="{!save}" id="button" oncomplete="javascript:CloseAndRefresh()" value="Save" />
+                 <apex:commandbutton action="{!save}" id="button1"  value="close" />
+             
+            </apex:outputPanel>
+        </apex:outputPanel>
+ 
+    </apex:form>
+    
+      <script type="text/javascript">
+        function CloseAndRefresh(){
+       // var =document.getElementById("xxxif1");
+        
+            window.location.reload();
+
+        }    
+
+    </script>
+    
+    <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 500px;
+            margin-left: -250px;
+            top:100px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+
+    </style>
+</apex:page>
+-->

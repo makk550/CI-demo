@@ -1,0 +1,97 @@
+<apex:page standardController="Executive_Profile__c" extensions="ExecProfControllerExtension">
+<style>
+.headerClass {
+            background: white url('/img/alohaSkin/grid_headerbg.gif') 0 bottom repeat-x;
+            background-image: url(/img/alohaSkin/grid_headerbg.gif);
+            background-repeat-x: repeat;
+            background-repeat-y: no-repeat;
+            background-attachment: initial;
+            background-position-x: 0px;
+            background-position-y: 100%;
+            background-origin: initial;
+            background-clip: initial;
+            background-color: #cfeef8;
+            border: 1px solid black;
+            border-width: 0 0 1px 1px;
+            border-top-width: 0px;
+            border-right-width: 0px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            color: black;
+            font-size: .9em;
+            font-weight: bold;
+            padding: 5px 2px 4px 5px;
+            padding-top: 5px;
+            padding-right: 2px;
+            padding-bottom: 4px;
+            padding-left: 5px;
+            text-align:left;
+            vertical-align:bottom;
+           }
+           
+       .trBG
+           {
+                    background-color:white;
+                  
+            }
+                
+          .trBG:hover
+            {
+                    background-color:#cfeef8;
+                  //  border: solid black 1px;
+            }
+         .requiredField
+         {
+            background-color: #C00;
+            width: 3px;
+            bottom: 1px;
+         }        
+</style>
+<apex:sectionHeader title="Executive Profile" subtitle="{!Executive_Profile__c.Name}"/>
+<apex:form >
+  <apex:pageBlock title="Executive Profile Edit" mode="edit">
+      <apex:pageMessages />
+      <apex:pageBlockButtons >
+          <apex:commandButton action="{!save}" value="Save"/>
+          <!--<apex:commandButton action="{!cancel}" value="Cancel"/>-->
+          <input type="button" class="btn" onclick="if ((Modal.confirm && Modal.confirm('Pressing Cancel will not save any updates to Executive Profile, press OK to Continue')) || (!Modal.confirm && window.confirm('Pressing Cancel will not save any updates to Executive Profile, press OK to Continue'))) navigateToUrl('{!IF(ISBLANK(Executive_Profile__c.Id),URLFOR($Action.Contact.View, Executive_Profile__c.Customer__c),URLFOR($Action.Executive_Profile__c.View, Executive_Profile__c.Id))}','DETAIL','cancel');" value="Cancel"/>
+      </apex:pageBlockButtons>
+      <apex:pageBlockSection title="Meeting Details" columns="2">
+          <apex:inputField value="{!Executive_Profile__c.Account_Name__c}" rendered="false"/>
+          <apex:inputField value="{!Executive_Profile__c.Account_Owner_1__c}" rendered="false"/>
+          <apex:inputField value="{!Executive_Profile__c.Account_Segment__c}" rendered="false"/>
+          <apex:inputField value="{!Executive_Profile__c.Account_Area__c}" rendered="false"/>
+          <apex:inputField value="{!Executive_Profile__c.Customer__c}" rendered="false"/>
+          
+          <apex:outputField value="{!Executive_Profile__c.Customer__c}"/> 
+          <apex:inputField value="{!Executive_Profile__c.Meeting_Type__c}" required="true"/>
+          <apex:inputField value="{!Executive_Profile__c.Meeting_Status__c}"/>
+          <apex:inputField value="{!Executive_Profile__c.Event_Name__c}"/>
+          <apex:inputField value="{!Executive_Profile__c.Meeting_Date__c}"/>
+          <apex:inputField value="{!Executive_Profile__c.CA_Executive_Name__c}"/>
+          <apex:inputField value="{!Executive_Profile__c.Location__c}"/>
+      </apex:pageBlockSection>
+
+      <apex:pageBlockSection title="Account Details" columns="2">
+          <apex:inputField value="{!Executive_Profile__c.CA_Spend_Current__c}"/>
+          <apex:inputField value="{!Executive_Profile__c.CA_Spend_History__c}"/>
+          <apex:inputField value="{!Executive_Profile__c.CA_Products_Not_In_Use__c}" style="width: 360px;"/>
+          <apex:pageBlockSectionItem >   
+          <input type="button" class="btn" value="View CILL" onclick="window.open('/apex/CILL?id={!myAccountId}','_blank','width=800,height=600,location=no,dependent=no,resizable=yes,toolbar=no,status=no,directories=no,menubar=no,scrollbars=yes')"/>
+          </apex:pageBlockSectionItem>
+      </apex:pageBlockSection> 
+      
+      <apex:pageBlockSection title="Relationship and Purpose of Meeting" columns="2">
+          <apex:inputField value="{!Executive_Profile__c.CA_Executive_Relationships__c}" required="true" style="width: 360px;"/>
+          <apex:inputField value="{!Executive_Profile__c.Invitation_Reason__c}" style="width: 360px;"/>
+          <apex:inputField value="{!Executive_Profile__c.Meeting_Reason__c}" style="width: 360px;"/>
+          <apex:inputField value="{!Executive_Profile__c.Briefing_Reason__c}" style="width: 360px;"/>
+      </apex:pageBlockSection>
+
+      <apex:pageBlockSection title="Follow Up" columns="1">
+          <apex:inputField value="{!Executive_Profile__c.Action_Items__c}" style="width: 360px;"/>
+      </apex:pageBlockSection>
+            
+   </apex:pageBlock>
+  </apex:form>    
+</apex:page>

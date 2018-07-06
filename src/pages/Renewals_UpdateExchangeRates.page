@@ -1,0 +1,18 @@
+<apex:page controller="Renewals_UpdateExchangeRatesController" showHeader="false" sidebar="false">
+ <apex:form >
+  <apex:pageBlock title="Update Exchange Rates">
+   <apex:pageBlockButtons >
+    <apex:commandButton action="{!updateExchange}" value="Update" status="status" oncomplete="javascript:window.close();"/>
+    <apex:commandButton value="Cancel" onclick="javascript:window.close();"/>
+   </apex:pageBlockButtons>
+   <apex:pageBlockSection columns="1" title="Select parameters">
+     <apex:inputField value="{!renCurrFiscalYear.Fiscal_Year__c}"/>
+     <apex:pageBlockSectionItem >
+      <apex:outputLabel value="Date"></apex:outputLabel>
+      <apex:inputField value="{!renDateField.Expected_Close_Date__c}"/>
+     </apex:pageBlockSectionItem> 
+   </apex:pageBlockSection>
+   <apex:actionStatus startText="Wait....." id="status"></apex:actionStatus>
+  </apex:pageBlock>
+ </apex:form>
+</apex:page>

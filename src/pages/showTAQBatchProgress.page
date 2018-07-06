@@ -1,0 +1,60 @@
+<apex:page extensions="apexJobStatus" id="showNoticeMessage" standardController="TAQ_Organization__c" action="{!RedirectPage}">
+       
+<script type="text/javascript">
+    setInterval('window.location.reload()', 10000);
+</script>
+   <!-- Here is the css styles that will be used for the progress bars -->
+    <style>
+        .progressBar{
+            background-color: #f8f8f8;
+            border:1px solid #DDDDDD;
+            height: 19px;
+            width: 300px;
+            -moz-border-radius: 5px; 
+            -webkit-border-radius: 5px;
+        }
+        .progress{
+            background-color: #F7B64B;
+            border:1px solid #E78F08;
+            height: 100%;
+            margin: -1px;
+            text-align: center;
+            -moz-border-radius: 5px; 
+            -webkit-border-radius: 5px;
+            line-height: 18px;
+        }
+    </style>
+    
+<div>
+<br />
+<br />
+<b>Approval of {!TaqOrgName} is in process. You can access the record once the Approval is complete.</b>
+</div>
+<br />
+<br />
+<apex:form >
+<apex:pageBlock >
+
+        <apex:pageBlockTable value="{!batchJobs}" var="b" id="jobs">            
+            <apex:column value="{!b.CreatedDate}"/>
+            <apex:column value="{!b.CreatedById}"/>
+            <apex:column value="{!b.Status}"/>
+            <apex:column value="{!b.NumberOfErrors}"/>
+            <apex:column value="{!b.TotalJobItems}"/>
+            <apex:column value="{!b.JobItemsProcessed}"/>
+            <apex:column width="320px" >
+ 
+               <div class="progressBar">
+                    <div class="progress" style="width:  {! If(batchJobs[0].TotalJobItems == 0 ,0,FLOOR((batchJobs[0].JobItemsProcessed/ batchJobs[0].TotalJobItems) * 100.0))}%;">
+{! If(batchJobs[0].TotalJobItems == 0 ,0,FLOOR((batchJobs[0].JobItemsProcessed/ batchJobs[0].TotalJobItems) * 100.0))}%
+                    </div>
+                </div>
+ 
+            </apex:column>
+            <apex:column value="{!b.ExtendedStatus}"/>
+        </apex:pageBlockTable>
+        <apex:commandButton action="{!BackToTAQOrg}" rendered="{!NumberOfErrors > 0}"  value="Return To TAQ ORG." id="theButton"/>
+    </apex:pageBlock>
+  </apex:form>      
+
+</apex:page>

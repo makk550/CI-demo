@@ -1,0 +1,9 @@
+<apex:page standardController="Co_Term__c"  showHeader="false" sidebar="false" standardStylesheets="false"  >
+<script>
+
+alert("Please modify Co terms from Quote line item entries");
+//document.location.href='/{!Co_Term__c.Quote__c}';
+window.open('/{!Co_Term__c.Quote__c}','_self', false);
+</script>
+
+</apex:page>

@@ -1,0 +1,242 @@
+<apex:page controller="Quote_TechnicalContactSearchController" showHeader="false"  sidebar="false" applyHtmlTag="false" applyBodyTag="false" action="{!doDataload}">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <head>
+        <apex:slds />
+        <style>
+            .hederSD{
+            	font-weight:bold;  
+            	color: #0070d2;
+              }
+        </style>
+        <script>
+
+             winMain=window.opener;       
+             function fillIn(id,firstname,lastname,partnerfunction,email,telephone,firstnameLocal,lastnameLocal){       
+                    if (null==winMain)       
+                    {          
+                        winMain=window.parent.opener; 
+                            
+                    }    
+                     var fullname =firstname +' '+ lastname;
+                     var ele=winMain.document.getElementById('{!$CurrentPage.parameters.idf}');
+                     ele.value=id;
+                     var hiddenEle = '{!$CurrentPage.parameters.idf}' + 'Hidden';
+                     ele=winMain.document.getElementById(hiddenEle);
+                     ele.value=id;
+                 	 ele=winMain.document.getElementById('{!$CurrentPage.parameters.fullname}');
+                     ele.value=fullname;
+                     hiddenEle = '{!$CurrentPage.parameters.fullname}' + 'Hidden';
+                     ele=winMain.document.getElementById(hiddenEle);
+                     ele.value=fullname;
+                    ele=winMain.document.getElementById('{!$CurrentPage.parameters.firstname}');
+                     ele.value=firstname;
+                 	ele=winMain.document.getElementById('{!$CurrentPage.parameters.lastname}');
+                     ele.value=lastname;
+                  ele=winMain.document.getElementById('{!$CurrentPage.parameters.flocal}');
+                     ele.value=firstnameLocal;
+                 	ele=winMain.document.getElementById('{!$CurrentPage.parameters.llocal}');
+                     ele.value=lastnameLocal;
+                   ele=winMain.document.getElementById('{!$CurrentPage.parameters.email}');
+                     ele.value=email;
+                     hiddenEle = '{!$CurrentPage.parameters.email}' + 'Hidden';
+                     ele=winMain.document.getElementById(hiddenEle);
+                     ele.value=email;
+                 	ele=winMain.document.getElementById('{!$CurrentPage.parameters.phone}');
+                     ele.value=telephone;
+                     hiddenEle = '{!$CurrentPage.parameters.phone}' + 'Hidden';
+                     ele=winMain.document.getElementById(hiddenEle);
+                     ele.value=telephone;
+            
+                    CloseWindow();    
+            
+                }      
+                function CloseWindow()    { 
+            
+                    winMain=window.opener;       
+                    if (null==winMain)       
+                    {          
+                        winMain=window.parent.opener;       
+                    }       
+                winMain.closeLookupPopup();  
+                 
+                }
+         	 function validateContact()
+                {
+                   if(document.getElementById('j_id0:theForm:TablePanel:FirstName').value.length <= 0)
+                    {
+                        alert("Please enter the First Name");
+                        return false;
+                    }
+                    else if(document.getElementById('j_id0:theForm:TablePanel:LastName').value.length <= 0)
+                    {
+                        alert("Please enter the Last Name");
+                        return false;
+                    }
+                    else
+                        return false;
+                }
+
+        </script>
+    </head>
+    <body class="slds-scope">
+        <apex:actionStatus id="TableUpdateStatus">
+                    <!-- loading message -->
+                    <apex:facet name="start">
+                       <apex:outputPanel >
+                            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                                &nbsp;
+                            </div>
+                            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                                <div style="display: inline-block; padding: 2px; width: 125px;">
+                                    <img src="{!URLFOR($Asset.SLDS, '/assets/images/spinners/slds_spinner_brand.gif')}" style="float: left; margin: 8px;" />
+                                    <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                                </div>
+                            </div>
+                       </apex:outputPanel>
+                    </apex:facet>
+              <apex:facet name="stop"> </apex:facet>
+          </apex:actionStatus>
+     <apex:form id="theForm" styleClass="hasMotif lookupTab  LookupSearchFrame">
+       <apex:pageMessages ></apex:pageMessages>
+      <apex:pageBlock id="TablePanel">
+          <div class="slds-page-header">
+          <div class="slds-grid">
+            <div class="slds-col slds-has-flexi-truncate">
+              <div class="slds-media slds-no-space slds-grow">
+                <div class="slds-media__figure">
+                  <svg class="slds-icon slds-icon-standard-account" aria-hidden="true">
+                    <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#search')}"></use>
+                  </svg>
+                </div>
+                <div class="slds-media__body">
+                  <p class="slds-text-title--caps slds-line-height--reset">Technical Contact Search</p>
+                  <h1 class="slds-page-header__title slds-m-right--small slds-align-middle slds-truncate" title="this should match the Record Title">Contact</h1>
+                </div>
+              </div>
+            </div>
+             <!--Search Header-->
+       
+            </div>
+          </div>
+          <apex:outputPanel rendered="{!showContactList}" >
+    		<apex:dataTable value="{!ContactList}" var="a" cellspacing="2" headerClass="headerRow"  width="100%" styleClass="slds-table slds-table--bordered slds-table--cell-buffer">
+                <apex:column >
+                    <apex:facet name="header">
+                        <div class="hederSD">
+                            CUSTOMER ID
+                        </div>
+                    </apex:facet>
+                    <apex:outputLink value="#" onclick="fillIn('{!a.CONTACT_ID}','{!JSENCODE(a.FIRST_NAME)}','{!JSENCODE(a.LAST_NAME)}','{!JSENCODE(a.PARTNER_FUNCTION_DESCRIPTION)}','{!JSENCODE(a.EMAIL_ID)}','{!JSENCODE(a.TELEPHONE)}','{!JSENCODE(a.FIRST_NAME_INTL)}','{!JSENCODE(a.LAST_NAME_INTL)}')">{!a.CONTACT_ID}</apex:outputLink>
+                </apex:column>
+                <apex:column value="{!a.FIRST_NAME}">
+                    <apex:facet name="header">
+                        <div class="hederSD">FIRST NAME</div>
+                        
+                    </apex:facet> 
+                </apex:column>
+                <apex:column value="{!a.LAST_NAME}">
+                    <apex:facet name="header">
+                        <div class="hederSD">LAST NAME</div>
+                        
+                    </apex:facet>
+                </apex:column>
+                <apex:column value="{!a.PARTNER_FUNCTION_DESCRIPTION}">
+                    <apex:facet name="header">
+                        <div class="hederSD">PARTNER FUNCTION</div>
+                        
+                    </apex:facet>
+                </apex:column>
+                <apex:column value="{!a.EMAIL_ID}">
+                    <apex:facet name="header">
+                        <div class="hederSD">EMAIL ID</div>
+                        
+                    </apex:facet>
+                </apex:column>
+                <apex:column value="{!a.TELEPHONE}">
+                    <apex:facet name="header">
+                        <div class="hederSD">TELEPHONE</div>
+                        
+                    </apex:facet>
+                </apex:column>
+                <apex:column value="{!a.FIRST_NAME_INTL}">
+                    <apex:facet name="header">
+                        <div class="hederSD">FIRST NAME (LOCAL)</div>
+                        
+                    </apex:facet>
+                </apex:column>
+                <apex:column value="{!a.LAST_NAME_INTL}">
+                    <apex:facet name="header">
+                        <div class="hederSD">LAST NAME (LOCAL)</div>
+                        
+                    </apex:facet>
+                </apex:column>
+            </apex:dataTable>
+          </apex:outputPanel>
+          <!--Contact Create Block--->
+        <apex:outputPanel id="theCreate" rendered="{!showCreateContact}" >
+        <div style="margin:10px;">
+            <fieldset class="slds-form--compound">
+              <legend class="slds-form-element__label slds-text-title--caps">Contact Information</legend>
+              <div class="slds-form-element__group">
+                <div class="slds-form-element__row">
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>First Name</label>
+                    <apex:inputtext id="FirstName" value="{!firstName}" styleClass="slds-input"/>
+                  </div>
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Last Name</label>
+                    <apex:inputtext id="LastName" value="{!lastName}" styleClass="slds-input"/>
+                  </div>
+                </div>
+                <div class="slds-form-element__row">
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Email</label>
+                    <apex:inputtext id="Email" value="{!email}" styleClass="slds-input" html-placeholder="example@email.com"/>
+                  </div>
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label" >Telephone</label>
+                    <apex:inputtext id="Phone" value="{!phone}" styleClass="slds-input"/>
+                  </div>
+                </div>
+                <div class="slds-form-element__row">
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Partner Function</label>
+                    <div class="slds-select_container">
+                      <apex:selectList value="{!partnerRole}" size="1" id="selCountry" styleClass="slds-select">
+                                        <apex:selectoptions value="{!partnerRoles}"></apex:selectoptions>
+                      </apex:selectList>
+                    </div>
+                            
+                  </div>
+                  <div class="slds-form-element slds-size--1-of-2">
+                  </div>
+                </div>
+                <!--<div class="slds-form-element__row">
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label">Firstname local</label>
+                    <apex:inputtext id="firstnamelocal" value="{!firstnamelocal}" styleClass="slds-input"/>
+                  </div>
+                  <div class="slds-form-element slds-size--1-of-2">
+                    <label class="slds-form-element__label" >LastName local</label>
+                    <apex:inputtext id="lastnamelocal" value="{!lastnamelocal}" styleClass="slds-input"/>
+                  </div>
+                </div>-->
+                <div class="slds-form-element__row">
+                    <apex:commandButton value="Create Contact" action="{!Createcontact}"  styleClass="slds-button slds-button--brand slds-container--center" reRender="theForm" status="TableUpdateStatus"/>
+                </div>
+              </div>
+            </fieldset>
+         </div>
+        </apex:outputPanel>
+        <!--End Contact Create Block-->
+          <apex:outputPanel id="createLinkBlock" rendered="{!showContactLink}">
+                <br/>
+                <div class="slds-box slds-box--x-small slds-theme--shade">
+                   Click &nbsp;<apex:commandLink id="createLink"  value="here" action="{!opencreateContact}" reRender="theForm" status="TableUpdateStatus"></apex:commandLink> to create a New Contact.
+                </div>
+        </apex:outputPanel> 
+    </apex:pageBlock>
+  </apex:form>
+    </body>
+         </html>
+</apex:page>

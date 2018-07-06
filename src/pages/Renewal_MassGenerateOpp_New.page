@@ -1,0 +1,60 @@
+<apex:page Controller="Renewals_MassGenerateOpp_New" >
+    
+    
+    <style type="text/css">
+table.gridtable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+}
+table.gridtable th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #dedede;
+}
+table.gridtable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #ffffff;
+}
+</style>
+<apex:sectionHeader title="Generate Opportunities from Renewals"/>
+<Apex:form >
+    <apex:pagemessages rendered="true"  ></apex:pagemessages>
+        <apex:pageBlock >
+              <apex:pageBlockButtons ><apex:commandButton value="Generate Opportunities" action="{!Convert }" /></apex:pageBlockButtons>    
+              <apex:pageBlockSection >
+              <apex:pageBlockSectionItem > 
+                     <apex:outputLabel value="Segmentation: " for="regionID"/>
+                     <apex:selectList id="regionID" value="{!segmentation}" size="1" >
+                        <apex:selectOptions value="{!items}"/>
+                     </apex:selectList>
+                     </apex:pageBlockSectionItem><br/>
+                      <apex:pageBlockSectionItem > 
+                             <apex:outputLabel >Start Date</apex:outputLabel>   <apex:inputField value="{!ac.ChangeDate__c}"/>
+                     </apex:pageBlockSectionItem>
+                     <br/>
+                     <apex:pageBlockSectionItem >
+                             <apex:outputLabel style="margin-left:20px">End Date</apex:outputLabel> <apex:inputField value="{!ac.Expected_Close_Date__c}"/>
+                     </apex:pageBlockSectionItem>                     
+             </apex:pageBlockSection>
+        </apex:pageBlock>   
+ 
+  <br/><br/><br/><br/><br/><br/>
+  
+    <div  style="text-align:center;height: 30%; width: 80%;border: 1px solid black; visibility:{!showErrorlogButton} " ><b>
+    A batch started processing the selected records.An email would be sent once the records are processed. <br/>
+    Please refer to the below link for Error / Success logs..
+    <br/><br/><br/><apex:outputLink value="{!$Label.Renewal_Report_Link}">Report to view the Error / Success Logs </apex:outputLink>
+    <br/><br/>Batch Number : {!Text(BatchNumber)}   </b>         
+    <br/><br/><br/>
+</div>
+      </Apex:form>
+</apex:page>

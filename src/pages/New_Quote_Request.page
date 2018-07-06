@@ -1,0 +1,582 @@
+<apex:page standardController="opportunity">
+    <script src="/soap/ajax/9.0/connection.js" type="text/javascript"></script> 
+    <script type="text/javascript" src="/js/functions.js"></script> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript"> 
+        
+        var cfStr = "CF"; 
+        var forwadUrlMd = "a00"; 
+        var baseUrl = "/"+forwadUrlMd+"/e?nooverride=1&"; 
+        // ====== End of the section that could vary based on salesforce instance ======== 
+        
+        var sRecordTypeName=""; 
+        
+        
+        var percentTwoF = "%2F"; 
+        var retUrlPrf = "retURL="+percentTwoF; 
+        var retUrlSfx = "o"; 
+        var GlobalIdValStr = "idValStr"; 
+        var productNumberFldName = "totalNumberOfProduct"; 
+        var id; 
+        var name; 
+        var idFieldName = "id"; 
+        var nameFieldName = "nameFld"; 
+        
+        var fldName = "fldName"; 
+        var fldLinkName = "fldLinkName"; 
+        var finalUrlStr; 
+        var oppRecordType = ""; 
+        var openPopWindowYn = ""; 
+        var recTypeId; 
+        
+        var oTable; 
+        var oFields; 
+        var percentMatch = 80; 
+        
+            $(document).ready(
+                function(){
+                    initPage();
+                }    
+            );
+            
+            function initPage() 
+            { 
+                sforce.connection.init("{!$API.Session_ID}", "{!$API.Partner_Server_URL_90}"); 
+                checkExistingRecord(); 
+            } 
+        
+            //## Query an existing Quote Request for this Opportunity. If one exists 
+            //## display alert message. 
+            function checkExistingRecord() 
+            { 
+                var strQry = " SELECT Id, Name FROM Quote_Request__c WHERE Opportunity_Name__c = '{!Opportunity.Id}'"; 
+                var result = sforce.connection.query(strQry); 
+                
+                if (result != null && result.size > 0) 
+                { 
+                    var objRecords = result.getArray('records'); 
+                    var objObj = objRecords[0]; 
+                    var existingQRId = objObj.get("Id"); 
+                    if (confirm("An existing Quote Support Request already exists within this opportunity, if you would like to add to or update the existing record, please press OK. If an additional request is required, please press cancel.")) 
+                    { 
+                        var returl = "/"+existingQRId; 
+                        parent.location.href = returl; 
+                    } 
+                    else 
+                    { 
+                        setup(); 
+                    } 
+                    
+                } 
+                else 
+                { 
+                    setup(); 
+                } 
+                
+            }
+    
+            function setup() 
+            { 
+                determineAndPopulateIdAndName(); 
+                printLineItems(); 
+            }
+            
+            //Construct the base url for account or opportunity 
+            function constructForwardUrl() 
+            { 
+                return (baseUrl+cfStr+getFldValFromParam(fldName)+"="+encodeURIComponent(unescape(name))+"&"+cfStr+getFldValFromParam(fldLinkName)+"="+id+"&"+retUrlPrf+id); 
+            } 
+        
+            //Get Id field 
+            function determineAndPopulateIdAndName() 
+            { 
+                if(isEmpty(id) == true) 
+                { 
+                    id = "{!Opportunity.Id}"; 
+                    if(isEmpty(id) == true) 
+                    { 
+                        id = getQueryStringValue(idFieldName); 
+                    } 
+                } 
+                if(isEmpty(id) == true) 
+                { 
+                    id = document.getElementById(idFieldName).value; 
+                } 
+            
+            }
+             
+            //Get any field value from parameter and if not found try find it in document 
+            function getFldValFromParam(fieldNameStr) 
+            { 
+                var fldVal = getQueryStringValue(fieldNameStr); 
+                if(isEmpty(id) == true) 
+                { 
+                    fldVal = getTextFldValFromDoc(fieldNameStr); 
+                } 
+                return fldVal; 
+            } 
+        
+            //Get any field value from document 
+            function getTextFldValFromDoc(fieldNameStr) 
+            { 
+                var fldVal = document.getElementById(fieldNameStr).value; 
+                if(isEmpty(id) == true) 
+                { 
+                    fldVal = ""; 
+                } 
+                return fldVal; 
+            }
+            
+            //get opportunity record type 
+            function populateOppType() 
+            { 
+                oppRecordType = "{!Opportunity.RecordType}"; 
+            } 
+        
+            //Utility method to get value for a given parameter 
+            //from the Url Query String 
+            function getQueryStringValue(name) 
+            { 
+                
+                var query = location.search.substring(1); 
+                var pairs = query.split("&"); 
+                for(var i = 0; i < pairs.length; i++) 
+                { 
+                    var pos = pairs[i].indexOf('='); 
+                    if (pos == -1) continue; 
+                    var argname = pairs[i].substring(0,pos); 
+                    var value = pairs[i].substring(pos+1); 
+                    
+                    if (argname == name) return unescape(value); 
+                } 
+                return ""; 
+            }
+    
+            function stringArray(thisArray) 
+            { 
+                var vDisplay = ""; 
+                if(thisArray != null) 
+                { 
+                    vDisplay += " size is "+thisArray.length+" array elements are "; 
+                    for (var b=0; b<thisArray.length; b++) 
+                    { 
+                        vDisplay += (b+1)+thisArray[b]+"<br>"; 
+                    } 
+                } 
+                return vDisplay; 
+            }
+    
+            function printArray(thisArray) 
+            { 
+                
+                alert(stringArray(thisArray)); 
+            } 
+            
+            function isEmpty(str) 
+            { 
+                if(str=="") 
+                    return true; 
+                if(str==null) 
+                    return true; 
+                if(str=="undefined") 
+                    return true; 
+                if(str=="000000000000000") 
+                    return true; 
+                return false; 
+            } 
+        
+            // function to sort by product name 
+            //assuming that the productName is in the 2nd indexed element 
+            function compareOnProductName(Item1, Item2) 
+            { 
+                var item1 = Item1[1]; 
+                var item2 = Item2[1]; 
+                if (item1 > item2) return 1; 
+                if (item1 < item2) return -1; 
+                return 0; 
+            } 
+        
+            //Method to display the product list 
+            function printLineItems() 
+            { 
+                var ele = document.getElementById('printLineItems'); 
+                var strPageHTML = ""; 
+                try 
+                { 
+                    populateOppType(); 
+                    strPageHTML = strPageHTML +" <TABLE class='list' cellpadding='0' cellspacing='0' border='0'>"; 
+                    strPageHTML = strPageHTML +" <TR>"; 
+                    strPageHTML = strPageHTML +" <TD class='labelCol' width='33%'>Quote Request Type</TD>"; 
+                    strPageHTML = strPageHTML +" <TD class='labelCol' width='33%'>&nbsp;</TD>"; 
+                    strPageHTML = strPageHTML +" <TD class='labelCol' width='34%'>&nbsp;</TD>"; 
+                    var hiddenEntries = ""; 
+                    var hiddenIdValString = ""; 
+                    strPageHTML = strPageHTML +" </TR>"; 
+                    var idStr = ""; 
+                    typePicklistStr = "<TD class='dataCol'><div align=right><select id='quoteType' name='quoteType' ><option value='NCV Quote'>NCV Quote</option>"; //Srini 03rdNOV trial Quote removed ---<option value='Trial Quote'>Trial Quote</option> 
+                    
+                    // ADDED BY MOHAMMAD AFZAL, 29TH JULY 2009 
+                    var acctQry = "SELECT Region_Country__c,Region_Text__c FROM Account WHERE Id='{!Opportunity.AccountId}'"; 
+                    var acctQR = sforce.connection.query(acctQry); 
+                    var acct = acctQR.getArray("records")[0]; 
+                    var accCountry = acct.Region_Country__c ; 
+                    var accgeo = acct.Region_Text__c ; 
+                    
+                    //Added By Srini 31JUL09-Start 
+                    if(accgeo != "NA" ){ 
+                        typePicklistStr = typePicklistStr + "<option value='Renewal'>Renewal</option>"; 
+                    } 
+                    
+                    if(accgeo != "NA" ){ 
+                        typePicklistStr = typePicklistStr + "<option value='Renewal with NCV'>Renewal with NCV</option><option value='Trial Quote'>Trial Quote</option>"; // Trial Quote Visible only to non NA --Srini 03rdNOV trial Quote Added. 
+                    } 
+                    
+                    //Added By Srini 31JUL09-End 
+                    
+                    //Added By Leslie 061511
+                    if(accgeo != "NA" ){ 
+                        typePicklistStr = typePicklistStr + "<option value='Education-Standalone'>Education-Standalone</option>"; 
+                    }
+                    
+                    if(accgeo == "NA" ){ 
+                        typePicklistStr = typePicklistStr + "<option value='Education-Standalone'>Education-Standalone</option>"; 
+                    }
+                    
+                    // Add "Indirect - NFR/Demo/Trial" for NA only --> Srini 11/05/2009 
+                    
+                    if(accgeo == "NA" ){ 
+                        typePicklistStr = typePicklistStr + "<option value='Indirect - NFR/Demo/Trial'>Indirect - NFR/Demo/Trial</option>"; 
+                    } 
+                    
+                    typePicklistStr = typePicklistStr + "<option value='Zero Dollar Quote'>Zero Dollar Quote</option></select></div></TD>"; 
+                    
+                    strPageHTML = strPageHTML + typePicklistStr + "</TR>"; 
+                    strPageHTML = strPageHTML +" </TABLE>"; 
+                    strPageHTML = strPageHTML +hiddenEntries; 
+                }catch(error) 
+                { 
+                    strPageHTML = strPageHTML +" An error occurred while getting the product information to display."+errors; 
+                } 
+                ele.innerHTML = strPageHTML; 
+            }
+        
+            //handle errors 
+            function handleErrors(location, errors) 
+            { 
+                alert("Error for "+location+" is: "+errors); 
+            } 
+            
+            //This function gets the values to be displayed 
+            /** 
+            array[0]---> price book entry id 
+            array[1]---> product name 
+            array[2]---> Market Focus Area 
+            */ 
+            function getLineItems() 
+            { 
+                var arrSearchResult = new Array(); 
+                var productName = ""; 
+                var productDesc = ""; 
+                var prodBu = ""; 
+                var prodSol = ""; 
+                var lineItemStrSQL="Select pricebookEntry.product2.name, pricebookEntry.product2.Market_Focus_Area__c, PricebookEntryId from OpportunityLineItem "; 
+                lineItemStrSQL = lineItemStrSQL +" where OpportunityId = '"+id+"'"; 
+                var priceBookEntryId = ""; 
+                var qrOppLine= sforce.connection.query(lineItemStrSQL); 
+                if(qrOppLine !=null && qrOppLine.size>0) 
+                { 
+                    var k=0; 
+                    var KeepLooking = true; 
+                    while(KeepLooking==true) 
+                    { 
+                        k=0; 
+                        var objRecords = qrOppLine.getArray('records'); 
+                        for (var i = 0; i < objRecords.length; i++) 
+                        { 
+                            var OppLine=objRecords[i]; 
+                            if(OppLine != null) 
+                            { 
+                                priceBookEntryId = OppLine.get("PricebookEntryId"); 
+                                if(priceBookEntryId != null) 
+                                { 
+                                    var prod = OppLine.PricebookEntry.Product2; 
+                                    if(prod != null) 
+                                    { 
+                                        var SearchResultArrLength=arrSearchResult.length; 
+                                        arrSearchResult[SearchResultArrLength]=new Array(3); 
+                                        arrSearchResult[SearchResultArrLength][0]=priceBookEntryId; 
+                                        arrSearchResult[SearchResultArrLength][1]=prod.Name; 
+                                        arrSearchResult[SearchResultArrLength][2]=prod.Market_Focus_Area__c; 
+                                    } 
+                                    
+                                } 
+                            }//end of if(OppLine != null) 
+                        } 
+                        if(qrOppLine.getBoolean("done")) 
+                        { 
+                            KeepLooking=false; 
+                        } 
+                        else 
+                        { 
+                            qrOppLine=sforce.connection.queryMore(qrOppLine.queryLocator) 
+                        } 
+                    }//end of while(KeepLooking==true) 
+                } 
+                
+            return arrSearchResult; 
+            
+        } 
+        
+        
+        //jump back to default Url 
+        function jumpbackToDefault() 
+        { 
+            jumpbackTo(constructForwardUrl()); 
+        } 
+        
+        function jumpBackToOpp() 
+        { 
+            determineAndPopulateIdAndName(); 
+            
+            jumpbackTo("/"+id); 
+        } 
+        
+        //jump back to final Url 
+        function jumpbackTo(locStr) 
+        { 
+            parent.frames.location.replace(locStr); 
+        } 
+        
+        function getUserEntries() 
+        { 
+            var userEntryArray = new Array(); 
+            var arraySize = document.getElementById(productNumberFldName).value; 
+            var currVal = ""; 
+            var currIndex = 0; 
+            var prodElem = ""; 
+            var buElem = ""; 
+            var solElem = ""; 
+            
+            if(arraySize != null && arraySize>0) 
+            { 
+                
+                var hiddenIdValString = ""; 
+                for(var i=0;i<arraySize;i++) 
+                { 
+                    hiddenIdValString = GlobalIdValStr+i; 
+                    if(document.getElementById(hiddenIdValString).checked != false) 
+                    { 
+                        currVal = document.getElementById(hiddenIdValString).value; 
+                        prodElem = document.getElementById("prod_"+currVal).value; 
+                        marketFocusAreaElem = document.getElementById("marketFocusArea_"+currVal).value; 
+                        var values = "Index "+currIndex+" hiddenVal "+hiddenIdValString+" Id "+currVal+"\nProduct "+prodElem+"\n"; 
+                        values = values + "MFA "+marketFocusAreaElem+"\n"; 
+                        userEntryArray[currIndex]=new Array(2); 
+                        userEntryArray[currIndex][0]=prodElem; 
+                        userEntryArray[currIndex][1]=marketFocusAreaElem; 
+                        currIndex = currIndex + 1; 
+                    } 
+                } 
+            } 
+            return userEntryArray; 
+        } 
+        
+        //function to populate and create a new Quote Request record 
+        function applySelection() 
+        { 
+            var newQRId=""; 
+            
+            var acctQry = "SELECT Id, Name, Sales_Area__c, Sales_Region__c, Region_Text__c ,Region_Country__c "; // Add Geo Srini 13AUG 
+            acctQry = acctQry + " FROM Account WHERE Id='{!Opportunity.AccountId}'"; 
+            
+            var acctQR = sforce.connection.query(acctQry); 
+            var acct = acctQR.getArray("records")[0]; 
+            
+            var acctArea = acct.Sales_Area__c; 
+            var acctTerr = acct.Sales_Region__c; 
+            var acctcountry = acct.Region_Country__c ; //Srini 
+            
+            var acctgeo = acct.Region_Text__c ; //Srini 13AUG2009 
+            
+            
+            var oppQry = "SELECT Id, Amount, CurrencyIsoCode, CloseDate,RecordType.Name,Ent_Comm_Account__r.Id,Ent_Comm_Account__r.Sales_Area__c, Ent_Comm_Account__r.Sales_Region__c,Ent_Comm_Account__r.Region_Country__c "; 
+            oppQry = oppQry + " FROM Opportunity WHERE Id='{!Opportunity.Id}'"; 
+            
+            var oppQR = sforce.connection.query(oppQry); 
+            var opp = oppQR.getArray("records")[0]; 
+            
+            var oppAmt = opp.Amount; 
+            
+            var closeDate = opp.CloseDate; 
+            
+            var quoteRequest = new sforce.SObject("Quote_Request__c"); 
+            quoteRequest.Opportunity_Name__c = "{!Opportunity.Id}"; 
+            quoteRequest.Account_Area__c = acctArea; 
+            quoteRequest.Opportunity_Close_Date__c = closeDate; 
+            quoteRequest.Sales_Milestone__c = "{!Opportunity.StageName}"; 
+            quoteRequest.Opportunity_Owner__c = "{!Opportunity.Owner.Name}"; 
+            quoteRequest.Territory__c = acctTerr; 
+            quoteRequest.Area02__c = acctcountry; //Srini 
+            quoteRequest.Region__c = acctgeo; //Srini 13AUG2009 
+            
+            
+            //quoteRequest.Account_Name__c = "{!Opportunity.AccountId}"; // COMMENTED BY MOHAMMAD AFZAL, CR:15079779 
+            //ADDED BY MOHAMMAD AFZAL, CR:15079779 
+            sRecordTypeName = opp.RecordType.Name; 
+            if(sRecordTypeName!= "IND-Value"){ 
+                quoteRequest.Account_Name__c = "{!Opportunity.AccountId}"; 
+            }else{ 
+                quoteRequest.Account_Name__c = opp.Ent_Comm_Account__r.Id; 
+                quoteRequest.Account_Area__c = opp.Ent_Comm_Account__r.Sales_Area__c; 
+                quoteRequest.Territory__c = opp.Ent_Comm_Account__r.Sales_Region__c; 
+                quoteRequest.Area02__c = opp.Ent_Comm_Account__r.Region_Country__c; 
+            } 
+            
+            quoteRequest.Opportunity_Number__c ="{!Opportunity.Opportunity_Number__c}"; 
+            quoteRequest.Opportunity_Amount__c = oppAmt; 
+            quoteRequest.CurrencyIsoCode = opp.CurrencyIsoCode; //Srini CURRENCY 
+            quoteRequest.Type__c = "{!Opportunity.Type}"; 
+            
+            // grab the value from the picklist 
+            var elem = document.getElementById("quoteType"); 
+            var selindx = document.getElementById("quoteType").selectedIndex; 
+            
+            var selval = document.getElementById("quoteType")[selindx].value; 
+            
+            quoteRequest.Request_Type__c = selval; 
+            
+            
+            var result = sforce.connection.create([quoteRequest]); 
+            var returl = ""; 
+            if (result[0].getBoolean("success")) { 
+                newQRId = result[0].id; 
+                returl = "/p/attach/NoteAttach?pid="+newQRId+"&retURL=%2F"+newQRId; 
+                parent.location.href = returl; 
+                
+            } else { 
+                alert( result[0].errors.message); 
+            } 
+        } 
+        
+        
+        function filterNum(str) 
+        { 
+            if(isEmpty(str)) 
+            { 
+                return ""; 
+            } 
+            return str.replace(/[\ .,-/\n/\r/\t!#\$\/:\?'\(\)\[\]_\-\\]/g,""); 
+        } 
+        
+        function escapeSingleQuote(str) 
+        { 
+            if(isEmpty(str) == true) 
+            { 
+                return ""; 
+            } 
+            return str.replace(/'/g, "\'"); 
+        } 
+        
+        
+        function Trim(str) 
+        { 
+            if(isEmpty(str) == true) 
+            { 
+                return ""; 
+            } 
+            return str.replace(/^\s*|\s*$/g, ""); 
+        } 
+
+    </script>
+
+    <link href="/dCSS/Theme2/default/common.css" type="text/css" media="handheld,print,projection,screen,tty,tv" rel="stylesheet"/> 
+    <link href="/dCSS/Theme2/default/custom.css" type="text/css" media="handheld,print,projection,screen,tty,tv" rel="stylesheet"/>
+    
+    <style>
+        .bDescription {
+           padding: 0;
+           margin: 0.75%% 0;
+        }
+        h1,h2,h3,h4,h5,h6{
+            margin : 0px 2.5%;
+        }
+        .pageTitleIcon{
+            position : relative;
+        }
+        body .pbBody table.list tr th, body .pbBody table.list tr td {
+            border: 0px solid #ededed;
+            color: #000;
+        }
+    </style>
+
+    <body class="opportunity editPage" > 
+        <div class="bPageTitle"> 
+            <div class="secondaryPalette"> 
+                <div class="content">
+                    <img src="/s.gif" alt="Opportunity" class="pageTitleIcon" title="Opportunity"/> 
+                    <h1 class="pageType">Opportunity <span class="titleSeparatingColon">:</span></h1> 
+                    <h2 class="pageDescription" id="pdes" >Select Type</h2> 
+                    <!-- --> <br/> 
+                    <!-- <div class="blank">&nbsp;</div> 
+                    --> 
+                </div> 
+            </div> <!-- end ptBody --> 
+            <div class="bDescription" id="descript">Select the Type of the Quote Request and press Apply Selection.</div> 
+            
+            <div id="pagebody">     
+                <div class="hotListElement">
+                    <div class="bPageBlock secondaryPalette">
+                        <div class="pbHeader"> 
+                    
+                        </div> 
+                        <div class="pbBody"> 
+                            <table class="list" border="0" cellspacing="0" cellpadding="0"> 
+                                
+                                <TR><TD class="labelCol" width="25%">Opportunity </TD><TD class="dataCol col02">{!Opportunity.Name}</TD> 
+                                    <TD class="labelCol" width="25%">Opportunity Type</TD><TD class="dataCol col02">{!Opportunity.RecordType.Name}</TD></TR> 
+                            </table> 
+                        </div>
+                    </div> 
+                <br/> 
+
+                <div class="bPageBlock bEditBlock secondaryPalette" id="ep">
+                    <div class="pbHeader"> 
+
+                    </div> 
+                    <div class="pbBody"> 
+
+                        <div id="printLineItems"></div> 
+
+                    </div> 
+                    <div class="pbHeader"> 
+                        
+                        <TABLE cellpadding="0" cellspacing="0" border="0" > 
+                        <TR> 
+                        <TD class="pbButton" align="center"> 
+                            <input value="Apply Selection" class="button" type="button" title="Apply Selection" name="apply_selection" onclick="return applySelection()"/> 
+                            <input value="Cancel" align="center" class="button" type="button" title="Cancel" name="cancel" onclick="return jumpBackToOpp()"/> 
+                        </TD> 
+                        </TR> 
+                        <tr><td>&nbsp;</td></tr> 
+                        <TR> 
+                        <TD align="center"> 
+                        <table width="300"><tr><td><span style="color:red"><b>Once you press Apply Selection, you will be redirected to a page where you can upload an attachment to this Quote Request. 
+                        <br/> 
+                        Please follow the steps on the next page to attach your file:<ul><li>Click Browse</li><li>Click Attach File</li><li>Click Done</li></ul></b></span> 
+                        </td></tr></table> 
+                        </TD> 
+                        </TR> 
+                        </TABLE> 
+                    </div> 
+
+</div> 
+ 
+</div> 
+            </div>
+        </div>
+</body>
+    
+    
+    
+    
+</apex:page>

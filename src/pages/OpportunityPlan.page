@@ -1,0 +1,50 @@
+<apex:page title="Opportunity Plan for {!AccName}" action="{!initPlan}" standardController="Opportunity_Plan__c" extensions="OpportunityPlanController" tabStyle="Opportunity_Plan__c" >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head> 
+<apex:stylesheet value="{!URLFOR($Resource.appleMenu, 'appleMenu/menu_style.css')}"/>
+<script>
+    function setURI(sUri){
+        var buFrame = document.getElementById("buFrame");
+        if(buFrame!=null){
+            buFrame.src = sUri;
+        }
+        var x = document.getElementsByTagName("a");
+        var len = x.length;
+        for (i=0;i<=len;i++){
+            if(i>=len){
+            }else{
+                if(x[i].className=="current"){
+                    x[i].className = "notcurrent";
+                }
+            }
+        }
+    }
+</script>
+</head>
+<body onload="setURI('apex/OpportunityPlanOverview?Id={!PlanId}');document.getElementById('lnkAO').className='current';">
+<apex:pageBlock title="Customer Intelligence Licensing Landscape for {!AccName}" tabStyle="Opportunity_Plan__c">
+<div id="menu">
+<ul>
+<li><a id="lnkAO" href="#;" onclick="setURI('apex/OpportunityPlanOverview?Id={!PlanId}');this.className='current';" target="_self" title="Account Overview" class="current"><span>Account Overview</span></a></li>
+<apex:repeat value="{!drivers}" var="driver" id="theRepeat">
+    <li><a id="lnk{!driver.Business_Unit__c}" href="#;" onclick="setURI('apex/BUDriverDetails?BU={!driver.Business_Unit__c}&AccId={!AccId}&PlanId={!$CurrentPage.parameters.Id}');this.className='current';" target="_self" title="{!driver.Business_Unit__c}" class="notcurrent"><span>{!driver.Business_Unit__c}</span></a></li>
+</apex:repeat>
+</ul>
+</div>
+<iframe id="buFrame" width="100%" height="1200px" frameborder="0" src=""></iframe>
+</apex:pageBlock>
+<script>
+    if("{!$CurrentPage.parameters.pdId}"!=""){
+        setURI('apex/BUDriverDetails?id={!$CurrentPage.parameters.pdId}&ncvId={!$CurrentPage.parameters.ncvId}&Driver={!$CurrentPage.parameters.Driver}&BU={!$CurrentPage.parameters.BU}&AccId={!$CurrentPage.parameters.AccId}&PlanId={!$CurrentPage.parameters.PlanId}');
+        if(document.getElementById('lnk{!$CurrentPage.parameters.BU}')!=null)
+            document.getElementById('lnk{!$CurrentPage.parameters.BU}').className='current';
+    }else{
+        setURI('apex/OpportunityPlanOverview?Id={!PlanId}');
+        if(document.getElementById('lnkAO')!=null)
+            document.getElementById('lnkAO').className='current';
+    }
+</script>
+</body>
+</html>
+
+</apex:page>

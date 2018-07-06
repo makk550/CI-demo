@@ -1,0 +1,9 @@
+<apex:page standardcontroller="Account" extensions="ReadOnlyAccountPlanController" action="{!init}" showHeader="False" sidebar="False">
+ <apex:outputPanel id="pnlReadOnlyAccountPlan" rendered="{!showAccountPlanPanel}">
+ </apex:outputPanel>
+ <font size=1 face="verdana">Note: The editable version of the opportunity grid is located on the account plan.
+ <apex:outputLink target="_parent" value="https://cs3.salesforce.com/{!ap.id}">Click here to go to the Account Plan</apex:outputLink> to update the opportunity grid.</font>
+ <apex:outputPanel id="pnlErrorMessage" rendered="{!ShowAccountPlanNotFoundPanel}">
+ <apex:outputText style="font-style:italic" value="{!errorMessage}"></apex:outputText>
+ </apex:outputPanel>  
+</apex:page>

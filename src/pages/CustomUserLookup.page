@@ -1,0 +1,126 @@
+<apex:page sidebar="false" controller="CustomUserLookupCtrlr" id="thePage"  showHeader="false" action="{!SearchAccounts}" > 
+    <apex:pagemessages ></apex:pagemessages>
+    <script>
+    var winMain=window.opener;
+    
+        function CloseWindow()    {       
+        winMain=window.opener;       
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener;       
+        }  
+       
+        winMain.closeLookupPopup();   
+    
+        }
+    
+    
+    
+    function fillIn(ev,id)    {
+    
+    try {
+        isIE = /*@cc_on!@*/false || !!document.documentMode;
+        //alert('isIE'+isIE);
+
+        if (document.all && document.querySelector && !document.addEventListener || isIE)//added for IE8
+        {
+            //alert('in IE');
+            var name = ev.srcElement.innerText.replace("'","\'");
+        }
+        else
+        {
+            //alert('in else');
+            var src = ev.target.textContent || ev.srcElement.innerText;
+            var name = src.replace("'","\'");
+        }
+        
+
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener;       
+        }    
+        var ele=winMain.document.getElementById('{!$CurrentPage.parameters.namefield}');       
+        ele.value=name;
+        var ele=winMain.document.getElementById('{!$CurrentPage.parameters.inpField}');       
+        ele.value=name;
+             
+        ele=winMain.document.getElementById('{!$CurrentPage.parameters.idfield}');       
+        ele.value=id; 
+             
+        CloseWindow(); 
+       
+        }
+        catch(err)
+        {
+        alert(err.message);
+        }  
+
+    }      
+    
+
+
+    function ValidateEndUserSelection()  
+     {
+        if(document.getElementById('thePage:theForm:endUserName').value.length <2){
+            alert("Please enter atleast 2 characters for EndUser Name");
+            return false;
+        }
+        else
+            return true; 
+    }
+    
+                                        
+    
+    </script>
+    
+    <apex:form id="theForm" styleClass="hasMotif lookupTab  LookupSearchFrame" > 
+   
+    <div class="lookup">
+    <div class="bPageTitle">
+    <div class="ptBody secondaryPalette">
+    <div class="content">
+      <img title="" class="pageTitleIcon" alt="" src="/s.gif"/>     
+      <h1> Partner User Search</h1>
+    </div></div></div></div>  
+   
+     
+          <table >
+              <tr>
+                  <td>
+                      <apex:outputLabel value=" User Name : "></apex:outputLabel>    
+                  </td>
+                  <td>
+                    <apex:outputPanel styleClass="requiredInput" layout="block" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                          <apex:inputText value="{!endUserName}" id="endUserName"/>
+                     </apex:outputPanel> 
+                  </td>
+                  <td align="center">
+                      <apex:commandButton id="btnSearch" styleClass="btn" title="Search" value="Go!" action="{!Searchaccounts}" onclick="return ValidateEndUserSelection()"/>                        
+                  </td>
+              </tr>
+              <tr>
+              <td colspan="3"> Only Partner users related to the account will be displayed</td>
+              </tr> 
+          </table>  
+      <br/> <br/>  <br/>
+      <h1> Search Results </h1>
+      <!--  Account of the User : {!account} and End user name : {!endUserName} -->
+      <apex:pageBlock id="theBlock" >
+        
+                <apex:pageBlockSection rendered="{!!showResults}" > <p style="color:red">The Criteria did not match any user records</p> </apex:pageBlockSection>
+                <apex:pageblockSection title="Results" id="resultBlock" showHeader="false" columns="1" rendered="{!showResults}">
+                <apex:dataTable value="{!results}" headerClass="headerRow" styleClass="list" var="usr" width="100%" columnsWidth="75%,25%"  >
+                    <apex:column headerValue="User Name" >
+                        <apex:outputLink value="#" onclick="fillIn(event,'{!usr.id}')" >{!usr.Name}</apex:outputLink>
+                    </apex:Column>
+                    <apex:column headerValue="Email" >
+                       {!usr.Email}
+                    </apex:Column>
+                    
+                </apex:dataTable>
+            </apex:pageblockSection>
+         </apex:pageBlock>   
+             
+    </apex:form>
+</apex:page>

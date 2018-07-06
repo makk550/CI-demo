@@ -1,0 +1,356 @@
+<apex:page sidebar="{!showsidebar}" showHeader="{!showhead}" controller="DE_AccSearch_CLS" id="pgNew" action="{!loadheadercont}">  
+    <apex:pagemessages ></apex:pagemessages>
+    <apex:includeScript value="{!$Resource.JS_JQuery}" />
+    <apex:includeScript value="{!$Resource.JS_JQuery_Block_UI}" /> 
+    <apex:includeScript value="{!$Resource.YUI_ModalLoader}" /> 
+    
+    <apex:stylesheet value="{!URLFOR($Resource.ISTP,'/progress.css')}"/>
+     
+     
+       <apex:form id="createacc" styleClass="hasMotif lookupTab  LookupSearchFrame">
+       <apex:actionFunction name="goToSrch2Screen" action="{!gotoPrevRes2}" />
+       <apex:actionfunction name="createAcc" action="{!createTaqAccount}" oncomplete="YUIHideLoading();fillIn();" reRender="op" />
+        <apex:pageBlock id="theBlock"  mode="edit">
+        
+        <apex:pageBlock >
+        
+            <table height="100%">
+                <tr width="100%" height="30px">
+                    <td  style="align:left;width:75%"><apex:outputText /><b>Account Search - Create New Account</b></td>
+                    <td  style="align:right;width:25%"><apex:image rendered="{!bIsPartner}" value="{!URLFOR($Resource.ISTP,'/4.png')}"/></td>
+                </tr>
+            </table>
+        
+        </apex:pageBlock>
+  
+        
+            <apex:PageBlockButtons location="bottom">
+                <div align="right">
+                    <apex:commandButton id="prev" value=" < Previous" onclick="YUIShowLoading();goToSrch2Screen();" oncomplete="YUIHideLoading();" />
+                    <apex:commandButton id="create"  value="CreateAccount" onclick="validateForm();return false;" />
+                    <apex:commandButton id="Cancel" value="Cancel Search" onclick="YUIShowLoading();ClosePage();return false;" oncomplete="YUIHideLoading();" />
+                </div>
+            </apex:PageBlockButtons>
+            <apex:inputhidden id="isread" value="{!isReadOnly }"/>
+           <apex:pageBlockSection id="sec" columns="1">
+            <apex:pageBlockSectionItem id="secit1">
+               <apex:outputLabel value="Account Name" />
+               <apex:outputPanel styleClass="requiredInput" layout="block">
+               <apex:outputPanel styleClass="requiredBlock" layout="block" rendered="{!isReadOnly}"/>
+                   <apex:inputText id="accName" value="{!objacc.accName}" disabled="{!isReadOnly}" style="align:left"/>
+               </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem id="secit2">               
+               <apex:outputLabel value="Physical Street" />
+               <apex:outputPanel styleClass="requiredInput" layout="block">
+               <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                   <apex:inputText id="street" value="{!objacc.street}" disabled="{!IF(Usrtyp!='PowerPartner'&& isReadOnly,true,false)}" />
+                   </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                 <apex:pageBlockSectionItem id="secit3">
+               <apex:outputLabel value="Physical City" />
+               <apex:outputPanel styleClass="requiredInput" layout="block">
+               <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                         <apex:inputText id="city"  value="{!objacc.city}" disabled="{!IF(Usrtyp!='PowerPartner'&& isReadOnly,true,false)}" />
+                </apex:outputPanel>
+                 </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem id="secit4">                
+                 <apex:outputLabel value="State/Region" id="statelabel"/>
+                <apex:outputPanel >
+                    <apex:outputPanel layout="block" rendered="{!OR(AND(objacc.country!='US - UNITED STATES',objacc.country!='CA - CANADA',objacc.country!='AU - AUSTRALIA',objacc.country!='IN - INDIA'),Usrtyp!='PowerPartner')}">
+                        <apex:outputPanel layout="block"/>
+                     <apex:inputText id="state" value="{!objacc.state}"  disabled="{!IF(Usrtyp!='PowerPartner',true,false)}"/>
+                     </apex:outputPanel>
+                        <apex:outputPanel styleClass="requiredInput" layout="block"  id="opStateRegion_US" rendered="{!IF(Usrtyp=='PowerPartner'&& objacc.country=='US - UNITED STATES',true,false)}">
+                         <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:selectList value="{!objacc.state}" size="1" id="lstStateRegion_US">
+                            <apex:selectoptions value="{!stateRegionsFor_US}"></apex:selectoptions>
+                        </apex:selectList>    
+                    </apex:outputPanel>
+                    <apex:outputPanel styleClass="requiredInput" layout="block"  id="opStateRegion_CA" rendered="{! IF(Usrtyp=='PowerPartner'&& objacc.country=='CA - CANADA',true,false)}">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:selectList value="{!objacc.state}" size="1" id="lstStateRegion_CA">
+                            <apex:selectoptions value="{!stateRegionsForCANADA}"></apex:selectoptions>
+                        </apex:selectList>    
+                    </apex:outputPanel>
+                    <apex:outputPanel styleClass="requiredInput" layout="block"  id="opStateRegion_Australia" rendered="{! IF(Usrtyp=='PowerPartner'&& objacc.country=='AU - AUSTRALIA',true,false)}" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:selectList value="{!objacc.state}" size="1" id="lstStateRegion_Australia">
+                            <apex:selectoptions value="{!StateRegionsForAustralia}"></apex:selectoptions>
+                        </apex:selectList>    
+                    </apex:outputPanel>      <!--SAMAP01 -US465954 -->
+                       <apex:outputPanel styleClass="requiredInput" layout="block"  id="opStateRegion_INDIA" rendered="{! IF(Usrtyp=='PowerPartner'&& objacc.country=='IN - INDIA',true,false)}" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:selectList value="{!objacc.state}" size="1" id="lstStateRegion_INDIA">
+                            <apex:selectoptions value="{!stateRegionsForINDIA}"></apex:selectoptions>
+                        </apex:selectList>    
+                    </apex:outputPanel>      
+                </apex:outputPanel>
+                   </apex:pageBlockSectionItem>
+                   <apex:pageBlockSectionItem id="secit5">
+                <apex:outputLabel value="Country" rendered="{!isReadOnly}" />
+                 <apex:outputPanel styleClass="requiredInput" layout="block">
+                <apex:outputPanel styleClass="requiredBlock" layout="block" rendered="{!isReadOnly}"/>
+                <apex:inputText id="lstCountrytxt" value="{!objacc.country}" disabled="true" rendered="{!isReadOnly}"/>
+                 </apex:outputPanel>
+                 </apex:pageBlockSectionItem>
+                  <!--<apex:pageBlockSectionItem id="secit6">    
+                  <apex:outputLabel value="Country" rendered="{!isReadOnly}" />
+                <apex:outputPanel styleClass="requiredInput" layout="block">
+                <apex:outputPanel styleClass="requiredBlock" layout="block" rendered="{!isReadOnly}"/>
+                <apex:selectList value="{!objacc.country}" size="1" id="lstCountry" rendered="{!isReadOnly}">
+                        <apex:selectoptions value="{!countries}"></apex:selectoptions>
+                    </apex:selectList>    
+                </apex:outputPanel>
+                 </apex:pageBlockSectionItem>-->
+                   <apex:pageBlockSectionItem id="secit7">
+                <apex:outputLabel value="Zip/Postal Code" />
+                
+                    <apex:inputText id="zipCode" value="{!objacc.zipCode}"  disabled="{!IF(Usrtyp!='PowerPartner'&& isReadOnly,true,false)}"/>
+                    
+                </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem rendered="{!!bIsPartner}"> 
+                    <apex:outputLabel value="GEO" />
+                    <apex:inputText id="geo"   value="{!objacc.geo}"  disabled="true"/>
+                  </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem rendered="{!!bIsPartner}">                    
+                    <apex:outputLabel value="Operating Area" />
+                    <apex:inputText id="oppArea" value="{!objacc.opparea}" disabled="true"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                <apex:outputPanel rendered="{!!bIsPartner}">
+                <apex:pageBlockSection columns="2" rendered="{!isReadOnly}">
+                  <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Sales Region" />
+                    <apex:inputText id="salReg"  value="{!objacc.salReg}" disabled="true"/>
+                    </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Global Parent Account Number" />
+                    <apex:inputText id="GPAccNo" value="{!objacc.GPAccNo}" disabled="true"/> 
+                    </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem >                   
+                    <apex:outputLabel value="Territory" />
+                    <apex:inputText id="territory" value="{!objacc.territory}" disabled="true"/>
+                    </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Global Parent Account Name" />
+                    <apex:inputText id="GPAccName" value="{!objacc.GPAccName}" disabled="true"/>
+                    </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Segment" />
+                    <apex:inputText id="segment" value="{!objacc.segment}" disabled="true"/>
+                    </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Global Parent Segment" />
+                    <apex:inputText id="GPSeg" value="{!objacc.GPSeg}" disabled="true"/>  
+                    </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Coverage Model" />
+                    <apex:inputText id="coverMod" value="{!objacc.coverMod}" disabled="true"/>
+                    </apex:pageBlockSectionItem>
+                  <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Global Ultimate Region" />
+                    <apex:inputText id="GobUltReg" value="{!objacc.GobUltReg}" disabled="true"/>
+                    </apex:pageBlockSectionItem>
+                    <!--
+                  <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="SIC Code" />
+                    <apex:inputText id="Siccode" disabled="true"/>
+                    </apex:pageBlockSectionItem>
+                    -->
+                    <!--
+                  <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="SIC Description" />
+                    <apex:inputText id="Sicdesc" disabled="true"/>    
+                    </apex:pageBlockSectionItem>
+                    -->
+                  </apex:pageBlockSection> 
+                </apex:outputPanel>
+                <apex:pageBlockSection >
+                  <apex:pageBlockSectionItem >
+                      <apex:outputText ><br/><br/><b>A new CA Account will be created with the following details.</b></apex:outputText>
+                  </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+          </apex:pageBlock>
+    </apex:form>
+    <script>
+          
+       function validateForm()
+       {
+           	var usertype='{!Usrtyp}';
+             var accname,street,city,state,Country,zipCode;
+             accname=document.getElementById('pgNew:createacc:theBlock:sec:secit1:accName').value;
+             street=document.getElementById('pgNew:createacc:theBlock:sec:secit2:street').value;
+             city=document.getElementById('pgNew:createacc:theBlock:sec:secit3:city').value;
+             
+             
+             //alert('____'+document.getElementById('{!$Component.pgNew:createacc:theBlock:sec:secit5:lstCountrytxt}').value);
+             Country=document.getElementById('pgNew:createacc:theBlock:sec:secit5:lstCountrytxt').value;
+             if(Country!='US - UNITED STATES'&&Country!='CA - CANADA'&&Country!='AU - AUSTRALIA'&&Country!='IN - INDIA'){
+             state=document.getElementById('pgNew:createacc:theBlock:sec:secit4:state').value;
+             }
+           	else if(Country =='US - UNITED STATES')
+            {
+             if(usertype=='PowerPartner'){
+             state=document.getElementById('pgNew:createacc:theBlock:sec:secit4:lstStateRegion_US').value;
+                 }else{
+                 state=document.getElementById('pgNew:createacc:theBlock:sec:secit4:state').value;
+                 }
+             }
+            else if(Country =='CA - CANADA')
+            {
+               if(usertype=='PowerPartner'){  
+             state=document.getElementById('pgNew:createacc:theBlock:sec:secit4:lstStateRegion_CA').value;
+            }else{
+                 state=document.getElementById('pgNew:createacc:theBlock:sec:secit4:state').value;
+                 }
+                }
+                 //SAMAP01 
+             else if(Country =='IN - INDIA')
+             {
+               if(usertype=='PowerPartner'){  
+             state=document.getElementById('pgNew:createacc:theBlock:sec:secit4:lstStateRegion_INDIA').value;
+            }else{
+                 state=document.getElementById('pgNew:createacc:theBlock:sec:secit4:state').value;
+                 }
+             }
+             else if(Country =='AU - AUSTRALIA')
+             {
+                if(usertype=='PowerPartner'){ 
+             state=document.getElementById('pgNew:createacc:theBlock:sec:secit4:lstStateRegion_Australia').value;
+             }else{
+                 state=document.getElementById('pgNew:createacc:theBlock:sec:secit4:state').value;
+                 }
+             }
+             
+             zipCode=document.getElementById('pgNew:createacc:theBlock:sec:secit7:zipCode').value; 
+             //samap01 - if CA - California or PA - Pennsylvania -US465954
+                if(zipCode=="" && (state == "California" || state == "Pennsylvania") )
+                {
+                    alert('Please enter the zipcode.');
+                    return false; 
+                }
+              //alert('acc name in val'+accname);
+               if(accname==''||accname==null)
+               {
+               alert('Please Enter a valid Account Name');
+               return false;
+               }
+               else if(street==''||street==null)
+               {
+               alert('Street is Mandatory');
+               return false;
+               }
+               else if(city==''||city==null)
+               {
+               alert('City Field is Mandatory');
+               return false;
+               }
+               else if((state==''||state==null ||state=='--Select--') && Country=='US - UNITED STATES')
+               {
+               alert('State is Mandatory');
+               return false;
+               } else if((state==''||state==null ||state=='--Select--') && Country=='CA - CANADA')
+               {
+               alert('State is Mandatory');
+               return false;
+               } else if((state==''||state==null ||state=='--Select--') && Country=='AU - AUSTRALIA')
+               {
+               alert('State is Mandatory');
+               return false;
+               }
+                 //SAMAP01
+                 else if((state==''||state==null ||state=='--Select--') && Country=='IN - INDIA')
+               {
+               alert('State is Mandatory');
+               return false;
+               }
+                 //SAMAP01
+               else if(Country==''||Country==null||Country=='--Select--')
+               {
+               alert('Country is Mandatory');
+               return false;
+               }
+               else
+                   YUIShowLoading();
+                   createAcc();
+                   return true;
+           console.log('test account create');
+       } 
+          </script>
+          
+          <apex:outputPanel id="op">
+          <script>
+          var winMain=window.opener;
+  
+    function ClosePage()   
+         {  
+            var pagered = '{!pagered}';
+            if(pagered!=null && pagered =='StandNew')
+              {
+               setURI('/001/o');                    
+   
+              }
+            else {
+             winMain=window.opener;  
+              if (null==winMain) {     
+                winMain=window.parent.opener;       
+             } 
+             winMain.closeLookupPopup();    
+             } 
+
+        }      
+        
+       function setURI(sUri){
+            window.location.href= sUri;
+      }
+    function fillIn()    { 
+        var usertype='{!Usrtyp}'; 
+        var accountid='{!accid}';
+        // alert('{!Usrtyp}');
+        console.log('test account');
+       // alert('{!accid}');
+       // alert('{!accname}');
+        if('{!accname}' == '')
+        {
+            alert('Account creation failed due to invalid inputs.');
+            return false;
+        }
+        alert('New Account "{!accname}" has been successfully created');
+        if(usertype!='PowerPartner'){
+            //  alert('accountid'+accountid);
+         
+		
+
+
+			window.location='/apex/AccountViewOverride?id='+accountid; 
+		   
+       }
+        
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener;       
+        }    
+        var ele=winMain.document.getElementById('{!namefield}');      
+        ele.value='{!accname}';
+        if("{!parentPage}" == "Dealxsp"){
+            ele=winMain.document.getElementById('targetSPName');       
+            ele.innerHTML='{!accname}'; 
+        }else{
+            ele=winMain.document.getElementById('targetName');       
+            ele.innerHTML='{!accname}'; 
+        }
+              
+        ele=winMain.document.getElementById('{!idfield}');       
+        ele.value='{!accid}'; 
+        //alert('{!accid}');  
+        setTimeout(ClosePage(),3000);
+        
+        //closePopup();   
+        //commit 7:40 PM
+
+    }      
+  </script>
+       </apex:outputPanel>
+         
+</apex:page>

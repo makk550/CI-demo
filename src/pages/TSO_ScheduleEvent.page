@@ -1,0 +1,96 @@
+<apex:page id="page1" standardcontroller="Event" extensions="TSO_ScheduleEventcontroller_New">
+    <apex:form id="mainform">
+    
+    
+        <apex:PageBlock title="Event Edit" id="mainpb" >
+            <apex:pagemessages rendered="true" />
+            <apex:PageBlockButtons >
+                <apex:CommandButton value="Save" action="{!saveEvent}"></apex:CommandButton>
+            </apex:PageBlockButtons>
+            <apex:inputHidden value="{!TSOReqID}" id="hidtsoid" />
+                    
+            <apex:PageBlockSection id="pbs3" title="Product Details" collapsible="false"></apex:PageBlockSection>
+            
+            <table width="100%" cellpadding="0" cellspacing="0" >
+            <tr>
+            <td width="3%"><b>#</b></td>
+            <td width="27%" align="left"><b>Product Family</b></td>
+            <td width="45%"><b>Business Unit</b></td>
+            <td width="25%"><b>Product</b></td>
+            </tr>
+            </table>
+            <table>
+            <tr>
+            <td width="3%">1</td>
+ 
+            <td width="27%">
+                <apex:selectList value="{!relclass.prodfamily1}" id="Product_Family__c" size="1" style="width:100px">   
+                    <apex:selectOptions value="{!level1items}"/>                    
+                    <apex:actionSupport event="onchange" rerender="mainform,BU__c"/>
+                </apex:selectList>
+            </td>
+            <td width="45%">
+                <apex:selectList value="{!relclass.BU1}" id="BU__c" size="1" style="width:310px">
+                   <apex:selectOptions value="{!level2items}"/>                 
+                   <apex:actionSupport event="onchange" rerender="mainform,Product__c"/>
+                  
+                </apex:selectList>            
+                 
+            </td>
+            <td width="25%"> 
+                <apex:selectList value="{!relclass.prod1}" id="Product__c" size="1" style="width:410px">
+                   <apex:selectOptions value="{!level3items}" ></apex:selectOptions>                    
+                   <!-- <apex:actionSupport event="onchange"  />-->
+                </apex:selectList> 
+            </td>
+            
+            </tr>
+            <tr>
+            <td width="3%">2</td>
+            <td width="27%">
+                <apex:selectList value="{!relclass.prodfamily2}" id="Product_Family__c2" size="1" style="width:100px">
+                    <apex:selectOptions value="{!level1items}"/>                    
+                    <apex:actionSupport event="onchange" rerender="mainform,BU__c2"/>
+                </apex:selectList>
+            </td>
+            <td width="45%">
+                <apex:selectList value="{!relclass.BU2}" id="BU__c2" size="1" style="width:310px">
+                   <apex:selectOptions value="{!secondBU}"/>                    
+                   <apex:actionSupport event="onchange" rerender="mainform,Product__c2"/>               
+                </apex:selectList>             
+            </td>
+            <td width="25%">
+                <apex:selectList value="{!relclass.prod2}" id="Product__c2" size="1" style="width:410px">
+                   <apex:selectOptions value="{!secondProducts}"/>                    
+                   
+                </apex:selectList>
+
+            </td>
+        </tr>
+        <tr> 
+            <td width="3%">3</td>
+            <td width="27%">
+                <apex:selectList value="{!relclass.prodfamily3}" id="Product_Family__c3" size="1" style="width:100px">            
+                    <apex:selectOptions value="{!level1items}"/>                    
+                    <apex:actionSupport event="onchange" rerender="mainform,BU__c3"/>
+                </apex:selectList>
+            </td>
+            <td width="45%">
+                <apex:selectList value="{!relclass.BU3}" id="BU__c3" size="1" style="width:310px">
+                   <apex:selectOptions value="{!thirdBU}"/>                    
+                   <apex:actionSupport event="onchange" rerender="mainform,Product__c3"/>               
+                </apex:selectList>             
+            </td>
+            <td width="25%">
+                <apex:selectList value="{!relclass.prod3}" id="Product__c3" size="1" style="width:410px">
+                   <apex:selectOptions value="{!thirdProducts}"/>
+                   
+                </apex:selectList>
+
+            </td>
+            </tr>
+            </table>
+            
+        </apex:PageBlock>       
+    </apex:form>
+</apex:page>

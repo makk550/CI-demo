@@ -1,0 +1,41 @@
+<apex:component controller="KBArticleFeedbackController" allowDML="true"  >
+
+    <apex:attribute name="articleNumber" assignTo="{!aNumber}" description="This is the article number" type="String" required="true"/>
+    <apex:attribute name="articleTitle" description="This is the Title of the article" type="String" required="true"/>
+    <apex:attribute name="articleId" assignTo="{!aId}" description="This is the unique Id of the article." type="String" required="true"/>
+    <apex:form >
+    <apex:pageBlock >
+       <apex:pageMessages id="showmsg"></apex:pageMessages>
+        <!--<apex:sectionHeader >{!averageRatingTitle}
+            <apex:image url="{!$Resource.ThumbsUpCount}" height="25Px" width="25Px"/>
+            <apex:image url="{!$Resource.ThumbsDownCount}" height="25Px" width="25Px"/></apex:sectionHeader>-->
+        <apex:pageBlockSection title="{!articleTitle} ({!articleNumber})" collapsible="false" rendered="{!renderFeedbackList}"> 
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="{!averageRatingTitle}" columns="1" collapsible="true" rendered="{!renderFeedbackList}" >
+            <!--<img src="{!$Resource.ThumbsUpCount}" style="margin-top: -4%; margin-left: 10%;" height="25Px" width="25Px"/>
+            <img src="/img/msg_icons/info32.png" style="margin-top: -4%; margin-left: 10%;" height="25Px" width="25Px"/>-->
+            <!-- <script>colorPageBlock(document.getElementById("{!$Component.redSection}"), "red");</script> -->
+            <apex:outputLabel value="No feedbacks to display" rendered="{!feedbackList.size = 0}" styleClass="noRowsHeader"></apex:outputLabel>
+            <apex:pageBlockTable value="{!feedbackList}" var="feedback" rendered="{!feedbackList.size > 0}" width="100%" Id="feedbackDetails">
+                <apex:column headerValue="Rating" value="{!feedback.Article_Rating__c}" style="vertical-align:top; "/>
+                <!--<apex:column headerValue="Version" value="{!feedback.Article_Version__c}" style="vertical-align:top;"/>-->
+                <apex:column headerValue="Comments" value="{!feedback.Feedback_Comments__c}" style="vertical-align:top;"/>
+                <apex:column headerValue="Contact" value="{!feedback.Feedback_By__c}" style="vertical-align:top;"/>
+                <apex:column headerValue="Contact Email" value="{!feedback.Contact_Email__c}" style="vertical-align:top;"/>
+                <apex:column headerValue="Feedback Date" value="{!feedback.CreatedDate}" style="vertical-align:top;"/>
+            </apex:pageBlockTable>
+        </apex:pageBlockSection>
+
+        <apex:outputPanel id="feedbackButtons">
+            <apex:commandButton value="<<" rerender="feedbackDetails, feedbackDetailsTable, feedbackButtons" action="{!first}" disabled="{!NOT(hasPrevious)}"/>
+            <apex:commandButton value="<" rerender="feedbackDetails, feedbackDetailsTable, feedbackButtons" action="{!previous}" disabled="{!NOT(hasPrevious)}"/>
+            <apex:commandButton value=">" rerender="feedbackDetails, feedbackDetailsTable, feedbackButtons" action="{!next}" disabled="{!NOT(hasNext)}"/>
+            <apex:commandButton value=">>" rerender="feedbackDetails, feedbackDetailsTable, feedbackButtons" action="{!last}" disabled="{!NOT(hasNext)}"/> 
+            <br/>
+            <br/>
+            <apex:commandButton value="Back To Article" action="{!backToArticle}" rerender="showmsg" />
+        </apex:outputPanel>
+    </apex:pageBlock>
+    </apex:form>
+    
+</apex:component>

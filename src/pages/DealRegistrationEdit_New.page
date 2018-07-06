@@ -1,0 +1,1016 @@
+<apex:page standardController="Opportunity" id="thePage" extensions="Ext_EditDealRegistration_New">
+    
+    <link href="/servlet/servlet.FileDownload?file=01530000001ojYs" rel="stylesheet" type="text/css"/>
+    <link href="/servlet/servlet.FileDownload?file=01530000001ojYx" rel="stylesheet" type="text/css"/>
+    <link href="/servlet/servlet.FileDownload?file=01530000001ojZ7" rel="stylesheet" type="text/css"/>
+    <apex:includeScript value="{!URLFOR($Resource.JQueryUiLibrary, '/js/jquery-1.4.2.min.js')}"/> 
+    <style>
+        .vfHelpText a            {position:relative;}
+        .vfHelpText a span       {display: none;}
+        .vfHelpText a:hover span {display: block;
+                                  position:absolute;
+                                  top:1.25em;
+                                  padding:2px 5px;
+                                  left:-15em; width:30em;
+                                  z-index:100;
+                                  border:1px solid orange;
+                                  background-color:#FEFDB9;
+                                  color:black;
+                                 }
+                                 
+         <!--  AR 3186  
+        .imgclass:hover{
+            background-image: url(/img/icon/profile16.png);
+            background-repeat: no-repeat;
+            width: 16px;
+            height: 15px;   
+            background-position: right;
+       
+        }
+        .imgclass{
+            background-image: url(/img/icon/profile16.png);
+            background-repeat: no-repeat;
+            width: 16px;
+            height: 15px;-->
+        }
+        
+        #overlay{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            filter:alpha(opacity=50);
+            -moz-opacity:0.5;
+            -khtml-opacity: 0.5;
+            opacity: 0.5;
+            z-index: 100;
+            display: none;
+         }
+         
+       
+         .saveandaddmodalpopup{
+            display: none;
+            position: fixed;
+            z-index: 101; 
+            left: 0px;
+            top: 0px;
+            width: 100%; 
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4);
+              
+         }
+        
+         .popupClass{
+            padding: 10px;
+            min-width: 350px;
+            width: 350px;
+            min-height: 220px;
+            margin: -150px auto;
+            background: #f3f3f3;
+            position: relative;
+            z-index: 103;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px #000;
+            top : 40%;
+         }
+       
+       .popupClass .closePopup{
+            float: right;
+            left: 18px;
+            position: relative;
+            top: -23px;
+            width: 26px;
+            font-size: x-large;
+            background-color: #f3f3f3;
+            border-radius: 50%;
+            cursor : pointer;
+       }
+       .popupClass .modalbutton{
+            position: relative;
+            width:100px;
+            background-color: #99E8EA;
+            cursor : pointer;
+            padding: 5px;
+            border: 1px solid grey;
+            border-radius: 3px;
+            box-shadow: 1px 1px 0.5px #888888;
+            
+        }
+        
+        .cssload-thecube {
+            width: 62px;
+            height: 62px;
+            margin: 0 auto;
+            margin-top: 41px;
+            z-index: 103;
+            position: fixed;
+            top: 50%;
+            left:50%;
+            transform: rotateZ(45deg);
+            -o-transform: rotateZ(45deg);
+            -ms-transform: rotateZ(45deg);
+            -webkit-transform: rotateZ(45deg);
+            -moz-transform: rotateZ(45deg);
+        }
+        .cssload-thecube .cssload-cube {
+            position: relative;
+            transform: rotateZ(45deg);
+            -o-transform: rotateZ(45deg);
+            -ms-transform: rotateZ(45deg);
+            -webkit-transform: rotateZ(45deg);
+            -moz-transform: rotateZ(45deg);
+        }
+        .cssload-thecube .cssload-cube {
+            float: left;
+            width: 50%;
+            height: 50%;
+            position: relative;
+            transform: scale(1.1);
+            -o-transform: scale(1.1);
+            -ms-transform: scale(1.1);
+            -webkit-transform: scale(1.1);
+            -moz-transform: scale(1.1);
+        }   
+        .cssload-thecube .cssload-cube:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(43,160,199);
+            animation: cssload-fold-thecube 2.76s infinite linear both;
+            -o-animation: cssload-fold-thecube 2.76s infinite linear both;
+            -ms-animation: cssload-fold-thecube 2.76s infinite linear both;
+            -webkit-animation: cssload-fold-thecube 2.76s infinite linear both;
+            -moz-animation: cssload-fold-thecube 2.76s infinite linear both;
+            transform-origin: 100% 100%;
+            -o-transform-origin: 100% 100%;
+            -ms-transform-origin: 100% 100%;
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+        }
+        .cssload-thecube .cssload-c2 {
+            transform: scale(1.1) rotateZ(90deg);
+            -o-transform: scale(1.1) rotateZ(90deg);
+            -ms-transform: scale(1.1) rotateZ(90deg);
+            -webkit-transform: scale(1.1) rotateZ(90deg);
+            -moz-transform: scale(1.1) rotateZ(90deg);
+        }       
+        .cssload-thecube .cssload-c3 {
+            transform: scale(1.1) rotateZ(180deg);
+            -o-transform: scale(1.1) rotateZ(180deg);
+            -ms-transform: scale(1.1) rotateZ(180deg);
+            -webkit-transform: scale(1.1) rotateZ(180deg);
+            -moz-transform: scale(1.1) rotateZ(180deg);
+        }
+        .cssload-thecube .cssload-c4 {
+            transform: scale(1.1) rotateZ(270deg);
+            -o-transform: scale(1.1) rotateZ(270deg);
+            -ms-transform: scale(1.1) rotateZ(270deg);
+            -webkit-transform: scale(1.1) rotateZ(270deg);
+            -moz-transform: scale(1.1) rotateZ(270deg);
+        }
+        .cssload-thecube .cssload-c2:before {
+            animation-delay: 0.35s;
+            -o-animation-delay: 0.35s;
+            -ms-animation-delay: 0.35s;
+            -webkit-animation-delay: 0.35s;
+            -moz-animation-delay: 0.35s;
+        }
+        .cssload-thecube .cssload-c3:before {
+            animation-delay: 0.69s;
+            -o-animation-delay: 0.69s;
+            -ms-animation-delay: 0.69s;
+            -webkit-animation-delay: 0.69s;
+            -moz-animation-delay: 0.69s;
+        }
+        .cssload-thecube .cssload-c4:before {
+            animation-delay: 1.04s;
+            -o-animation-delay: 1.04s;
+            -ms-animation-delay: 1.04s;
+            -webkit-animation-delay: 1.04s;
+            -moz-animation-delay: 1.04s;
+        }
+
+
+
+        @keyframes cssload-fold-thecube {
+            0%, 10% {
+                transform: perspective(115px) rotateX(-180deg);
+                opacity: 0;
+            }
+                25%,
+                75% {
+                        transform: perspective(115px) rotateX(0deg);
+                        opacity: 1;
+                    }
+                        90%,
+                        100% {
+                                transform: perspective(115px) rotateY(180deg);
+                                opacity: 0;
+                              }
+            }
+
+        @-o-keyframes cssload-fold-thecube {
+            0%, 10% {
+                        -o-transform: perspective(115px) rotateX(-180deg);
+                        opacity: 0;
+                    }
+            25%,
+                75% {
+                        -o-transform: perspective(115px) rotateX(0deg);
+                        opacity: 1;
+                    }
+            90%,
+                100% {
+                        -o-transform: perspective(115px) rotateY(180deg);
+                        opacity: 0;
+                    }
+            }
+
+            @-ms-keyframes cssload-fold-thecube {
+                0%, 10% {
+                    -ms-transform: perspective(115px) rotateX(-180deg);
+                    opacity: 0;
+                }
+                25%,
+                            75% {
+                    -ms-transform: perspective(115px) rotateX(0deg);
+                    opacity: 1;
+                }
+                90%,
+                            100% {
+                    -ms-transform: perspective(115px) rotateY(180deg);
+                    opacity: 0;
+                }
+            }
+
+            @-webkit-keyframes cssload-fold-thecube {
+                0%, 10% {
+                    -webkit-transform: perspective(115px) rotateX(-180deg);
+                    opacity: 0;
+                }
+                25%,
+                            75% {
+                    -webkit-transform: perspective(115px) rotateX(0deg);
+                    opacity: 1;
+                }
+                90%,
+                            100% {
+                    -webkit-transform: perspective(115px) rotateY(180deg);
+                    opacity: 0;
+                }
+            }
+            
+            @-moz-keyframes cssload-fold-thecube {
+                0%, 10% {
+                    -moz-transform: perspective(115px) rotateX(-180deg);
+                    opacity: 0;
+                }
+                25%,
+                            75% {
+                    -moz-transform: perspective(115px) rotateX(0deg);
+                    opacity: 1;
+                }
+                90%,
+                            100% {
+                    -moz-transform: perspective(115px) rotateY(180deg);
+                    opacity: 0;
+                }
+            }
+    </style>
+
+    <script type="text/javascript">
+     
+     var newWin=null;
+     var PAccountservice = null;
+     var PAccountalliance = null;
+     window.onload=function()
+     {      
+         $('.saveandaddmodalpopup').hide();
+         $('.cssload-thecube').hide();
+         /*
+         var editmode = "{!isEditMode}";
+         if(editmode){
+             alert('Changing the values of the following fields will delete the products you may have added  ');
+         }
+         */
+          PAcisservice = document.getElementById('{!$Component.theform.theBlock.isserviceprovider}').value;
+         // alert(PAcisservice);
+         PAccountservice = document.getElementById('{!$Component.theform.theBlock.PAccountserviceprovider}').value;
+         PAccountalliance = document.getElementById('{!$Component.theform.theBlock.PAccountAllianceType}').value;
+         $("[id='thePage:theform:theBlock:regtype'] option[value='Direct']").remove();
+         if(PAccountservice == "GSP" || PAccountalliance == "Global Systems Integrator"){
+             
+          }else{
+              //  $("[id='thePage:theform:theBlock:regtype'] option[value='Service Provider/Licensee']").remove();
+          }
+         if(PAcisservice!="True"){
+		         $("[id='thePage:theform:theBlock:regtype'] option[value='Service Provider/Licensee']").remove();
+         }
+         $("[id='thePage:theform:theBlock:regtype'] option[value='OEM']").remove();
+         var accountid = "{!Opportunity.AccountId}";
+         
+         if(accountid != null && accountid != "")
+             document.getElementById('{!$Component.theform.theBlock.hdnAccountID}').value = accountid;
+        
+        
+        /*var contactid = "{!Opportunity.End_User_Contact__c}";
+        if(contactid != null && contactid!= "")
+           document.getElementById('{!$Component.theform.theBlock.hdnContactID}').value = contactid;*/
+
+      
+        var Distiaccountid = "{!Opportunity.Distributor_6__c}";
+        if(Distiaccountid != null && Distiaccountid!= "" && isresellervar)
+           document.getElementById('{!$Component.theform.theBlock.hdnDistiAccountID}').value = Distiaccountid;
+
+        var Resellaccountid = "{!Opportunity.Reseller__c}";
+        if(Resellaccountid != null && Resellaccountid!= "")
+           document.getElementById('{!$Component.theform.theBlock.hdnResellAccountID}').value = Resellaccountid;
+      
+        
+        if(document.getElementById('{!$Component.theform.theBlock.hdnContactName}')!= null){
+            document.getElementById('targetContact').innerHTML = document.getElementById('{!$Component.theform.theBlock.hdnContactName}').value;
+        }
+        
+        if(document.getElementById('{!$Component.theform.theBlock.hdnResellContactName}')!= null){
+            document.getElementById('targetResellContact').innerHTML = document.getElementById('{!$Component.theform.theBlock.hdnResellContactName}').value;
+        }
+        
+        if(document.getElementById('{!$Component.theform.theBlock.hdnAccountName}')!= null){
+            document.getElementById('targetName').innerHTML = document.getElementById('{!$Component.theform.theBlock.hdnAccountName}').value;
+        }
+      
+        if(document.getElementById('{!$Component.theform.theBlock.hdnResellAccountName}')!= null){
+            document.getElementById('targetNameResell').innerHTML = document.getElementById('{!$Component.theform.theBlock.hdnResellAccountName}').value;
+        }
+          if(document.getElementById('{!$Component.theform.theBlock.hdnserviceProAccountName}')!= null){
+            document.getElementById('targetSPName').innerHTML = document.getElementById('{!$Component.theform.theBlock.hdnserviceProAccountName}').value;
+        }
+        //alert(contactid);alert(Distiaccountid);
+    }
+     
+     document.getElementById('saveandaddproducts').onclick = function(){
+        console.debug('button save and add product clicked');
+         
+     };
+    function saveandaddclick(){
+        console.debug('clicked save and add product button');
+        var isEdit = '{!isEditMode}';
+        var msg = document.getElementById("{!$Component.theform.theBlock.ErrorMsgBlock}").textContent;
+        var drtypesaved = '{!dealRegOpp.Transaction_Type_Test__c}';
+        var drrolesaved = '{!Opportunity.What_is_your_Role__c}';
+        var draccountsaved = '{!endUserAccountName}';
+        var drtypeform = document.getElementById("{!$Component.thePage.theform.theBlock.regtype}").value;
+        if(drtypeform == 'Resell with a distributor'){
+            var drroleform = document.getElementById("{!$Component.thePage.theform.theBlock.wtrv}").value;
+        }
+        var draccountform = document.getElementById("{!$Component.thePage.theform.theBlock.hdnAccountName}").value
+        console.debug(isEdit);
+        console.debug(drtypeform);
+        console.debug(drtypesaved);
+        console.debug(drroleform);
+        console.debug(drrolesaved);
+        console.debug(draccountform);
+        console.debug(draccountsaved);
+        console.debug(msg);
+        if((isEdit == 'true' && msg == ''  )&& (drtypesaved != drtypeform || draccountsaved != draccountform ||(drtypeform == 'Resell with a distributor' &&  drrolesaved != drroleform))){
+            /*  
+            if(drtypeform == '2 Tier' &&  drrolesaved != drroleform){
+                    console.debug('Inside If Condition');
+                    $('.saveandaddmodalpopup').show();
+                    $('.popupClass').show();
+                 }
+                 */
+                 console.debug('Inside If Condition');
+                 $('.saveandaddmodalpopup').show();
+                 $('.popupClass').show();
+            }
+        else if(isEdit == 'true' && msg == '' && drtypesaved == drtypeform && draccountsaved == draccountform){
+                 if(drtypeform == 'Resell with a distributor' &&  drrolesaved == drroleform){
+                     callupdateopportunity();
+                     $('.cssload-thecube').show();
+                 }
+                callupdateopportunity();
+                $('.cssload-thecube').show();
+        }
+        else if(isEdit == 'false'){
+            callupdateopportunity();
+            $('.cssload-thecube').show();
+        }
+    }
+               
+     function openLookupPopup(searchPage,name, id)  
+     {  
+        var pageName = "Deal";
+        var url="{!$Site.prefix}/apex/" + searchPage +"?namefield=" + name + "&idfield=" + id + "&parentPage=" + pageName;   
+        newWin=window.open(url, 'Popup','height=500,width=1000,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+     
+            if (window.focus)    
+                {    newWin.focus();   
+            }           return false;    
+     }
+     function openxspLookupPopup(searchPage,name, id)  
+     {  
+        var pageName = "Dealxsp";
+        var url="{!$Site.prefix}/apex/" + searchPage +"?namefield=" + name + "&idfield=" + id + "&parentPage=" + pageName;   
+        newWin=window.open(url, 'Popup','height=500,width=1000,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+     
+            if (window.focus)    
+                {    newWin.focus();   
+            }           return false;    
+     }
+    
+     
+     function openContactLookup(searchPage,name, id)  
+     {  
+        if(document.getElementById('targetName').innerHTML == ""){
+            alert("Please select End user Account");
+        }
+        else
+        { 
+            var accountId = document.getElementById('{!$Component.theform.theBlock.hdnAccountID}').value;
+            var contactEmail = '{!$Component.theform.theBlock.contactEmail}';
+            var contactPhone = '{!$Component.theform.theBlock.contactPhone}';
+            var contactMobile = '{!$Component.theform.theBlock.contactMobile}'; 
+            var contactFax = '{!$Component.theform.theBlock.contactFax}'; 
+            var contactTitle = '{!$Component.theform.theBlock.contactTitle}'; 
+            var contactFNameLocal = '{!$Component.theform.theBlock.firstNameLocal}';
+            var contactLNameLocal = '{!$Component.theform.theBlock.lastNameLocal}';            
+            
+            var url="{!$Site.prefix}/apex/" + searchPage +"?namef=" + name + "&idf=" + id + "&accId=" + accountId + "&emailf=" + contactEmail + "&phonef=" + contactPhone
+                             + "&mobilef=" + contactMobile + "&faxf=" + contactFax + "&titlef=" + contactTitle 
+                             +  "&firstnamelocalf=" + contactFNameLocal+ "&lastnamelocalf=" + contactLNameLocal ; 
+                             
+            newWin=window.open(url, 'Popup','height=500,width=600,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+     
+            if (window.focus)    
+                {    newWin.focus();   
+            }           
+            return false;
+         }    
+     }           
+     
+    function openDistiContactLookup(searchPage,name, id)  
+     {  
+        if(document.getElementById('thePage:theform:theBlock:hdnDistiAccountID').value == ""){
+            alert("Please select Distributor Account");
+        }
+        else
+        { 
+            var accountId = document.getElementById('thePage:theform:theBlock:hdnDistiAccountID').value;
+            var url="{!$Site.prefix}/apex/" + searchPage +"?namef=" + name + "&idf=" + id + "&accId=" + accountId ;
+            newWin=window.open(url, 'Popup','height=500,width=600,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+      
+            if (window.focus)    
+                {    newWin.focus();   
+            }           
+            return false;
+         }    
+     }
+     
+    function openResellContactLookup(searchPage,name, id)  
+     {  
+        if(document.getElementById('thePage:theform:theBlock:hdnResellAccountID').value == ""){
+            alert("Please select Partner Account");
+        }
+        else
+        { 
+            var accountId = document.getElementById('thePage:theform:theBlock:hdnResellAccountID').value;
+            var url="{!$Site.prefix}/apex/" + searchPage +"?namef=" + name + "&idf=" + id + "&accId=" + accountId ;
+            newWin=window.open(url, 'Popup','height=500,width=600,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+      
+            if (window.focus)    
+                {    newWin.focus();   
+            }           
+            return false;
+         }    
+     }
+       
+     function closeLookupPopup()  
+     {     
+            if (null!=newWin)     
+            {     
+                /*if(document.getElementById('thePage:theform:theBlock:hdnContactID').value != ""){
+                    refreshEndUserConInfo (); 
+                }  */                
+                
+                newWin.close();     
+            }    
+     
+     }
+         
+    function partnerUI()
+     {
+        if(document.getElementById('{!$Component.theform.theBlock.regforpartner}').value=='Distributor'){ 
+            //Partner
+            document.getElementById('{!$Component.theform.theBlock.partneracclabelid}').style.visibility="visible";
+            document.getElementById('{!$Component.theform.theBlock.partneraccount}').style.visibility="visible";
+            document.getElementById('imgpartner').style.visibility="visible";
+            //Partner opportunity owner
+            document.getElementById('{!$Component.theform.theBlock.partneroppownerlabelid}').style.visibility="visible";
+            document.getElementById('{!$Component.theform.theBlock.partneroppowner}').style.visibility="visible";
+            document.getElementById('imgpartneroppowner').style.visibility="visible";
+        }
+        else {
+            //Partner
+            document.getElementById('{!$Component.theform.theBlock.partneracclabelid}').style.visibility="hidden";
+            document.getElementById('{!$Component.theform.theBlock.partneraccount}').style.visibility="hidden";
+            //document.getElementById('imgpartner').style.display="none";
+            document.getElementById('imgpartner').style.visibility="hidden";
+            
+            //Partner opportunity owner
+            document.getElementById('{!$Component.theform.theBlock.partneroppownerlabelid}').style.visibility="hidden";
+            document.getElementById('{!$Component.theform.theBlock.partneroppowner}').style.visibility="hidden";
+            document.getElementById('imgpartneroppowner').style.visibility="hidden";
+        }
+     }
+     
+     //to hide the transaction Type 'Direct' on change
+     function hideDirect(){
+         PAciisservice = document.getElementById('{!$Component.theform.theBlock.isserviceprovider}').value;
+        $("[id='thePage:theform:theBlock:regtype'] option[value='Direct']").remove();
+         if(PAccountservice == "GSP" || PAccountalliance == "Global Systems Integrator"){
+             
+          }else{
+              //$("[id='thePage:theform:theBlock:regtype'] option[value='Service Provider/Licensee']").remove();
+          }
+         if(PAciisservice!="True"){
+			         $("[id='thePage:theform:theBlock:regtype'] option[value='Service Provider/Licensee']").remove();
+         }
+        $("[id='thePage:theform:theBlock:regtype'] option[value='OEM']").remove();        
+     }
+     
+      
+    <!-- AR 3186 : Refresh Contact details on hover -->   
+    /*function refreshEndUserConInfo(){
+
+        rerenderContactDetail(document.getElementById('thePage:theform:theBlock:hdnContactID').value);
+        
+    } */   
+        
+          var overlay;
+          $(document).ready(function(){
+            $('.saveandaddmodalpopup').hide();
+            overlay = $('<div id="overlay"></div>');
+          });
+          
+        function closePopUp(){
+
+              $('.popupClass').hide();
+              $('.saveandaddmodalpopup').hide();
+          }
+        function showloader(){
+               $('.popupClass').hide();
+               $('.cssload-thecube').show();
+               $('.saveandaddmodalpopup').show();
+        }
+        
+        
+        document.getElementById("aftereffects") = function(){
+            $('.saveandaddmodalpopup').hide();
+        };
+        window.onclick = function(event) {
+              if (event.target == saveandaddmodalpopup) {
+                $('.saveandaddmodalpopup').hide();
+         }
+        }
+         
+     </script>
+    <div class="cssload-thecube">
+        <div class="cssload-cube cssload-c1"></div>
+        <div class="cssload-cube cssload-c2"></div>
+        <div class="cssload-cube cssload-c4"></div>
+        <div class="cssload-cube cssload-c3"></div>
+    </div>
+    <div id="saveandaddpopup" class="saveandaddmodalpopup">
+          <div class="popupClass">
+              <div class="closePopup" onclick="closePopUp()"><center>&times;</center></div>
+             
+              You have made a modification to one of the following fields:<br />
+              <ul>
+                  <li>Transaction Type</li>
+                  <li>End User Account Name</li>
+                  <li>What is your role?</li>
+                  
+              </ul>
+              <i>This  modification will require  removal of your previously added product line items.<br /><br />
+                Please click continue to add your product line items again and submit your deal for approval.
+                </i>
+              <br /><br />
+              <br />
+              <input type="button" id="buttonid" class = "modalbutton" value="Continue" onclick="callupdateopportunity() ; showloader()" style="float:left; left:10%;" />
+              <input type="button" id="cancel" class = "modalbutton" value="Cancel" onclick="closePopUp()" style="float:right; right:10%;"/>
+              
+             
+          </div>
+      </div>
+
+     
+    <apex:sectionHeader title="Deal Registration & Opportunity Management"/>
+    <apex:form id="theform">
+    <apex:pageBlock mode="edit" id="theBlock">
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!UpdateOpportunity}" id="saveandaddproducts" rendered="{!!isEditMode}" value="Save & Add Products" rerender="ErrorMsgBlock" status="msg_refresh1"/>
+            <apex:commandButton oncomplete="saveandaddclick()" action="{!UpdateOpportunity}" id="saveandaddproducts2" rendered="{!isEditMode}" value="Save & Add Products" rerender="ErrorMsgBlock" status="msg_refresh1"/>
+            <apex:commandButton action="{!Cancel}" value="Cancel"/>
+            <apex:actionFunction name="callupdateopportunity" id="aftereffects" action="{!UpdateOpportunity2}"/>
+        </apex:pageBlockButtons>
+        <apex:pagemessages id="ErrorMsgBlock"></apex:pagemessages>
+        <table style="width:100%;height:100%;border:0">
+            <tr>
+                <td colspan="4">
+                    <h2 style="font-size:1.2em"><apex:outputLabel value="{!$Label.DRType}" /></h2>
+                </td>
+            </tr>
+             <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>
+            
+            
+            <tr>
+            
+                  <td><b><apex:outputLabel value="{!$Label.DRTransactionType}" /> </b>
+                  <img src="/s.gif" class="helpOrb" title="{!$ObjectType.Opportunity.Fields.Transaction_Type_Test__c.inlineHelpText}" />
+                  </td>
+                      
+                      
+                <td>
+                        <apex:actionregion >
+                        
+                        <apex:inputField id="regtype" value="{!dealRegOpp.Transaction_Type_Test__c}" required="true" ><apex:actionSupport event="onchange" action="{!Changetype}" rerender="theBlock" status="msg_refresh1" onComplete="hideDirect();return false;"></apex:actionSupport></apex:inputField> </apex:actionregion>
+                        <!--<apex:actionFunction name="partnerUI"  />-->
+                        <!--<apex:actionSupport event="onchange" rerender="partneraccount,partneroppowner" status="status"/></apex:inputField>
+                        <apex:actionStatus startText="applying value..." id="status"/>-->
+                         <apex:actionStatus id="msg_refresh1" stopText="">
+                 <apex:facet name="start">
+                      <apex:outputPanel >
+                            <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 40px; position: relative; left:400px;top:200px;"/></div>
+                        </apex:outputPanel>
+                    </apex:facet>
+                   </apex:actionStatus>
+                </td>
+                 
+                  <td><b><apex:outputLabel value="{!$Label.DRWhatisyourrole}" rendered="{!(showWTR)}" id="wtrl"/></b></td>
+               <td>
+                         
+                          <apex:actionregion >
+                          
+                          <apex:inputField id="wtrv" value="{!Opportunity.What_is_your_Role__c}" rendered="{!(showWTR)}" required="True"><apex:actionSupport event="onchange" action="{!autofillDistributor}" rerender="partneraccount,partneroppowner,disticheck,targetNameDisti,distiContactTest,targetDistiContact,hdnDistiAccountID,hdnDistiAccountName,hdnDistiContactName,hdnDistiContactID" status="msg_refresh2"/> </apex:inputfield> </apex:actionregion>
+                          <apex:actionStatus id="msg_refresh2" stopText="">
+                          <apex:facet name="start">
+                          <apex:outputPanel >
+                            <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 40px; position: relative; left:400px;top:200px;"/></div>
+                          </apex:outputPanel>
+                        </apex:facet>
+                      </apex:actionStatus>
+                    </td>
+                 
+              
+            </tr>
+              
+              <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr> <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>
+                <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>
+              
+              <tr>
+                <td colspan="4">
+                    <h2 style="font-size:1.2em"><apex:outputLabel value="{!$Label.DRContactInfo}" /></h2>
+                </td>
+            </tr>
+             <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>
+            <tr>  
+            
+            <td><b><apex:outputLabel value="{!$Label.DREndUserAccountName}" rendered="{!dealRegOpp.Transaction_Type_Test__c!='Service Provider/Licensee'}"/><apex:outputLabel value="Partner Account" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}"/></b></td>                
+                <td>
+                    <apex:outputPanel styleClass="requiredInput" layout="block" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                            <div id="targetName" style="float:left;font-size:12px">{!endUserAccountName}</div>  &nbsp;                    
+                             <!-- Modified the Code by JADMR01 on 13/2/2014 
+                                        Navigation to New Search Screen for Account -->
+                          
+                           <a href="#" onclick="openLookupPopup('DE_AccSearch_VFP','{!$Component.hdnAccountName}', '{!$Component.hdnAccountID}'); return false" style="{!popupIconStyle}">
+                           <!--
+                           <a href="#" onclick="openLookupPopup('CAEndUserAccountSearch','{!$Component.hdnAccountName}', '{!$Component.hdnAccountID}'); return false">
+                           -->
+                               <img title="Account Name Lookup (New Window)" class="lookupIcon" alt="Account Name Lookup (New Window)" src="/s.gif"/>                 
+                           </a>      
+
+                   </apex:outputPanel>
+                   <apex:inputHidden id="hdnAccountName" value="{!endUserAccountName}"/>
+                   <apex:inputHidden id="hdnAccountID" value="{!hdnAccountId}"/>  
+                </td>
+            
+            <td><b><apex:outputLabel value="{!$Label.DREndUserContact}" rendered="{!dealRegOpp.Transaction_Type_Test__c!='Service Provider/Licensee'}"/><apex:outputLabel value="Partner Contact Name" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}"/></b></td>
+                  
+                <td>
+                     <apex:outputPanel styleClass="requiredInput" layout="block" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                         <div id="targetContact" style="float:left;font-size:12px">{!endUserContact}</div> &nbsp; 
+                            <a href="#" onclick="openContactLookup('CAEndUserContactSearch','{!$Component.hdnContactName}', '{!$Component.hdnContactID}'); return false" style="{!popupIconStyle}"> 
+                                <img title="Contact Lookup (New Window)" class="lookupIcon" alt="Contact Lookup (New Window)" src="/s.gif"/>                
+                            </a>
+                         </apex:outputPanel>
+                    <apex:inputHidden id="hdnContactName" value="{!endUserContact}"/>                         
+                    <apex:inputHidden id="hdnContactID" value="{!hdnContactId}"/> 
+                </td>
+                
+                
+               
+             <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr> <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr> <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>    
+            </tr>
+              <tr>
+                <td colspan="4">
+                    <h2 class="mainTitle"><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>
+             <tr>
+                <td colspan="4"><h2 style="font-size:1.2em"><apex:outputLabel value="{!$Label.DRDetails}"/></h2></td>
+            </tr>
+             <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>
+              
+            <tr>
+                <td><b><apex:outputLabel value="{!$Label.DROpportunityName}"/></b></td>
+                <td>
+                    <apex:outputPanel styleClass="requiredInput" layout="block" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                    
+                    <apex:inputText value="{!Opportunity.Name}" id="OpportunityName" required="true" />
+                    </apex:outputPanel>
+                </td>
+                <td><b><apex:outputLabel value="{!$Label.DRCloseDate}"/></b></td>
+                <td><apex:inputField value="{!Opportunity.CloseDate}"/></td>
+            </tr>
+            
+             
+             <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>
+          
+            <tr>
+                 <td><b><apex:outputLabel value="{!$Label.DRCurrency}"/></b></td> 
+                <td>
+                  <apex:outputField value="{!Opportunity.CurrencyIsoCode}" rendered="{!isEditMode}"/>
+                  <apex:inputField value="{!Opportunity.CurrencyIsoCode}" rendered="{!!isEditMode}"/>
+                 </td>       
+                <td><b><apex:outputLabel value="{!$Label.DRAdditionalInfo}"/></b></td>
+                <td>
+                  <apex:inputField value="{!Opportunity.Additional_Deal_Registration_Information__c}"/>
+                </td>
+            </tr>
+                                  
+             
+             <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>
+             <tr>
+                <td><b><apex:outputLabel value="{!$Label.DRdidthe_dealoriginatefromacampaign}" /></b></td>
+                <td>
+                        <apex:inputField id="DealFrmCamp" value="{!Opportunity.Did_the_deal_originate_from_a_campaign__c}" required="true"/>
+                </td>
+                <td><b><apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Campaign_Name__c.Label}"/></b></td>
+                <td><apex:inputField value="{!Opportunity.Campaign_Name__c}"/></td>
+               
+            </tr>
+             
+             <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>
+              <tr>            
+           
+                 <td><b><apex:outputLabel id="partneracclabelid" value="{!$Label.DRPartnerAccount}" rendered="{!dealRegOpp.Transaction_Type_Test__c !='Service Provider/Licensee'}"/></b></td>
+                 <td>
+                     <apex:outputPanel id="partneraccount" styleClass="requiredInput" layout="block" rendered="{!dealRegOpp.Transaction_Type_Test__c !='Service Provider/Licensee'}">
+                     <!--rendered="{!Opportunity.Registering_on_behalf_of_Partner__c}"-->
+                         <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                         <!--apex:actionFunction name="receiveResult" action="{!RefershDealRegistrationProg}" /-->
+                        <!--<apex:inputText id="targetNameResell" style="float:left;font-size:12px:visibility:hidden" value="{!accvalue}">{!Opportunity.Reseller__r.Name}</apex:inputText>-->
+                        <div id="targetNameResell" style="float:left;font-size:12px">{!resellbutorAccName}</div>&nbsp;
+                        <a href="#" onclick="openLookupPopup('CAResellerAccountSearch','{!$Component.hdnResellAccountName}', '{!$Component.hdnResellAccountID}'); return false" style="{!popupIconStyle}">
+                            <img id="imgpartner" title="Account Name Lookup (New Window)" class="lookupIcon" alt="Account Name Lookup (New Window)" src="/s.gif" />                 
+                        </a>
+                        
+                     </apex:outputPanel>  
+                   <apex:inputHidden id="hdnResellAccountName" value="{!resellbutorAccName}"/>
+                   <apex:inputHidden id="hdnResellAccountID" value="{!hdnresellAccountId}"/>  
+                 </td>
+                 <td><b><apex:outputLabel id="partneroppownerlabelid" value="{!$Label.DRPartnerOwner}" rendered="{!dealRegOpp.Transaction_Type_Test__c !='Service Provider/Licensee'}"/></b></td>
+                <td>
+                    <apex:outputPanel id="partneroppowner" styleClass="requiredInput" layout="block" rendered="{!dealRegOpp.Transaction_Type_Test__c !='Service Provider/Licensee'}">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                        <div id="targetResellContact" style="float:left;font-size:12px;">{!endresellUserContact}</div>  &nbsp;
+                        <a href="#" onclick="openResellContactLookup('caresellcontactsearch','{!$Component.hdnResellContactName}', '{!$Component.hdnResellID}'); return false" style="{!popupIconStyle}">
+                            <img id="imgpartneroppowner" title="Contact Name Lookup (New Window)" class="lookupIcon" alt="Contact Name Lookup (New Window)" src="/s.gif" />
+                        </a>
+                    </apex:outputPanel>
+                   <apex:inputHidden id="hdnResellContactName" value="{!endresellUserContact}"/>
+                   <apex:inputHidden id="hdnResellID" value="{!hdnresellContactId}"/>                                                                          
+                 </td>
+            </tr>
+            
+             
+             <tr>
+                <td colspan="4">
+                    <h2><apex:outputLabel value="" /></h2>
+                </td>
+            </tr>
+               
+            <tr>          
+                <td>
+                    <b>
+                        <apex:outputLabel value="{!$Label.DRDistributor}" rendered="{!showWTR}"/>
+                        <apex:outputLabel id="SerProplLbl"  value="{!$ObjectType.Opportunity.fields.Cloud_Platform__c.label}" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}" >
+                            <img src="/s.gif" class="helpOrb" title="{!$ObjectType.Opportunity.fields.Cloud_Platform__c.inlineHelpText}" />
+                        </apex:outputLabel>
+                    </b>
+                </td>
+                 <td>
+                     <apex:outputField id="ReadonlySerProp1" value="{!Opportunity.Cloud_Platform__c}" rendered="{!(dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee' && isEditMode)}"/> 
+                     <apex:inputField id="SerPropl"  value="{!Opportunity.Cloud_Platform__c}" rendered="{!(dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee' && !isEditMode)}" required="True" /> 
+                  
+                     <apex:outputPanel rendered="{!showWTR}">
+                        <apex:outputPanel rendered="{!showWTR}"/>
+                     <apex:outputpanel id="disticheck"><div id="targetNameDisti" style="float:left;font-size:12px">{!distributorAccName}</div></apex:outputpanel>  &nbsp;     
+                                     <apex:outputpanel rendered="{!showWTR}" >     
+                                    <a href="#" onclick="openLookupPopup('CADistributorAccountSearch','{!$Component.hdnDistiAccountName}', '{!$Component.hdnDistiAccountId}');return false;" style="{!popupIconStyle}">
+                                        
+                                        <img title="Account Name Lookup (New Window)" class="lookupIcon" alt="Account Name Lookup (New Window)" src="/s.gif"/>                 
+                                    </a>  
+                                    </apex:outputpanel>
+                                   </apex:outputPanel> 
+                   <apex:inputHidden id="hdnDistiAccountID" value="{!hdnDistiAccountId}"/> 
+                   <apex:inputHidden id="hdnDistiAccountName" value="{!distributorAccName}"/>
+                  
+                 </td>
+                <td>
+                    <b>
+                        <apex:outputLabel value="{!$Label.DRDistributorContact}" rendered="{!showWTR}"/>
+                        <apex:outputLabel id="SerProLbl"  value="{!$ObjectType.Opportunity.fields.Service_Provider_Client__c.label}" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}" >
+                            <img src="/s.gif" class="helpOrb" title="{!$ObjectType.Opportunity.fields.Service_Provider_Client__c.inlineHelpText}" />
+                        </apex:outputLabel>
+                   </b>
+                </td>
+                <td> 
+                <apex:outputPanel styleClass="requiredInput" layout="block" rendered="{!showXsp}">
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"></apex:outputPanel>
+                    <div id="targetSPName" style="float:left;font-size:12px">{!serviceProAccountName}</div>
+                    <a href="#" onclick="openxspLookupPopup('DE_ServiceProvider_VFP','{!$Component.hdnserviceProAccountName}', '{!$Component.hdnserviceProAccountId}'); return false" style="{!popupIconStyle}">
+                           <!--
+                           <a href="#" onclick="openLookupPopup('CAEndUserAccountSearch','{!$Component.hdnAccountName}', '{!$Component.hdnAccountID}'); return false">
+                           -->
+                               <img title="Account Name Lookup (New Window)" class="lookupIcon" alt="Account Name Lookup (New Window)" src="/s.gif"/>                 
+                    </a>  
+                </apex:outputPanel> 
+                 <apex:inputHidden id="hdnserviceProAccountName" value="{!serviceProAccountName}"/>
+                 <apex:inputHidden id="hdnserviceProAccountId" value="{!hdnserviceProAccountId}"/> 
+                <apex:outputPanel rendered="{!showWTR}">
+                        <apex:outputPanel rendered="{!showWTR}"/>
+                    <apex:outputPanel id="distiContactTest">
+                            <div id="targetDistiContact" style="float:left;font-size:12px">{!endDistiUserContact}</div>
+                      </apex:outputPanel> &nbsp;    
+                        <apex:outputpanel rendered="{!showWTR}" >
+                            <a href="#" onclick="openDistiContactLookup('cadisticontactsearch','{!$Component.hdnDistiContactName}', '{!$Component.hdnDistiContactID}'); return false" style="{!popupIconStyle}">
+                                        <img title="Contact Name Lookup (New Window)" class="lookupIcon" alt="Contact Name Lookup (New Window)" src="/s.gif"/> 
+                              </a>   
+                        </apex:outputpanel>       
+                    </apex:outputPanel>     
+                   <apex:inputHidden id="hdnDistiContactName" value="{!endDistiUserContact}"/>
+                   <apex:inputHidden id="hdnDistiContactID" value="{!hdnDistiContactId}"/>                                                                         
+                 </td> 
+            </tr> 
+            
+            
+            <tr>
+                <td>
+                    <b><apex:outputLabel value="{!$ObjectType.Opportunity.fields.Pulldown__c.label}" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}" ></apex:outputLabel></b>
+            </td>
+                <td>
+                    <apex:inputField value="{!Opportunity.Pulldown__c}" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}"/> 
+                </td>
+            <td>
+                   <b> <apex:outputLabel value="{!$ObjectType.Opportunity.fields.Strategic_Outsourcing_Contract_End_Date__c.label}" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}" ></apex:outputLabel></b>
+            </td>
+                <td>
+                    <apex:inputField value="{!Opportunity.Strategic_Outsourcing_Contract_End_Date__c}" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}"/>
+                </td>
+          </tr>
+            <tr>
+                <td>
+                    <b><apex:outputLabel value="{!$ObjectType.Opportunity.fields.Annual_ISV_spend__c.label}" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}" ></apex:outputLabel></b>
+            </td>
+                <td>
+                    <apex:inputField value="{!Opportunity.Annual_ISV_spend__c}" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}"/>
+                </td>
+            <td>
+                    <b><apex:outputLabel value="{!$ObjectType.Opportunity.fields.of_MIPS__c.label}" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}" ></apex:outputLabel></b>
+            </td>
+                <td>
+                    <apex:inputField value="{!Opportunity.of_MIPS__c}" rendered="{!dealRegOpp.Transaction_Type_Test__c=='Service Provider/Licensee'}"/>
+                </td>
+          </tr>
+             <tr>
+                
+                <td>
+                    <apex:inputHidden id="contactEmail" value="{!Opportunity.End_User_Contact_E_mail__c}"/>  
+                </td>
+                
+                <td>
+                    <apex:inputHidden id="contactPhone" value="{!Opportunity.End_User_Contact_Phone__c}"/>
+                </td>
+            </tr>
+            <tr>
+                
+                <td>
+                    <apex:inputHidden id="contactMobile" value="{!Opportunity.End_User_Contact_Mobile__c}"/> 
+                </td>
+                
+                <td>
+                    <apex:inputHidden id="contactFax" value="{!Opportunity.End_User_Contact_Fax__c}"/>   
+                </td>
+            </tr>
+            <tr>
+               
+                <td>
+                    <apex:inputHidden id="contactTitle" value="{!Opportunity.End_User_Contact_Title__c}"/>   
+                </td>
+                
+                <td>
+                    <apex:inputHidden id="firstNameLocal" value="{!Opportunity.End_User_First_Name_Local__c}"/>   
+                </td>
+            </tr>
+            <tr>
+                
+                <td>
+                    <apex:inputHidden value="{!Opportunity.End_User_Company_Name_Local__c}"/>    
+                </td>
+
+               
+                <td>
+                    <apex:inputHidden id="lastNameLocal" value="{!Opportunity.End_User_Last_Name_Local__c}"/>    
+                </td>
+            </tr>
+             <tr>
+                
+                <td>
+                    <apex:inputHidden id="PAccountserviceprovider" value="{!PAccountserviceprovider}" ></apex:inputHidden> 
+                </td>
+				<td>
+		        <apex:inputHidden id="isserviceprovider" value="{!isserviceprovider}" ></apex:inputHidden> 
+				 </td>
+               
+                <td>
+                    <apex:inputHidden id="PAccountAllianceType" value="{!PAccountAllianceType}"/>    
+                </td>
+            </tr>
+                    
+
+           
+        </table>    
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

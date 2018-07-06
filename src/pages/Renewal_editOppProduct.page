@@ -1,0 +1,291 @@
+<apex:page standardController="Opportunity" extensions="Renewal_editOppProduct" sidebar="false">
+
+<script language="javascript">
+
+function ShowOrHide()
+{
+  if(document.getElementById('j_id0:form1:pb1:pbs2:j_id69').style.visibility == 'visible' || document.getElementById('j_id0:form1:pb1:pbs2:j_id69').style.visibility == '')
+  {
+   document.getElementById('j_id0:form1:pb1:pbs2:j_id69').style.visibility = 'hidden';
+     document.getElementById('j_id0:form1:pb1:pbs2:j_id69').style.width = 0;
+     document.getElementById('j_id0:form1:pb1:pbs2:j_id69').style.height = 0;
+  }
+  else
+  {
+   document.getElementById('j_id0:form1:pb1:pbs2:j_id69').style.visibility = 'visible';
+     document.getElementById('j_id0:form1:pb1:pbs2:j_id69').style.width = '100%';
+     document.getElementById('j_id0:form1:pb1:pbs2:j_id69').style.height = '100%';
+  }
+  return false;
+}
+    
+    function performArrCalculation(pos){
+        console.log('pos'+pos)
+    	ArrCalculation_action(pos);
+    }
+    
+   
+    
+</script>
+
+ <apex:form id="form1" >
+
+     <apex:actionFunction name="ArrCalculation_action" action="{!getDaysBetweenLineItem}"  status="msgUF" rerender="pbs1,pbs2,errors">
+     	<apex:param name="positionvalue" value="" assignTo="{!position}" />
+     </apex:actionFunction>
+	 <apex:actionFunction name="massupdatedates" action="{!massupdatedates}" rerender="pbs1,pbs2,errors"></apex:actionFunction>
+          <!--samap01 --revrec-->
+             <apex:actionFunction name="masseditproducts" action="{!masseditproducts}" rerender="pbs1,pbs2,errors">
+	 </apex:actionFunction>
+    
+     
+ <apex:pagemessage summary="There are no Opportunity Products added" severity="Info" rendered="{!showMsg}" />
+     <apex:pageMessages id="errors"/>
+     
+     <apex:actionStatus id="msgUF">
+                          <apex:facet name="start">
+                               <apex:outputPanel >
+                                     <apex:commandButton value="Processing..." status="myStatus" disabled="true"/>
+                                     <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 20px; position: absolute; left:50%;top:50%;"/></div>
+                                 </apex:outputPanel>
+                             </apex:facet>
+                 </apex:actionStatus>
+ 
+ <apex:sectionHeader subtitle="{!opp_temp.name}" title="Edit Renewing Products"/>
+ <apex:outputLink value="/{!opp_temp.Id}" >Return to Opportunity </apex:outputLink>
+        <apex:pageBlock id="pb1">
+            <apex:pageBlockSection id="pbs1" title="Overview" >
+                <apex:pageblockSectionItem >
+                        <apex:outputLabel value="Sales Price (LC)" for="ProjectedRenewal"/>
+                        <apex:inputText id="ProjectedRenewal" value="{!TimeRenewal}" required="True"/>                        
+                </apex:pageblockSectionItem>
+				
+				<apex:pageblockSectionItem >
+                        <apex:outputLabel value="Stretch (LC)" for="Stretch"/>
+                        <apex:inputText id="Stretch" value="{!PageStretch}"/>                        
+                </apex:pageblockSectionItem>
+				
+				
+                <apex:pageblockSectionItem >
+                        <apex:outputLabel value="New Deal Term (Months)" for="dealTerm"/>
+                        <apex:outputField id="dealTerm" value="{!opp_temp.New_Deal_Term_months__c}"/>
+                </apex:pageblockSectionItem>
+                
+				
+				
+                <apex:pageblockSectionItem >
+                    <apex:outputLabel value="Stretch Deal Term (Months)" for="StretchDealTerm"/>
+                    <apex:inputField id="StretchDealTerm" value="{!opp_temp.Stretch_Deal_Term_Months__c}"/>
+                </apex:pageblockSectionItem>
+
+                <apex:pageblockSectionItem >
+                        <apex:outputLabel value="Total Raw Maint.Calc" for="TotalRawMaintenanceCacl"/>
+                        <apex:outputText id="TotalRawMaintenanceCacl" value="{0, number, ###,###,###,###.##}">
+                           <apex:param value="{!opp_temp.Total_Raw_Maintenance_Cacl__c}" />
+                           </apex:outputText>
+                </apex:pageblockSectionItem>
+
+                <apex:pageblockSectionItem >
+                        <apex:outputLabel value="Sales Price/Stretch Gap Reason" for="SalesPriceStretchGap"/>
+                        <apex:inputField id="SalesPriceStretchGap" value="{!opp_temp.Stretch_Sales_Price_Gap_Reason__c}"/>
+                </apex:pageblockSectionItem>
+               
+                <apex:pageBlocksectionItem >
+                        <apex:outputLabel value="Quote" for="Quote"/>
+                        <apex:inputText id="Quote"  value="{!opp_temp.Quote_Number__c}" />
+                </apex:pageBlocksectionItem>
+
+                <apex:pageBlocksectionItem >
+                        <apex:outputLabel value="Contract No" for="ContractNo"/>
+                        <apex:inputText id="ContractNo" value="{!opp_temp.Contract_Number_EU4cast__c}" />
+                </apex:pageBlocksectionItem>
+                <apex:pageBlocksectionItem >
+                        <apex:outputLabel value="Reason duration is < 1 year"/>
+                        <apex:inputField id="reasonduration" value="{!opp_temp.Reason_duration_is_1_year__c}" />
+                </apex:pageBlocksectionItem>
+                <apex:pageBlocksectionItem >
+                        <apex:outputLabel value="Status at end of term"/>
+                        <apex:inputField id="Stautsatendofterm" value="{!opp_temp.Status_at_end_of_term__c}" />
+                </apex:pageBlocksectionItem>
+                <apex:pageBlocksectionItem >
+                        <apex:outputLabel value="Start Date"/>
+                        <apex:outputField id="oppstartdate" value="{!opp_temp.Start_Date__c}" />
+                </apex:pageBlocksectionItem>
+                <apex:pageBlocksectionItem >
+                        <apex:outputLabel value="End Date"/>
+                        <apex:outputField id="oppenddate" value="{!opp_temp.End_Date__c}" />
+                </apex:pageBlocksectionItem>
+                <apex:pageBlocksectionItem >
+                        <apex:outputLabel value="Baseline ATTRF"/>
+                        <apex:inputField id="oppbaseline" value="{!opp_temp.Baseline_ATTRF_LC__c}" />
+                </apex:pageBlocksectionItem><br/>
+
+ <apex:commandButton value="Save Opportunity" action="{!updateOpportunity}"/>                       
+                       
+            </apex:pageBlockSection>            
+
+
+            <apex:pageBlockSection columns="1" id="pbs2" title="Details" >
+				<apex:outputPanel style="width:25%;">
+                    <apex:commandButton value="Save Products" action="{!updateProducts}" />
+					<apex:commandButton value="Mass Update Dates" action="{!massupdatedates}" />
+                        <apex:commandButton value="Mass Edit Products" action="{!masseditproducts}" /> <!--samap01 -->
+					</apex:outputPanel>
+                    <!--<apex:outputlink OnClick="return ShowOrHide()">Show/Hide Details</apex:outputlink> -->                 
+                  
+                           <apex:pageblocksection columns="4" >               
+                                   <apex:pageblockSectionItem >                            
+                                           <apex:outputLabel value="CA Contract Product Name" for="CA_prod_Name"/>
+                                           <apex:inputText id="CA_Prod_Name" value="{!Product_Name_Filter}"/>
+                                   </apex:pageblockSectionItem>
+                                    <apex:pageblockSectionItem >                      
+                                           <apex:outputLabel value="Orig.Exp.Date(MM/DD/YYYY)" for="Orig_Exp_Date"/>
+                                           <apex:inputText Title="{MM/DD/YYYY}" id="Orig_Exp_Date" value="{!Orig_Exp_Date_Filter}"/>
+                                    </apex:pageblockSectionItem>                      
+                                    
+                                    <apex:commandButton value="Apply Filter" action="{!applyFilter}"/>                
+                                    <apex:commandButton value="Clear Filter" action="{!clearFilter}" />                 
+                              </apex:pageblocksection>
+                  
+					<apex:variable var="priceindex" value="{!0}" />
+                	<apex:variable var="startindex" value="{!0}" />
+                	<apex:variable var="endindex" value="{!0}" />
+                	
+                	
+                      <apex:pageBlockTable value="{!oppItmList}" var="val" id="pbt1">
+
+                       <apex:column >       
+                        <apex:facet name="header">   
+                          <apex:commandLink action="{!ViewData}" value="CA Contract Product Name {!IF(sortExpression=='CA_Contract_Product__c',IF(sortDirection='ASC','▲','▼'),'')}" id="nameSort"> 
+                            <apex:param value="CA_Contract_Product__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                            </apex:commandLink>       
+                           </apex:facet>      
+                              <apex:outputField value="{!val.CA_Contract_Product__c}" />
+                        </apex:column>     
+                         
+                        <apex:column > 
+                         <apex:facet name="header">
+                           <apex:commandLink action="{!ViewData}" value="Business Type{!IF(sortExpression=='Business_Type__c',IF(sortDirection='ASC','▲','▼'),'')}" id="BusinessSort">      
+                             <apex:param value="Business_Type__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                           </apex:commandLink>  
+                         </apex:facet>
+                            <apex:outputField value="{!val.Business_Type__c}"/>
+                        </apex:column>
+                      <!--samap01 Revrec US370554-->
+                        <apex:column > 
+                        <apex:facet name="header">
+                            <apex:commandLink action="{!ViewData}" value="Material Text{!IF(sortExpression=='Material_Text__c',IF(sortDirection='ASC','▲','▼'),'')}" id="Materialtext">      
+                                <apex:param value="Material_Text__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                            </apex:commandLink>  
+                        </apex:facet>
+                        <apex:outputField value="{!val.Material_Text__c}"/>
+                    </apex:column>
+                      <apex:column > 
+                        <apex:facet name="header">
+                            <apex:commandLink action="{!ViewData}" value="License Type{!IF(sortExpression=='License__c',IF(sortDirection='ASC','▲','▼'),'')}" id="Licensetype">      
+                                <apex:param value="License__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                            </apex:commandLink>  
+                        </apex:facet>       
+                           <apex:outputField value="{!val.License__c}"/>
+                        
+                    </apex:column>
+                      <apex:column > 
+                        <apex:facet name="header">
+                            <apex:commandLink action="{!ViewData}" value="License Classification{!IF(sortExpression=='License_Classification__c',IF(sortDirection='ASC','▲','▼'),'')}" id="Licenseclassification">      
+                                <apex:param value="License_Classification__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                            </apex:commandLink>  
+                        </apex:facet>
+                          <apex:outputField value="{!val.License_Classification__c}"/>
+                         
+                    </apex:column>
+                    
+                      
+                    <!--samap01 -->
+                          
+                        <apex:column style="text-align:center;"> 
+                         <apex:facet name="header">
+                           <apex:commandLink action="{!ViewData}" value="Segmentation{!IF(sortExpression=='Segmentation__c',IF(sortDirection='ASC','▲','▼'),'')}" id="SegmentationSort">      
+                             <apex:param value="Segmentation__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                           </apex:commandLink>  
+                         </apex:facet>
+                            <apex:outputField value="{!val.Segmentation__c}" />
+                        </apex:column>
+                        
+                        <apex:column style="text-align:right;">       
+                         <apex:facet name="header">   
+                          <apex:commandLink action="{!ViewData}" value="Orig.Exp.Date{!IF(sortExpression=='Original_Expiration_Date__c',IF(sortDirection='ASC','▲','▼'),'')}" id="expDateSort"> 
+                            <apex:param value="Original_Expiration_Date__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                            </apex:commandLink>       
+                           </apex:facet>      
+                              <apex:outputField value="{!val.Original_Expiration_Date__c}"/>
+                        </apex:column>      
+
+                        <apex:column style="text-align:right;">       
+                         <apex:facet name="header">   
+                          <apex:commandLink action="{!ViewData}" value="Raw Maint. Calc{!IF(sortExpression=='Raw_Maintenance__c',IF(sortDirection='ASC','▲','▼'),'')}" id="RawMaintcalcSort"> 
+                            <apex:param value="Raw_Maintenance__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                            </apex:commandLink>       
+                           </apex:facet>      
+                              <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                                 <apex:param value="{!val.Raw_Maintenance__c}" />
+                              </apex:outputtext>
+                        </apex:column>      
+
+                       <apex:column style="text-align:right;" headerValue="Sales Price" >
+                            <apex:inputField value="{!val.UnitPrice}" onchange="performArrCalculation('{!priceindex}')"/>
+                           <apex:variable var="priceindex" value="{!priceindex+1}" /> 
+                        </apex:column>
+                       
+                        <apex:column style="text-align:right;">       
+                         <apex:facet name="header">   
+                          <apex:commandLink action="{!ViewData}" value="Stretch{!IF(sortExpression=='Stretch__c',IF(sortDirection='ASC','▲','▼'),'')}" id="StretchSort"> 
+                            <apex:param value="Stretch__c" name="column" assignTo="{!sortExpression}" ></apex:param>
+                            </apex:commandLink>       
+                           </apex:facet>      
+                              <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                                 <apex:param value="{!val.Stretch__c}" />
+                              </apex:outputtext>
+                        </apex:column>
+                          
+                        <apex:column style="text-align:right;" headerValue="Start Date" >
+                            <apex:inputField value="{!val.Start_Date__c}" onchange="performArrCalculation('{!startindex}')" required="true"/>
+                            <apex:variable var="startindex" value="{!startindex+1}" /> 
+                        </apex:column>
+						
+						<apex:column style="text-align:right;" headerValue="End Date" >
+                            <apex:inputField value="{!val.End_Date__c}" onchange="performArrCalculation('{!endindex}')" required="true"/>
+                            <apex:variable var="endindex" value="{!endindex+1}" /> 
+                        </apex:column>
+                          
+						<!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                          <apex:column style="text-align:right;" headerValue="ARR" >
+                              <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                                  <apex:param value="{!val.Corporate_ARR__c}" />
+                              </apex:outputtext>  
+                          </apex:column>
+                          
+                        <apex:column style="text-align:right;" headerValue="ARR Stretch" >
+                            <apex:outputtext value="{0, number, ###,###,###,##0.00}">
+                                  <apex:param value="{!val.Stretch_Corporate_ARR__c}" />
+                              </apex:outputtext>
+                        </apex:column>
+						<!-- MERHA02 US459007 FY19 – Replacement of Current ARR with Corporate ARR Fields -->
+                          
+                         <apex:column headerValue="Quote" >
+                            <apex:inputField value="{!val.Quote_Number__c}"/>
+                        </apex:column>                                                             
+                         <apex:column headerValue="Contract No" >
+                            <apex:inputField value="{!val.Contract_Number__c}"/>
+                        </apex:column>
+                        <!--<apex:column value="{!val.Raw_Maintenance__c}"/>-->
+                       <!-- <apex:column value="{!val.Renewal_Opportunity__r.Total_Raw_Maintenance_Cacl__c}"/>-->
+                          
+                    </apex:pageBlockTable>
+                                
+             </apex:pageBlockSection>
+            <apex:commandButton value="<-Previous" style="font-weight:bold" rerender="pb1" rendered="{!hasPrevious}" action="{!previous}"/>
+            <apex:commandButton value="Next->" style="font-weight:bold" rerender="pb1" rendered="{!hasNext}" action="{!next}"/>
+            <br/>
+      </apex:pageBlock>
+    </apex:form>          
+</apex:page>

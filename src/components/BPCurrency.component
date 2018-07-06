@@ -1,0 +1,9 @@
+<apex:component controller="BPCurrencyComponentController">
+  <apex:attribute name="value1" description="amount to display"
+                  type="Decimal" required="true" assignTo="{!value}"/>
+  <apex:attribute name="currencyIsoCode1" description="currencyIsoCode of amount"
+                  type="String" required="false" assignTo="{!currencyIsoCode}"/>
+    
+    <!-- Custom Component Definition -->
+    <apex:outputfield value="{!hacked.GTM_SP_Q2__c}"/>
+</apex:component>

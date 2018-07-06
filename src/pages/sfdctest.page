@@ -1,0 +1,34 @@
+<apex:page standardController="Case" recordSetVar="Cases" extensions="TestListViewController">
+
+    <apex:includeScript value="/soap/ajax/32.0/connection.js"/>
+    <apex:includeScript value="/support/console/29.0/integration.js"/> 
+    <apex:includeScript value="/soap/ajax/32.0/apex.js"/>
+    
+  
+    <script type="text/javascipt">  
+        
+        ListViewport.prototype.extHandler.click = function(a,b,c,d) {
+             sforce.console.getPrimaryTabIds(showTabId);               
+        }  
+        
+        ListViewport.prototype.extHandler.click = function(a) {
+             console.log('HI from click event');
+             sforce.console.getPrimaryTabIds(showTabId);  
+        }
+        
+        var showTabId = function showTabId(result) {
+            console.log(result.ids);
+        };
+
+         
+    
+    
+    </script>
+    
+    <apex:enhancedList type="Case" height="675" id="customListDiv"/>
+    <div id='dialog'  style="height: 100%; width: 400px" >
+        <iframe id='edt' width="100%" style="display:'none'" frameBorder="0">            
+        </iframe>
+    </div>    
+    
+</apex:page>

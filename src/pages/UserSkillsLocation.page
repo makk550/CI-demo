@@ -1,0 +1,77 @@
+<apex:page standardController="User_Skills__c" extensions="UserSkillsController" standardStylesheets="true">
+<apex:stylesheet value="{!URLFOR($Resource.bpstyles, 'styles.min.css')}" />
+    <apex:form >
+        <apex:pageBlock title="User Skills Location">
+        
+        <apex:pageBlockButtons >
+            <apex:commandbutton action="{!save}" value="Save" styleClass="btn"/>
+            <apex:commandButton action="{!cancel}" value="Cancel" styleClass="btn"/>    
+        </apex:pageBlockButtons> 
+        
+        <apex:pageBlockSection >   
+        <apex:outputpanel id="TerritoryPanel">
+            <table class="territory middle check-right">
+                <tr class="territory-row">
+                    <th>Region</th>
+                    <th>Countries</th>
+                </tr>
+                
+                <tr class="territory-row">
+                    <td>
+                        <apex:outputLabel value="NA"/>
+                    </td>
+                    <td>                            
+                        <apex:inputfield value="{!User_Skills__c.NA_Countries__c}"/>   
+                    </td>
+                </tr>
+                
+                <tr class="territory-row alt">
+                    <td>
+                        <apex:outputLabel value="LA"/>
+                    </td>
+                    <td>                            
+                        <apex:inputfield value="{!User_Skills__c.LA_Countries__c}"/>   
+                    </td>
+                </tr>
+                
+                <tr class="territory-row">
+                    <td>
+                        <apex:outputLabel value="EMEA1"/>
+                    </td>
+                    <td>                            
+                        <apex:inputfield value="{!User_Skills__c.EMEA1_Countries__c}"/>   
+                    </td>
+                </tr>
+                
+               <tr class="territory-row">
+                    <td>
+                        <apex:outputLabel value="EMEA2"/>
+                    </td>
+                    <td>                            
+                        <apex:inputfield value="{!User_Skills__c.EMEA2_Countries__c}"/>   
+                    </td>
+                </tr>            
+
+                <tr class="territory-row alt">
+                    <td>
+                        <apex:outputLabel value="APJ"/>
+                    </td>
+                    <td>                            
+                        <apex:inputfield value="{!User_Skills__c.APJ_Countries__c}"/>   
+                    </td>
+                </tr>   
+                
+                <tr class="territory-row alt">
+                    <td>
+                        <apex:outputLabel value="WW"/>
+                    </td>
+                    <td>                            
+                        <apex:inputfield value="{!User_Skills__c.WW_Countries__c}"/>   
+                    </td>
+                </tr>                                                             
+            </table>
+          </apex:outputpanel>
+        </apex:pageBlockSection>
+    </apex:pageBlock> 
+    </apex:form>  
+</apex:page>

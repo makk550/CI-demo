@@ -1,0 +1,135 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" contentType="text/javascript">
+
+ var PartnerLocationMapController = Class.create({
+    initialize: function(mapDivFieldID,locationJSONDataFieldID){
+    this.locationJSONDataFieldID = locationJSONDataFieldID;
+    var mapOptions = {
+           disableDefaultUI: true,
+           center:new google.maps.LatLng(37.4419, -122.1419),                          
+           mapTypeId: google.maps.MapTypeId.ROADMAP,            
+           zoom: 14,
+          }
+        this.map = new google.maps.Map($(mapDivFieldID), mapOptions);                 
+        this.pointLookup = new Hash();
+        this.locationLookup = new Hash();       
+        var locations = $F(this.locationJSONDataFieldID).evalJSON().locations;
+        var bounds = new google.maps.LatLngBounds();
+        var points = [];
+        var point;
+        locations.each(function(location){
+      
+            point = new google.maps.LatLng(location.latitude, location.longitude);
+            point.serialNumber = location.serialNumber;
+            points.push(point);
+            bounds.extend(point);
+            this.locationLookup.set(location.serialNumber,location);
+        }.bind(this));
+        this.map.setCenter(bounds.getCenter());
+        points.each(function(point){
+        var marker = new google.maps.Marker({
+                map: this.map,
+                position: point,
+                draggable: true
+            });
+        })
+    },
+    
+    addLocation:function(locationNumber){
+        this.pointLookup = new Hash();
+        this.locationLookup = new Hash();
+        var locations = $F(this.locationJSONDataFieldID).evalJSON().locations;
+        var bounds = new google.maps.LatLngBounds();
+        var points = [];
+        var point;
+        locations.each(function(location){
+        if(location.serialNumber==locationNumber){
+            point = new google.maps.LatLng(location.latitude, location.longitude);
+            point.serialNumber = location.serialNumber;
+            point.name = location.name;
+            point.city = location.city;
+            point.street = location.street;
+            point.state = location.state;
+            point.country = location.country;
+            point.postalCode= location.postalCode;
+            
+            points.push(point);
+            bounds.extend(point);
+            var marker = new google.maps.Marker({
+                map: this.map,
+                position: point,
+                draggable: true
+            });
+            var contentString = '<b>'+ point.serialNumber  + '-</b> '+ 
+                                        '<b> ' + point.name + '</b><br/>' + 
+                                        (Object.isUndefined(point.street) || (point.street==null) || point.street.blank() ?'': point.street + ', ') + 
+                                        (Object.isUndefined(point.city) || (point.city==null) || point.city.blank() ?'': point.city + ', ') + 
+                                        (Object.isUndefined(point.state) || (point.state==null) || point.state.blank() ?' ': point.state + '  ') + 
+                                        (Object.isUndefined(point.postalCode) || (point.postalCode==null) || point.postalCode.blank() ?'': point.postalCode ) + 
+                                        '<br/>' + 
+                                        point.country;
+            var infoWindow = new google.maps.InfoWindow({
+              content: contentString,
+              position:point
+          });
+            marker.setMap(this.map);
+            google.maps.event.addListener(marker,'click', function(point) {            
+                infoWindow.open(this.map,marker);
+                 
+                });
+            
+            this.locationLookup.set(location.serialNumber,location);
+            }
+        }.bind(this));
+        
+        
+        this.map.setCenter(bounds.getCenter());
+        points.each(function(point){
+         var marker = new google.maps.Marker({
+                map: this.map,
+                position: point,
+                draggable: true
+            });
+        })
+        
+        
+    }
+    
+    ,showLocation: function(locationNumber){        
+        this.addLocation(locationNumber)
+    }
+});
+
+var controller;
+function updateMap(locationNumber){
+    if(!Object.isUndefined(controller)){
+        alert('updateMap -> locNum ' + locationNumber );
+        controller.showLocation(locationNumber);
+    }   
+}
+
+function showLocation(locationNumber){
+        controller = new PartnerLocationMapController('map_canvas','Page:Form:LocationData');
+        controller.showLocation(locationNumber);
+}
+
+
+function initializeController() {
+    if($('map_canvas')){
+        controller = new PartnerLocationMapController('map_canvas','Page:Form:LocationData');
+        showLocation(1);
+    }
+}
+
+document.observe('dom:loaded', function() {
+    initializeController();
+}, false);
+
+function confirmDeletion(locId){
+    var r=confirm("{!JSENCODE($Label.are_you_sure_to_delete_the_partner_locat)}");
+    if (r==true){
+        deleteLocation(locId);
+    } else {
+        
+    }
+}
+</apex:page>

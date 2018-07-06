@@ -1,0 +1,311 @@
+<apex:page standardController="Executive_Profile__c" extensions="ExecProfControllerExtension" cache="true"  showHeader="False" contentType="application/vnd.msword#ExecProfile.doc">
+<html Content-Type="application/vnd.msword#ExecProfile.doc" xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+<meta name="ProgId" content="Word.Document"></meta>
+<meta name="Generator" content="Microsoft Word 7"></meta>
+<meta name="Originator" content="Microsoft Word 7"></meta>
+<title></title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print Layout</w:View>
+<w:Zoom>90</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+
+<style>   
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}         
+body{font-family:Calibri;font-size:14.5px;}
+@page Section1{    
+    margin : .5in 1in 1in .5in; 
+    mso-header-margin:.5in;
+    mso-footer-margin:.5in;    
+    mso-header: h1;
+    mso-footer: f1;   
+    mso-paper-source:0;
+    font-size:14.5px;    
+}
+div.Section1{
+page:Section1;
+}
+p.MsoFooter, li.MsoFooter, div.MsoFooter{
+    margin:0in;
+    margin-bottom:.0001pt;
+    mso-pagination:widow-orphan;
+}
+p.MsoHeader, li.MsoHeader, div.MsoHeader{
+    margin:0in;
+    margin-top:0px;
+    mso-pagination:widow-orphan;
+}
+table#hrdftrtbl
+{ margin:0in 0in 0in 900in;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+}
+td.data{border-style:solid;border-width:1px 1px 1px 1px;border-color:#000000;border-collapse:collapse;}
+
+</style>
+</head>
+<body>
+<div class="Section1"> 
+<apex:outputPanel rendered="true">
+<table width="95%" style="border:1px solid black;border-collapse:collapse;border-left:dotted;border-right:dotted;" align="Center">    
+    <tr width="100%" style="border:1px solid black;border-collapse:collapse;border-top:dotted;">
+        <td width="25%" style="border:1px solid black;padding-left:3px;border-left:dotted;border-top:dotted;" align="Left">CA Internal Use Only</td>      
+        <td width="45%" style="border:1px solid black;padding-left:3px;border-top:dotted;font-size:16px;" align="Center">
+            Type of Meeting - <b>{!meetingType}</b>                    
+        </td>
+        <td width="30%" style="border:1px solid black;padding-left:3px;border-right:dotted;border-top:dotted;" align="Left">Date: <apex:outputText value="{0,date, MM/dd/yyyy}"><apex:param value="{!Executive_Profile__c.Meeting_Date__c}"/></apex:outputText><br></br>Location: {!Executive_Profile__c.Location__c}</td>        
+    </tr>
+    
+    <tr width="100%" height="115" style="border:1px solid black;border-collapse:collapse;background:#B8B8B8 ;">
+        <!--<td width="30%" style="border:1px solid black;padding-left:3px;border-left:dotted;" align="Left"><img src="data:image/jpeg;base64,{!imageBase64}" alt='Account Logo' width="102" height="80"></img></td>-->
+        <!--<td width="30%" style="border:1px solid black;padding-left:3px;border-left:dotted;" align="Left"><img src='{!BaseURL}'  width="102" height="80"></img></td>-->
+        <td width="25%" style="border:1px solid black;padding-left:3px;border-left:dotted;" align="Center">
+            {!HVNPhotoUrl}
+        </td>                                      
+        <td width="45%" style="border:1px solid black;padding-left:3px;font-size:21px;" align="Center"><b>{!Executive_Profile__c.Customer__r.Name}</b><br></br>{!Executive_Profile__c.Customer_Title__c}</td>
+        <td width="30%" style="border:1px solid black;padding-left:3px;border-right:dotted;" align="Center">
+            {!accountLogoUrl}
+        </td>        
+    </tr> 
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;background:#191655;">
+        <td style="padding-left:3px;font-size:14.5px;" align="Left"><b>Account Summary</b></td>
+    </tr>   
+</table> 
+    
+<table width="95%" style="border:1px solid black;border-collapse:collapse;border-left:dotted;border-right:dotted;" align="Center">        
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-left:dotted;" align="Left"><b>Account Name</b></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left">{!Executive_Profile__c.Account_Name__c}</td>        
+    </tr>     
+     
+    <tr width="100%" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;border-left:dotted;" align="Left"><b>Company Overview/Account Summary</b>
+            including key stats, overall deployment, background issues and opportunities.</td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left"><apex:outputField value="{!Executive_Profile__c.Customer__r.Account.Company_Overview__c}"/></td>
+    </tr>
+</table>
+
+<table width="95%" style="border-collapse:collapse;border-left:dotted;border-right:dotted;" align="Center">       
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;border-left:dotted;" align="Left"><b>Account Owner: </b></td>
+        <td width="20%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;" align="Left">{!Executive_Profile__c.Account_Owner_Name__c}</td>
+        <td width="30%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;" align="Left"><b>Area: </b>{!Executive_Profile__c.Account_Area__c}</td>
+        <td width="30%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left"><b>Account Segment: </b>{!Executive_Profile__c.Account_Segment__c}</td>                
+    </tr>         
+</table>    
+      
+<table width="95%" style="border-collapse:collapse;border-left:dotted;border-right:dotted;" align="Center">        
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;border-left:dotted;" align="Left"><b>IT Budget</b></td>
+        <td width="80%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left"><apex:outputField value="{!myAccountPlan.Capex_Budget__c}"/></td>        
+    </tr>     
+     
+    <tr width="100%" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;border-left:dotted;" align="Left"><b>CA Spend: </b> 
+            <br>Include specifics by product/solution</br></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left">Historical: <apex:outputField value="{!Executive_Profile__c.CA_Spend_History__c}"/><br></br>Current: <apex:outputField value="{!Executive_Profile__c.CA_Spend_Current__c}"/></td>
+    </tr>
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;border-left:dotted;" align="Left"><b>Pipeline/Details on Current Opportunities: </b></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left">
+
+        <apex:panelGrid columns="2">
+            <apex:outputLabel value="Total Current Fiscal Year PNCV Pipeline (Internal View)" styleClass="labelCol first "/>
+            <apex:outputField value="{!Executive_Profile__c.Total_PNCV_Pipeline__c}" styleClass="dataCol first "/>
+          </apex:panelGrid>
+        <br></br>
+        <table style="border-collapse:collapse;" border="1">
+            <tr width="100%">
+                <th>Opportunity Name</th> 
+                <th>PNCV Amount</th>
+                <th>Close Date</th>                                                                                                                              
+            </tr>
+            <apex:repeat value="{!topOpps}" var="opp">
+                <tr width="100%">
+                  <td class="head" style="padding-left:3px;padding-right:3px;padding-top:10px;padding-bottom:10px;">{!opp.Name}</td>                
+                  <td class="head" style="padding-left:3px;padding-right:3px;padding-top:10px;padding-bottom:10px;">
+                    <c:currency value1="{!opp.PNCV__c}" currencyIsoCode1="{!opp.CurrencyIsoCode}"/>                  
+                  </td>
+                  <td class="head" style="padding-left:3px;padding-right:3px;padding-top:10px;padding-bottom:10px;"><apex:outputText value="{0,date, MM/dd/yyyy}"><apex:param value="{!opp.CloseDate}"/></apex:outputText></td>                    
+                </tr>
+            </apex:repeat>
+        </table>
+        
+        </td>        
+    </tr>     
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;border-left:dotted;" align="Left"><b>Stated Business Priorities</b></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left"><apex:outputField value="{!myAccountPlan.Stated_Business_Priorities__c}"/></td>        
+    </tr>   
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;border-left:dotted;" align="Left"><b>Recent Significant Win/Loss:</b></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left">
+            <apex:outputLabel value="Won Opportunities" styleClass="labelCol first "/>
+            <table style="border-collapse:collapse;" border="1">
+                <tr width="100%">
+                    <th>Opportunity Name</th> 
+                    <th>Amount</th>
+                    <th>Close Date</th>                                                                                                                              
+                </tr>
+                <apex:repeat value="{!wonOpps}" var="won">
+                    <tr width="100%">
+                      <td class="head" style="padding-left:3px;padding-right:3px;padding-top:10px;padding-bottom:10px;">{!won.Name}</td>                
+                      <td class="head" style="padding-left:3px;padding-right:3px;padding-top:10px;padding-bottom:10px;">
+                        <c:currency value1="{!won.Amount}" currencyIsoCode1="{!won.CurrencyIsoCode}"/></td>
+                      <td class="head" style="padding-left:3px;padding-right:3px;padding-top:10px;padding-bottom:10px;"><apex:outputText value="{0,date, MM/dd/yyyy}"><apex:param value="{!won.CloseDate}"/></apex:outputText></td>                    
+                    </tr>
+                </apex:repeat>
+            </table>   
+            <br></br>
+            <apex:outputLabel value="Lost Opportunities" styleClass="labelCol first "/>            
+            <table style="border-collapse:collapse;" border="1">
+                <tr width="100%">
+                    <th>Opportunity Name</th> 
+                    <th>Amount</th>
+                    <th>Loss Reason</th>
+                    <th>Deal Lost To</th>                                        
+                    <th>Close Date</th>                                                                                                                              
+                </tr>
+                <apex:repeat value="{!lostOpps}" var="lost">
+                    <tr width="100%">
+                      <td class="head" style="padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;">{!lost.Name}</td>                
+                      <td class="head" style="padding-left:3px;padding-right:3px;padding-top:10px;padding-bottom:10px;">
+                        <c:currency value1="{!lost.Amount}" currencyIsoCode1="{!lost.CurrencyIsoCode}"/>                      
+                      </td>
+                      <td class="head" style="padding-left:3px;padding-right:3px;padding-top:10px;padding-bottom:10px;">{!lost.ReasonField__c}</td>                    
+                      <td class="head" style="padding-left:3px;padding-right:3px;padding-top:10px;padding-bottom:10px;">{!lost.Deal_Lost_to__c}</td>                    
+                      <td class="head" style="padding-left:3px;padding-right:3px;padding-top:10px;padding-bottom:10px;"><apex:outputText value="{0,date, MM/dd/yyyy}"><apex:param value="{!lost.CloseDate}"/></apex:outputText></td>                                                                
+                    </tr>
+                </apex:repeat>
+            </table>                 
+        
+        </td>        
+    </tr>    
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;border-left:dotted;" align="Left"><b>Reference</b> <br>Reference? If yes, what products</br></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left">
+            {!myReference}
+        </td>        
+    </tr>   
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;border-left:dotted;" align="Left"><b>CA Products not in Use (Shelfware)</b></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left"><apex:outputField value="{!Executive_Profile__c.CA_Products_Not_In_Use__c}"/></td>        
+    </tr>  
+</table>
+
+<table width="95%" style="border:1px solid black;border-collapse:collapse;border-left:dotted;border-right:dotted;" align="Center">    
+    <tr width="100%" height="30" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;border-collapse:collapse;background:#191655;">
+        <td style="padding-left:3px;font-size:14.5px;" align="Left"><b>Contact Information</b></td>
+    </tr>   
+</table>
+    
+<table width="95%" style="border-collapse:collapse;border-left:dotted;border-right:dotted;" align="Center"> 
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;border-left:dotted;" align="Left"><b>Bio Highlights:</b>
+        </td>
+        <td width="80%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left">
+                <b><u>Education:</u></b>
+                <apex:dataList value="{!myHVNEdu}" var="Edu">
+                    <apex:outputText value="{!Edu.Alma_Mater__c}"/>
+                    <apex:outputText value=",&nbsp;" rendered="{!Edu.Alma_Mater__c!=''}"/> 
+                    <apex:outputText value="{!Edu.Field_of_Studies__c}"/>
+                    <apex:outputText value="&nbsp;(" rendered="{!Edu.Field_of_Studies__c!=''}"/>
+                    <apex:outputText value="{!Edu.Year__c}"/>
+                    <apex:outputText value=")" rendered="{!Edu.Field_of_Studies__c!=''}"/>                       
+                </apex:dataList>
+                <br></br>
+                <b><u>Professional Experience:</u></b> 
+                <apex:dataList value="{!myHVNProfExp}" var="Prof">
+                    <apex:outputText value="{!Prof.Title__c}"/>
+                    <apex:outputText value=",&nbsp;" rendered="{!Prof.Title__c!=''}"/>                     
+                    <apex:outputText value="{!Prof.Company_Name__c}"/>
+                    <apex:outputText value=",&nbsp;" rendered="{!Prof.Company_Name__c!=''}"/>                                                             
+                    <apex:outputText value="{!Prof.Role_Description__c}"/>
+                    <apex:outputText value="&nbsp;(" rendered="{!Prof.Role_Description__c!=''}"/>                    
+                    <apex:outputText value="{!Prof.Tenure__c}"/>
+                    <apex:outputText value=")" rendered="{!Prof.Tenure__c!=''}"/>                                              
+                </apex:dataList>                       
+        </td>        
+    </tr> 
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;border-left:dotted;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;" align="Left"><b>Boards and Organizations:</b></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left">
+                <apex:dataList value="{!myHVNAff}" var="Aff">
+                    <apex:outputText value="{!Aff.Name}"/>
+                </apex:dataList>
+
+        </td>        
+    </tr> 
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;border-left:dotted;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;" align="Left"><b>Personal Attributes and Interests:</b></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left">
+               <apex:outputLabel value="{!HVNAffStr}" styleClass="labelCol first "/>
+         </td>        
+    </tr>                     
+</table>      
+
+<table width="95%" style="border:1px solid black;border-collapse:collapse;border-left:dotted;border-right:dotted;" align="Center">    
+    <tr width="100%" height="30" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;border-collapse:collapse;background:#191655;">
+        <td style="padding-left:3px;font-size:14.5px;" align="Left"><b>Relationship and Purpose of Meeting</b></td>
+    </tr>   
+</table>
+
+<table width="95%" style="border-collapse:collapse;border-left:dotted;border-right:dotted;" align="Center">       
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;border-left:dotted;" align="Left"><b>Contact Relationship: </b></td>
+        <td width="20%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;" align="Left">{!imgURL}</td>
+        <td width="60%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left">{!Executive_Profile__c.HVN__r.Relationship_Status__c}</td>
+    </tr>         
+</table> 
+
+<table width="95%" style="border-collapse:collapse;border-left:dotted;border-right:dotted;" align="Center">       
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;border-left:dotted;" align="Left"><b>CA Executive Relationships:</b><br></br>Additional connections/recent meetings</td>
+        <td width="80%" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left"><apex:outputField value="{!Executive_Profile__c.CA_Executive_Relationships__c}" style="width: 360px;"/></td>        
+    </tr> 
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;border-left:dotted;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;" align="Left"><b>Reason for Invitation and desired outcome of participation</b></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left"><apex:outputField value="{!Executive_Profile__c.Invitation_Reason__c}" style="width: 360px;"/></td>        
+    </tr> 
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;border-left:dotted;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;" align="Left"><b>Reason for Meeting / Desired Outcome</b></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left"><apex:outputField value="{!Executive_Profile__c.Meeting_Reason__c}" style="width: 360px;"/></td>        
+    </tr>  
+    
+    <tr width="100%" height="30" style="border:1px solid black;border-collapse:collapse;">
+        <td width="20%" style="border:1px solid black;border-left:dotted;padding-left:3px;padding-top:10px;padding-bottom:10px;font-size:14.5px;" align="Left"><b>Briefing Reason / Desired Outcome</b></td>
+        <td width="80%" style="border:1px solid black;padding-left:3px;font-size:14.5px;border-right:dotted;" align="Left"><apex:outputField value="{!Executive_Profile__c.Briefing_Reason__c}" style="width: 360px;"/></td>        
+    </tr>                         
+</table>
+
+</apex:outputpanel>
+<br></br>
+
+</div>
+</body>
+</html>
+</apex:page>

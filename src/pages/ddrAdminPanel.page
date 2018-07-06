@@ -1,0 +1,750 @@
+<apex:page standardController="DDR_Rules__c" extensions="ddrAdminPanelControllerExt" action="{!checkForRecord}">
+<apex:form >
+  <!-- Begin Default Content REMOVE THIS --> 
+    <h1>DDR Admin Panel</h1>
+    <p>The rules below will need to be evaluated to determine if the quote can continue through the quick quote process, or be kicked out and a DDR created.
+Auto Create DDR if any of the rules below are true. </p>
+    <br/>
+    <h2>New Product Rules - Direct</h2>
+    <table>
+        <!-- <caption>New Product Rules</caption> -->
+        <thead>
+            <tr>
+                <th>Activated</th>
+                <th>Rule</th>
+            </tr>
+        </thead>
+        <tbody>
+           <!-- <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal4_Using_Quick_Contract_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Using Quick Contract is set to No"/>
+                </td>
+            </tr>-->
+            <tr>
+                <p>If Using Quick Contract is set to No</p>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_Account_Segment_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Account Segment is "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Account_Segment__c}"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_CPQ_Quote_Type_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the CPQ Quote type is "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_CPQ_Quote_Type__c}" />
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_LA_Quote_Total_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = LA and Quote Total is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Max_Quote_Total_For_LA__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_EMEA_Quote_Total_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = EMEA and Quote Total is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Max_Quote_Total_For_EMEA__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_NA_Quote_Total_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = NA and Quote Total is greater than " />
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Max_Quote_Total_For_NA__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.PSCAN_Quote_Total_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = PS/CAN and Quote Total is greater than " />
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Max_Quote_Total_For_PSCAN__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_Pricing_Group_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the Pricing Group is "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Pricing_Group__c}" required="false"/>
+                    <apex:outputText value=" and the Term is less than "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Pricing_Group_Term__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the term (in years) of the contract is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Maximum_Contract_Term__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_Net_Payment_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Net Payment Terms is "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Net_Payment_Terms__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_Payment_Schedule_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the Payment Schedule is "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Payment_Schedule__c}" required="false"/>
+                </td>
+            </tr>
+            
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_LT_Combo_Rule_1__c}" /></td>
+                <td>
+                    <apex:outputText value="If a line with the license type of "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_LT1_for_LT_Combo_1__c}" />
+                    <apex:outputText value=" exists with any other line that has a license type of "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_LT2_for_LT_Combo_1__c}" />
+                    <br/>
+                    <apex:outputText value="where the business transaction type is one of the following:" />
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_BTT_for_LT_Combo_1__c}" />
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_LT_Combo_Rule_2__c}" /></td>
+                <td>
+                    <apex:outputText value="If a line with the license type of "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_LT1_for_LT_Combo_2__c}" />
+                    <apex:outputText value=" exists with any other line that has a license type of "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_LT2_for_LT_Combo_2__c}" />
+                    <br/>
+                    <apex:outputText value="where the business transaction type is one of the following:" />
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_BTT_for_LT_Combo_2__c}" />
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_LT_Combo_Rule_3__c}" /></td>
+                <td>
+                    <apex:outputText value="If a line with the license type of "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_LT1_for_LT_Combo_3__c}" />
+                    <apex:outputText value=" exists with any other line that has a license type of "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_LT2_for_LT_Combo_3__c}" />
+                    <br/>
+                    <apex:outputText value="where the business transaction type is one of the following:" />
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_BTT_for_LT_Combo_3__c}" />
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_LT_Combo_Rule_4__c}" /></td>
+                <td>
+                    <apex:outputText value="If a line with the license type of "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_LT1_for_LT_Combo_4__c}" />
+                    <apex:outputText value=" exists with any other line that has a license type of "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_LT2_for_LT_Combo_4__c}" />
+                    <br/>
+                    <apex:outputText value="where the business transaction type is one of the following:" />
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_BTT_for_LT_Combo_4__c}" />
+                </td>
+            </tr>
+            
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_PS_and_LT_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the Payment Schedule is "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_PS_for_PS_and_LT__c}" required="false"/>
+                    <apex:outputText value=" and the license Type is "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_LT_for_PS_and_LT__c}" required="false"/>
+                    <br/>
+                    <apex:outputText value="and the business transaction type is one of the following:"/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_BTT_for_PS_and_LT__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_PS_and_LT_2_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the Payment Schedule is "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_PS_for_PS_and_LT_2__c}" required="false"/>
+                    <apex:outputText value=" and the license Type is "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_LT_for_PS_and_LT_2__c}" required="false"/>
+                    <br/>
+                    <apex:outputText value="and the business transaction type is one of the following:"/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_BTT_for_PS_and_LT_2__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_Quick_Quote_Line_Item_Rule__c}" /></td>
+                <td>
+                     <apex:outputText value="If any of the material is not flagged for Quick Quote"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_Auto_Calc_State_Renewal_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If AutoCalc Stated Renewal flag = No, unless license type is one of the following:"/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_ACSR_LT_Exceptions__c}" />
+                    <apex:outputText value="or Business Transction Type is one of the following:"/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_ACSR_BTT_Exceptions__c}" />
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_Auth_Use_Model_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the Auth Use Model is "/>
+                    <apex:inputField value="{!DDR_Rules__c.New_Product_Auth_Use_Model__c}" />
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.New_Product_IndirectAdvantageSKUs__c}" /></td>
+                <td>
+                    <apex:outputText value="If a Non Indirect Advantage Quote has an Indirect Advantage product listed below "/>
+                    
+                </td>
+            </tr>
+            <tr>
+            <td></td>
+            <td> <ul align="left"  style="font-size:12px;list-style-type:disc;">
+                            <li>{!$Label.Release_Automation_SKU}</li>
+                            <li>{!$Label.API_Gateway_SKU}</li>
+                            <li>{!$Label.CSM_SKU_1}</li>
+                            <li>{!$Label.CSM_SKU_2}</li>
+                    </ul>
+            </td>
+        </tr>      
+              
+             <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.NewProduct_Product_Swap_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If any line item is flagged as a Product Swap"/>
+                    
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <br />
+    <br />
+    <h2>New Product Rules - Indirect Advantage </h2>
+     <table>
+        <thead>
+            <tr>
+                <th>Activated</th>
+                <th>Rule</th>
+            </tr>
+        </thead>
+        <tbody>
+        
+        <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.NewPt_Indirect_Quick_Contract_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Using Quick Contract is set to No"/>
+                </td>
+            </tr>
+                
+        <tr>
+            <td><apex:inputField value="{!DDR_Rules__c.New_Product_Morethan_1_SKUs__c}" /></td>
+            <td><apex:outputText value="If Quote has products with none of the SKUs listed below or morethan one Products with any one of the SKUs listed below"/></td>
+        </tr>  
+        <tr>
+            <td></td>
+            <td> <ul align="left"  style="font-size:12px;list-style-type:disc;">
+                            <li>{!$Label.Release_Automation_SKU}</li>
+                            <li>{!$Label.API_Gateway_SKU}</li>
+                            <li>{!$Label.CSM_SKU_1}</li>
+                            <li>{!$Label.CSM_SKU_2}</li>
+                    </ul>
+            </td>
+        </tr>        
+        <tr>
+            <td><apex:inputField value="{!DDR_Rules__c.New_Product_Stated_Renewal_Fee__c}" /></td>
+            <td><apex:outputText value="If Quote with SKU = SPCRS3990 and Stated Renewal greater than "/>
+            <apex:inputField value="{!DDR_Rules__c.New_Product_Stated_Renewal_Fee_Input__c}" required="false"/></td>
+        </tr>
+        <tr>
+            <td><apex:inputField value="{!DDR_Rules__c.New_Product_Quote_Term__c}" /></td>
+            <td><apex:outputText value="If Quote with SKU = SPCRS3990 and Term not equals to "/> 
+            <apex:inputField value="{!DDR_Rules__c.New_Product_Term_Input1__c}" required="false"/> year(s)</td>
+           
+        
+        </tr>
+         <tr>
+            <td><apex:inputField value="{!DDR_Rules__c.New_Product_Quote_Term2__c}" /></td>
+            <td><apex:outputText value="If Quote with SKU = APIGTS990 / SPRAPN990 / SPCRS1990 and Term not equals to "/>
+            <apex:inputField value="{!DDR_Rules__c.New_Product_Term_Input2__c}" required="false"/> year(s)</td>
+            
+        </tr>
+        <tr>
+            <td><apex:inputField value="{!DDR_Rules__c.New_Product_Number_of_Users__c}" /></td>
+            <td><apex:outputText value="If Quote with SKU = APIGTS990 / SPRAPN990 / SPCRS1990 / SPCRS3990 and Number of Users not equals to "/>
+            <apex:inputField value="{!DDR_Rules__c.New_Product_UserCount_Input__c}" required="false"/></td>
+            
+        </tr>
+        
+        <tr>
+            <td><apex:inputField value="{!DDR_Rules__c.New_Product_Net_Payment_Term__c}" /></td> 
+            <td><apex:outputText value="If Quote with Net Payment is "/>
+            <apex:inputField value="{!DDR_Rules__c.New_Product_Net_Term_Input__c}" required="false"/></td>
+            
+        </tr>
+        
+         <tr>
+            <td><apex:inputField value="{!DDR_Rules__c.New_Product_Payment_Schedule_1__c}" /></td> 
+            <td><apex:outputText value="If Quote with license type equals to "/>
+            <apex:inputField value="{!DDR_Rules__c.New_Product_License_Type_Input_1__c}" required="false"/>
+            <apex:outputText value=" AND Payment Schedule not equals to "/>
+            <apex:inputField value="{!DDR_Rules__c.New_Product_Payment_Schedule_Input_1__c}" required="false"/></td>
+            
+        </tr>
+        
+         <tr>
+            <td><apex:inputField value="{!DDR_Rules__c.New_Product_Payment_Schedule_2__c}" /></td> 
+            <td><apex:outputText value="If Quote with license type equals to "/>
+            <apex:inputField value="{!DDR_Rules__c.New_Product_License_Type_Input_2__c}" required="false"/>
+            <apex:outputText value=" AND Payment Schedule equals to "/>
+            <apex:inputField value="{!DDR_Rules__c.New_Product_Payment_Schedule_Input_2__c}" required="false"/></td>
+            
+        </tr>
+        
+         <tr>
+            <td><apex:inputField value="{!DDR_Rules__c.New_Product_Payment_Schedule_3__c}" /></td> 
+            <td><apex:outputText value="If Quote with license type equals to "/>
+            <apex:inputField value="{!DDR_Rules__c.New_Product_License_Type_Input_3__c}" required="false"/>
+            <apex:outputText value=" AND Payment Schedule equals to "/>
+            <apex:inputField value="{!DDR_Rules__c.New_Product_Payment_Schedule_Input_3__c}" required="false"/></td>
+            
+        </tr>
+       
+        </tbody> 
+    </table>
+    <br />
+    <br />
+    <h2>New Product Rules – CAAC</h2>
+    <table>
+        <!-- <caption>New Product Rules</caption> -->
+        <thead>
+            <tr>
+                <th>Activated</th>
+                <th>Rule</th>
+            </tr>
+        </thead>
+       <tbody>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Agile_NP_Pricing_Group_Term_Rule__c }" /></td>
+                <td>
+                    <apex:outputText value="If the Pricing Group is "/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile_NP__c}" required="false"/>
+                    <apex:outputText value=" and the Term is less than "/>
+                    <apex:inputField value="{!DDR_Rules__c.PGroup_Term_in_months_is_less_than__c}" required="false"/><br/>
+                    <apex:outputText value="And Bus Transaction Type is one of the following"/>
+                    <apex:inputField value="{!DDR_Rules__c.AgileNP__c}"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.AgileContract_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Contract Term is greater than"/>
+                    <apex:inputField value="{!DDR_Rules__c.AgileContract_Term_In_Years_greater_than__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Agile_New_Product_term_rule_months__c}" /></td>
+                <td>
+                    <apex:outputText value="The Term should not be equal to"/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile_New_product_term_12__c}" required="false"/>
+                    <apex:outputText value="Or"/>
+                    <apex:inputField Value="{!DDR_Rules__c.Agile_New_product_term_24__c}"/>
+                    <apex:outputText value="Or"/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile_New_product_term_36__c}"/>
+                    <apex:outputText value="and If the Pricing Group is "/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile_NP_Pricing_Not_12_24_36__c}" required="false"/><br/>
+                    <apex:outputText value="And Bus Transaction Type is one of the following"/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile_NP_Bus_Tran_Not_12_24_36__c}"/>
+                </td>
+            </tr>
+            <!--<tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Agile_Net_Payment_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Net Payment term "/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile_Net_Payment_Terms_equal__c}" required="false"/>
+                </td>
+            </tr>-->
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Agile_Payment_Schedule_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Payment Schedule is"/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile_Payment_Schedule_is__c}" required="false"/>
+                    <apex:outputText value="Or"/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile1_Payment_Schedule_is__c}"/>
+                </td>
+
+            </tr>
+           <!--Added as part of US267679 - BAJPI01-->
+           <tr>
+               <td><apex:inputField value="{!DDR_Rules__c.Agile_NP_PG_Bus_Trans_and_Term_12_Rule__c }" /></td>
+               <td>
+                   <apex:outputText value="The Term is less than "/>
+                   <apex:inputField value="{!DDR_Rules__c.Agile_New_Product_Term_Less_Than_12__c}" required="false"/>
+                   <apex:outputText value=" and the Pricing Group is not equal to "/>
+                   <apex:inputField value="{!DDR_Rules__c.Agile_NP_PG_Not_SaaS__c}" required="false"/><br/>
+                   <apex:outputText value="And Bus Transaction Type is not equal to"/>
+                   <apex:inputField value="{!DDR_Rules__c.Agile_NP_Bus_Trans_Not_Dist_Capc__c}"/>
+               </td>
+           </tr>
+           <!--US267679 ends here - BAJPI01-->
+            
+        </tbody>
+           <p><apex:inputCheckbox value="{!DDR_Rules__c.Ramp_Bridge_Order__c}"/>&nbsp;&nbsp;If Bridge Order is true</p>
+
+        </table>
+     <br />
+    <br />
+    <h2>Renewal Rules - The rules below apply to all renewals, regardless of renewal area </h2>
+    
+    <table>
+        <tr>
+            <td><apex:inputField value="{!DDR_Rules__c.Renewal_Product_Swap_Rule__c}" /></td>
+            <td>
+                <apex:outputText value="If any line item is flagged as a Product Swap"/>
+                
+            </td>
+        </tr>
+    </table>
+    <br />
+    <br />
+    <h2>Renewal Rules - If Renewal Area (Commissionable_Area__c) (header)= Medium Touch, Acquisition, Indirect Medium Touch follow the rules below for DDR rules</h2>
+    <table>
+        <!-- <caption>Renewal Rules</caption> --> 
+        <thead>
+            <tr>
+                <th>Activated</th>
+                <th>Rule</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal_Using_Quick_Contract_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Using Quick Contract is set to No"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal_LA_Quote_Total_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = LA and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal_Max_Quote_Total_Annum_For_LA__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal_EMEA_Quote_Total_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = EMEA and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal_Max_Quote_Total_Annum_For_EMEA__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal_NA_Quote_Total_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = NA and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal_Max_Quote_Total_Annum_For_NA__c}" required="false"/>
+                </td>
+            </tr>
+             <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal_PSCAN_Quote_Total_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = PS/CAN and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal_Max_Quote_Total_Annum_For_PSCAN__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the term (in years) of the contract is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal_Maximum_Contract_Term__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal_Net_Payment_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Net Payment Terms is "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal_Net_Payment_Terms__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal_Business_Transaction_Type_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the business type includes "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal_Business_Transaction_Type__c}" required="false"/>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br/>
+    <br/>
+    
+    <h2>Renewal Rules - If Renewal Area (Commissionable_Area__c) (header) = Medium Touch Nimsoft SaaS, follow the rules below for DDR rules</h2><!--YEDRA01 for AR:2994 -->
+    <table>
+        <!-- <caption>Renewal Rules</caption> -->
+        <thead>
+            <tr>
+                <th>Activated</th>
+                <th>Rule</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal2_Using_Quick_Contract_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Using Quick Contract is set to No"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal2_LA_Quote_Total_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = LA and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal2_Max_Quote_Total_Annum_For_LA__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal2_EMEA_Quote_Total_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = EMEA and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal2_Max_Quote_Total_Annum_For_EMEA__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal2_NA_Quote_Total_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = NA and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal2_Max_Quote_Total_Annum_For_NA__c}" required="false"/>
+                </td>
+            </tr>
+             <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal2_PSCAN_Quote_Total_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = PS/CAN and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal2_Max_Quote_Total_Annum_For_PSCAN__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal2_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the term (in years) of the contract is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal2_Maximum_Contract_Term__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal2_Net_Payment_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Net Payment Terms is "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal2_Net_Payment_Terms__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal2_Business_Transaction_Type_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the business type includes "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal2_Business_Transaction_Type__c}" required="false"/>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br/>
+    <br/>
+    <h2>If Renewal Area (Commissionable_Area__c) (header)  = High Touch Fast Track </h2>
+    <p>High Touch Fast Track will not go through the SFDC approval workflow, but not all quotes will go to DDR.  Follow the below rules for DDR rules.  If DDR is not required based on these rules,</p>
+    <p> DO NOT send to SFDC workflow approval.  These rules are only to determine if a DDR is required.</p>
+    <table>
+        <!-- <caption>Renewal Rules</caption> -->
+        <thead>
+            <tr>
+                <th>Activated</th>
+                <th>Rule</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal3_Using_Quick_Contract_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Using Quick Contract is set to No"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal3_Business_Transaction_Type_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the business type includes "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal3_Business_Transaction_Type__c}" required="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal3_Net_Payment_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Net Payment Terms is "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal3_Net_Payment_Terms__c}" required="false"/>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br/>
+    <br/>
+    <h2>If Renewal Area (Commissionable_Area__c) (header)  = High Touch</h2> 
+    <p>High Touch is out of scope for quick quote process.  Auto Create DDR</p>
+    <br/>
+    <h2>If Renewal Area (Commisionable_Area__c) (header)=Medium Touch Clarity SaaS, follow the rules below for DDR rules</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Activated</th>
+                <th>Rule</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal4_Using_Quick_Contract_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Using Quick Contract is set to No"/>
+                </td>
+            </tr>
+
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal3_NA_Qcuote_Total_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = NA and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal3_Max_Quote_Total_Annum_For_NA__c}" required="false"/>
+                </td>
+            </tr>
+
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal3_PSCAN_Qcuote_Total_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = PS/CAN and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal3_Max_Quote_Total_Annum_For_PSCAN__c}" required="false"/>
+                </td>
+            </tr>
+
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal3_EMEA_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = EMEA"/>
+                </td>            
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal3_LA_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = LA"/>
+                </td>            
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal3_APJ_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = APJ"/>
+                </td>
+            </tr>
+            <tr>
+            <td></td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal3_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If term (in years) of the contract is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal3_Maximum_Contract_Term__c}" required="false"/>
+                </td>            
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal4_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If term (in years) of the contract is less than "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal4_Maximum_Contract_Term__c}" required="false"/>
+                </td>            
+            </tr>            
+        </tbody>
+    </table>
+    <br/>
+    <br/>
+    <h2>If Renewal Area (Commisionable_Area__c) (header)=Medium Touch Agile Central, follow the rules below for DDR rules</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Activated</th>
+                <th>Rule</th>
+            </tr>
+        </thead>
+        <tbody>
+             <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal_Agile_Quick_Contract__c}" /></td>
+                <td>
+                    <apex:outputText value="If Using Quick Contract is set to No"/>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Agile_RenewalPricing_Group_and_Term_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If the Pricing Group is "/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal_Pricing_Group__c}" required="false"/>
+                    <apex:outputText value=" and the Term is less than "/>
+                    <apex:inputField value="{!DDR_Rules__c.RenewalGroup_Term_in_months_is_less_than__c}" required="false"/>
+                    <apex:outputText value="and Bus Transaction Type is one of the following"/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal5_Business_Transaction_Type__c}"/>
+                </td>
+            </tr>
+
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.NA1_Quote_Total_Per_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = NA and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.NA_Quote_Total_per_annum_is_greater_than__c}" required="false"/>
+                </td>
+            </tr>
+
+             <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.PSCAN_Renewal_Quote_Total_Per_Annum_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = PS/CAN and Quote Total per annum is greater than "/>
+                    <apex:inputField value="{!DDR_Rules__c.PSCAN_Quote_Total_per_annum_is_greater_t__c}" required="false"/>
+                </td>
+            </tr>
+
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.EMEA_Agile_Quote_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = EMEA"/>
+                </td>            
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.LA_Agile_Quote_Rules__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = LA"/>
+                </td>            
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.APJ_Agile_Quote_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Region = APJ"/>
+                </td>
+            </tr>
+            <tr>
+            <td></td>
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Agile_Renewal_Term_rule_3_years__c}" /></td>
+                <td>
+                    <apex:outputText value="The Term should not  be equal to  "/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile_Renewal_TERM_12__c}" required="false"/>
+                    <apex:outputText value="Or"/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile_Renewal_TERM_24__c}"/>
+                    <apex:outputText value="Or"/>
+                    <apex:inputField value="{!DDR_Rules__c.Agile_Renewal_Term_36__c}"/>
+                    <apex:outputText value="and Bus Transaction Type is one of the following"/>
+                    <apex:inputField value="{!DDR_Rules__c.Renewal_Bus_Trans_When_Not_12_24_36__c}"/>
+                </td>            
+            </tr>
+            <tr>
+                <td><apex:inputField value="{!DDR_Rules__c.Renewal_Ramp_Indicator_Rule__c}" /></td>
+                <td>
+                    <apex:outputText value="If Ramp Indicator is True"/>
+                </td>
+            </tr>
+                   
+        </tbody>
+    </table>
+    <br/>
+    <apex:commandButton action="{!save}" value="Save"/>
+  </apex:form>
+</apex:page>

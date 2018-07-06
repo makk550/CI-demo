@@ -1,0 +1,48 @@
+<apex:page cache="true"  standardcontroller="Apttus__APTS_Agreement__c" extensions="AgreementPOBHistory" contentType="application/vnd.ms-excel#POB Audit history report.xls" language="english">
+<apex:form >
+    <apex:pageBlock title="Agreement POBs">
+      <!--
+        <apex:pageBlockSection title="Agreement POBs">
+            <apex:pageBlockSectionItem>
+            <apex:outputLabel>POB Name :</apex:outputLabel>
+           <apex:inputText value="{!PobName}"/>
+                
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection> -->
+        
+        <apex:pageblocktable id="bookrec" rendered="{!display}" value="{!returnPOBHistoryRecords}" var="fetch">
+		    <apex:column headerValue="Agreement POB Name" value="{!fetch.parent.name}">
+               <!-- <a id="{!fetch.parentId}" onclick="openPOBRecord(this.id);return false;">{!fetch.parent.name}</a>  -->
+            </apex:column> 
+            
+            <apex:column value="{!fetch.parent.Agreement_POB_ID__c}"/>
+            <apex:column headerValue="POB Name" value="{!fetch.parent.POB_Category__r.Name}"/>
+            <apex:column value="{!fetch.field}"/>
+    		<apex:column value="{!fetch.NewValue}"/>
+            <apex:column value="{!fetch.OldValue}"/>
+            <apex:column headerValue="User name" value="{!fetch.createdBy.Name}"/>
+            <apex:column value="{!fetch.createdDate}"/>
+            
+    </apex:pageblocktable> 
+        </apex:pageBlock>
+    <apex:pageBlock title="Exercised POBs">
+        
+        <apex:pageblocktable id="bookrec1" title="Related Exercised Agreement POBs" value="{!ReturnExPobHistoryRecords}" var="fetch">
+		    <apex:column headerValue="Exercised POB Name" value="{!fetch.parent.name}">
+               <!-- <a id="{!fetch.parentId}" onclick="openPOBRecord(this.id);return false;">{!fetch.parent.name}</a>  -->
+            </apex:column> 
+            
+            <apex:column headerValue="Exercised POB ID" value="{!fetch.parent.CA_Exercised_POB_Unique_ID__c}"/>
+            <apex:column headerValue="Agreement POB Name" value="{!fetch.parent.CA_Agreement_POB_Name__r.Name}"/>
+            <apex:column value="{!fetch.field}"/>
+    		<apex:column value="{!fetch.NewValue}"/>
+            <apex:column value="{!fetch.OldValue}"/>
+            <apex:column headerValue="User name" value="{!fetch.createdBy.Name}"/>
+            <apex:column value="{!fetch.createdDate}"/>
+            
+    </apex:pageblocktable> 
+        
+    </apex:pageBlock>
+    
+</apex:form>    
+</apex:page>

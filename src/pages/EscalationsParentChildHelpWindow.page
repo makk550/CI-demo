@@ -1,0 +1,4 @@
+<apex:page showHeader="false" action="{! URLFOR($Resource.ParentChildEscalations) }">
+    <!-- This page redirects to the URL in the action attribute above -->
+    <p>Redirecting to help content...</p>
+</apex:page>

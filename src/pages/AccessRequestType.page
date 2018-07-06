@@ -1,0 +1,47 @@
+<!--VF Page to provide users options to select the type of access request they want to create-->
+<!--Comment added by BAJPI01, 26/6/2016-->
+
+<apex:page standardController="Access_Request__c" extensions="AccessRequestSubmitCtlr"  showHeader="true">
+    
+    <style>
+    #AccReqType,.AccReqTable{ <!--Styling for the table-->
+        padding: 15px;
+        spacing: 10px;
+        border-collapse: collapse;
+        border: 1px solid black;
+        }
+    </style>
+    
+    <apex:sectionHeader title="New Access Request" subtitle="Select the Type"/>
+    <apex:form >
+        <apex:pageBlock >
+    <div>
+        Select the type of Access Request you wish to create.
+    </div>
+ 
+        
+            
+    <apex:pageBlockSection showHeader="TRUE">        
+            <!--Hidden fields added to display the field a bit lower than the pageblock section-->
+    	<apex:inputHidden />
+        <apex:inputHidden />
+       
+       <apex:inputField id="Type" value="{!accReq.Type__c}" required="true"/>     
+    </apex:pageBlockSection> 
+    <apex:pageBlockButtons location="bottom">
+    <apex:commandButton action="{!ContinueAR}" value="Continue" />        <!--This sets the appropriate flag variable to true, depending on the type selected-->
+    </apex:pageBlockButtons>											<!--Redirects to AccessRequestSubmit Page, and renders the section based on the type selected-->
+    </apex:pageBlock>
+        
+    </apex:form>
+   
+        
+    <table id="AccReqType">
+        <tr class="AccReqTable"><th class="AccReqTable">Type</th><th>Description</th></tr>
+        <tr class="AccReqTable"><th class="AccReqTable">Create Access Request</th><td class="AccReqTable">Select this type when you have the URL and Mirror User</td></tr>
+        <tr class="AccReqTable"><th class="AccReqTable">Mirror a User</th><td class="AccReqTable">Select this type when you have the Mirror User but no URL.</td></tr>
+        <tr class="AccReqTable"><th class="AccReqTable">Create Service Desk Ticket</th><td class="AccReqTable">Select this type when you don’t have either the URL or the Mirror User</td></tr>
+    </table>
+    
+  
+</apex:page>

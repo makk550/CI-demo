@@ -1,0 +1,109 @@
+<apex:page id="ccpage2" standardStylesheets="true" showHeader="false" sidebar="false" controller="CC_CustomerCareFormController" action="{!setNotificationOnPage}">
+
+     <style> 
+    @font-face{font-family:"Averta";font-style:normal;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-bold-webfont.woff')})format("woff")}
+    @font-face{font-family:"Averta";font-style:normal;font-weight:bold;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-bold-webfont.woff2')}) format("woff2")}
+    @font-face{font-family:"Averta";font-style:normal;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-regular-webfont.woff')}) format("woff")}
+    @font-face{font-family:"Averta";font-style:italic;font-weight:normal;src:url({!URLFOR($Resource.CustomerCareForm, '/fonts/averta-regular-webfont.woff2')} format("woff2")}
+      
+    </style>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <title>Customercare Form Attachment</title>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <apex:stylesheet value="{!URLFOR($Resource.CustomerCareForm, 'bootstrap.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.CustomerCareForm, 'styles.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.CustomerCareForm, 'jquery.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.CustomerCareForm, 'bootstrap.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.CustomerCareForm, 'attachment-styles.css')}" /> 
+        
+        
+        <apex:form id="ccform2" styleClass="submit-bg">
+
+        <div> <!-- class="conatiner" -->
+            <!-- Help Links -->
+            <div class="dropdown">
+               <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"> Help
+                   <span class="caret"></span>
+                   <span class="caret caret-reversed"></span>
+               </button>
+                <ul class="dropdown-menu">
+                <apex:repeat value="{!helpTextForCCF}" var="helptext" >
+                    <li > <a href="{! helptext.url__c }" target="new">  {! helptext.title_eng__c } </a> </li> <!-- class="dropdown-menu" -->
+                </apex:repeat>
+                    </ul>
+           </div>
+            <!-- Help Links -->
+            
+            <h2 class="submitform-text">Submit a Question</h2>
+        </div> 
+            
+             <apex:pageMessages id="errors" />
+            
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3> {! $Label.CCF_Attachments } </h3>
+                
+                <!-- Attachments Block -->
+                    <apex:outputPanel id="attachment_id" styleClass="content-bg file-attach">
+                        
+                        <div class="col-md-12">
+                            
+                            <div class="col-md-10">
+                            <div class="form-group">
+                                <!-- apex:outputLabel value="{! $Label.CCF_Attachments }" / -->
+                                <apex:inputFile value="{!attachmentRec.body}" filename="{!attachmentRec.name}" id="file" /> 
+                                  <div class="caption text-muted"> ( File size should be &#60;= 5 MB ) </div>   
+                                     
+                            </div>
+                                </div> 
+                                <div class="col-md-2" >
+                                    <div class="form-group">
+                                            <apex:actionRegion >
+                                <apex:commandButton action="{! addAttachment }" styleClass="attachButton" value="Attach"  />                              
+                                </apex:actionRegion>
+                                    </div>
+                                </div>                                     
+                        </div>                               
+                                
+                         <div class="col-md-12">
+                            <div class="form-group">
+                                <apex:repeat value="{!attachmentsNameList}" var="attachName" id="theRepeat"> 
+                                    <apex:outputText value="{!attachName}" id="theValue"/><br/>                                
+                                </apex:repeat>
+                        </div>
+                        </div>                                
+                    </apex:outputPanel>
+                    
+                    
+                      <apex:outputPanel id="buttons_id" > <!-- rendered="{! showButtons}" -->
+                        <!--  -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group submit-buttons">         
+                                        <apex:actionRegion >                                                                    
+                                            <apex:commandButton value="Close" action="{!cancel}" onComplete="redirectToHomePage();" styleClass="btn btn-info"/>
+                                        </apex:actionRegion>
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel> 
+                                        
+                </div>
+                
+                </div>
+               <script type = "text/javascript">
+                                  function redirectToHomePage()
+                                  {
+                                       window.location = '{!($Label.CCF_HomePageURLAfterCloseButton)}';
+                                      //window.close();
+                                      
+                                  }    
+                </script>                                                                    
+                                                                    
+            </apex:form>
+                                                                    
+                                                                    
+</apex:page>

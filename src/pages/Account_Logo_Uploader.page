@@ -1,0 +1,61 @@
+<apex:page >  
+  
+  <script src="../../soap/ajax/38.0/connection.js"
+          type="text/javascript"></script>
+  <script>
+      window.onload = new function(){
+          checkCondition();
+      }
+      function checkCondition(){
+      
+          sforce.connection.sessionId = '{!$Api.Session_ID}';
+          
+          var ObjectName = "Account"; 
+          var ImageIdFieldName = "Company_Logo_ID__c";
+
+          var userId = "{!$User.Id}";     
+          var entityId = "{!$CurrentPage.parameters.id}"; 
+          
+          if (entityId !="") { 
+              
+              var pictureId = getIdOfLatestAttachment(entityId,userId); 
+              
+              if (pictureId !="" ) { 
+                  var oObject = new sforce.SObject(ObjectName); 
+                  oObject.Id = entityId; 
+                  oObject[ImageIdFieldName] = pictureId; 
+                  
+                  var result = sforce.connection.update([oObject]); 
+                  
+                  if (!result[0].getBoolean("success")) { 
+                      alert("Failed to update the Object - please manually add the image id.\n" + result[0]); 
+                  } 
+              } 
+              window.location.href = "/" + entityId; 
+          } 
+          else { 
+              alert("Entity Id not found - please manually add the shreenshot id."); 
+              window.location.href = "/home/home.jsp"; // home 
+          }
+      }
+      function getIdOfLatestAttachment(id,userId) { 
+          var attachmentId = ""; 
+          var sql = " SELECT a.ParentId, a.Name, a.Id, a.CreatedDate " + 
+              " FROM Attachment a " + 
+              " WHERE ParentId = '" + id + "' AND OwnerId = '" + userId + "' " + 
+              " ORDER BY CreatedDate desc LIMIT 1 "; 
+          
+              var result = sforce.connection.query( sql ); 
+          
+              var records = result.getArray("records"); 
+          
+          if (records.length > 0) { 
+              var record = records[0]; 
+              attachmentId = record.Id; 
+          } else { 
+              alert("Error: uploaded attachment not found."); 
+          } 
+          return attachmentId; 
+      } 
+  </script>
+</apex:page>

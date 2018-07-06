@@ -1,0 +1,122 @@
+<apex:page controller="PreSalesEditController" showHeader="true" >
+
+<style>
+table {
+    border-collapse: collapse;
+}
+
+.fixed {
+    max-width: 300px;
+    min-width: 300px;
+}
+.fluid {
+        width: 50%;
+}
+</style>
+ <apex:form >
+     <apex:pageMessages ></apex:pageMessages>
+     <apex:sectionHeader title="Presales Request Removal" rendered="{!removeApproveButton}"/>
+     <apex:sectionHeader title="Presales Request Cancel" rendered="{!cancellApproveButton}"/>
+
+        <apex:outputLink value="/{!presale.id}" >Return to Presales Request </apex:outputLink>
+  <apex:pageBlock >
+
+     <apex:pageBlock title="Commission Section" >
+                <apex:pageBlockSection columns="2">
+                  
+                     <apex:outputField value="{!presale.PreSales_Commission__r.Presales_Resource1__c}" />
+                     <apex:outputField value="{!presale.PreSales_Commission__r.Commission_Split1__c}" />
+                    <apex:outputField value="{!presale.PreSales_Commission__r.Presales_Resource2__c}" />
+                     <apex:outputField value="{!presale.PreSales_Commission__r.Commission_Split2__c}" />
+                    <apex:outputField value="{!presale.PreSales_Commission__r.Presales_Resource3__c}" />
+                     <apex:outputField value="{!presale.PreSales_Commission__r.Commission_Split3__c}" />
+                  
+
+             
+                </apex:pageBlockSection>
+             
+        
+        </apex:pageBlock>
+         <apex:pageBlock title="Presales Request Information" >
+             <apex:pageBlockSection columns="2">
+                <apex:outputField value="{!presale.Opportunity__c}"/>
+                 <apex:outputField value="{!presale.Start_Date__c}"/>
+                <apex:outputField value="{!presale.Activity__c}"/>
+                 <apex:outputField value="{!presale.Duration__c}"/>
+                 <apex:outputField value="{!presale.Commission_BU__c}"/>
+                 <apex:outputField value="{!presale.Cancellation_Reason__c}" rendered="{!cancellApproveButton}"/>
+                
+
+
+
+             </apex:pageBlockSection>
+             
+             </apex:pageBlock>
+ 
+             
+             
+      
+        <apex:pageBlock title="Consultants Section"  rendered="{!removeApproveButton}" >
+				<table>
+				<thead>
+					<tr>
+						<th class="fluid" style=" border: solid 1px #CCC;padding: 10px;">Presales Consultants</th>
+						<th class="fixed" style=" border: solid 1px #CCC;padding: 10px;">Roles</th>
+						<th class="fluid" style=" border: solid 1px #CCC;padding: 10px;">Removal Reasons</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputField value="{!presale.Presales_Resource1__c}"/></td>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputText value="{!presale.Role1__c}"/></td>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputText value="{!presale.Removal_Reason1__c}" rendered="{!removeApproveButton}" /></td>
+					</tr>
+					<tr>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputField value="{!presale.Presales_Resource2__c}"/></td>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputText value="{!presale.Role2__c}"/></td>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputText value="{!presale.Removal_Reason2__c}" rendered="{!removeApproveButton}" /></td>
+					</tr>
+					<tr>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputField value="{!presale.Presales_Resource3__c}"/></td>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputText value="{!presale.Role3__c}"/></td>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputText value="{!presale.Removal_Reason3__c}" rendered="{!removeApproveButton}" /></td>
+					</tr>
+				</tbody>
+			</table>  
+            </apex:pageBlock> 
+        <apex:pageBlock title="Consultants Section"  rendered="{!cancellApproveButton}" >
+				<table width="100%">
+				<thead>
+					<tr>
+						<th class="fluid" style=" border: solid 1px #CCC;padding: 10px;">Presales Consultants</th>
+						<th class="fixed" style=" border: solid 1px #CCC;padding: 10px;">Roles</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputField value="{!presale.Presales_Resource1__c}"/></td>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputText value="{!presale.Role1__c}"/></td>
+					</tr>
+					<tr>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputField value="{!presale.Presales_Resource2__c}"/></td>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputText value="{!presale.Role2__c}"/></td>
+					</tr>
+					<tr>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputField value="{!presale.Presales_Resource3__c}"/></td>
+						<td style=" border: solid 1px #CCC;padding: 10px;"><apex:outputText value="{!presale.Role3__c}"/></td>
+					</tr>
+				</tbody>
+			</table>  
+            </apex:pageBlock> 
+       <apex:pageBlockButtons >
+                  <apex:commandButton value="Reject" action="{!rejectedRequest}"  style="color:red;"/>
+                 <apex:commandButton value="Next" action="{!removeResource}" rendered="{!removeApproveButton}" style="color:green;"/>
+                  <apex:commandButton value="Next" action="{!cancellationRequest}" rendered="{!cancellApproveButton}" style="color:green;"/>
+
+            </apex:pageBlockButtons>
+                 
+      </apex:pageBlock> 
+    </apex:form>
+    
+    
+</apex:page>

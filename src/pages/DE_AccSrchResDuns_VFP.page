@@ -1,0 +1,120 @@
+<apex:page id="pgResWithDuns" sidebar="{!showsidebar}" showHeader="{!showhead}" controller="DE_AccSearch_CLS" action="{!loadheadercont}"> 
+  <apex:pageMessages ></apex:pageMessages> 
+  <apex:includeScript value="{!$Resource.JS_JQuery}" />
+  <apex:includeScript value="{!$Resource.JS_JQuery_Block_UI}" /> 
+  <apex:includeScript value="{!$Resource.YUI_ModalLoader}" /> 
+  
+   <apex:stylesheet value="{!URLFOR($Resource.ISTP,'/progress.css')}"/>
+   
+  
+  <apex:form id="frmSrch1">
+  <apex:actionFunction name="doSecSearch" action="{!SearchNext}" />
+  <apex:actionFunction name="goToFirstScreen" action="{!gotoPrevAccSrch}" />
+  <apex:pageBlock >   
+     <apex:pageBlock >
+        
+            <table height="100%">
+                <tr width="100%" height="30px">
+                    <td  style="align:left;width:75%"><apex:outputText /><b>Company Search</b></td>
+                    <td  style="align:right;width:25%"><apex:image rendered="{!bIsPartner}" value="{!URLFOR($Resource.ISTP,'/2.png')}"/></td>
+                </tr>
+            </table>
+        
+      </apex:pageBlock>
+        
+    <apex:PageBlockButtons location="bottom">
+      <div align="right">
+        <apex:commandButton id="prev" value=" < Previous" onclick="YUIShowLoading();goToFirstScreen();return false;" oncomplete="YUIHideLoading();" />
+        <apex:commandButton id="next" value="Next > " onclick="doSecSearch();YUIShowLoading();return false;" oncomplete="YUIHideLoading();" />
+        <apex:commandButton id="Cancel" value="Cancel" onclick="YUIShowLoading();ClosePage();return false;" oncomplete="YUIHideLoading();" />
+      </div>
+    </apex:PageBlockButtons>
+    <apex:outputLabel >Please select the Company that best matches your search criteria</apex:outputLabel><br/><br/>
+    <apex:outputLabel rendered="{!hasBestMatch}"> * Denotes the best match. </apex:outputLabel>
+    <br/><br/>
+    <apex:actionFunction name="rerenderpgblktable" action="{!displayresults1}" rerender="tblRes1,otpNav2" oncomplete="YUIHideLoading();"/>
+    <apex:outputPanel layout="block" styleClass="pSearchShowMore" id="otpNav2">
+              <div  style="padding-right: 2px;text-align: left;"><b>Total Records Found: &nbsp;&nbsp;<apex:outputText >{!IF(recordCount <> null, recordCount,0)} </apex:outputText></b></div>
+                  <div  style="padding-left: 2px;text-align: right;">
+                  Number of Records <apex:selectList value="{!selectedSize}" size="1" onchange="YUIShowLoading();clickme();"><apex:selectOptions value="{!recordssize}"/>
+                  </apex:selectList>
+                  <apex:image url="/img/search_prevarrow_disabled.gif" styleClass="prevArrow" rendered="{!NOT(hasPrevious)}"/>
+                  <apex:image url="/img/search_prevarrow.gif" title="Previous" styleClass="prevArrow" rendered="{!hasPrevious}"/>
+                  <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(hasPrevious)}">First</apex:outputPanel>
+                  <apex:commandLink action="{!First1}" title="First" value="First" rendered="{!hasPrevious}"/>&nbsp;&lt;&lt;&nbsp;
+                  <apex:commandLink action="{!Previous1}" title="Previous" value="Previous" rendered="{!hasPrevious}"/>
+                  <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(hasPrevious)}">Previous</apex:outputPanel>&nbsp;|&nbsp;
+                  <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(hasNext)}">Next</apex:outputPanel>         
+                  <apex:commandLink title="Next" value="Next" rendered="{!hasNext}" action="{!Next1}"/>&nbsp;&gt;&gt;&nbsp;
+                  <apex:commandLink title="Last" value="Last" rendered="{!hasNext}" action="{!Last1}"/>
+                  <apex:outputPanel styleClass="pShowLess noLink" style="color:grey" rendered="{!NOT(hasNext)}">Last</apex:outputPanel>&nbsp;
+                  <apex:image url="/img/search_nextarrow.gif" title="Next" styleClass="nextArrow" rendered="{!hasNext}"/>
+                  <apex:image url="/img/search_nextarrow_disabled.gif" rendered="{!NOT(hasNext )}"/></div>          
+    </apex:outputPanel>
+    
+    <apex:pageblockTable id="tblRes1" value="{!lstWSTenSize}" border="2" var="record">
+      <apex:column >
+        <apex:facet name="header"></apex:facet>
+          <apex:actionSupport action="{!selectAccDuns}" event="onclick" reRender="opTest" status="loading">
+          <apex:outputPanel rendered="{!!record.IsFirstRow}">
+              <input type="radio" name="group1" id="{!record.accId}" />
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!record.IsFirstRow}">
+              <input type="radio" name="group1" id="{!record.accId}" checked="true" />    
+          </apex:outputPanel>
+          <apex:param name="selectedAcc" value="{!record.accDunsNo}" assignTo="{!selAccId}" />
+          </apex:actionSupport>
+        <apex:actionStatus id="loading" style="align:center;">       
+            <apex:facet name="start">
+             <apex:image value="/img/loading.gif" title="Processing..."  height="30px" width="30px"/>
+            </apex:facet>
+            <apex:facet name="stop"></apex:facet>
+        </apex:actionStatus>
+      </apex:column>
+      <apex:column >
+        <apex:outputLabel id="matched" rendered="{!record.hasBestMatch}">*</apex:outputLabel>      
+      </apex:column>
+      <!-- <apex:column headerValue="DunsNo" value="{!record.accDunsNo}"/>  -->
+      <apex:column headerValue="Business Name" value="{!record.accName}"/> 
+      <apex:column headerValue="Trade Style" value="{!record.tradeStyle}"/> 
+      <apex:column headerValue="Address" value="{!record.address}"/> 
+      <apex:column headerValue="City" value="{!record.city}"/> 
+      <apex:column headerValue="State" value="{!record.state}"/> 
+      <apex:column headerValue="Country" value="{!record.country}"/> 
+    </apex:pageblockTable>
+   
+  </apex:pageBlock>
+  <apex:outputPanel id="opTest" />
+  </apex:form>
+  <script>
+    function ClosePage()   
+         {  
+            var pagered = '{!pagered}';
+            if(pagered!=null && pagered =='StandNew')
+              {
+               setURI('/001/o');                      
+   
+              }
+            else if(pagered !=null && pagered =='TAQButton')
+             {
+                setURI('/a15/o');    
+                
+             }        
+            else {
+             winMain=window.opener;  
+              if (null==winMain) {     
+                winMain=window.parent.opener;       
+             } 
+             winMain.closeLookupPopup();    
+             } 
+//
+        }      
+       function clickme()
+       {
+           rerenderpgblktable();
+       } 
+       function setURI(sUri){
+            window.location.href= sUri;
+      }
+  </script>
+</apex:page>

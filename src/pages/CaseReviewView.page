@@ -1,0 +1,61 @@
+<apex:page standardController="Case_Review__c" extensions="CaseReviewControllerExtension" standardStylesheets="true" showHeader="true" sidebar="true">
+
+<!--<apex:stylesheet value="{!URLFOR($Resource.bpstyles, 'styles.min.css')}" />-->
+
+<apex:form >
+    <apex:pageBlock title="Case Review" mode="edit" >
+
+        <!--<apex:pageBlockButtons >
+            <apex:commandButton action="{!save}" value="Save" styleClass="btn" status="saving" />
+            <apex:commandButton action="{!cancel}" value="Cancel" styleClass="btn"/>    
+        </apex:pageBlockButtons>-->  
+                  
+        <apex:pageBlockSection title="Case Information">
+            <apex:pageBlockSectionItem >
+            	<apex:outputLabel value="Assessment Type"/>
+                <apex:outputText value="{!Case_Review__c.Assessment_Type__c}"/>                
+            </apex:pageBlockSectionItem><br/>
+            <apex:pageBlockSectionItem rendered="{!IF(recordTypeValue=='Assisted',true,false)}">
+            	<apex:outputLabel value="Case Number"/>
+                <apex:outputText value="{!Case_Review__c.Case_Number__c}"/>                
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!IF(recordTypeValue=='Customer Assistance',true,false)}">
+            	<apex:outputLabel value="Case Number"/>
+                <apex:outputText value="{!Case_Review__c.Case_Number__c}"/>                
+            </apex:pageBlockSectionItem>
+            <apex:pageblockSectionItem rendered="{!IF(recordTypeValue=='Chat',true,false)}">
+                <apex:outputLabel value="Chat Transcript"/>
+                <apex:outputText value="{!Case_Review__c.Chat_Transcript__c}"/>
+            </apex:pageblockSectionItem>
+            
+            <apex:outputText value="" styleClass="dataCol first"/> <!--US368336-->
+             <apex:outputField value="{!Case_Review__c.Case_Troubleshooting_Stage__c}"/>  <!--US368336-->
+            
+            <apex:outputText value="" styleClass="dataCol first "/>            
+            <apex:outputField value="{!Case_Review__c.Engineer_Name__c}"/>
+
+            <apex:outputText value="" styleClass="dataCol first "/>            
+            <apex:outputField value="{!Case_Review__c.Reviewer_Name__c}"/>
+
+            <apex:outputText value="" styleClass="dataCol first "/>            
+            <apex:outputField value="{!Case_Review__c.Today_Date__c}" rendered="{!IF(recordTypeValue=='Assisted',true,false)}"/>  
+             <apex:outputField value="{!Case_Review__c.Today_Date__c}" rendered="{!IF(recordTypeValue=='Customer Assistance',true,false)}"/>
+            <apex:outputField value="{!Case_Review__c.Review_Today_Date__c}" rendered="{!IF(recordTypeValue=='Chat',true,false)}"/>    
+            
+            <apex:outputText value="" styleClass="dataCol first "/>            
+            <apex:outputField value="{!Case_Review__c.Review_Type__c}"/>            
+        </apex:pageBlockSection>
+        
+    <br></br>
+        <apex:repeat value="{!caseQuestionsViewList}" var="Q"> 
+            <apex:pageBlockSection title="{!Q.Type__c}">
+                <apex:outputField value="{!Q.Description__c}"/> 
+                <apex:outputField value="{!Q.Explanation__c}"/>
+                <apex:outputField value="{!Q.Comment__c}"/>
+                <apex:outputField value="{!Q.Score_New__c}"/>                        
+            </apex:pageBlockSection>    
+        </apex:repeat>      
+    </apex:pageBlock>
+</apex:form>
+
+</apex:page>

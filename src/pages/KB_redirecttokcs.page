@@ -1,0 +1,2 @@
+<apex:page controller="KB_redirecttokcs" showHeader="false" applyBodyTag="false" applyHtmlTag="false" cache="false" action="{!redirectTopage}">
+</apex:page>

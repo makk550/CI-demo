@@ -1,0 +1,18 @@
+<apex:component controller="InputPicklistNoNoneController">
+  <apex:attribute name="value" required="true" type="String" 
+   description="The variable the selected option will be assigned to"/>
+  
+  <apex:attribute name="field" assignTo="{!fieldName}"    
+   required="true" type="String" 
+   description="The picklist field that forms the basis of the input"/>
+
+  <!--If the value is empty, then set it to be equal to the default 
+      value from the schema description-->
+
+  <apex:variable var="value" value="{!defaultOption}" 
+   rendered="{!ISNULL(value)}"/>
+
+  <apex:selectList size="1" value="{!value}">
+    <apex:selectOptions value="{!options}"/>
+  </apex:selectList>
+</apex:component>

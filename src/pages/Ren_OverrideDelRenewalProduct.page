@@ -1,0 +1,8 @@
+<apex:page standardController="Renewal_Product__c">
+<script>
+ //display message
+ alert('Please check the projected renewals while deleting renewal products.');
+ //delete the renewal product
+ window.location.href = '/setup/own/deleteredirect.jsp?delID={!Renewal_Product__c.Id}&retURL=%2F{!Renewal_Product__c.Renewal__c}&nooverride=1';
+</script>
+</apex:page>

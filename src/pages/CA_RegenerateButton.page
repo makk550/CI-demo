@@ -1,0 +1,17 @@
+<apex:page >
+<apex:includescript value="/soap/ajax/36.0/connection.js"/>
+<apex:includescript value="/soap/ajax/24.0/apex.js"/>    
+    <script> 
+     var AID= '{!$CurrentPage.parameters.Id}';      
+         
+            
+           var answer = confirm('{!$Label.Regenerate_Popup_Message}'); 
+           if(answer) {
+                window.open("/apex/Apttus__SelectTemplate?id="+AID+"&action=Regenerate_Agreement&templateType=Agreement","_self");                
+            }else{ 
+                window.open("/"+AID,"_self");
+            }      
+     
+    </script>  
+ 
+</apex:page>

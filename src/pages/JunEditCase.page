@@ -1,0 +1,14 @@
+<apex:page controller="JunEditCaseController" showHeader="false">
+     <apex:form >
+           <apex:pageBlock mode="edit">
+                <apex:pageBlockSection title="Edid Field" columns="1" showHeader="false">
+                        <apex:inputField value="{!CurrentCase[FieldName]}" />
+               </apex:pageBlockSection>
+         <apex:pageBlockButtons >
+             <apex:commandButton value="Save" action="{!SaveCaseField}" />
+         </apex:pageBlockButtons>
+
+         </apex:pageBlock>
+    </apex:form>    
+    
+</apex:page>

@@ -1,0 +1,157 @@
+<apex:page standardController="Account" tabStyle="Account_Visit__c" sidebar="false"  showHeader="false" extensions="EBCAttendeesExt" action="{!initPage}">
+
+<apex:includeScript id="JQuery" value="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"/>
+<script>
+    window.$j = jQuery.noConflict();
+    function checkAll(cb)
+    {
+        var inputElem = document.getElementsByTagName("input");
+        for(var i=0; i<inputElem.length; i++)
+        {
+            if(inputElem[i].id.indexOf("chkpDIds")!=-1){
+                // inputElem[i].checked = cb.checked;
+             }
+        }
+    }
+    
+   
+
+    function setURL(theUrl){
+        //alert(theUrl);
+        window.top.location.href = theUrl; 
+             
+    }
+var areaIds = [];
+function submitSelection() {
+    saveSelection();
+    selectedIds=areaIds.join();
+    if(selectedIds==''){
+            if(confirm('No selection has been made.\nAre you sure you want to continue?')){
+                top.window.opener.setContacts(selectedIds);
+                window.parent.close();
+            }
+        }else{
+            top.window.opener.setContacts(selectedIds);
+            window.parent.close();
+        }    
+}
+function saveSelection() {
+    var selectedIds = areaIds.join('');
+    $j(':checkbox').each(function(){
+        if (this.checked) {
+            if (selectedIds.indexOf(this.id) === -1) {
+                areaIds.push(this.id);
+                selectedIds = selectedIds + this.id;
+            }
+        } else {
+            if (selectedIds.indexOf(this.id) !== -1) {
+                for (i=0; i < areaIds.length; i++) {
+                    if (areaIds[i] === this.id) {
+                        areaIds.splice(i, 1);
+                        selectedIds = areaIds.join('');
+                    }
+                }
+            }
+        }                      
+    });
+}
+
+function restoreSelection() {
+   contIds = areaIds.join('');
+    i = 0;
+  
+    $j(':checkbox').each(function(){ if(this.id !== ''){  if(contIds.indexOf(this.id) !== -1){this.checked=true;};}});
+
+}
+</script>
+<apex:sectionHeader title="Select Attendees"/>
+<apex:form >
+<table width="100%">
+    <tr>
+        <td width="70%" valign="top">
+            <apex:pageBlock tabStyle="Account_Visit__c" id="btr">
+                <apex:pageBlockButtons >
+                    <input type="button" class="button" value="Submit" onclick="submitSelection();"/>
+                </apex:pageBlockButtons>
+    <apex:variable var="v" value="" id="rerenderThis">
+
+                <apex:pageBlockSection title="List of contacts from Account: {!account.Name}" collapsible="false" id="pbs">
+                <apex:outputPanel id="mypanel">
+                <apex:dataTable value="{!lstContacts}" var="contact" styleClass="list" width="100%" id="cntList">
+                    <apex:column >
+                        <apex:facet name="header"> 
+                            <input type="Checkbox" id="chkAll" value="all" onclick="checkAll(this)" />
+                        </apex:facet>
+     
+                        <apex:outputPanel rendered="{!IF($CurrentPage.parameters.contactids!=null && contains($CurrentPage.parameters.contactids,contact.id),true,false)}">                
+                             <input type="checkbox" checked="checked" value="{!contact.id}:{!contact.name}"  id="{!contact.id}:{!contact.name}" />
+    
+                        </apex:outputPanel>
+       
+                        <apex:outputPanel rendered="{!!contains($CurrentPage.parameters.contactids,contact.id)}">                
+                             <input type="checkbox" value="{!contact.id}:{!contact.name}"  id="{!contact.id}:{!contact.name}" />
+                      
+
+
+                        </apex:outputPanel>
+                   
+                    </apex:column>
+                   
+                    <apex:column headerValue="Contact Name" value="{!contact.name}"/>
+                    <apex:column headerValue="Title" value="{!contact.title}"/>
+                
+                   
+                
+                      
+                </apex:dataTable>
+                
+             </apex:outputPanel>
+
+                </apex:pageBlockSection>
+    </apex:variable>
+                 <apex:outputpanel >Showing Page #{!pageNumber} of {!totalPages} </apex:outputpanel>  
+                 <apex:outputpanel >            
+<apex:commandButton action="{!Beginning}" title="Beginning" value="First" disabled="{!disablePrevious}" reRender="cntList,mypanel,pbs,btr" immediate="true"  onClick="saveSelection();" oncomplete="restoreSelection()"/>
+<apex:commandButton action="{!Previous}" title="Previous" value="Prevoius " disabled="{!disablePrevious}" reRender="cntList,mypanel,pbs,btr" immediate="true" onClick="saveSelection();" oncomplete="restoreSelection()"/>        
+<apex:commandButton action="{!Next}" title="Next" value="Next" disabled="{!disableNext}" reRender="cntList,mypanel,pbs,btr" immediate="true" onClick="saveSelection();" oncomplete="restoreSelection()"/>
+<apex:commandButton action="{!End}" title="End" value="Last" disabled="{!disableNext}"reRender="cntList,mypanel,pbs,btr" immediate="true" onClick="saveSelection();" oncomplete="restoreSelection()"/>
+        </apex:outputpanel>     
+                 </apex:pageBlock>
+                 
+                 
+                
+              
+            
+        </td>
+        <td valign="top" nowrap="nowrap">
+            <apex:pageBlock title="Create New Contact" mode="edit">
+                <apex:pageBlockButtons location="bottom" >
+                    <apex:commandButton value="Create Contact" action="{!createContact}"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection collapsible="false" columns="1" id="cntForm" >
+                    <apex:inputField value="{!newContact.FirstName}"/>
+                    <apex:inputField value="{!newContact.LastName}"/>
+                    <apex:inputField value="{!newContact.Title}"/>
+                    <apex:inputField value="{!newContact.Email}"/>
+                    <apex:inputField value="{!newContact.Phone}"/>
+                    <apex:outputLabel value="{!errMsg}" id="lblErr"></apex:outputLabel>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            <p align="center">
+            <h1>Please note</h1>
+            <br>
+            
+                1. Please add new contact first, if desired. </br><br>
+                2. Then select contact name from Account contact list.
+               
+                </br>
+            </p>
+        </td>
+    </tr>
+</table>
+ 
+  
+
+</apex:form>
+
+</apex:page>

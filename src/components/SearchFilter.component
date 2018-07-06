@@ -1,0 +1,103 @@
+<apex:component allowDML="true" id="filterRegion">
+    <apex:attribute name="filterFields" description="This is the list of filter fields passed to the component"
+        type="FormField[]" required="true"/>
+
+    <apex:outputPanel style="width:100%" layout="block">
+        <apex:repeat var="filterField" value="{!filterFields}">
+            <apex:outputPanel style="float: left; width:290px;" layout="block" >
+                <apex:outputLabel style="float: left;" value="{!filterField.label}"  />             
+               <apex:outputPanel rendered="{!filterField.inlineHelpText  != null }" > 
+                 <!-- PRM5.5 -  Code replaced as below... <img src="img/alohaSkin/help_orange.png" class="helpIcon" alt="Help" title= "{!filterField.inlineHelpText}" style="float: left !important;" /> -->
+                     <apex:image id="helpImage" value="{!$Resource.help_orange}" styleClass="helpIcon" alt="Help" title="{!filterField.inlineHelpText}" style="float: left !important;"/> 
+                </apex:outputpanel> 
+              <!-- PRM5.5 -  <apex:outputPanel rendered="{!filterField.inlineHelpText  == null }" >
+                <br/>
+                </apex:outputpanel> -->
+                
+                                 <br/> 
+                <apex:outputPanel styleClass="textbox_filter" 
+                    rendered="{!NOT(filterField.fieldType=='MULTIPICKLIST')}" 
+                    style="float: left; width:90%;" 
+                    layout="block">
+                    <apex:inputText style="width:100%; background:transparent none repeat scroll 0 0;border-style:none;"
+                        value="{!filterField.value}" 
+                        rendered="{!OR(filterField.fieldType=='STRING',
+                        filterField.fieldType=='INTEGER',
+                        filterField.fieldType=='LONG',
+                        filterField.fieldType=='DOUBLE',
+                        filterField.fieldType=='URL',
+                        filterField.fieldType=='CURRENCY',
+                        filterField.fieldType=='EMAIL',
+                        filterField.fieldType=='PERCENT',
+                        filterField.fieldType=='PHONE',
+                        filterField.fieldType=='TEXTAREA'
+                        )}"
+                        onkeypress="keypressed()"/>
+
+                    <apex:selectList style="width:100%;border-style:none;" value="{!filterField.value}"                  
+                        rendered="{!filterField.fieldType=='PICKLIST'}" 
+                        multiselect="false"
+                        size="1" >
+                        <apex:selectOption itemValue="" itemLabel="{!$Label.none}" /> 
+                        <apex:selectOptions value="{!filterField.pickListValues}"/>
+                    </apex:selectList>
+
+                    <apex:selectList style="width:100%;border-style:none;" value="{!filterField.value}" size="1" 
+                    rendered="{!filterField.fieldType=='BOOLEAN'}">
+                        <apex:selectOption itemValue="" itemLabel="{!$Label.none}" />
+                        <apex:selectOption itemValue="false" itemLabel="{!$Label.no}" />
+                        <apex:selectOption itemValue="true" itemLabel="{!$Label.yes}" />
+                    </apex:selectList>
+                </apex:outputPanel>
+                <apex:outputPanel styleClass="multi_filter" rendered="{!filterField.fieldType=='MULTIPICKLIST'}" style="float: left; width:90%;" layout="block">
+                    <apex:selectList style="width:100%;border-style:none;background:transparent none repeat scroll 0 0;" value="{!filterField.values}"                   
+                        rendered="{!filterField.fieldType=='MULTIPICKLIST'}" 
+                        multiselect="true"
+                        size="3" >
+                       <!-- PRM5.5 - Removing 'None' option for multi picklists <apex:selectOption itemValue="" itemLabel="{!$Label.none}" /> -->
+                        <apex:selectOptions value="{!filterField.pickListValues}"/>
+                    </apex:selectList>
+                    <span align="left" style="float:left;" class="search_tip">({!$Label.ctrl_click_to_select_multiple})</span>
+                </apex:outputPanel>
+
+            </apex:outputPanel>
+        </apex:repeat>
+         
+    </apex:outputPanel>
+     
+         <!-- PRM5.5 - Introducing Partner Type,Designation  
+             <apex:outputLabel style="float: left;" value="Partner Type"/><br/>
+             <apex:outputPanel styleClass="multi_filter" style="float: left; width:30%;" layout="block">
+                 
+                    
+                     <apex:selectList   style="width:100%;border-style:none;" value="{!selectedPartnerType}"                  
+                            multiselect="true"
+                            size="3" >
+                           <apex:selectOptions value="{!PartnerTypes}"/>
+                        </apex:selectList>
+                 <br/>       <span align="left" style="float:left;" class="search_tip">({!$Label.ctrl_click_to_select_multiple})</span> 
+               </apex:outputpanel>  
+           
+          
+             <apex:outputPanel>
+               <apex:outputLabel style="float: left;" value="Partner Designation"/><br/>
+                <apex:outputPanel styleClass="multi_filter" style="float: left; width:30%;" layout="block">
+                    
+                     <apex:selectList   style="width:100%;border-style:none;" value="{!selectedPartnerDesgn}"                  
+                            multiselect="true"
+                            size="3" >
+                           <apex:selectOptions value="{!PartnerDesgns}"/>
+                        </apex:selectList>
+                 <br/>       <span align="left" style="float:left;" class="search_tip">({!$Label.ctrl_click_to_select_multiple})</span> 
+               </apex:outputpanel>  
+                </apex:outputpanel>  
+            -->
+            
+         <!--END  PRM5.5 - Introducing Partner Type,Designation -->       
+        
+        
+        
+        
+      
+    <br/>
+</apex:component>

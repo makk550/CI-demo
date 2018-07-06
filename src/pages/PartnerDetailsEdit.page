@@ -1,0 +1,33 @@
+<apex:page controller="PartnerDetailsController"
+	sidebar="{!LEN($Site.Name)<=0}"
+	showHeader="false"
+	standardStylesheets="true" 
+	 id="Page"
+	 language="{!preferredLanguageCode}">
+	
+		<apex:pageMessages />
+		<apex:form id="Form">
+			 
+			<!-- rendered="{!isCurrentUserAdmin}" -->
+			
+			<apex:outputPanel id="editDetailPanel">
+				<apex:pageBlock title="{!$Label.titleeditpartnerdetail}"  mode="edit" >
+					 <apex:pageBlockButtons >
+                		<apex:commandButton action="{!saveDetail}"  value="{!$Label.btnsave}"/>
+            			<apex:commandButton action="{!cancelDetail}" value="{!$Label.btncancel}"/>
+            		</apex:pageBlockButtons>
+            		<table cellspacing="10" cellpadding="5"> 
+					<tr>
+						<td>
+            		<c:EditFields editFields="{!editFields}" rendered="true" />
+						</td>
+						</tr>
+						</table>
+				</apex:pageBlock>
+			</apex:outputPanel>
+		
+			
+		</apex:form>
+
+
+</apex:page>

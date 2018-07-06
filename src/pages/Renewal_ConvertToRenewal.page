@@ -1,0 +1,53 @@
+<apex:page Controller="Renewal_ConvertToRenewal" >
+    <apex:sectionHeader title="Generate Renewals From Contracts"/>
+    <Apex:form >
+    <apex:pagemessages ></apex:pagemessages>
+    <apex:pagemessage summary="Renewals records are still processing.." rendered="{!batchProcessing}" severity="info"/>
+        <apex:pageBlock >
+              <apex:pageBlockButtons ><apex:commandButton value="Generate Renewals" action="{!Convert }" rendered="{!batchProcessing == false}" /></apex:pageBlockButtons>    
+              <apex:pageBlockSection >
+              <apex:pageBlockSectionItem >
+                     <apex:outputLabel value="Region: " for="regionID"/>
+                     <apex:selectList id="regionID" value="{!region}" size="1" >
+                        <apex:selectOptions value="{!items}"/>
+                     </apex:selectList>
+                     </apex:pageBlockSectionItem> <br/>
+                      <apex:pageBlockSectionItem >
+                             <apex:outputLabel >Start Date</apex:outputLabel>   <apex:inputField value="{!ac.ChangeDate__c}" />
+                     </apex:pageBlockSectionItem>
+                     <br/>
+                     <apex:pageBlockSectionItem >
+                             <apex:outputLabel style="margin-left:20px">End Date</apex:outputLabel> <apex:inputField value="{!ac.Expected_Close_Date__c}" />
+                     </apex:pageBlockSectionItem>
+                     <br/>
+                            
+             </apex:pageBlockSection>
+        </apex:pageBlock> 
+        
+        <apex:pageBlock rendered="{!ShowDataMessage}">   
+  <apex:pageblockSection title="Generated Renewal Details" >
+  <apex:pageBlockTable value="{!GeneratedRenewals}"  var="ren" >
+ 
+      <apex:column headerValue="Renewal Name">
+      <apex:outputLink value="/{!ren.Id}">{!ren.name}
+      </apex:outputLink>
+      </apex:column>
+    </apex:pageBlockTable>
+    <br/>
+    <apex:commandLink value="View Generated Renewals" action="{!recentRenewals}"/><br/>
+    
+    </apex:pageblockSection>
+  </apex:pageBlock>
+  
+  <apex:pageBlock rendered="{!ShowErrorMessage}">   
+  <apex:pageblockSection title="Error Message" >
+  <apex:pageBlockTable value="{!errors}"  var="error" >
+ 
+      <apex:column Value="{!error}" />
+      
+    </apex:pageBlockTable>
+    
+    </apex:pageblockSection>
+  </apex:pageBlock>   
+    </Apex:form>
+</apex:page>

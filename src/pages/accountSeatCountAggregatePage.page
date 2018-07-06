@@ -1,0 +1,305 @@
+<apex:page controller="accountSeatCountAggregateClass" sidebar="false" showHeader="false" >
+    <html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js">
+        </script>
+        <apex:slds />
+    <style>
+        body{
+         width:100%;
+        }
+        .MainSectionBody{
+        padding: 0px 20px;
+        padding-top: 0px;
+        border: 1px solid #738292;
+        margin: 10px;
+        box-shadow: 2px 2px 1px #738292;
+        }
+        .arrow-right, .arrow-down {
+        width: 11px;
+        height: 11px;
+        }
+        .arrow-right {
+        background: transparent url(/img/alohaSkin/twisty_sprite.png) 0 0 no-repeat;
+        }
+        .arrow-down {
+        background: transparent url(/img/alohaSkin/twisty_sprite.png) 0 -11px no-repeat;
+        }
+        .details {
+
+        cursor: pointer;
+        }
+        .headerN{
+            font-weight: bold;
+            color: #0070d2;
+        }
+        .headerRow{
+         background-color:#f4f6f9 !important;
+        }
+        .customMessage * {
+        font-weight:bold;
+        color: #fff!important;
+        font-size:14px;
+        }
+        .customMessage {
+        margin: 5px 0!important;
+        text-align:center;
+        opacity: 1!important;
+        width: 100%;
+        font-size: 12px;
+        border: 0px;
+        padding-left: 10px;
+        <!--background: rgba(128, 164, 226, 0.95) !important;-->
+        background: rgb(63, 147, 220) !important;
+        }
+        
+        body .bPageTitle .ptBody .pageType {
+        font-size: 1.5em !important;
+        }
+        
+        body .bPageTitle .ptBody .pageDescription {
+        font-size: 1.2em !important;
+        }
+        
+    </style>
+    <script>
+     $(document).ready(function(){
+                       overridePageMessages();    
+                    });
+                    function overridePageMessages(){    
+                        var textureEffect = 'slds-theme--alert-texture';
+                        //Uncomment below line for texture effect on page messages
+                        //textureEffect = 'slds-theme--alert-texture';
+                                     
+                        $('.warningM3').addClass('slds-notify slds-notify--toast slds-theme--warning customMessage '+textureEffect);          
+                        $('.confirmM3').addClass('slds-notify slds-notify--alert slds-theme--success  customMessage '+textureEffect);    
+                        $('.errorM3').addClass('slds-notify slds-notify--alert slds-theme--error customMessage '+textureEffect);                  
+                        $('.infoM3').addClass('slds-notify slds-notify--toast customMessage '+textureEffect);    
+                                         
+                        $('.errorM3').removeClass('errorM3'); 
+                        $('.confirmM3').removeClass('confirmM3'); 
+                        $('.infoM3').removeClass('infoM3');   
+                        $('.warningM3').removeClass('warningM3');  
+                    }
+                </script>
+    
+        
+    </head>
+    <body class="slds-scope">
+    <apex:pageMessages ></apex:pageMessages>
+    <div class="MainSectionBody">
+    <apex:form id="gp_form">
+        
+        <apex:sectionHeader title="Subscription Seat Count for Account: {!accountName}" subtitle="GP Number: {!gpNumber}"/>
+        <apex:pageBlock rendered="{!renderGPSubscriptionDetails}" mode="maindetail">
+            <apex:pageBlockSection title="Subscription Seat Count" id="gpsubcount" columns="1" rendered="{!renderGPSubscriptionDetails}">
+               <!-- <script>  
+                twistSection(document.getElementById('img_{!$Component.gpsubcount}')); 
+                </script>-->
+                <apex:pageBlockTable value="{!productAggregateList}" var="prod" style="line-height:2rem;border-collapse: initial;" >
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            <div class="headerN">
+                                Product Name
+                            </div>
+                        </apex:facet>
+                        <apex:outputText value="{!prod.productName}"/>
+                    </apex:column>
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            <div class="headerN">
+                                Minimum Start Date</div>
+                        </apex:facet>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!prod.startDate}" />
+                        </apex:outputText> 
+                    </apex:column>
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            <div class="headerN">
+                                Maximum End Date</div>
+                        </apex:facet>
+                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!prod.endDate}" />
+                        </apex:outputText> 
+                    </apex:column>
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            <div class="headerN">
+                                Total Seats</div>
+                        </apex:facet>
+                        <apex:outputText value="{!prod.quantity}"/>
+                    </apex:column>
+                    
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock rendered="{!renderGPAssetDetails}" mode="maindetail">
+            <apex:pageBlockSection title="Asset Seat Count" columns="1" id="gpassetcount" rendered="{!renderGPAssetDetails}">
+                <!--<script>  
+                twistSection(document.getElementById('img_{!$Component.gpassetcount}')); 
+                </script>-->
+                <apex:pageBlockTable value="{!productAssetAggregateList}" var="prodAsset" style="line-height:2rem;border-collapse: initial;">
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            <div class="headerN">
+                                Product Name</div>
+                        </apex:facet>
+                        <apex:outputText value="{!prodAsset.productName}"/>
+                    </apex:column>
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            <div class="headerN">
+                                Total Seats</div>
+                        </apex:facet>
+                        <apex:outputText value="{!prodAsset.quantity}"/>
+                    </apex:column>
+                    
+                </apex:pageBlockTable>
+
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+
+        <apex:pageBlock mode="maindetail" rendered="{!renderGPSubscriptionDetails}">
+            <apex:pageBlockSection title="Account Subscription Details" columns="1" id="accSubCount" rendered="{!renderGPSubscriptionDetails}">
+                <!--<script>  
+                twistSection(document.getElementById('img_{!$Component.accSubCount}')); 
+                </script>-->
+                <apex:pageBlockTable id="acc_details" value="{!accountSubscriptionList}" var="temp" style="line-height:2rem;">
+                    <apex:column >
+                        <div class="details" onclick="toggleArrow(this);toggleDisplay('{! $Component.details }');">
+                            <img src="/s.gif" class="arrow-right" /> Details
+                        </div>
+                    </apex:column>
+                    <apex:column value="{!temp.accName}" >
+                        <apex:facet name="header">
+                            <div class="headerN">
+                                Account Name</div>
+                        </apex:facet>
+                    </apex:column>
+                    <apex:column value="{!temp.accId}" >
+                        <apex:facet name="header">  
+                            <div class="headerN">
+                                Account ID</div>
+                        </apex:facet>
+                    </apex:column>
+                    <apex:column breakBefore="true" id="details" style="display:none" colspan="5">
+                        <apex:pageBlockTable id="details_table" value="{!temp.accSubscList}" var="prod" style="margin:0.5rem;width:60%;">
+                            <apex:column value="{!prod.prodName}" >
+                                <apex:facet name="header"> 
+                                    <div class="headerN">
+                                        Product Name</div>
+                                </apex:facet>
+                            </apex:column>
+                            <apex:column value="{!prod.instanceId}" >
+                                <apex:facet name="header">
+                                    <div class="headerN">
+                                        Product Instance ID</div>
+                                </apex:facet>
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header"> 
+                                    <div class="headerN">
+                                        Minimum Start Date</div>
+                                </apex:facet>
+                                <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                    <apex:param value="{!prod.minStartDate}" />
+                                </apex:outputText>
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header"> 
+                                    <div class="headerN">
+                                        Maximum End Date</div>
+                                </apex:facet>
+                                <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                    <apex:param value="{!prod.maxEndDate}" />
+                                </apex:outputText>
+                            </apex:column>
+                            <apex:column value="{!prod.TotalQuantity}" >
+                                <apex:facet name="header">
+                                    <div class="headerN">
+                                        Total Quantity</div>
+                                </apex:facet>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock mode="maindetail" rendered="{!renderGPAssetDetails}">
+            <apex:pageBlockSection title="Account Asset Details" columns="1" id="accAssetCount" rendered="{!renderGPAssetDetails}">
+                <!--<script>  
+                twistSection(document.getElementById('img_{!$Component.accAssetCount}')); 
+                </script>-->
+                <apex:pageBlockTable id="acc_asset_details" value="{!accountAssetList}" var="temp" style="line-height:2rem;">
+                    <apex:column >
+                        <div class="details" onclick="toggleArrow(this);toggleDisplay('{! $Component.asset_details }');">
+                            <img src="/s.gif" class="arrow-right" /> Details
+                        </div>
+                    </apex:column>
+                    <apex:column value="{!temp.accName}" >
+                        <apex:facet name="header">
+                            <div class="headerN">
+                                Account Name</div>
+                        </apex:facet>
+                    </apex:column>
+                    <apex:column value="{!temp.accId}" >
+                        <apex:facet name="header">  
+                            <div class="headerN">
+                                Account ID</div>
+                        </apex:facet>
+                    </apex:column>
+                    <apex:column breakBefore="true" id="asset_details" style="display:none" colspan="5">
+                        <apex:pageBlockTable id="details_table" value="{!temp.accAssetList}" var="prod" style="margin:0.5rem;width:60%;">
+                            <apex:column value="{!prod.prodName}" >
+                                <apex:facet name="header"> 
+                                    <div class="headerN">
+                                        Product Name</div>
+                                </apex:facet>
+                            </apex:column>
+                            <!-- chajo30 -->
+                            <apex:column value="{!prod.instanceId}" >
+                                <apex:facet name="header">
+                                    <div class="headerN">
+                                        Product Instance ID</div>
+                                </apex:facet>
+                            </apex:column>
+                            <!-- chajo30 -->
+                            <apex:column value="{!prod.TotalQuantity}" >
+                                <apex:facet name="header">
+                                    <div class="headerN">
+                                        Total Quantity</div>
+                                </apex:facet>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        
+    </apex:form>
+        </div>
+      <script>
+    function toggleArrow(elem) {
+      var arrowDiv = elem.firstElementChild;
+      arrowDiv.className = (arrowDiv.className === 'arrow-right') ? 'arrow-down' : 'arrow-right';
+    }
+    function toggleDisplay(id) {
+      var elem = document.getElementById(id);
+      elem.style.display = elem.style.display === 'none' ? 'table-cell' : 'none';
+      elem.parentNode.removeAttribute('onmouseover'); // remove script that highlights the entire detail row
+    }
+    </script>
+    
+        
+    </body>
+    
+        
+    </html>
+</apex:page>

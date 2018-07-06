@@ -1,0 +1,14 @@
+<apex:page showHeader="false" cache="false" applyHtmlTag="false" >  
+    
+<html>
+  <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+          <meta name="google-site-verification" content="nsgssviTIKDmwiztU5Oy95LtibZ7e4wxy4asBvVnHxU" /> 
+      <title>CA Knowledge base home page</title>
+      
+  </head>
+    <body>
+        <apex:outputText value="This is the home page for the site"></apex:outputText>
+    </body>
+</html>     
+</apex:page>

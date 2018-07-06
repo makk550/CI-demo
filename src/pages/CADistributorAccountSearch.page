@@ -1,0 +1,218 @@
+<apex:page sidebar="false" controller="CADistributorAccountSearch" id="thePage"  showHeader="false" > 
+    <apex:pagemessages ></apex:pagemessages>
+    <script>
+    var winMain=window.opener;   
+    function fillIn(ev, id)    {       
+          
+        if (document.all && document.querySelector && !document.addEventListener)//added for IE8
+        {
+            var name = ev.srcElement.innerText.replace("'","\'");
+        }
+        else
+        {
+            var src = ev.target.textContent || ev.srcElement.innerText;
+            var name = src.replace("'","\'");
+        }
+        
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener;       
+        }    
+        var ele=winMain.document.getElementById('{!$CurrentPage.parameters.namefield}');       
+        ele.value=name;
+        ele=winMain.document.getElementById('targetNameDisti');       
+        ele.innerHTML=name;       
+        ele=winMain.document.getElementById('{!$CurrentPage.parameters.idfield}');       
+        ele.value=id;          
+        CloseWindow();    
+
+    }      
+    
+    function fillDistributor(ev, id){
+        if (document.all && document.querySelector && !document.addEventListener)//added for IE8
+        {
+            var name = ev.srcElement.innerText.replace("'","\'");
+        }
+        else
+        {
+            var src = ev.target.textContent || ev.srcElement.innerText;
+            var name = src.replace("'","\'");
+        }
+        
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener;       
+        }
+                
+        winMain.document.getElementById('targetNameDisti').innerHTML = name;
+        winMain.document.getElementById('thePage:theform:theBlock:hdnDistiAccountName').value=name;
+        winMain.document.getElementById('thePage:theform:theBlock:hdnDistiAccountID').value=id;
+        
+        CloseWindow();
+    }
+    
+    function CloseWindow()    {       
+        winMain=window.opener;       
+        if (null==winMain)       
+        {          
+            winMain=window.parent.opener;       
+        }       
+    winMain.closeLookupPopup();    
+    }
+
+    function ValidateEndUserAccount()  
+     {
+        if(document.getElementById('thePage:theForm:theSearch:endUserAccountName').value.length <2){
+            alert("Please enter atleast 2 characters for EndUser AccountName");
+            return false;
+        }
+        /*else if(document.getElementById('thePage:theForm:theSearch:selCountry').value == '--Select--'){
+            alert("Please select a country");
+            return false;
+        }*/
+        //else
+            return true; 
+    }
+    
+    function ValidateUnnamedAccount()
+    {
+        if(document.getElementById('thePage:theForm:theCreate:AccountName').value.length <= 0)
+        {
+            alert('Account Name cannot be blank');
+            return false;
+        }
+        /*else if(document.getElementById('thePage:theForm:theCreate:newCountry').value == '--Select--')
+        {
+            alert('Please select a country');
+            return false;
+        }*/
+        else
+            return true;
+    }                                     
+     
+    </script>
+    <apex:form id="theForm" styleClass="hasMotif lookupTab  LookupSearchFrame"> 
+           <div class="lookup">
+ <div class="bPageTitle">
+  <div class="ptBody secondaryPalette">
+    <div class="content">
+      <img title="" class="pageTitleIcon" alt="" src="/s.gif"/>     
+      <h1> Account Search</h1>
+    </div></div></div></div>  
+    <apex:pageBlock id="theSearch" rendered="{!showSearch}">
+          <table>
+              <tr>
+                  <td>
+                      <apex:outputLabel value="Distributor Account"></apex:outputLabel>    
+                  </td>
+                  <td>
+                    <apex:outputPanel styleClass="requiredInput" layout="block" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                      <apex:inputText value="{!accountName}" id="endUserAccountName"/>
+                     </apex:outputPanel> 
+                  </td>
+              </tr> 
+              
+               <tr>    
+                  <td>
+                      <apex:outputLabel value="Distributor's Country"></apex:outputLabel>
+                  </td>
+                  <td>
+                    <apex:outputPanel styleClass="requiredInput" layout="block" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                      <apex:selectList value="{!selectedCountry}" size="1" id="selCountry">
+                          <apex:selectoptions value="{!countries}"></apex:selectoptions>
+                      </apex:selectList>    
+                     </apex:outputPanel>
+                  </td>
+              </tr>             
+              <tr>
+                  <td colspan="2" align="center">
+                      <apex:commandButton id="btnSearch" styleClass="btn" title="Search" value="Search" action="{!SearchAccounts}" />                        
+                  </td>
+              </tr>
+          </table>  
+      </apex:pageBlock>     
+      <apex:pageBlock id="theCreate" rendered="{!showCreateBlock}">
+                <table>
+                   <tr>
+                       <td>
+                           <apex:outputLabel value="End User Account "></apex:outputLabel>                         
+                       </td>
+                       <td>
+                            <apex:outputPanel styleClass="requiredInput" layout="block" >
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:inputtext id="AccountName" value="{!createaccountName}"/>
+                            </apex:outputPanel>
+                       </td>
+                   </tr>
+                   <tr>
+                       <td>
+                           <apex:outputLabel value="Physical Street"></apex:outputLabel>                         
+                       </td>
+                       <td>
+                            <apex:inputtext id="PhysicalStreet" value="{!physicalStreet}"/>
+                       </td>
+                   </tr>
+                    <tr>
+                       <td>
+                           <apex:outputLabel value="Physical City"></apex:outputLabel>                       
+                       </td>
+                       <td>
+                            <apex:inputtext id="PhysicalCity" value="{!physicalCity}"/>  
+                       </td>
+                   </tr>
+                   <tr>
+                       <td>
+                           <apex:outputLabel value="State/Region"></apex:outputLabel>                       
+                       </td>
+                       <td>
+                            <apex:inputtext id="PhysicalState" value="{!physicalState}"/>  
+                       </td>
+                   </tr>  
+                                                                             
+               </table>
+       </apex:pageBlock>
+      <apex:pageBlock rendered="{!showResults}">
+                <apex:pageblockSection title="Results" id="resultBlock" showHeader="false">
+                <apex:dataTable value="{!results}" headerClass="headerRow" styleClass="list" var="acc" width="100%">
+                    <apex:column headerValue="Account Name" width="50px">
+                        <apex:outputLink value="#" onclick="fillIn(event, '{!acc.id}')">{!acc.Name}</apex:outputLink>
+                    </apex:Column>
+                    <apex:column headerValue="Country" width="50px">
+                        <apex:outputText value="{!acc.Country_Picklist__c}"/>
+                    </apex:Column>
+                    <apex:column headerValue="Street" width="50px">
+                        <apex:outputText value="{!acc.BillingStreet}"/>
+                    </apex:Column>
+                     <apex:column headerValue="City" width="50px">
+                        <apex:outputText value="{!acc.BillingCity}"/>
+                    </apex:Column>
+                    <apex:column headerValue="State" width="50px">
+                        <apex:outputText value="{!acc.BillingState}"/>
+                    </apex:Column>
+                              
+                </apex:dataTable>
+            </apex:pageblockSection>
+         </apex:pageBlock> 
+         
+         <!-- ISTP : Lead to Cash : 3076 : List Recent Distributor Accounts on custom Distributor Lookup -->
+        <apex:pageblock title="Recent Accounts">
+            <apex:pageBlockTable value="{!recentlyAccessedDistributors}" var="distributor">
+                <apex:column >
+                    <apex:facet name="header">Account Name</apex:facet>
+                    <apex:outputLink value="#" onclick="fillIn(event,'{!distributor.Distributor_6__c}')">{!distributor.Distributor_6__r.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">CA Account ID</apex:facet>
+                    <apex:outputLabel value="{!distributor.Distributor_6__r.Enterprise_ID__c}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">Country</apex:facet> 
+                    <apex:outputLabel value="{!distributor.Distributor_6__r.Country_Picklist__c}"/>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+
+    </apex:form>
+</apex:page>

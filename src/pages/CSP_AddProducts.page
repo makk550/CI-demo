@@ -1,0 +1,51 @@
+<apex:page standardController="CSP_Product__c" extensions="Ext_CSP_AddProd" >
+   <apex:sectionHeader title="{! IF(cp.id <> null, 'Update Products', 'Add Product to CSP')}" />  
+   <apex:messages />
+       <apex:form id="frm" >  
+        <apex:pageBlock >
+             <apex:pageBlockButtons >
+                 <apex:commandButton value="Cancel" action="{!Back}" />
+             </apex:pageBlockButtons>   
+             <apex:pageBlockSection columns="1" >  
+
+              <b> Please select the Product and then the Product Materials from the Product Materials List as under </b>
+              </apex:pageBlockSection> 
+              
+              <apex:actionFunction name="fnChangeChecklist" id="fnChangeChecklist" action="{!refreshValues}" status="msgStatus" rerender="frm"/>
+       
+              <apex:pageBlockSection >
+                 <apex:inputField value="{!cp.Product__c}" onchange="fnChangeChecklist()" rendered="{!ISNULL(cp.id)}" />
+                 <apex:OutputField value="{!cp.Product__c}" rendered="{! NOT(ISNULL(cp.id)) }" />
+                 
+                 <apex:actionStatus startText="Refreshing..." stopText="" id="msgStatus"></apex:actionStatus>
+
+                <!--200-272609 <apex:inputField value="{!cp.Risk__c}" required="true"/> -->
+                 <apex:commandButton value="Add Product" action="{!AddProd}" rendered="{!cp.Product__c <> null  && ISNULL(cp.id) }" reRender="frm" />                                  
+                 <apex:commandButton value="Update Activity Reason" action="{!UpdateRisk}" rendered="{!NOT(ISNULL(cp.id)) }" reRender="frm" />                 
+              <!--   <apex:commandButton value="Update Product" action="{!UpdateProd}" rendered="{! cp.Product__c <> null && ISNULL(lstPM) && (cp.id <> null) }" reRender="frm" /> -->
+              
+                  
+             </apex:pageBlockSection>
+          
+           <apex:pageBlockSection title="Product Materials" columns="1"  >
+            <Apex:outputText rendered="{!ISNULL(lstPM)}" >No Materials Available</Apex:outputText>     
+            <apex:outputPanel rendered="{!addError}"> <span style="color:red">{!msg}</span></apex:outputPanel>
+            
+            <apex:commandButton value="Add Product Material" action="{!AddMaterial}" rendered="{! cp.Product__c <> null && NOT(ISNULL(lstPM)) && (cp.id = null) }" reRender="frm" />
+            <apex:commandButton value="Update Product Material" action="{!AddMaterial}" rendered="{! cp.Product__c <> null && NOT(ISNULL(lstPM)) && (cp.id <> null) }" reRender="frm" />
+                    <apex:pageBlockTable value="{!lstPM}" var="pm" width="100%" rendered="{!NOT(ISNULL(lstPM))}">
+                             <apex:column headerValue="Select">
+                                <apex:inputCheckbox value="{!pm.isSelected}"/>
+                            </apex:column>        
+                            <apex:column value="{!pm.pm.Product__r.name}" />
+                            <apex:column value="{!pm.pm.Material_Text__c}"/>
+                            <apex:column value="{!pm.pm.Platform_Category__c}"/>
+                            <apex:column value="{!pm.pm.Operational_BU__c}"/>
+                      </apex:pageBlockTable>
+                      
+            </apex:pageBlockSection>
+           
+     
+    </apex:pageBlock>
+       </apex:form>
+</apex:page>

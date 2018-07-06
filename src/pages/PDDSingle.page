@@ -1,0 +1,1308 @@
+<apex:page id="EntPage" controller="PDDSingle" sidebar="false" docType="html-5.0">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <apex:includeScript value="/support/console/26.0/integration.js"/>
+    
+    <div id="overlay_div" class="waiting" style="position:fixed; top:0; left:0; height:100%; width:100%; z-index:2000; background-color:#999; opacity:.6; display:none;" />
+    <div style="position:fixed; top:35%; left:45%; width:150px; height:115px; background-color:#FFF; border:#FF0000 thin solid; z-index:2001; display:none;" align="center" class="ui-corner-all waiting">
+        <div align="center" style="margin-top:17px;">
+            <img src="{!$Resource.loadingGif}" />
+        </div>
+        <div align="center" id="waiting_msg">Loading...</div>
+    </div>
+    
+    <apex:actionStatus id="overlayStatus" onstart="$('.waiting').show();" onstop="$('.waiting').hide();" />
+    
+    <script type="text/javascript">
+        var newWin=null;
+      //  alert(document.getElementById("{!$Component.crl}"));
+        function openLookupPopup(name, value)
+        {
+            var url="/apex/ProdLkp?namefield=" + name + "&fldVal=" + value;
+            newWin=window.open(url, 'Popup','height=500,width=600,left=200,top=200,resizable=no,scrollbars=yes,toolbar=no,status=no');
+            if (window.focus) 
+            {
+                newWin.focus();
+            }
+                
+            return false;
+        }
+        
+        function openLookupProdRel(name, value,gaVal)
+        {
+            
+            //alert('==='+gaVal);
+            var url="/apex/ProdRelLkp?namefield=" + name + "&fldVal=" + value + "&gaVal=" +gaVal;
+            newWin=window.open(url, 'Popup','height=500,width=600,left=200,top=200,resizable=no,scrollbars=yes,toolbar=no,status=no');
+            if (window.focus) 
+            {
+                newWin.focus();
+            }
+                
+            return false;
+        }
+                      
+        function closeLookupPopup()
+        {
+           if (null!=newWin)
+           {
+              newWin.close();
+           }  
+        }
+        var newVal = '';
+        function testOpenSubtab(ProdName){
+            //alert('URL----->'+ProdName);
+            newVal =ProdName;
+            preRecordId  ='{!$CurrentPage.parameters.dID}';
+            if(sforce.console.isInConsole())
+               sforce.console.getEnclosingPrimaryTabId(openSubtab);
+             else
+               window.open('/apex/PDDCustomerVersion?id='+preRecordId+'&&accId=' + ProdName,'_blank');
+        }
+        
+        var openSubtab = function openSubtab(result) 
+        {
+            //Now that we have the primary tab ID, we can open a new subtab in it
+            var primaryTabId = result.id;
+            
+            sforce.console.openSubtab(primaryTabId , '/apex/PDDCustomerVersion?id='+preRecordId+'&&accId='+newVal, true, 
+                preRecordId , null , openSuccess, 'salesforceSubtab');
+        };
+        var openSuccess = function openSuccess(result) 
+        {
+            //Report whether we succeeded in opening the subtab
+            
+              /*  if (result.success == true) 
+                {
+                    alert('subtab successfully opened');
+                } 
+                else 
+                {
+                    alert('subtab cannot be opened');
+                }
+            */
+        };
+        var matId='';
+        var aId='';
+        function hisoryOpenSubtab(accId,materialId){
+            //alert('URL----->'+accId+''+materialId);
+             preRecordId  ='{!$CurrentPage.parameters.dID}';
+             matId=materialId;
+             aId=accId;
+            if(sforce.console.isInConsole())
+               sforce.console.getEnclosingPrimaryTabId(openSubtab);
+             else
+               window.open('/apex/pddhistoryPage?materialId='+materialId+'&&myDID=' + accId,'_blank');
+        }
+        
+        var openSubtab = function openSubtab(result) 
+        {
+            //Now that we have the primary tab ID, we can open a new subtab in it
+            var primaryTabId = result.id;
+            
+            sforce.console.openSubtab(primaryTabId , '/apex/pddhistoryPage?materialId='+matId+'&&myDID=' + aId, true, 
+                preRecordId , null , openSuccess, 'salesforceSubtab');
+        };
+        var openSuccess = function openSuccess(result) 
+        {
+             
+            
+        };
+        
+       
+    </script>
+    
+    <style>
+        .hCol{text-align:center}
+        .capacityError { color: red; font-weight: strong;}
+        
+        .lookupIcon {
+          background-image: url(/img/func_icons/util/lookup20.gif);
+          background-position: 0 0;
+          width: 20px;
+          height: 20px;
+          background-position: top left;
+        }
+        
+           
+        .imgclass:hover{   
+            background-image: url(/img/help/helpOrbs.gif);   
+            background-repeat: no-repeat;   
+            width: 16px;   
+            height: 15px;      
+            background-position: right;   
+          
+        }   
+        .imgclass{   
+            background-image: url(/img/help/helpOrbs.gif);   
+            background-repeat: no-repeat;   
+            width: 16px;   
+            height: 15px;   
+        }   
+     
+    </style>
+    <apex:pageMessages />
+    
+    <apex:form id="mainForm">
+        <apex:outputPanel id="prodId">
+        
+        <apex:pageBlock rendered="{!IF(sdunsID != NULL && sentID == NULL && sintID == NULL && myAction == NULL, TRUE, FALSE)}" >
+            <apex:pageBlockSection title="Entitlement Advanced Search" >
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Product Group: " style="width:150px; text-align:center;"/>
+                <apex:selectList value="{!selectedAcctId}" size="1">
+                    <apex:selectOptions value="{!listProducts}"/>
+                    <apex:actionSupport action="{!toggleSort}" event="onchange" status="actStatus" rerender="pb">
+                        <apex:param name="sortField" value="Product_Material__r.Product__r.Name" assignTo="{!sortField}"/>
+                        <apex:param name="sortDir" value="desc" assignTo="{!sortDir}" />
+                    </apex:actionSupport>
+                </apex:selectList>
+            </apex:pageBlockSectionItem>
+            <apex:pageblockSectionItem >
+                <apex:outputLabel value="Product Name: "/>
+                <apex:selectList value="{!selectedProdnameId}" size="1">
+                    <apex:selectOptions value="{!listProductNames}"/>
+                    <apex:actionSupport action="{!toggleSort}" event="onchange" status="actStatus" rerender="pb">
+                        <apex:param name="sortField" value="Product_Material__r.Product__r.Name" assignTo="{!sortField}"/>
+                        <apex:param name="sortDir" value="desc" assignTo="{!sortDir}" />
+                     </apex:actionSupport>
+                </apex:selectList>
+            </apex:pageblockSectionItem>
+            <apex:pageBlockSectionItem helpText="Date format should be MM/DD/YYYY" >
+               
+                    <apex:outputLabel value="Dismantle Date:" />
+                     <apex:outputPanel >
+                    <apex:input type="date" value="{!datename}" />
+                   <!-- <apex:inputText value="{!datename}" size="10" id="demo" onfocus="DatePicker.pickDate(false, this , false);" />--> 
+                    <apex:commandButton value="Go" action="{!toggleSort}" status="actStatus" rerender="pb">
+                     <apex:param name="sortField" value="Product_Material__r.Product__r.Name" assignTo="{!sortField}"/>
+                     <apex:param name="sortDir" value="desc" assignTo="{!sortDir}" />
+                    </apex:commandButton>
+                </apex:outputPanel>
+               
+            </apex:pageBlockSectionItem>
+                <apex:actionstatus id="actStatus">
+                <apex:facet name="start">
+                    <div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb; height:100%;opacity:0.65;width:100%;">
+                        <div class="waitingHolder" style="top: 100px; width: 91px;">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." />
+                        <span class="waitingDescription">Loading...</span>
+                        </div>
+                    </div>
+                </apex:facet>
+            </apex:actionstatus>
+           
+            </apex:pageBlockSection>
+         
+        </apex:pageBlock>
+       
+         </apex:outputPanel>
+          
+        <!--Begin Account Information Section-->
+        <apex:outputPanel id="accountHdr">
+            <apex:sectionHeader title="Entitlements" subtitle="{!account.name}"/>
+            <apex:outputLink value="/apex/AccountViewOverride?id={!account.id}">
+                Account: {!account.name}
+            </apex:outputLink>
+            <apex:panelGrid columns="1" id="grid1" cellpadding="0" cellspacing="0">
+                CA Account ID:{!account.Enterprise_ID__c}
+            </apex:panelGrid>
+        </apex:outputPanel>
+        <!--End Account Information Section-->
+        
+        <!--Begin Entitlements List Section-->
+        <apex:outputPanel id="out1">
+            <apex:pageBlock id="pb" title="Entitlements" rendered="{!IF(sdunsID != NULL && sentID == NULL && sintID == NULL && myAction == NULL, TRUE, FALSE)}">
+            
+                <!--<apex:pageBlockTable id="pbtable1" value="{!EntitlementsList}" var="EntList">-->
+                <apex:pageBlockTable id="pbtable1" value="{!ContItemList}" var="EntList">
+                
+                    <apex:column >
+                        <apex:facet name="header">
+                           Instance flag 
+                        </apex:facet>
+                       <apex:variable value="{!instMap[EntList.Product_Material__c].checkNull}" var="inst"/>
+                       
+                       
+                        <apex:image value="{!IF(inst,'/img/samples/flag_green.gif','/img/samples/flag_red.gif')}"/>  
+                       
+                    </apex:column> 
+                    
+                    
+        
+                    
+                     
+                  
+                   
+                    <apex:column >
+                        <apex:facet name="header">
+                        
+                            <apex:commandLink value="Product Group" action="{!toggleSort}" rerender="pb" status="overlayStatus">
+                                <apex:param name="sortField" value="Product_Material__r.CA_Product_Controller__r.name" assignTo="{!sortField}"/>
+                               <!-- &nbsp;<apex:image value="{!IF(sortDir = 'desc','/img/sort_desc_arrow.gif','/img/sort_asc_arrow.gif')}"/>-->
+                            </apex:commandLink>
+                           
+                        </apex:facet>
+                       <!-- <apex:outputField value="{!EntList.Product_Group__c}"/>-->
+                        <apex:outputField value="{!EntList.Product_Material__r.CA_Product_Controller__r.name}"/>
+                    </apex:column>                  
+                    <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="Product Name" action="{!toggleSort}" rerender="pb" status="overlayStatus">
+                                <apex:param name="sortField" value="Product_Material__r.Product__r.Name" assignTo="{!sortField}"/>
+                                
+                            </apex:commandLink>
+                        </apex:facet>
+                        <apex:commandLink value=""  action="{!goInstList}" rerender="out1,out2,out2v,out3,out4,out5,out6,prodId" status="overlayStatus" >
+                            {!EntList.Product_Material__r.Product__r.Name}
+                            <apex:param name="myDID" value="{!sdunsID}"/>
+                            <apex:param name="myEntID" value="{!EntList.id}"/>
+                            <apex:param name="materialId" value="{!EntList.Product_Material__c}" />
+                            <apex:param name="productId" value="{!EntList.Product_Material__r.Product__c}" />
+                        </apex:commandLink>
+                       
+                    </apex:column>
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="Material Text" action="{!toggleSort}" rerender="pb" status="overlayStatus">
+                                <apex:param name="sortField" value="Product_Material__r.Material_Text__c" assignTo="{!sortField}"/>
+                               
+                            </apex:commandLink>
+                        </apex:facet>
+                       
+                         <apex:outputField value="{!EntList.Product_Material__r.Material_Text__c}"/>
+                    </apex:column>  
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="Highest Client Release Level" >
+                            </apex:commandLink>
+                            </apex:facet>
+                        {!IF(instMap[EntList.Product_Material__c].checkNull,instMap[EntList.Product_Material__c].relVer,' ')} 
+                    </apex:column> 
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="Material" action="{!toggleSort}" rerender="pb" status="overlayStatus">
+                                <apex:param name="sortField" value="Material__c" assignTo="{!sortField}"/>
+                                
+                            </apex:commandLink>
+                        </apex:facet>
+                      
+                         <apex:outputField value="{!EntList.Material__c}"/>
+                    </apex:column>
+    
+                    <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="Dismantle Date" action="{!toggleSort}" rerender="pb" status="overlayStatus">
+                                <apex:param name="sortField" value="Orig_Dismantle_Date__c" assignTo="{!sortField}"/>
+                                
+                            </apex:commandLink>
+                        </apex:facet>
+                      
+                        
+                      
+                         <apex:outputField value="{!EntList.Orig_Dismantle_Date__c}"/>
+                    </apex:column>
+                    
+                     <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="Last Modified Date" >
+                            </apex:commandLink>
+                            </apex:facet>
+                         {!IF(instMap[EntList.Product_Material__c].checkNull, instDateMap[EntList.Product_Material__c],' ')} 
+                         <!-- {!IF(instMap[EntList.Product_Material__c].checkNull, instMap[EntList.Product_Material__c].lastModified,' ')}  -->
+                    </apex:column>  
+                    
+                  <!--  <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="License Type" action="{!toggleSort}" rerender="pb" status="overlayStatus">
+                                <apex:param name="sortField" value="License_Type_Text__c" assignTo="{!sortField}"/>
+                                
+                            </apex:commandLink>
+                        </apex:facet>
+                       
+                         <apex:outputField value="{!EntList.License_Type_Text__c}"/>
+                    </apex:column>  
+                               -->
+                   
+                </apex:pageBlockTable>
+            
+                <apex:panelGrid columns="7" cellpadding="1" style="vertical-align:middle">
+                    <apex:commandButton status="fetchStatus" reRender="pb" value="|<" action="{!first}" disabled="{!!hasPrevious}" title="First Page"/>
+                    <apex:commandButton status="fetchStatus" reRender="pb" value="<" action="{!previous}" disabled="{!!hasPrevious}" title="Previous Page"/>
+                    <apex:commandButton status="fetchStatus" reRender="pb" value=">" action="{!next}" disabled="{!!hasNext}" title="Next Page"/>
+                    <apex:commandButton status="fetchStatus" reRender="pb" value=">|" action="{!last}" disabled="{!!hasNext}" title="Last Page"/>
+                    <apex:outputText value="{!(pageNumber * size)+1-size}-{!IF((pageNumber * size)>noOfRecords, noOfRecords,(pageNumber * size))} of {!noOfRecords}" />
+                    
+                   <!-- <apex:commandLink value="" action="{!refresh}" rerender="pb">  --> 
+                   
+                        <apex:selectList value="{!size}" size="1" multiselect="false" title="Page size" onchange="refreshPageSize();">
+                        <apex:selectOption itemValue="10" itemLabel="10"/>
+                        <apex:selectOption itemValue="25" itemLabel="25"/>
+                        <apex:selectOption itemValue="50" itemLabel="50"/>
+                        <apex:selectOption itemValue="100" itemLabel="100"/>
+                        <apex:selectOption itemValue="200" itemLabel="200"/>
+                        </apex:selectList>
+                   <!-- </apex:commandLink> -->
+                    <apex:outputPanel style="color:#4AA02C;font-weight:bold">
+                        <apex:actionStatus id="fetchStatus">
+                        <apex:facet name="start" >
+                          <img src="/img/loading.gif" /> Fetching...                 
+                        </apex:facet>
+                       </apex:actionStatus>
+                    </apex:outputPanel>
+                </apex:panelGrid>
+            <apex:actionFunction name="refreshPageSize" action="{!refresh}" status="fetchStatus" reRender="pb"/>
+
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <!--End Entitlements List Section-->
+        
+        <!--Begin Entitlement View Section-->        
+        <apex:outputPanel id="out2">    
+            <apex:pageBlock id="pb2" title="Entitlement" rendered="{!IF(sdunsID != NULL && sentID != NULL && (myAction == 'dispInstList' || myAction == 'dispInst' || myAction == 'editInst' || myAction == 'newInst' || myAction == 'saveInst'), TRUE, FALSE)}">
+              
+                <apex:pageBlockButtons location="top">
+           <!-- <apex:commandLink action="{!goCustoVersionData}" styleClass="btn" style="text-decoration:none;padding:4px;" value="version" id="theButton"/>-->
+               
+                <apex:commandLink onclick="testOpenSubtab('{!entA.Product_Material__r.CA_Product_Controller__r.name}');return false;" styleClass="btn" style="text-decoration:none;padding:4px;" value="Customer Version Map" id="theButton"/>
+                </apex:pageBlockButtons>
+            
+                <apex:pageBlockSection title="Entitlement Data" id="pbEntpbSect1" columns="2" collapsible="true">
+                    <apex:pageBlockSection columns="1">
+                        <apex:pageBlockSectionItem >
+                        
+                            <apex:outputLabel value="License Type" for="entName"/>
+                            <!--<apex:outputField id="entName" value="{!entA.Name}" />-->
+                            <apex:outputField id="entName" value="{!entA.License_Type_Text__c}" />
+                        </apex:pageBlockSectionItem>
+                    
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Duns #:" for="entDuns"/>
+                            <!--<apex:outputField id="entDuns" value="{!entA.Duns__c}"/>-->
+                            <apex:outputField id="entDuns" value="{!entA.Contract_Product__r.Active_Contract__r.Ship_To_Site_Association__r.DUNS_Number__c}"/>
+                            
+                        </apex:pageBlockSectionItem>
+                    
+                       <!-- <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Duns Source:" for="entDunsSource"/>
+                            <apex:outputField id="entDunsSource" value="{!entA.Duns_Source__c}"/>  
+                        </apex:pageBlockSectionItem>    -->      
+                    
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Global Parent Duns #:" for="entGPDuns"/>
+                           <!-- <apex:outputField id="entGPDuns" value="{!entA.Dunsgp__c}"/>-->
+                            <apex:outputField id="entGPDuns" value="{!entA.Contract_Product__r.Active_Contract__r.Account__r.GU_DUNS_NUMBER__c}"/>
+                            
+                        </apex:pageBlockSectionItem>
+        
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="GBU:" for="entGBU"/>
+                            <!--<apex:outputField id="entGBU" value="{!entA.Business_Group__c}"/>-->
+                            <apex:outputField id="entGBU" value="{!entA.OPERATIONAL_BU_F__c}"/>
+                        </apex:pageBlockSectionItem>                  
+        
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Product Group:" for="entProdGroup"/>
+                            <!--<apex:outputField id="entProdGroup" value="{!entA.Product_Group__c}"/>-->
+                            <apex:outputField id="entProdGroup" value="{!entA.Product_Material__r.CA_Product_Controller__r.name}"/>
+                            
+                        </apex:pageBlockSectionItem>   
+        
+                        
+                       <!-- <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Product Release:" for="entProdRel"/>
+                            <apex:outputField id="entProdRel" value="{!entA.Product_Release__c}"/>
+                        </apex:pageBlockSectionItem>                  
+        
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Licensed Quantity:" for="entQuantity"/>
+                           
+                            <apex:outputField id="entQuantity" value="{!entA.Licensed_Quantity__c}"/>
+                        </apex:pageBlockSectionItem>    -->
+        
+                    
+                    </apex:pageBlockSection>
+                
+                    <apex:pageBlockSection columns="1">
+                    
+                       <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Product Name:" for="entMaterialName"/>
+                            <!--<apex:outputField id="entMaterialName" value="{!entA.Product_Name__c}"/>-->
+                             <apex:outputField id="entMaterialText" value="{!entA.Product_Material__r.Product__r.Name}"/>
+
+                       </apex:pageBlockSectionItem>
+                       
+                       
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Material Text:" for="entMaterialText"/>
+                            <!--<apex:outputField id="entMaterialText" value="{!entA.Material_Text__c}"/>-->
+                            <apex:outputField id="entMaterialText" value="{!entA.Product_Material__r.Material_Text__c}"/>
+                        </apex:pageBlockSectionItem>  
+                    
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Material:" for="entMaterial"/>
+                            <!--<apex:outputField id="entMaterial" value="{!entA.Material_ID__c}"/>-->
+                            <apex:outputField id="entMaterial" value="{!entA.Material__c}"/>
+                            
+                        </apex:pageBlockSectionItem>
+                        
+                        
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Type:" for="Type"/>
+                            <!--<apex:outputField id="entType" value="{!entA.Type__c}"/>-->
+                            <apex:outputText id="entType" value="Enterprise"/>
+                        </apex:pageBlockSectionItem> 
+                     
+                       <!-- <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Fulfillment Status:" for="entFulStatus"/>
+                            <apex:outputField id="entFulStatus" value="{!entA.Fulfillment_Status__c}"/>
+                        </apex:pageBlockSectionItem>    
+                    
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Status:" for="entStatus"/>
+                          
+                           <apex:outputText id="entStatus" value="Complete"/>
+                        </apex:pageBlockSectionItem> 
+        
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Install Date:" for="entInstallDate"/>
+                           
+                            <apex:outputField id="entInstallDate" value="{!entA.Orig_Installation_Date__c}"/>
+                            
+                        </apex:pageBlockSectionItem> 
+                    
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Dismantle Date:" for="entDismantleDate"/>
+                            
+                            <apex:outputField id="entDismantleDate" value="{!entA.Orig_Dismantle_Date__c}"/>
+                        </apex:pageBlockSectionItem>
+                        
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Ship To Name:" for="entShipName"/>
+                           
+                            <apex:outputField id="entShipName" value="{!entA.Contract_Product__r.Active_Contract__r.Account__r.Name}"/>
+                             
+                        </apex:pageBlockSectionItem> 
+                    
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Ship To City:" for="entCity"/>
+                           
+                           <apex:outputField id="entCity" value="{!entA.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.City__c}" />
+                        </apex:pageBlockSectionItem>  
+                    
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Ship To State:" for="entState"/>
+                           
+                           <apex:outputField id="entState" value="{!entA.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.State__c}"/>
+                        </apex:pageBlockSectionItem>  
+        
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Ship To Country:" for="entCountry"/>
+                           
+                           <apex:outputText id="entCountry" value="{!RIGHT(entA.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.Country_Picklist__c, LEN(entA.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.Country_Picklist__c)-4)}"/>
+                        
+                        </apex:pageBlockSectionItem>   -->        
+        
+                       
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+                
+                <apex:panelGrid columns="1" id="grid1" style="padding-top:2px;padding-bottom:2px;padding-left:0;">
+                    <apex:commandLink action="{!goEntList}" value="Return to Entitlement List" rerender="out1,out2,out2v,out3,out4,out5,out6,prodId" status="overlayStatus" immediate="true">
+                        <apex:param name="myDID" value="{!sdunsID}"/>
+                        <apex:param name="sortField" value="Product_Material__r.CA_Product_Controller__r.name,Product_Material__r.Product__r.Name,Product_Material__r.Material_Text__c,Material__c" assignTo="{!sortField}"/>
+                        <apex:param name="sortDir" value="desc" assignTo="{!sortDir}" />
+                    </apex:commandLink>
+                </apex:panelGrid>
+              
+              
+            </apex:pageBlock>
+            <apex:pageBlock title="Active Contract Details" rendered="{!IF(sdunsID != NULL && sentID != NULL && (myAction == 'dispInstList' || myAction == 'dispInst' || myAction == 'editInst' || myAction == 'newInst' || myAction == 'saveInst'), TRUE, FALSE)}">
+            
+                  <apex:pageblockTable value="{!lstActiveItem}" var="item">
+                       <apex:column >
+                            <apex:facet name="header">Contract Item</apex:facet>
+                            <apex:outputField value="{!item.Contract_Item__c}"/>
+                       </apex:column>
+                       
+                        <apex:column >
+                            <apex:facet name="header">Licensed Quantity</apex:facet>
+                            <apex:outputField value="{!item.Licensed_Quantity__c}"/>
+                       </apex:column>
+                       
+                        <apex:column >
+                            <apex:facet name="header">Install Date</apex:facet>
+                            <apex:outputField value="{!item.Orig_Installation_Date__c}"/>
+                       </apex:column>
+                       
+                        <apex:column >
+                            <apex:facet name="header">Dismantle Date</apex:facet>
+                            <apex:outputField value="{!item.Orig_Dismantle_Date__c}"/>
+                       </apex:column>
+                       
+                        <apex:column >
+                            <apex:facet name="header">Type</apex:facet>
+                            <apex:outputText value="Enterprise"/>
+                       </apex:column>
+                       
+                        <apex:column >
+                            <apex:facet name="header">Ship To City</apex:facet>
+                            <apex:outputField value="{!item.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.City__c}"/>
+                       </apex:column>
+                       
+                        <apex:column >
+                            <apex:facet name="header">Ship To State</apex:facet>
+                            <apex:outputField value="{!item.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.State__c}"/>
+                       </apex:column>
+                       
+                       <apex:column >
+                            <apex:facet name="header">Ship To Country</apex:facet>
+                            <apex:outputText value="{!RIGHT(item.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.Country_Picklist__c, LEN(item.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.Country_Picklist__c)-4)}"/>
+                       </apex:column> 
+                       
+                       <apex:column >
+                            <apex:facet name="header">Material ATTRF (USD)</apex:facet>
+                            <apex:outputField value="{!item.Calculated_Orig_ATTRF_USD__c}"/>
+                       </apex:column> 
+                       
+                       <apex:column >
+                            <apex:facet name="header">Material ATTRF (LC)</apex:facet>
+                            <apex:outputField value="{!item.Orig_ATTRF_LC__c}"/>
+                       </apex:column>
+                       
+                        
+                    
+                  </apex:pageblockTable>
+              
+               
+             </apex:pageBlock>
+               
+        </apex:outputPanel>
+        <!--End Entitlement View Section-->
+        
+        <!--Begin Customer Value Statement Section-->        
+        <apex:outputPanel id="out2v">    
+            <apex:pageBlock id="pb2v" title="Value Realization Statement" rendered="{!IF(sdunsID != NULL && sentID != NULL && (myAction == 'dispInstList' || myAction == 'dispInst' || myAction == 'editInst' || myAction == 'newInst' || myAction == 'saveInst'), TRUE, FALSE)}">
+                <apex:pageBlockSection columns="1">
+                        <apex:pageBlockSectionItem >
+                            <apex:outputText value="A pointed statement that highlights the usage and magnitude of impact the CA product has at the customer."/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                           <!--<apex:inputTextArea id="entRelStatement" value="{!entA.Value_Statement__c}" style="text-decoration:none;padding:4px;width:100%;"/>-->
+                           <apex:inputTextArea id="entRelStatement" value="{!valueStatment}" style="text-decoration:none;padding:4px;width:100%;"/>
+                        </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                <apex:pageBlockButtons >
+                    <apex:commandLink action="{!goSaveRelStatement}" value="Save" rerender="out1,out2,out2v,out3,out4,out5,out6" styleClass="btn" style="text-decoration:none;padding:4px;" status="overlayStatus">
+                        <apex:param name="myDID" value="{!sdunsID}"/>
+                        <apex:param name="materialId" value="{!entA.Product_Material__c}"/>
+                    </apex:commandLink>
+                </apex:pageBlockButtons>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <!--End Entitlements List Section-->  
+        <!--Begin Entitlements Installations List Section-->
+        <apex:outputPanel id="out3">   
+            <apex:pageBlock id="pb3" title="Instances" rendered="{!IF(sdunsID != NULL && sentID != NULL && sintID == NULL && (myAction == 'dispInstList' || myAction == 'saveInst'), TRUE, FALSE)}">
+        
+                <apex:pageBlockButtons >
+                    <apex:commandLink action="{!goNewInst}" value="New" rerender="out1,out2,out2v,out3,out4,out5,out6" styleClass="btn" style="text-decoration:none;padding:4px;" status="overlayStatus">
+                        <apex:param name="myDID" value="{!sdunsID}"/>
+                        <apex:param name="myEntID" value="{!sentID}"/>
+                        <apex:param name="materialId" value="{!entA.Product_Material__c}"/>
+                        <apex:param name="prodName" value="{!entA.Product_Material__r.Product__r.Name}" />
+                        <apex:param name="materialName" value="{!entA.Material__c}" />
+                    </apex:commandLink>
+                    <apex:commandLink onclick="hisoryOpenSubtab('{!sdunsID}','{!entA.Product_Material__c}');return false;" styleClass="btn" style="text-decoration:none;padding:4px;" value="History" id="pddButton"/>
+               
+                </apex:pageBlockButtons>
+        
+                <apex:pageBlockTable value="{!InstanceList}" var="IntList">
+        
+                    <apex:column style="width:150px">
+                        <apex:facet name="header">Action</apex:facet>
+                        <!--<apex:outputField value="{!IntList.Product_Detail__c}"/>-->
+                        <apex:commandLink title="Edit Instance" value="Edit" action="{!goEditInst}" rerender="out1,out2,out2v,out3,out4,out5,out6" status="overlayStatus">
+                            <apex:param name="myDID" value="{!sdunsID}"/>
+                            <apex:param name="myEntID" value="{!sentID}"/>
+                            <apex:param name="myIntID" value="{!IntList.id}"/>
+                        </apex:commandLink>
+                        &nbsp;|&nbsp;
+                        <apex:commandLink title="View Instance" value="View" action="{!goViewInst}" rerender="out1,out2,out2v,out3,out4,out5,out6" status="overlayStatus">
+                            <apex:param name="myDID" value="{!sdunsID}"/>
+                            <apex:param name="myEntID" value="{!sentID}"/>
+                            <apex:param name="myIntID" value="{!IntList.id}"/>
+                        </apex:commandLink>
+                        &nbsp;|&nbsp;
+                        <apex:commandLink title="Delete Instance" value="Del" action="{!goDelInst}" rerender="out1,out2,out2v,out3,out4,out5,out6" status="overlayStatus">
+                            <apex:param name="intID" value="{!IntList.id}" assignTo="{!delInstId}"/>
+                        </apex:commandLink>
+                        &nbsp;|&nbsp;
+                        <apex:commandLink title="Copy Instance" value="Copy" action="{!copyInst}" rerender="out1,out2,out2v,out3,out4,out5,out6" status="overlayStatus">
+                            <apex:param name="myDID" value="{!sdunsID}"/>
+                            <apex:param name="myEntID" value="{!sentID}"/>
+                            <apex:param name="myIntID" value="{!IntList.id}"/>
+                            <apex:param name="prodName" value="{!entA.Product_Material__r.Product__r.Name}" />
+                            <apex:param name="materialName" value="{!entA.Material__c}" />
+                            <apex:param name="materialId" value="{!entA.Product_Material__c}"/>
+                        </apex:commandLink>
+                    </apex:column>    
+
+                    <apex:column >
+                        <apex:facet name="header">
+                            Description
+                        </apex:facet>
+                        <apex:outputField value="{!IntList.Name}"/>    
+                    </apex:column>                     
+            
+                    <apex:column >
+                        <apex:facet name="header">
+                        <apex:commandLink value="Product Detail" action="{!toggleSort}" rerender="pb3" status="overlayStatus">
+                            <!-- Value attribute should have field (API Name) to sort in asc or desc order -->
+                            <apex:param name="sortField" value="Product_Detail__c" assignTo="{!sortField}"/>
+                        </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!IntList.Product_Detail__c}"/>    
+                    </apex:column> 
+            
+                    <apex:column >
+                        <apex:facet name="header">
+                        <apex:commandLink value="Release Version" action="{!toggleSort}" rerender="pb3" status="overlayStatus">
+                            <!-- Value attribute should have field (API Name) to sort in asc or desc order -->
+                            <apex:param name="sortField" value="Release_Version__c" assignTo="{!sortField}"/>
+                        </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!IntList.Release_Version__c}"/>
+                    </apex:column>  
+            
+                    <!--<apex:column >
+                        <apex:facet name="header">
+                        <apex:commandLink value="Software Type" action="{!toggleSort}" rerender="pb3" status="overlayStatus">
+                            <!-- Value attribute should have field (API Name) to sort in asc or desc order -->
+                    <!--        <apex:param name="sortField" value="Software_Type__c" assignTo="{!sortField}"/>
+                        </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!IntList.Software_Type__c}"/>
+                    </apex:column>    
+            -->
+                    <apex:column >
+                        <apex:facet name="header">
+                        <apex:commandLink value="Environment Type" action="{!toggleSort}" rerender="pb3" status="overlayStatus">
+                            <!-- Value attribute should have field (API Name) to sort in asc or desc order -->
+                            <apex:param name="sortField" value="Environment_Type__c" assignTo="{!sortField}"/>
+                        </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!IntList.Environment_Type__c}"/>
+                    </apex:column>                  
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                        <apex:commandLink value="LastModified Date" action="{!toggleSort}" rerender="pb3" status="overlayStatus">
+                            <!-- Value attribute should have field (API Name) to sort in asc or desc order -->
+                            <apex:param name="sortField" value="LastModifiedDate" assignTo="{!sortField}"/>
+                        </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!IntList.LastModifiedDate}"/>
+                    </apex:column> 
+                    
+                    <apex:column >
+                        <apex:facet name="header">
+                        <apex:commandLink value="LastModifiedBy" action="{!toggleSort}" rerender="pb3" status="overlayStatus">
+                            <!-- Value attribute should have field (API Name) to sort in asc or desc order -->
+                            <apex:param name="sortField" value="LastModifiedDate" assignTo="{!sortField}"/>
+                        </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!IntList.LastModifiedBy.Name}"/>
+                    </apex:column> 
+                  <!--  <apex:column >
+                        <apex:facet name="header">
+                        <apex:commandLink value="Capacity" action="{!toggleSort}" rerender="pb3" status="overlayStatus">
+                            <apex:param name="sortField" value="Capacity_Used__c" assignTo="{!sortField}"/>
+                        </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!IntList.Capacity_Used__c}"/>
+                    </apex:column> 
+                -->
+                </apex:pageBlockTable>
+        
+                <apex:panelGrid columns="7" cellpadding="1">
+                <apex:commandButton status="fetchStatus" reRender="pb" value="|<" action="{!first}" disabled="{!!hasPrevious}" title="First Page" />
+                <apex:commandButton status="fetchStatus" reRender="pb" value="<" action="{!previous}" disabled="{!!hasPrevious}" title="Previous Page" />
+                <apex:commandButton status="fetchStatus" reRender="pb" value=">" action="{!next}" disabled="{!!hasNext}" title="Next Page" />
+                <apex:commandButton status="fetchStatus" reRender="pb" value=">|" action="{!last}" disabled="{!!hasNext}" title="Last Page" />
+                <apex:outputText >{!(pageNumber * size)+1-size}-{!IF((pageNumber * size)>noOfRecords, noOfRecords,(pageNumber * size))} of {!noOfRecords}</apex:outputText>
+                <apex:commandLink value="" action="{!refresh}" rerender="pb">   
+                    <apex:selectList value="{!size}" size="1" multiselect="false" title="Page size">
+                    <apex:selectOption itemValue="10" itemLabel="10"/>
+                    <apex:selectOption itemValue="25" itemLabel="25"/>
+                    <apex:selectOption itemValue="50" itemLabel="50"/>
+                    <apex:selectOption itemValue="100" itemLabel="100"/>
+                    </apex:selectList>
+                 </apex:commandLink>
+        
+                 <apex:outputPanel style="color:#4AA02C;font-weight:bold">
+                    <apex:actionStatus id="fetchStatus" startText="Fetching..." stopText=""/>
+                 </apex:outputPanel>
+                </apex:panelGrid>
+        
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <!--End Entitlements Installations List Section-->
+        
+        <!--Begin Entitlement Installation View Section-->  
+        <apex:outputPanel id="out4">          
+         <apex:pageBlock id="PB4" title="Instance" rendered="{!IF(sdunsID != NULL && sentID != NULL && sintID != NULL && (myAction == 'dispInst' || myAction == 'saveInst'), TRUE, FALSE)}">
+            
+            <apex:pageBlockButtons location="bottom" style="text-align:left">
+                <apex:commandLink value="Edit" action="{!goEditInst}" title="Edit" styleClass="btn" style="text-decoration:none;padding:4px;" status="overlayStatus">
+                    <apex:param name="myDID" value="{!sdunsID}"/>
+                    <apex:param name="myEntID" value="{!sentID}"/>
+                    <apex:param name="myIntID" value="{!instA.id}"/>
+                </apex:commandLink>
+                <apex:commandLink action="{!goInstCancel}" value="Cancel" styleClass="btn" style="text-decoration:none;padding:4px;" status="overlayStatus">
+                    <apex:param name="myDID" value="{!sdunsID}"/>
+                    <apex:param name="myEntID" value="{!sentID}"/>
+                </apex:commandLink>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Instance Data" columns="2" collapsible="false" >
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Instance Description:" for="instName"/>
+                        <apex:outputField id="instName" value="{!instA.Name}"/>
+                    </apex:pageBlockSectionItem>  
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Environment Type:" for="etype"/>
+                        <apex:outputField id="etype" value="{!instA.Environment_Type__c}"/>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Software Type:" for="softType"/>    
+                        <apex:outputField id="softType" value="{!instA.Software_Type__c}"/>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Contact1 Name :" for="cName"/>    
+                       <!-- <apex:outputField id="cName" value="{!instA.Contact__r.Name}"/>-->
+                       <apex:outputlink value="/{!instA.Contact__c}" target="_blank">{!instA.Contact__r.Name}</apex:outputLink>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Contact1 phone:" for="softType"/>    
+                        <apex:outputField id="softType" value="{!instA.Contact__r.phone}"/>
+                        
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Contact1 email:" for="softType"/>    
+                        <apex:outputField id="softType" value="{!instA.Contact__r.email}"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Created By:" for="crBy"/> 
+                        <apex:outputPanel >
+                            <apex:outputField id="crBy" value="{!instA.CreatedBy.Name}"/>&nbsp;
+                            <apex:outputField value="{!instA.CreatedDate}"/>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Last Modified By:" for="lastBy"/> 
+                        <apex:outputPanel >
+                            <apex:outputField id="lastBy" value="{!instA.LastModifiedBy.Name}"/>&nbsp;
+                            <apex:outputField value="{!instA.LastModifiedDate}"/>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem> 
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Contact2 Name:" for="cName"/>    
+                       <!-- <apex:outputField id="cName" value="{!instA.Contact__r.Name}"/>-->
+                       <apex:outputlink value="/{!instA.Contact_2__c}" target="_blank">{!instA.Contact_2__r.Name}</apex:outputLink>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Contact2 phone:" for="softType"/>    
+                        <apex:outputField id="softType" value="{!instA.Contact_2__r.phone}"/>
+                        
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Contact2 email:" for="softType"/>    
+                        <apex:outputField id="softType" value="{!instA.Contact_2__r.email}"/>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Client Release Level:" for="crl"/>  
+                        <apex:outputField id="crl" value="{!instA.Release_Version__c}"/>                      
+                    </apex:pageBlockSectionItem>
+                
+                    
+                </apex:pageBlockSection>
+            </apex:pageBlockSection>  
+            <apex:pageBlockSection title="Product Demographics Data" columns="2" collapsible="false" >
+                <apex:pageblocksection columns="1">
+                    <!-- as per the user story US500331 removed reference of Client_Release_Level__c fileld<apex:pageBlockSectionItem helpText="{!crlTip}">
+                        <apex:outputLabel value="Client Release Level:" for="crl"/>  
+                        <apex:outputField id="crl" value="{!pdd.Client_Release_Level__c}"/>                      
+                    </apex:pageBlockSectionItem>-->
+                    <apex:pageBlockSectionItem helptext="{!ProdGALevTip}">
+                        <apex:outputLabel value="Product GA Level:" for="crl"/>  
+                        <apex:outputField id="crl" value="{!instA.GA_level_Text__c}"/>                      
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem helpText="{!btupTip}">
+                        <apex:outputLabel value="Barrier to Upgrade:" for="btup"/>  
+                        <apex:outputField id="btup" value="{!pdd.Barriers_to_Upgrade__c}"/>                      
+                    </apex:pageBlockSectionItem>  
+
+                    <apex:pageBlockSectionItem helpText="{!upStatTip}">
+                        <apex:outputLabel value="Upgrade Status:" for="upstat"/>  
+                        <apex:outputField id="upstat" value="{!pdd.Upgrade_Status__c}"/>                      
+                    </apex:pageBlockSectionItem>                     
+                        
+                    <apex:pageBlockSectionItem helpText="{!saTip}">
+                        <apex:outputLabel value="Scale of Adoption:" for="sa"/> 
+                        <apex:outputField id="sa" value="{!pdd.Scale_of_Adoption__c}"/>                      
+                    </apex:pageBlockSectionItem> 
+    
+                    <apex:pageBlockSectionItem helpText="{!btaTip}">
+                        <apex:outputLabel value="Barriers to Adoption:" for="bta"/>
+                        <apex:outputField id="bta" value="{!pdd.Barriers_to_Adoption__c}"/>
+                    </apex:pageBlockSectionItem>
+    
+                    <apex:pageBlockSectionItem helpText="{!pstatTip}">
+                        <apex:outputLabel value="Production Status:" for="ps"/>       
+                        <apex:outputField id="ps" value="{!pdd.Production_Status__c}"/>                    
+                    </apex:pageBlockSectionItem>    
+    
+                    <apex:pageBlockSectionItem helpText="{!cuTip}">
+                        <apex:outputLabel value="Capacity Used:" for="cu"/> 
+                        <apex:outputField id="cu" value="{!pdd.Capacity_Used__c}"/>                     
+                    </apex:pageBlockSectionItem> 
+                    
+                    <apex:pageBlockSectionItem helpText="{!LicUsedTip}">
+                        <apex:outputLabel value="Licenses Used:" for="cu1"/> 
+                        <apex:outputField id="cu1" value="{!pdd.Licenses_Used__c}"/>                     
+                    </apex:pageBlockSectionItem> 
+                    
+                    <apex:pageBlockSectionItem helpText="{!LicUsdPercTip}">
+                        <apex:outputLabel value="Licenses Used Percentage:" for="cu2"/> 
+                        <apex:outputField id="cu2" value="{!pdd.Licenses_Used_Percentage__c}"/>                     
+                    </apex:pageBlockSectionItem>   
+                    <apex:pageBlockSectionItem helpText="{!UpPlanTip}">
+                        <apex:outputLabel value="Upgrade Planned:" for="up"/>  
+                        <apex:outputField id="up" value="{!pdd.Upgrade_Planned__c}"/>                       
+                    </apex:pageBlockSectionItem>                    
+                </apex:pageblocksection>                  
+                <apex:pageBlockSection columns="1">    
+                    <apex:pageBlockSectionItem helpText="{!biTip}">
+                        <apex:outputLabel value="Business Impact:" for="impacts"/>
+                        <apex:outputField id="bta" value="{!pdd.Business_Impact__c}"/>
+                    </apex:pageBlockSectionItem>                    
+    
+                    <apex:pageBlockSectionItem helpText="{!cspTip}">
+                        <apex:outputLabel value="CSP Candidate:" for="csp">
+                        </apex:outputLabel>
+                        <apex:outputField id="csp" value="{!pdd.CSP_Candidate__c}"/>
+                    </apex:pageBlockSectionItem>
+                        
+                    <apex:pageBlockSectionItem helpText="{!rrTip}">
+                        <apex:outputLabel value="Renewal Risk:" for="rr"/>
+                        <apex:outputField id="rr" value="{!pdd.Renewal_Risk__c}"/>                      
+                    </apex:pageBlockSectionItem>  
+                    
+                     <apex:pageBlockSectionItem helpText="{!brenewTip}">
+                        <apex:outputLabel value="Barriers to Renewal:" for="barrR" title="{!brenewTip}"/>
+                        <apex:outputField value="{!pdd.BarrierstoRenewal__c}" id="barrR"/>    
+                    </apex:pageBlockSectionItem>                      
+     
+                    <apex:pageBlockSectionItem helpText="{!ctdTip}">
+                        <apex:outputLabel value="Competitive Technology:" for="ct"/>
+                        <apex:outputField id="ct" value="{!pdd.Competitive_Technology__c}"/>
+                    </apex:pageBlockSectionItem>                    
+            
+                    <apex:pageBlockSectionItem helptext="{!baTip}">
+                        <apex:outputLabel value="Business Alignment:" for="ba"/>
+                        <apex:outputField id="ba" value="{!pdd.Business_Alignment__c}"/>                     
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem helptext="{!pddComTip}">
+                        <apex:outputLabel value="Comments:" for="comments"/>  
+                        <apex:outputText id="comments" value="{!pdd.Comments__c}"/> 
+                    </apex:pageBlockSectionItem>  
+
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Created By:" for="crBy"/> 
+                        <apex:outputPanel >
+                            <apex:outputField id="crBy" value="{!pdd.CreatedBy.Name}"/>&nbsp;
+                            <apex:outputField value="{!pdd.CreatedDate}"/>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Last Modified By:" for="lastBy"/> 
+                        <apex:outputPanel >
+                            <apex:outputField id="lastBy" value="{!pdd.LastModifiedBy.Name}"/>&nbsp;
+                            <apex:outputField value="{!pdd.LastModifiedDate}"/>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                 
+            </apex:pageBlockSection>
+            </apex:pageBlockSection> 
+        </apex:pageBlock>  
+    </apex:outputPanel>
+    <!--End Entitlement Installation View Section-->  
+        
+    <!--Begin Entitlement Installation Edit Section-->
+    <apex:outputPanel id="out5">
+        <apex:pageBlock id="pb5" title="Instance Data" rendered="{!IF(sdunsID != NULL && sentID != NULL && sintID != NULL && myAction == 'editInst', TRUE, FALSE)}">
+            <apex:pageMessages />
+            <apex:pageBlockButtons location="bottom" style="text-align:left">
+                <apex:commandLink value="Save" action="{!goSaveInst}" title="Save" styleClass="btn" style="text-decoration:none;padding:4px;" rerender="out1,out2,out2v,out3,out4,out5,out6" status="overlayStatus">
+                    <apex:param name="myDID" value="{!sdunsID}"/>
+                    <apex:param name="myEntID" value="{!sentID}"/>
+                    <apex:param name="myIntID" value="{!instA.id}"/>
+                    <apex:param name="materialId" value="{!entA.Product_Material__c}"/>
+                </apex:commandLink>
+                <apex:commandLink action="{!goInstCancel}" value="Cancel" styleClass="btn" style="text-decoration:none;padding:4px;" rerender="out1,out2,out2v,out3,out4,out5,out6" status="overlayStatus" immediate="true">
+                    <apex:param name="myDID" value="{!sdunsID}"/>
+                    <apex:param name="myEntID" value="{!sentID}"/>
+                </apex:commandLink>
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlockSection title="Instance Data" columns="2" collapsible="false" >
+                <apex:pageBlockSection columns="1"> 
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Instance Description:" for="instName"/>
+                        <apex:inputField id="instName" value="{!instA.Name}" required="true"/>
+                    </apex:pageBlockSectionItem>  
+                
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Environment Type:" for="etype"/>  
+                       <!-- <apex:selectList id="etype" value="{!instA.Environment_Type__c}" size="1" required="true">
+                            <apex:selectOptions value="{!optionsEnvType}"/>
+                        </apex:selectList>-->
+                        <apex:inputField value="{!instA.Environment_Type__c}" id="etype" required="true" /> 
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Software Type:" for="softType"/>    
+                       <!-- <apex:selectList id="softType" value="{!instA.Software_Type__c}" size="1">
+                            <apex:selectOptions value="{!optionsSoftType}"/>
+                        </apex:selectList>-->
+                        <apex:inputField value="{!instA.Software_Type__c}" id="softType" required="true"/>
+                    </apex:pageBlockSectionItem> 
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Contact1:" for="conId"/>    
+                       
+                        <apex:inputField value="{!instA.Contact__c}" id="conId" />
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Contact2:" for="conId"/>    
+                       
+                        <apex:inputField value="{!instA.Contact_2__c}" id="conId" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Client Release Level:" for="crl" />      
+                        <apex:outputPanel >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputHidden value="{!instA.Release_Version__c}" id="crlHidden"/>
+                            <apex:inputText disabled="true" id="crl" value="{!instA.Release_Version__c}" required="true"/>&nbsp;<a href="#" onclick="openLookupProdRel('{!$Component.crl}', '{!entA.Material__c}','EntPage:mainForm:pb5:pgSecId:pgSectId:gasecItem:gaLevel'); return false"><apex:image styleClass="lookupIcon" value="/s.gif"/></a>
+                           </div>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Product Demographics Data" columns="2" collapsible="false" id="pgSecId">
+                <apex:pageBlockSection columns="1" id="pgSectId">    
+                    <!--<apex:pageBlockSectionItem helpText="{!crlTip}">
+                        <apex:outputLabel value="Client Release Level:" for="crl" title="{!crlTip}"/>      
+                        <apex:outputPanel >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputHidden value="{!instA.Release_Version__c}" id="crlHidden"/>
+                            <apex:inputText disabled="true" id="crl" value="{!instA.Release_Version__c}" required="true"/>&nbsp;<a href="#" onclick="openLookupProdRel('{!$Component.crl}', '{!entA.Material__c}','EntPage:mainForm:pb5:pgSecId:pgSectId:gasecItem:gaLevel'); return false"><apex:image styleClass="lookupIcon" value="/s.gif"/></a>
+                           </div>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>-->
+                    <apex:pageBlockSectionItem id="gasecItem" helptext="{!ProdGALevTip}">
+                        <apex:outputLabel value="Product GA Level:" for="gaLevel" />
+                        <apex:outputPanel >
+                            <apex:inputHidden value="{!instA.GA_level_Text__c}" id="gaLevelHidden"/>
+                        
+                        <apex:inputText id="gaLevel" value="{!instA.GA_level_Text__c}" disabled="true"/>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>    
+                    <apex:pageBlockSectionItem helpText="{!upStatTip}">
+                        <apex:outputLabel value="Upgrade Status:" for="upstat1" title="{!upStatTip}"/>
+                        <apex:selectList id="upstat1" value="{!pdd.Upgrade_Status__c}" size="1">
+                            <apex:selectOptions value="{!optionsUPSTAT}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>                      
+                    <apex:pageBlockSectionItem helpText="{!btupTip}">
+                        <apex:outputLabel value="Barriers to Upgrade:" for="btup1" title="{!btupTip}"/>
+                        <apex:selectList id="btup1" value="{!pdd.Barriers_to_Upgrade__c}" size="1">
+                            <apex:selectOptions value="{!optionsBTU}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>               
+                    <apex:pageBlockSectionItem helpText="{!saTip}">
+                        <apex:outputLabel value="Scale of Adoption:" for="sa" title="{!saTip}"/>         
+                       <!-- <apex:selectList id="sa" value="{!pdd.Scale_of_Adoption__c}" size="1">
+                            <apex:selectOptions value="{!optionsSA}"/>
+                        </apex:selectList>  -->
+                        <apex:inputField value="{!pdd.Scale_of_Adoption__c}" id="sa" required="true"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem helpText="{!btaTip}">
+                        <apex:outputLabel value="Barriers to Adoption:" for="bta" title="{!btaTip}"/>
+                        <apex:selectList id="bta" value="{!pdd.Barriers_to_Adoption__c}" size="1">
+                            <apex:selectOptions value="{!optionsBTA}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    <!--<apex:pageBlockSectionItem helpText="{!pstatTip}">
+                        <apex:outputLabel value="Production Status:" for="ps"/>        
+                        <apex:selectList id="ps" value="{!pdd.Production_Status__c}" size="1">
+                            <apex:selectOptions value="{!optionsPS}"/>
+                        </apex:selectList> 
+                    </apex:pageBlockSectionItem>-->   
+                    <!--<apex:pageBlockSectionItem helpText="{!cuTip}">
+                        <apex:outputLabel value="Capacity Used (%):" for="cu" title="0 to 100%"/>        
+                        <apex:inputField id="cu" value="{!instA.Capacity_Used__c}"/>
+                    </apex:pageBlockSectionItem>-->
+                    <apex:pageBlockSectionItem helpText="{!LicUsedTip}">
+                         <apex:outputLabel value="Licenses Used:" for="cu1"/> 
+                         <apex:inputField id="cu1" value="{!pdd.Licenses_Used__c}"/>                     
+                    </apex:pageBlockSectionItem> 
+                    <!--<apex:pageBlockSectionItem helpText="{!UpPlanTip}">
+                        <apex:outputLabel value="Upgrade Planned:" for="up"/>          
+                        <apex:selectList id="up" value="{!pdd.Upgrade_Planned__c}" size="1">
+                            <apex:selectOptions value="{!optionsUP}"/>
+                        </apex:selectList> 
+                    </apex:pageBlockSectionItem>-->
+                </apex:pageBlockSection>
+                <apex:pageBlockSection columns="1">                    
+                    <apex:pageBlockSectionItem helpText="{!biTip}">
+                        <apex:outputLabel value="Business Impact:" for="impacts" title="{!biTip}"/>        
+                        <apex:selectList id="impacts" value="{!pdd.Business_Impact__c}" size="1">
+                          <apex:selectOptions value="{!optionsBI}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem helpText="{!cspTip}">
+                        <apex:outputLabel value="CSP Candidate:" for="csp" title="{!cspTip}">
+                        </apex:outputLabel>           
+                        <apex:selectList id="csp" value="{!pdd.CSP_Candidate__c}" size="1">
+                            <apex:selectOptions value="{!optionsCSP}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>                    
+                    <apex:pageBlockSectionItem helpText="{!rrTip}">
+                        <apex:outputLabel value="Renewal Risk:" for="rr" title="{!rrTip}"/>          
+                        <apex:selectList id="rr" value="{!pdd.Renewal_Risk__c}" size="1">
+                            <apex:selectOptions value="{!optionsRR}"/>
+                        </apex:selectList> 
+                    </apex:pageBlockSectionItem>
+                    <apex:pageblockSectionItem helptext="{!brenewTip}">
+                        <apex:outputLabel value="Barriers to Renewal:" for="barrR" title="{!rrTip}"/>          
+                         <apex:inputField value="{!pdd.BarrierstoRenewal__c}" id="barrR"/>      
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem helpText="{!ctdTip}">
+                        <apex:outputLabel value="Competitive Technology:" for="ct" title="{!ctdTip}"/>           
+                        <apex:selectList id="ct" value="{!pdd.Competitive_Technology__c}" size="1">
+                            <apex:selectOptions value="{!optionsCT}"/>
+                        </apex:selectList> 
+                    </apex:pageBlockSectionItem>  
+                    <apex:pageBlockSectionItem helptext="{!baTip}">
+                        <apex:outputLabel value="Business Alignment:" for="ba" title="{!baTip}"/> 
+                        <apex:selectList id="ba" value="{!pdd.Business_Alignment__c}" size="1">
+                            <apex:selectOptions value="{!optionsBA}"/>
+                        </apex:selectList> 
+                    </apex:pageBlockSectionItem> 
+                    <apex:pageBlockSectionItem helptext="{!pddComTip}">
+                        <apex:outputLabel value="Comments:" for="comments" title="{!pddComTip}"/>          
+                        <apex:inputTextarea id="comments" value="{!pdd.Comments__c}" cols="40" rows="6"/> 
+                    </apex:pageBlockSectionItem>                
+    
+                </apex:pageBlockSection>    
+            </apex:pageBlockSection> 
+        </apex:pageBlock>  
+    </apex:outputPanel>
+    <!--End Entitlement Installation Edit Section-->
+        
+    <!--Begin Entitlement Installation New Section-->
+    <apex:outputPanel id="out6">
+        <apex:pageBlock id="pb6" title="Instance Data" rendered="{!IF(sdunsID != NULL && sentID != NULL && myAction == 'newInst', TRUE, FALSE)}">
+            
+            <apex:pageBlockButtons location="bottom" style="text-align:left">
+                <apex:commandLink value="Save" action="{!goSaveInst}" title="Save" styleClass="btn" style="text-decoration:none;padding:4px;" rerender="out1,out2,out2v,out3,out4,out5,out6" status="overlayStatus">
+                    <apex:param name="myDID" value="{!sdunsID}"/>
+                    <apex:param name="myEntID" value="{!sentID}"/>
+                    <apex:param name="myIntID" value="{!instA.id}"/>
+                    <apex:param name="myMaterId" value="{!materialId}" />
+                   
+                </apex:commandLink>
+                <apex:commandLink action="{!goInstCancel}" value="Cancel" styleClass="btn" style="text-decoration:none;padding:4px;" rerender="out1,out2,out2v,out3,out4,out5,out6" status="overlayStatus" immediate="true">
+                    <apex:param name="myDID" value="{!sdunsID}"/>
+                    <apex:param name="myEntID" value="{!sentID}"/>
+                </apex:commandLink>
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlockSection title="Instance Data" columns="2" collapsible="false" >
+                <!--<apex:pageBlockSection columns="1">--> 
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Instance Description:" for="instName"/>
+                        <apex:inputField id="instName" value="{!instA.Name}" required="true"/>
+                    </apex:pageBlockSectionItem>  
+                
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Environment Type:" for="etype"/>  
+                        <!--<apex:selectList id="etype" value="{!instA.Environment_Type__c}" size="1">
+                            <apex:selectOptions value="{!optionsEnvType}"/>
+                        </apex:selectList>-->
+                         <apex:inputField value="{!instA.Environment_Type__c}" id="etype" required="true" /> 
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Software Type:" for="softType"/>    
+                        <!--<apex:selectList id="softType" value="{!instA.Software_Type__c}" size="1">
+                            <apex:selectOptions value="{!optionsSoftType}"/>
+                        </apex:selectList>-->
+                        <apex:inputField value="{!instA.Software_Type__c}" id="softType" required="true"/>
+                    </apex:pageBlockSectionItem>
+                    
+                     <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Contact1" for="conId"/>    
+                        
+                        <apex:inputField value="{!instA.Contact__c}" id="conId" />
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Contact2" for="conId"/>    
+                        
+                        <apex:inputField value="{!instA.Contact_2__c}" id="conId" />
+                    </apex:pageBlockSectionItem>
+                        
+                <!--</apex:pageBlockSection>-->
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Product Demographics Data" columns="2" collapsible="false" id="pdd">
+                <apex:pageBlockSection columns="1" id="pdd1">
+                    <apex:pageBlockSectionItem id="pddSec1" helpText="{!crlTip}">
+                        <apex:outputLabel value="Client Release Level:" for="crl" title="{!crlTip}"/>      
+                        <apex:outputPanel >
+                            <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputHidden value="{!instA.Release_Version__c}" id="crlHidden"/>
+                            <apex:inputText disabled="true" id="crl" value="{!instA.Release_Version__c}" required="true"/>&nbsp;<a href="#" onclick="openLookupProdRel('{!$Component.crl}', '{!entA.Material__c}','EntPage:mainForm:pb6:pdd:pdd1:pddItem:gaLevel'); return false"><apex:image styleClass="lookupIcon" value="/s.gif"/></a>
+                            </div>
+                             <div class="errorMsg" style="display:none"><strong>Error:</strong>&nbsp; You must enter a value</div>
+
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                  
+                    <apex:pageBlockSectionItem id="pddItem" helptext="{!ProdGALevTip}">
+                        <apex:outputLabel value="Product GA Level:" for="gaLevel" />
+                        <apex:outputPanel >
+                            <apex:inputHidden value="{!instA.GA_level_Text__c}" id="gaLevelHidden"/>
+                        
+                        <apex:inputText id="gaLevel" value="{!instA.GA_level_Text__c}" disabled="true"/>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                
+                    <apex:pageBlockSectionItem helpText="{!upStatTip}">
+                        <apex:outputLabel value="Upgrade Status:" for="upstat1" title="{!upStatTip}"/>
+                        <apex:selectList id="upstat1" value="{!pdd.Upgrade_Status__c}" size="1">
+                            <apex:selectOptions value="{!optionsUPSTAT}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>                      
+                    <apex:pageBlockSectionItem helpText="{!btupTip}">
+                        <apex:outputLabel value="Barriers to Upgrade:" for="btup1" title="{!btupTip}"/>
+                        <apex:selectList id="btup1" value="{!pdd.Barriers_to_Upgrade__c}" size="1">
+                            <apex:selectOptions value="{!optionsBTU}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>       
+                    <apex:pageBlockSectionItem helpText="{!saTip}">
+                        <apex:outputLabel value="Scale of Adoption:" for="sa" title="{!saTip}"/>         
+                        <!--<apex:selectList id="sa" value="{!pdd.Scale_of_Adoption__c}" size="1">
+                            <apex:selectOptions value="{!optionsSA}"/>
+                        </apex:selectList>-->
+                        <apex:inputField value="{!pdd.Scale_of_Adoption__c}" id="sa" required="true"/>  
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem helpText="{!btaTip}">
+                        <apex:outputLabel value="Barriers to Adoption:" for="bta" title="{!btaTip}"/>
+                        <apex:selectList id="bta" value="{!pdd.Barriers_to_Adoption__c}" size="1">
+                            <apex:selectOptions value="{!optionsBTA}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    <!--<apex:pageBlockSectionItem helpText="{!pstatTip}">
+                        <apex:outputLabel value="Production Status:" for="ps"/>        
+                        <apex:selectList id="ps" value="{!pdd.Production_Status__c}" size="1">
+                            <apex:selectOptions value="{!optionsPS}"/>
+                        </apex:selectList> 
+                    </apex:pageBlockSectionItem>-->   
+                    <!--<apex:pageBlockSectionItem helpText="{!cuTip}">
+                        <apex:outputLabel value="Capacity Used (%):" for="cu" title="0 to 100%"/>        
+                        <apex:inputField id="cu" value="{!instA.Capacity_Used__c}"/>
+                    </apex:pageBlockSectionItem>-->
+                    <apex:pageBlockSectionItem helpText="{!LicUsedTip}">
+                         <apex:outputLabel value="Licenses Used:" for="cu1"/> 
+                         <apex:inputField id="cu1" value="{!pdd.Licenses_Used__c}"/>                     
+                    </apex:pageBlockSectionItem>
+                    <!--<apex:pageBlockSectionItem helpText="{!UpPlanTip}">
+                        <apex:outputLabel value="Upgrade Planned:" for="up"/>          
+                        <apex:selectList id="up" value="{!pdd.Upgrade_Planned__c}" size="1">
+                            <apex:selectOptions value="{!optionsUP}"/>
+                        </apex:selectList> 
+                    </apex:pageBlockSectionItem>-->
+                </apex:pageBlockSection>
+                <apex:pageBlockSection columns="1">                    
+                    <apex:pageBlockSectionItem helpText="{!biTip}">
+                        <apex:outputLabel value="Business Impact:" for="impacts" title="{!biTip}"/>        
+                        <apex:selectList id="impacts" value="{!pdd.Business_Impact__c}" size="1">
+                          <apex:selectOptions value="{!optionsBI}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem helpText="{!cspTip}">
+                        <apex:outputLabel value="CSP Candidate:" for="csp" title="{!cspTip}"/> 
+                              
+                        <apex:selectList id="csp" value="{!pdd.CSP_Candidate__c}" size="1">
+                            <apex:selectOptions value="{!optionsCSP}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem helpText="{!rrTip}">
+                        <apex:outputLabel value="Renewal Risk:" for="rr" title="{!rrTip}"/>          
+                        <apex:selectList id="rr" value="{!pdd.Renewal_Risk__c}" size="1">
+                            <apex:selectOptions value="{!optionsRR}"/>
+                        </apex:selectList> 
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem helpText="{!brenewTip}" >
+                        <apex:outputLabel value="Barriers to Renewal:" for="barrR" title="{!rrTip}"/>          
+                         <apex:inputField value="{!pdd.BarrierstoRenewal__c}" id="barrR"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem helptext="{!ctdTip}">
+                        <apex:outputLabel value="Competitive Technology:" for="ct" title="{!ctdTip}"/>           
+                        <apex:selectList id="ct" value="{!pdd.Competitive_Technology__c}" size="1">
+                            <apex:selectOptions value="{!optionsCT}"/>
+                        </apex:selectList> 
+                    </apex:pageBlockSectionItem>  
+                    <apex:pageBlockSectionItem helptext="{!baTip}">
+                        <apex:outputLabel value="Business Alignment:" for="ba" title="{!baTip}"/> 
+                        <apex:selectList id="ba" value="{!pdd.Business_Alignment__c}" size="1">
+                            <apex:selectOptions value="{!optionsBA}"/>
+                        </apex:selectList> 
+                    </apex:pageBlockSectionItem> 
+                    <apex:pageBlockSectionItem helptext="{!pddComTip}">
+                        <apex:outputLabel value="Comments:" for="comments" title="{!pddComTip}"/>          
+                        <apex:inputTextArea id="comments" value="{!pdd.Comments__c}" cols="40" rows="6"/> 
+                    </apex:pageBlockSectionItem>                
+                </apex:pageBlockSection>
+            </apex:pageBlockSection> 
+        </apex:pageBlock>  
+    </apex:outputPanel>
+    <!--End Entitlement Installation Edit Section--> 
+       
+    </apex:form>
+    
+</apex:page>

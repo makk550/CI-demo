@@ -1,0 +1,4 @@
+<apex:page standardController="Site_Association__c" extensions="RedirectSiteExtension" action="{!redirectSite}">
+    <apex:pageMessage rendered="{!!showDetail}" severity="error" summary="You are not allowed to see this record."></apex:pageMessage>
+    <apex:detail subject="{!Site_Association__c.Id}" rendered="{!showDetail}" relatedList="false"/>
+</apex:page>

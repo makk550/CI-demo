@@ -1,0 +1,208 @@
+<apex:page standardcontroller="opportunity">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+<script>
+$( document ).ready(function() {
+    var delapstatus= "{!opportunity.Deal_Approval_Status__c}";
+    var initalapr= "{!opportunity.Deal_Reg_Initially_Approved__c}";
+console.debug('initalapr'+initalapr);
+console.debug('delapstatus'+delapstatus);
+    
+    
+
+if(delapstatus=='Deal Rejected' || delapstatus=='Deal Approved'){
+if(initalapr == true){
+    $(".extraStatus").each(function( index ) {
+           if($(this).text()=='Rejected'){
+               $(this).text('Approved');
+           }
+       
+
+    });
+    $(".dataCell").each(function( index ) {
+           if($(this).text()=='Rejected'){
+               $(this).text('Approved');
+           }
+       
+
+    });
+    $( ".extraStatusDiv_R" ).css( "background-color", "#a1f78d" );
+    console.debug('saikumar');
+    console.debug($('.extraStatus').attr('src'));
+    $( ".extraStatus" ).first().attr('src','/img/icon/approve12.gif');
+ } 
+ } 
+  if(delapstatus=='Deal Recalled'){
+ if(initalapr == true){
+    $(".extraStatus").each(function( index ) {
+           if($(this).text()=='Recalled'){
+               $(this).text('Approved');
+           }
+       
+
+    });
+    $(".actionLink").each(function( index ) {
+           if($(this).text()=='Approval Request Recalled'){
+               $(this).text('Approval Request Approved');
+           }
+       
+
+    });
+    $(".dataCell").each(function( index ) {
+           if($(this).text()=='Recalled'){
+               $(this).text('Approved');
+           }
+       
+
+    });
+    $( ".extraStatusDiv_X" ).css( "background-color", "#a1f78d" );
+    console.debug('saikumar');
+    console.debug($('.extraStatus').attr('src'));
+    $( ".extraStatus" ).first().attr('src','/img/icon/approve12.gif');
+ }
+ } 
+   
+});  
+  
+</script>
+      
+     
+     <apex:detail subject="{!opportunity.Id}" relatedList="true" title="true" inlineEdit="true" showChatter="true"> 
+     </apex:detail> 
+     
+     <apex:includeScript value="{!URLFOR($Resource.JQueryUiLibrary, '/js/jquery-1.4.2.min.js')}"/>
+     <script type="text/javascript">
+        $(function(){
+            try{
+             
+
+                
+                if({!opportunity.Status_to_SAP__c}){
+                    $("[name='send_to_sap']").show();
+
+                }
+                
+                if(!{!opportunity.Status_to_SAP__c}){
+                    $("[name='send_to_sap']").remove();
+                }        
+
+
+                if({!opportunity.recordtype.name == 'Deal Registration'}){
+                    var approveRejectLink = document.querySelector('a[href*="/p/process/ProcessInstanceWorkitemWizardStageManager"]');
+                    if (approveRejectLink) {
+                        approveRejectLink.setAttribute('href', 'DealRegApprovalRejection?OppId='+"{!opportunity.Id}");
+                    }
+                }
+
+                if({!opportunity.recordtype.name == 'New Opportunity'}){
+                    $("[name='submit']").remove();
+                    $("[name='piSubmit']").remove();
+                    
+                    //$("[class='relatedProcessHistory']").remove();
+                }
+                var portalUser =  {!ISPICKVAL( $User.UserType , 'PowerPartner')};
+                var isPEROpp = {!opportunity.isPEROpp__c};
+                //alert('isPEROpp :'+isPEROpp );
+                if(portalUser){
+                    $("[name='piSubmit']").remove();
+                    $("[class='listRelatedObject opportunityLineItemBlock']").find("[class='actionColumn']").remove();
+                    $("[name='opportunitydeleteoverride']").hide();
+                    $("[name='submit_for_approval_new']").hide();
+
+                   // $("[name='edit']").hide();
+                    var dealRegStatus = '{!opportunity.Deal_Registration_Status__c}';
+                    var newOppStatus = '{!opportunity.New_Opportunity_Status__c}';
+                    var hasNoProgram = '{!opportunity.Has_No_Deal_Reg_Program__c}';
+                    var DealRegInitiallyApproved = '{!opportunity.Deal_Reg_Initially_Approved__c}';
+                    var WarrantResubmissionText = '{!opportunity.Warrant_Resubmission_Formula__c}';
+
+                    //Partner lead distribution - amili01
+                    var OppSource ='{!opportunity.Source__c}';
+                    
+                    if((dealRegStatus == 'New' ||newOppStatus == 'New') && isPEROpp != true) {  //|| dealRegStatus == 'Deal Rejected'|| dealRegStatus == '' || dealRegStatus == null) 
+                        $("[name='opportunitydeleteoverride']").show();
+                       // alert('dealregStatus '+dealRegStatus );
+                    }
+
+                    //Comment this out, as the logic is moved to below block, including new opportuinty and re-submission
+                     //     if((dealRegStatus == 'New' || dealRegStatus == 'Deal Recalled') || (newOppStatus == 'New' || newOppStatus == 'New Opportunity Recalled')){
+                     //    $("[name='submit_for_approval_new']").show();
+                     // //   $("[name='edit']").show();
+                     //    }
+
+                    if({!opportunity.recordtype.name == 'New Opportunity'}){
+                        if ((newOppStatus == 'New' || newOppStatus == 'New Opportunity Recalled') && hasNoProgram)
+                        {
+                             $("[name='submit_for_approval_new']").show();
+                        }
+                    }
+                    else
+                    { 
+                        //sunji03, following secnarios, submit for approval button will show
+                        //1. first time approval: new or recalled
+                        //2. Resubmit for approval: any of the list of items changed which warants resubmission, "modifying" or "recalled"
+                        if(
+                            hasNoProgram != true && (DealRegInitiallyApproved != true && (dealRegStatus == 'New' || dealRegStatus == 'Deal Recalled')) //the condition has to be "!= true", if using "== false", it won't work
+                            ||
+                            (DealRegInitiallyApproved && WarrantResubmissionText != '' && (dealRegStatus == 'Modifying' || dealRegStatus == 'Deal Recalled')) //checking true, just use variable, if using "== true", it won't work
+                          )
+                        {
+                            $("[name='submit_for_approval_new']").show();
+                        }
+                    }
+
+                    if(dealRegStatus == 'Deal Submitted to CA' || newOppStatus == 'New Opportunity Submitted to CA'){
+                    $("[name='edit']").hide();
+                    }
+                    
+                    
+                    if({!opportunity.MinMaxErrorFormula__c != ''}){
+                        $("[name='submit_for_approval_new']").hide();
+                    }
+                    if({!opportunity.isClosedDateFireDealRegFormula__c != ''}){
+                        $("[name='submit_for_approval_new']").hide();
+                    }
+                  
+                    $("[class='brandTertiaryBrd first pbSubheader tertiaryPalette']").hide();
+                    /* 
+                    
+                    $("[class='labelCol']").first().hide(); //Added for AR 4013 
+                   $("[class='last labelCol']").first().hide(); //hide the first 
+                   $("[class='data2Col inlineEditLock']").first().css({"color": "red"}); //Added for AR 4013 
+                   $("[class='last data2Col inlineEditLock']").first().css({"color": "red"});//hide the second Close date one 
+                    Commented for VF page 
+                     $("[class='brandTertiaryBrd first pbSubheader tertiaryPalette']").hide();
+                    $("[class='labelCol']").first().hide();
+                    $("[class='last labelCol']").first().hide(); //hide the first 
+                      $("[class='data2Col inlineEditLock']").first().css({"color": "red"});
+                    $("[class='last data2Col inlineEditLock']").first().css({"color": "red"});//hide the second Close date one 
+                    */
+                    if(isPEROpp == true){
+                       //alert ('hide minmax');
+                       $("[class='last data2Col inlineEditLock']").first().hide();
+                    }
+                    if({!opportunity.recordtype.name == 'New Opportunity'}){
+
+                        // if({!opportunity.Has_No_Deal_Reg_Program__c == true}){
+                        //     $("[name='submit_for_approval_new']").show();
+                        // }
+                        // else
+                        // {
+                        //     $("[name='submit_for_approval_new']").hide();
+                        // }
+
+                         $("[class='last data2Col inlineEditLock']").first().hide();
+                         
+                    }
+                    
+                    //Partner lead distribution - amili01
+                    if(OppSource=='Lead'){
+                        $("[name='submit_for_approval_new']").hide();
+                    }
+                }
+            }
+            catch(e){}
+        });
+     </script>
+     
+</apex:page>

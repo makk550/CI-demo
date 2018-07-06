@@ -1,0 +1,13 @@
+<apex:page showHeader="false" sidebar="false" standardController="Account" extensions="PreviewLogoFromAccountPageLayoutExt"
+	action="{!doOnLoad}"
+	language="{!preferredLanguageCode}">
+	<apex:form >
+		<apex:inputHidden value="{!Account.Logo__c}"/>
+		<apex:outputPanel rendered="{!AND(errorOccurred,error == NO_RECORD_ERROR)}">
+			<apex:outputLabel value="{!$Label.no_logo_exists}"/>
+		</apex:outputPanel>
+		<apex:outputPanel rendered="{!NOT(errorOccurred)}">
+			<apex:image height="50" width="150" rendered="{!NOT(ISNULL(logoAttachmentID))}" value="{!URLFOR($Action.Attachment.Download, logoAttachmentID)}"/>
+		</apex:outputPanel>
+	</apex:form>
+</apex:page>

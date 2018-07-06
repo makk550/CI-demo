@@ -1,0 +1,77 @@
+<apex:page controller="PDDActiveContractLineItems" sidebar="false" docType="html-5.0">
+    <apex:form >
+    <apex:pageBlock id="pbId" title="Active Contract Details" rendered="{!IF(pddEnhID != NULL, TRUE, FALSE)}">
+       <apex:pageblockTable value="{!activeContractLineItems}" var="item">
+                <apex:column >
+                    <apex:facet name="header">Contract Line Item</apex:facet>
+                    <apex:outputLink value="/{!item.id}">
+                        {!item.Contract_Item__c}
+                    </apex:outputLink>
+                </apex:column>
+               
+                <apex:column >
+                    <apex:facet name="header">Licensed Quantity</apex:facet>
+                    <apex:outputField value="{!item.Licensed_Quantity__c}"/>
+                </apex:column>
+           <apex:column >
+               <apex:facet name="header">Install Date</apex:facet>
+               <apex:outputField value="{!item.Installation_Date__c}"/>
+           </apex:column>
+           <apex:column >
+               <apex:facet name="header">Dismantle Date</apex:facet>
+               <apex:outputField value="{!item.Dismantling_Date__c}"/>
+           </apex:column>
+           
+           <apex:column >
+               <apex:facet name="header">Ship To ID</apex:facet>
+               <apex:outputText value="{!item.Ship_To_ID__c}"/>
+           </apex:column>
+           <apex:column >
+               <apex:facet name="header">Ship To City</apex:facet>
+               <apex:outputField value="{!item.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.City__c}"/>
+           </apex:column>
+           <apex:column >
+               <apex:facet name="header">Ship To State</apex:facet>
+               <apex:outputText value="{!item.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.State__c}"/>
+           </apex:column>
+           <apex:column >
+               <apex:facet name="header">Ship To Country</apex:facet>
+               <apex:outputText value="{!item.Contract_Product__r.Active_Contract__r.End_User_Site_Association__r.Country_Picklist__c}"/>
+           </apex:column>
+           <apex:column >
+               <apex:facet name="header">Material ATTRF (USD)</apex:facet>
+               <apex:outputText value="{!item.Calculated_Orig_ATTRF_USD__c}"/>
+           </apex:column>
+           <apex:column >
+               <apex:facet name="header">Material ATTRF (LC)</apex:facet>
+               <apex:outputText value="{!item.Orig_ATTRF_LC__c}"/>
+           </apex:column>
+                
+        </apex:pageblockTable>
+        <apex:panelGrid columns="10" cellpadding="1" style="vertical-align:middle">
+            <apex:commandButton status="fetchStatus" reRender="pbId" value="|<" action="{!first}" disabled="{!!hasPrevious}" title="First Page"/>
+            <apex:commandButton status="fetchStatus" reRender="pbId" value="<" action="{!previous}" disabled="{!!hasPrevious}" title="Previous Page"/>
+            <apex:commandButton status="fetchStatus" reRender="pbId" value=">" action="{!next}" disabled="{!!hasNext}" title="Next Page"/>
+            <apex:commandButton status="fetchStatus" reRender="pbId" value=">|" action="{!last}" disabled="{!!hasNext}" title="Last Page"/>
+            <apex:outputText value="{!(pageNumber * size)+1-size}-{!IF((pageNumber * size)>noOfRecords, noOfRecords,(pageNumber * size))} of {!noOfRecords}" />
+            
+                   
+                    <apex:selectList value="{!size}" size="1" multiselect="false" title="Page size" onchange="refreshPageSize();">
+                        <apex:selectOption itemValue="10" itemLabel="10"/>
+                        <apex:selectOption itemValue="25" itemLabel="25"/>
+                        <apex:selectOption itemValue="50" itemLabel="50"/>
+                        <apex:selectOption itemValue="100" itemLabel="100"/>
+                        <apex:selectOption itemValue="200" itemLabel="200"/>
+                        </apex:selectList>
+                        <apex:outputPanel style="color:#4AA02C;font-weight:bold">
+                        <apex:actionStatus id="fetchStatus">
+                        <apex:facet name="start" >
+                          <img src="/img/loading.gif" /> Fetching...                 
+                        </apex:facet>
+                       </apex:actionStatus>
+                    </apex:outputPanel>
+                </apex:panelGrid>
+            <apex:actionFunction name="refreshPageSize" action="{!refresh}" status="fetchStatus" reRender="pbId"/>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

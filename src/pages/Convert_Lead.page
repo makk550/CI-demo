@@ -1,0 +1,294 @@
+<apex:page id="thePage" standardController="lead" extensions="ext_LeadConvert" tabStyle="Lead" >
+<apex:pagemessages />
+<link href="/servlet/servlet.FileDownload?file=01530000001ojYs" rel="stylesheet" type="text/css"/>
+<link href="/servlet/servlet.FileDownload?file=01530000001ojYx" rel="stylesheet" type="text/css"/>
+<link href="/servlet/servlet.FileDownload?file=01530000001ojZ7" rel="stylesheet" type="text/css"/>
+<apex:includeScript value="{!URLFOR($Resource.JQueryUiLibrary, '/js/jquery-1.4.2.min.js')}"/>
+<style>
+        .vfHelpText a            {position:relative;}
+        .vfHelpText a span       {display: none;}
+        .vfHelpText a:hover span {display: block;
+                                  position:absolute;
+                                  top:1.25em;
+                                  padding:2px 5px;
+                                  left:-15em; width:30em;
+                                  z-index:100;
+                                  border:1px solid orange;
+                                  background-color:#FEFDB9;
+                                  color:black;
+                                 }
+    </style>
+    
+<script>
+
+var newWin=null;  
+     window.onload=function()
+     {
+         var abc=document.getElementById('{!$Component.thePage.theForm.theBlock.ttype}').value;
+         
+     
+          $("[id='thePage:theForm:theBlock:ttype'] option[value='Direct']").remove();
+         $("[id='thePage:theForm:theBlock:ttype'] option[value='xSP']").remove();
+         $("[id='thePage:theForm:theBlock:ttype'] option[value='OEM']").remove();
+         
+        if(document.getElementById('{!$Component.theform.theBlock.hdnAccountName}').value != ""){
+            document.getElementById('targetName').innerHTML = document.getElementById('{!$Component.theform.theBlock.hdnAccountName}').value;
+        }
+        if(document.getElementById('{!$Component.theform.theBlock.hdnContactName}').value != ""){
+            document.getElementById('targetContact').innerHTML = document.getElementById('{!$Component.theform.theBlock.hdnContactName}').value;
+        }
+     }
+
+
+function openLookupPopup(searchPage,name, id, lid)  
+     {  
+        var url="{!$Site.prefix}/apex/" + searchPage +"?namefield=" + name + "&idfield=" + id+ "&lid=" + lid + "&parentPage=Lead";   
+        newWin=window.open(url, 'Popup','height=500,width=1000,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+     
+            if (window.focus)    
+                {    newWin.focus();   
+            }           return false;    
+     } 
+
+ function closeLookupPopup()  
+     {     
+            if (null!=newWin)     
+            {        
+                newWin.close();     
+            }    
+     } 
+ 
+ function checkAccname(){
+      try{
+           if(document.getElementById('targetName').value == null){
+               return false;
+           }
+           else{
+              return true;
+           }
+       }catch(e){
+         alert('error while checking acc name:'+e);
+         return false;
+       }
+     }
+    function hideDirect(){
+    
+          $("[id='thePage:theForm:theBlock:ttype'] option[value='Direct']").remove();
+         $("[id='thePage:theForm:theBlock:ttype'] option[value='xSP']").remove();
+         $("[id='thePage:theForm:theBlock:ttype'] option[value='OEM']").remove();
+    
+    }
+     
+</script>
+ <apex:form id="theForm">
+    <Apex:actionFunction name="hideSection" action="{!hideSectionOnChange}" rerender="theBlock"/>
+ <apex:sectionHeader title="Convert Lead"/>
+ <apex:pageBlock id="theBlock" title="Convert Lead"  rendered="{!isConvertLeadBlock }">
+ <table>
+ <!-- <tr>
+  <td><b><apex:outputLabel value="Record Owner" /></b></td>
+ <td><apex:inputField value="{!ownerLead.ownerid}"/></td>
+ </tr>
+ <tr>
+  <td><b><apex:outputLabel value="Send email to the owner"></apex:outputLabel></b> </td>
+  <td><apex:inputcheckbox label="Send email to the owner" /></td>
+ </tr> -->
+ <tr>
+    <td><b><apex:outputLabel value="End User Account Name" /></b></td>
+    <td>
+        <apex:outputPanel styleClass="requiredInput" layout="block" >
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                <div id="targetName" style="float:left;font-size:12px"></div>  &nbsp;     
+                <!--
+                     page redirection to new account search page
+                     commented by jadmr01@20022014    
+                 <a href="#" onclick="openLookupPopup('CAEndUserAccountSearch','{!$Component.hdnAccountName}', '{!$Component.hdnAccountID}'); return false">
+                 -->                           
+               <a href="#" onclick="openLookupPopup('DE_AccSearch_VFP','{!$Component.hdnAccountName}', '{!$Component.hdnAccountID}','{!l.id}'); return false">
+                   <img title="Account Name Lookup (New Window)" class="lookupIcon" alt="Account Name Lookup (New Window)" src="/s.gif"/>                 
+               </a>                         
+       </apex:outputPanel>
+       <apex:inputHidden id="hdnAccountName" value="{!endUserAccountName}"/>
+       <apex:inputHidden id="hdnAccountID" value="{!hdnAccountId}"/>  
+    </td>
+
+ </tr>
+ <tr>
+  <td><b><apex:outputLabel value="Opportunity Name" /></b></td>
+ <td>
+ <apex:outputPanel styleClass="requiredInput" layout="block" >
+ <apex:outputPanel styleClass="requiredBlock" layout="block" />
+  <apex:inputtext required="true" value="{!opprName}" />
+   </apex:outputPanel>
+ </td>
+ </tr>
+  <tr>
+ <td>
+      <b><apex:outputLabel value="Transaction Type"> 
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                              <img src="/s.gif" alt="" class="helpIcon" />
+                              <span>{!$ObjectType.opportunity.fields.Type.inlineHelpText}</span>
+                            </apex:outputLink>
+              			</span>
+     </apex:outputLabel></b>
+     
+ </td>
+ <td>
+     
+
+ <apex:outputPanel id="Ttypepanel" styleClass="requiredInput" layout="block" >
+ <apex:outputPanel styleClass="requiredBlock" layout="block" />
+     
+      <apex:selectList value="{!selectedTransactiontype}" size="1" id="ttype">
+ <apex:selectOptions value="{!TtypePicklist}"></apex:selectOptions>
+     <apex:actionSupport event="onchange" action="{!hideSectionOnChange}" reRender="theBlock"  onComplete="hideDirect();return false;"></apex:actionSupport>
+ </apex:selectList>
+     
+ </apex:outputPanel>
+     
+
+ </td>
+ </tr>
+   {!showpartner}
+     <apex:inputHidden value="{!selectedTransactiontype}" id="selectedTransactiontype"/>
+	   <apex:outputPanel id="rsller" rendered="{!showpartner}">
+        
+    <tr>
+        <td>
+        <apex:outputLabel value="Partner"/>
+        </td><td>
+        <apex:inputfield value="{!l.Reseller__c}"/>
+                        </td>
+     
+     </tr>
+       <tr>
+        <td>
+        <apex:outputLabel value="Partner Opportunity Owner"/>
+        </td><td>
+        <apex:inputfield value="{!l.Reseller_Contact_Name__c}"/>
+                        </td>
+     
+     </tr>
+         </apex:outputPanel>
+      <apex:outputPanel >
+        
+    <tr>
+        <td>
+        <apex:outputLabel value="Distributor"/>
+        </td><td>
+        <apex:inputfield value="{!l.Distributor__c}"/>
+                        </td>
+     
+     </tr>
+       <tr>
+        <td>
+        <apex:outputLabel value="Distributor Opportunity Owner"/>
+        </td><td>
+        <apex:inputfield value="{!ldd.Distributor_Contact__c}"/>
+                        </td>
+     
+     </tr>
+         </apex:outputPanel>
+ <!--<tr>
+ <td><b><apex:outputLabel value="Partner RTM" /></b></td>
+ <td>
+ <apex:outputPanel styleClass="requiredInput" layout="block" >
+ <apex:outputPanel styleClass="requiredBlock" layout="block" />
+ <apex:selectList value="{!selctedPartnerRTM}" size="1" onchange="RTMTypeValues()">
+  <apex:actionfunction name="RTMTypeValues" action="{!getPartnerRTMTypeList}"  rerender="rtmtypepanel" status="processingMsg"/>
+  <apex:selectOptions value="{!partnerRTMPickList}"></apex:selectOptions>
+ </apex:selectList>
+  <apex:actionstatus id="processingMsg" starttext="Processing..."/>
+ </apex:outputPanel>
+ </td>
+ </tr>-->
+ <!--<tr>
+ <td><b><apex:outputLabel value="Partner RTM Type" /></b></td>
+ <td>
+ <apex:outputPanel id="rtmtypepanel" styleClass="requiredInput" layout="block" >
+ <apex:outputPanel styleClass="requiredBlock" layout="block" />
+ <apex:selectList value="{!selctedPartnerRTMType}" size="1">
+ <apex:selectOptions value="{!partnerRTMTypePickList}"></apex:selectOptions>
+ </apex:selectList>
+ </apex:outputPanel>
+ </td>
+ </tr>-->
+ <!--
+ <tr>
+  <td><b><apex:outputLabel value="Partner Engagement" />
+  <span class="vfHelpText">
+  <apex:outputLink value="javascript:return false;">
+            <img src="/s.gif" alt="" class="helpOrb" />
+            <span>{!$ObjectType.Opportunity.fields.partner_engagement__c.inlineHelpText}</span>
+        </apex:outputLink>
+    </span>
+  </b></td>
+ <td>
+ <apex:outputPanel id="partnerengagementpanel" styleClass="requiredInput" layout="block" >
+ <apex:outputPanel styleClass="requiredBlock" layout="block" />
+ <apex:selectList value="{!selectedPartnerEngagement}" size="1" onchange="reasonValues()" disabled="{!bool}">
+ <apex:selectOptions value="{!partnerEngagementPicklist}"></apex:selectOptions>
+ </apex:selectList>
+ </apex:outputPanel>
+  </td>
+ </tr>
+ -->
+ <!--<tr>
+ <apex:actionFunction name="reasonValues" action="{!reasonValues}" reRender="reasonpanel" status="processingMessage"/>
+  <td><b><apex:outputLabel value="Reason" /></b></td>
+ <td>
+ <apex:outputPanel id="reasonpanel">
+ <apex:selectList value="{!selectedReason}" size="1" disabled="{!reasonDisabled}">
+ <apex:selectOptions value="{!reasonPicklist}"></apex:selectOptions>
+ </apex:selectList>
+ <apex:actionstatus id="processingMessage" starttext="Processing..."/>
+ </apex:outputPanel>
+  </td>
+ </tr>-->
+<!--<tr>
+  <td><b><apex:outputLabel value="Other Fulfillment-Only Reason" /></b></td>
+ <td>
+ <apex:inputText value="{!otherFulfillmentOnlyReason}"/>
+  </td>
+ </tr>-->
+ 
+ <!--<tr><td></td>
+ <td>
+  <apex:inputCheckbox />Do not create a new opprtunity upon conversion
+ </td>
+ </tr>-->
+ </table>  
+ <apex:pageBlockButtons >
+  <apex:commandButton value="Convert" onclick="if(document.getElementById('{!$Component.theform.theBlock.hdnAccountName}').value == ''){alert('Please select Account'); return false;}" action="{!checkContacts}"/>
+
+ <apex:commandButton value="Cancel" action="{!cancelMeth}"/>
+ </apex:pageBlockButtons> 
+ </apex:pageBlock>
+ <apex:pageBlock title="Convert Lead" rendered="{!isContactBlock}">
+ <table>
+ <tr>
+ <td><b><apex:outputLabel value="Account Name" /></b></td>
+ <td><apex:outputText value="{!endUserAccountName}" /></td>
+ </tr>
+ <tr>
+ <td><b><apex:outputLabel value="Contact Name" /></b></td>
+ <td>
+ <apex:outputPanel styleClass="requiredInput" layout="block" >
+ <apex:outputPanel styleClass="requiredBlock" layout="block" />
+ <apex:selectList value="{!selctedContact}" size="1">
+ <apex:selectOptions value="{!contactPickList}"></apex:selectOptions>
+ </apex:selectList>
+ </apex:outputPanel>
+ </td>
+ </tr>
+ </table>
+     
+ <apex:pageBlockButtons >
+ <apex:commandButton value="Convert" action="{!executeConvertLead}" />
+ <apex:commandButton value="Back" onclick="backfunc();"/>
+ <apex:actionfunction name="backfunc" action="{!switchBlock}"/>
+ </apex:pageBlockButtons> 
+ </apex:pageBlock>
+ </apex:form>
+</apex:page>

@@ -1,0 +1,335 @@
+<apex:page standardController="Access_Request__c" extensions="accessRequest" cache="false">
+
+<style>
+.ct{
+text-align:center;
+}
+.lt{
+text-align:left;
+}
+
+.Text{ 
+width: 200px; 
+}
+
+.URL{ 
+width: 500px;  
+}
+
+.Comment{ 
+width: 500px; 
+height: 50px;
+}
+
+#msgs{
+
+color:red;
+font-weight: bold;
+border: 1px solid #39f;
+background-color: #ffc;
+}
+
+.mainForm{
+background-color: white;
+}
+
+</style>
+
+<script src="/soap/ajax/10.0/connection.js" type="text/javascript"></script>
+
+<script>
+ sforce.connection.sessionId = "{!$Api.Session_ID}";
+ function setFocusOnLoad() {}
+ function insertTerritory() {
+     //SolnList();  
+    console.log('Before finish Solution list>'+document.getElementById("{!$Component.theform.SolutionDetailID}").value);
+    var reason = document.getElementById("{!$Component.theform.ReqReason}").value;
+    var reasonList = reason.split(';');
+    console.log('reasonList>'+reasonList);
+     for(var i=0;i<reasonList.length-1;i++){
+        var thisUI = reasonList[i];
+         console.log('thisUI>'+thisUI);
+        var thisUIAll = thisUI.split('@');
+      
+
+            if(thisUIAll[1].indexOf("04T") > -1){
+			console.log('reason territory>'+thisUIAll[1]);
+			var UT = new sforce.SObject("UserTerritory");
+            UT.TerritoryId = thisUIAll[1];
+            var utLocal = '{!Access_Request__c.Request_For__c}';
+            console.debug('UT.TerritoryId my local >'+utLocal);
+            UT.UserId= '{!Access_Request__c.Request_For__c}';
+            var result = sforce.connection.create([UT]);
+            if(result[0].getBoolean("success")){
+                console.log('Success');
+            }
+            }
+        //samap01 -US345637 -Moved location
+          console.log('Before GrantOtherAccess');
+    	   GrantAccess(); 
+   		  console.log('After GrantOtherAccess');
+        
+    }
+     //Approve();
+ 
+}
+
+ function Set(Reason,SharedThrough,thisID){
+    
+    if(document.getElementById(thisID).checked == true){
+        document.getElementById('{!$Component.theform.ReqReason}').value +=  Reason +'@'+SharedThrough +';';
+        var ReasonAll = document.getElementById('{!$Component.theform.ReqReason}').value;
+        console.log('ReasonAll>'+ReasonAll.split(';').length);
+        console.log('ReasonAll'+ReasonAll);        
+    }
+    else if(document.getElementById(thisID).checked == false){
+        var reasonstring = document.getElementById('{!$Component.theform.ReqReason}').value;
+        var ReasonThroughPair = reasonstring.split(';');
+        console.log('ReasonThroughPair length'+ReasonThroughPair.length);
+        document.getElementById('{!$Component.theform.ReqReason}').value = null;
+        for(var i=0;i<ReasonThroughPair.length-1; i++){
+            var ReasonThroughPair2 = ReasonThroughPair[i].split('@');
+            if(ReasonThroughPair2[1].indexOf(SharedThrough) > -1){
+                console.log('pairs '+i+' Matched= ' +ReasonThroughPair2[0]+' Reason= '+Reason);
+            } 
+            else {
+                console.log('appending string');
+                document.getElementById('{!$Component.theform.ReqReason}').value +=  ReasonThroughPair2[0] +'@'+ReasonThroughPair2[1] +';';
+            }
+            //console.log('ReasonThroughPair2>'+ReasonThroughPair2[0]);
+            //console.log('ReasonThroughPair2>'+ReasonThroughPair2[1]);
+            
+         }
+         console.log('string> '+document.getElementById('{!$Component.theform.ReqReason}').value);
+         console.log('string> '+document.getElementById('{!$Component.theform.ReqSharedThrough}').value);
+        }
+    /*       
+    document.getElementById('{!$Component.theform.ReqSharedThrough}').value = SharedThrough;
+        var ReasonAll = document.getElementById('{!$Component.theform.ReqReason}').value;
+        console.debug('Reason Populated >' +ReasonAll +' Selected '+Selected);*/
+    //document.getElementById('{!$Component.theform.solnListSel}').value = document.getElementById('{!$Component.theform.solnListSel}').value soln;
+
+}
+</script>
+
+<div id="msgs">
+ <apex:messages />   
+    </div>
+        
+   
+
+<apex:form id="theform" StyleClass="mainForm">
+   
+   
+     <apex:actionStatus id="msg_refresh1" stopText="">
+                 <apex:facet name="start">
+                      <apex:outputPanel >
+                            <div style="background-color: #dbeefd; opacity: .80; -moz-opacity: 0.80; filter:alpha(opacity=80); position: absolute; left:0;top:0; width:100%; height:100%; z-index: 3;"><apex:image value="/img/loading32.gif" style="height: 40px; position: fixed; left:50%;top:40%;"/></div>
+                        </apex:outputPanel>
+                    </apex:facet>
+             </apex:actionStatus>
+    
+    <apex:actionFunction name="GrantAccess" action="{!GrantAccess}" oncomplete="Approve();" status="msg_refresh1"/>
+    <apex:actionFunction name="Approve" action="{!territoryApproval}"  status="msg_refresh1"/>
+    <apex:sectionHeader title="Access Request Approval"  />
+    <apex:pageBlock mode="detail" id="requestBlock" tabStyle="Access_Request__c"> 
+    <apex:pageblockSection title="Request Details :" showHeader="TRUE"  >
+    <apex:outputPanel styleClass="">
+    <table style="width:100%;height:100%;align:center" >
+           
+           <tr>
+                <td><b><apex:outputLabel style="display:block;width:150px;" value="Access Request Number " /></b></td>
+                <td><apex:outputLink value="/{!Access_Request__c.Id}">{!Access_Request__c.Name}</apex:outputLink></td>
+           </tr>
+            
+           <tr>
+                <td><b><apex:outputLabel style="display:block;width:150px;" value="Description " /></b></td>
+                <td><apex:outputText styleClass="Text" value="{!Access_Request__c.Description__c}"/></td>
+           </tr>
+           <tr>
+                <td><b><apex:outputLabel value="Access To " /></b></td>
+                <td><apex:outputLink styleClass="URL" value="{!Access_Request__c.Access_for_URL__c}">{!Access_Request__c.Access_for_URL__c}</apex:outputlink></td>
+           </tr>
+       
+           <tr>
+                <td><b><apex:outputLabel value="Reason for the Request" /></b></td>
+                <td><apex:outputText styleClass="Text" value="{!Access_Request__c.Reason_for_the_request__c}"/></td>
+           </tr>
+                    
+     </table></apex:outputPanel>
+     </apex:pageblockSection>
+</apex:pageBlock>
+
+<apex:inputHidden value="{!Access_Request__c.Request_For__r.Phone}"/>
+<apex:inputHidden value="{!Access_Request__c.Request_For__r.Email}"/>
+<apex:inputHidden value="{!Access_Request__c.Type__c}"/>
+
+
+
+<apex:pageBlock mode="detail" id="userBlock" tabStyle="Access_Request__c" > 
+    <apex:pageblockSection title="User Details :" showHeader="TRUE" columns="1">
+    <apex:outputPanel >
+    <table style="width:100%;height:100%;align:center" >
+           
+           <tr>
+                <td><b><apex:outputLabel value="Requestor" /></b></td>
+                <td><apex:outputLink value="/{!Access_Request__c.Request_For__c}">{!Access_Request__c.Request_For__r.Name}</apex:outputLink></td>
+                <td><b><apex:outputLabel value="Mirror" /></b></td>
+                <td><apex:outputLink value="/{!Access_Request__c.Mirror__c}">{!Access_Request__c.Mirror__r.Name}</apex:outputLink></td>
+           </tr>
+            
+           <tr>
+                <td><b><apex:outputLabel value="Requestor's Manager" /></b></td>
+                <td><apex:outputLink value="/{!Access_Request__c.Request_For__r.ManagerId}">{!Access_Request__c.Request_For__r.Manager.Name}</apex:outputLink></td>
+                <td><b><apex:outputLabel style="display:block;width:150px;" value="Mirror's Manager" /></b></td>
+                <td><apex:outputLink value="/{!Access_Request__c.Mirror__r.ManagerId}">{!Access_Request__c.Mirror__r.Manager.Name}</apex:outputLink></td>
+           </tr>
+             
+           <tr>
+                <td><b><apex:outputLabel value="Requestor's Role" /></b></td>
+                <td><apex:outputLink value="/{!Access_Request__c.Request_For__r.UserRoleId}">{!Access_Request__c.Request_For__r.UserRole.Name}</apex:outputLink></td>
+                <td><b><apex:outputLabel value="Mirror's Role" /></b></td>
+                <td><apex:outputLink value="/{!Access_Request__c.Mirror__r.UserRoleId}">{!Access_Request__c.Mirror__r.UserRole.Name}</apex:outputLink></td>
+           </tr>
+           
+           <tr>
+                <td><b><apex:outputLabel value="Requestor's Profile" /></b></td>
+                <td><apex:outputLink value="/{!Access_Request__c.Request_For__r.ProfileId}">{!Access_Request__c.Request_For__r.Profile.Name}</apex:outputLink></td>
+                <td><b><apex:outputLabel value="Mirror's Profile" /></b></td>
+                <td><apex:outputLink value="/{!Access_Request__c.Mirror__r.ProfileId}">{!Access_Request__c.Mirror__r.Profile.Name}</apex:outputLink></td>
+           </tr>
+          
+                     
+     </table></apex:outputPanel>
+     </apex:pageblockSection>
+</apex:pageBlock>
+
+<apex:pageBlock mode="detail" id="solutionBlock" tabStyle="Access_Request__c" rendered="{!solutionExists}">
+     <apex:pageblockSection title="Possible solutions :" id="resultBlock" showHeader="TRUE" columns="1" >
+     <apex:outputPanel id="results">
+                <apex:dataTable value="{!SolutionsList}" id="Solutions"  headerClass="ct" columnClasses="lt" styleClass="list" var="soln" width="100%" align="Left" >
+                    
+                    <apex:column headerValue="Type" width="500px" style="width :25%;vertical-align: middle;">
+                        <apex:outputText value="{!soln.Reason}"/>
+                    </apex:Column>
+                    
+                    <apex:column headerValue="Shared Through" style="width :50%;vertical-align: middle;">
+                        <apex:outputText value="{!soln.SharedWith}"/>
+                    </apex:Column>
+                    
+                    <apex:column headerValue="Access Level"  style="width :10%;text-align:center;vertical-align: middle;">
+                         <apex:outputText value="{!soln.AccessLevel}"/>
+                    </apex:Column>
+                    
+                    <apex:column headerValue="Solution Frequency"  style="width :10%;text-align:center;vertical-align: middle;">
+                         <apex:outputText value="{!soln.Frequency}"/>
+                    </apex:Column>
+                    
+                   
+                     <apex:column headerValue="Select a Solution" Id="Col3"  style="width :5%;text-align:center;vertical-align: middle;" >
+                         <apex:inputCheckbox id="SelectCheckbox" value="{!soln.selected}" onClick="Set('{!soln.Reason}','{!soln.SharedThrough}',this.id);" / >
+                    </apex:column> 
+                    
+                      
+                </apex:dataTable>
+      </apex:outputPanel>
+      </apex:pageblockSection>
+                                
+                <apex:pageBlockButtons location="bottom" id="Buttons" >
+                       <apex:commandButton onclick="insertTerritory();"  value="Approve and Grant access"  reRender="script" status="msg_refresh1"/>
+                       
+                </apex:pageBlockButtons>    
+ 
+</apex:pageBlock>  
+    
+    <apex:pageBlock mode="detail" id="manualApprovalBlock" tabStyle="Access_Request__c" rendered="{!solutionExists}">
+        <apex:pageblockSection title="Manual Approval :" id="manualApproveResultBlock" showHeader="TRUE" >
+            
+            <apex:outputPanel styleClass="mainForm">
+    		<table style="width:100%;height:100%;">
+           
+           <tr>
+                <td><b><apex:outputLabel style="display:block;width:150px;" value="Approval Reason :" /></b></td>
+                <td><apex:inputTextarea styleClass="Comment"  value="{!approverComments}"/></td>
+           </tr>
+           
+    		 </table></apex:outputPanel>
+        </apex:pageblockSection>
+     
+        <apex:pageBlockButtons location="bottom">
+           <apex:commandButton value="Approve Manually" action="{!approveManually}"/>
+     </apex:pageBlockButtons>
+        
+    </apex:pageBlock>
+    
+    <apex:pageBlock mode="detail" id="noMirrorURLManualApproveBlock" tabStyle="Access_Request__c" rendered="{!!solutionExists}">
+        <apex:pageblockSection title="Manual Approval (no Mirror & URL) :" id="noMirrorURLManualApprovalResultBlock" showHeader="TRUE" >
+            
+            <apex:outputPanel styleClass="mainForm">
+    		<table style="width:100%;height:100%;">
+           
+           <tr>
+                <td><b><apex:outputLabel style="display:block;width:150px;" value="Approval Reason :" /></b></td>
+                <td><apex:inputTextarea styleClass="Comment"  value="{!approverComments}"/></td>
+           </tr>
+		   
+		   
+           
+    		 </table></apex:outputPanel>
+		
+        </apex:pageblockSection>
+     
+        <apex:pageBlockButtons location="bottom">
+           <apex:commandButton value="Approve Manually" action="{!approveManually}"/>
+     </apex:pageBlockButtons>
+        
+    </apex:pageBlock>
+    
+    <apex:pageBlock mode="detail" id="rejectBlock" tabStyle="Access_Request__c" >
+        <apex:pageblockSection title="Rejection :" id="rejectresultBlock" showHeader="TRUE" >
+            
+            <apex:outputPanel styleClass="mainForm">
+    		<table style="width:100%;height:100%;">
+           
+           <tr>
+                <td><b><apex:outputLabel style="display:block;width:150px;" value="Rejection Reason :" /></b></td>
+                <td><apex:inputTextarea styleClass="Comment"  value="{!rejectComment}"/></td>
+           </tr>
+           
+    		 </table></apex:outputPanel>
+        </apex:pageblockSection>
+     
+        <apex:pageBlockButtons location="bottom">
+           <apex:commandButton value="Reject" action="{!reject}"/>
+     </apex:pageBlockButtons>
+        
+    </apex:pageBlock>
+    
+    
+    
+    <apex:pageBlock mode="detail" id="CBlock" tabStyle="Access_Request__c" rendered="{!solutionExists}">
+    <apex:pageblockSection title="ServiceDesk Ticket :" id="SDticket" showHeader="TRUE" >
+    <apex:outputPanel styleClass="mainForm">
+    <table style="width:100%;height:100%;align:center">
+           
+           <tr>
+                <td><b><apex:outputLabel style="display:block;width:150px;" value="Comments :" /></b></td>
+                <td><apex:inputTextarea styleClass="Comment"  value="{!SDapproverComments}"/></td>
+           </tr>
+           
+     </table></apex:outputPanel>
+     </apex:pageblockSection>
+      
+     <apex:pageBlockButtons location="bottom">
+           <apex:commandButton value="Approve and Create ServiceDesk Ticket" action="{!createSDTicket}"/>
+     </apex:pageBlockButtons> 
+
+</apex:pageBlock>
+
+<apex:inputHidden value="{!Reason}" id="ReqReason"/>
+<apex:inputHidden value="{!SharedThrough}" id="ReqSharedThrough"/>
+<apex:inputHidden value="{!SolutionDetail}" id="SolutionDetailID"/>
+
+
+</apex:form>
+</apex:page>

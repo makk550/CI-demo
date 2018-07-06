@@ -1,0 +1,5 @@
+<apex:page standardcontroller="Account">
+<apex:detail subject="{!Account.Id}" relatedList="true" title="true" inlineEdit="true" showChatter="true">
+     </apex:detail>
+     
+</apex:page>

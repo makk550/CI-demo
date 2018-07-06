@@ -1,0 +1,461 @@
+<apex:page standardcontroller="Opportunity" extensions="OpportunityCreateOverrideExtension" sidebar="true"  docType="html-5.0" >
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <div id="overlay_div" class="waiting" style="position:fixed; top:0; left:0; height:100%; width:100%; z-index:2000; background-color:#999; opacity:.6; display:none;" />
+    <div style="position:fixed; top:35%; left:45%; width:150px; height:115px; background-color:#FFF; border:#FF0000 thin solid; z-index:2001; display:none;" align="center" class="ui-corner-all waiting">
+        <div align="center" style="margin-top:17px;">
+            <img src="{!$Resource.loadingGif}" />
+        </div>
+        <div align="center" id="waiting_msg">Working...</div>
+    </div>
+    <apex:actionStatus id="overlayStatus" onstart="$('.waiting').show();" onstop="$('.waiting').hide();" />
+    
+
+    <script type="text/javascript">
+
+        /*  
+            I am using a pattern called an IIFE (Immediately Invoked Function expression).
+            IIFEs are used to control the scope of javascript, and also to prevent pollution of the global namespace.
+            This means that vars/functions defined within the IIFE are not accessible outside of the IIFE unless you explicitly set them on the window object.
+            You can do this like so: 
+                window.publicVar = 'my public string';
+                // or
+                window.publicFunction = function() { ... };
+            For more info: https://en.wikipedia.org/wiki/Immediately-invoked_function_expression
+        */ 
+
+        // Opportunity Contact Role - Is Primary
+        (function(){
+            'use strict';
+
+            // DOMContentLoaded - IE > 8
+            document.addEventListener('DOMContentLoaded', function(){
+                setTimeout(loadRadioData);
+            });
+
+            window.onPrimaryChanged = onPrimaryChanged;
+
+            var baseOcrPrimaryValueId = '{! $Component.oppForm.Title.OppContactRoles }:_';
+
+            function loadRadioData(){
+                var ocrTypes = ['Influencer', 'DecisionMaker', 'ProcurementSigner', 'Sponsor'];
+                // Array forEach - IE > 8
+                ocrTypes.forEach(function(ocrType) {
+                    if (isPrimaryOcr(ocrType)) {
+                        document.getElementById('radio_'+ocrType).checked = true;
+                    }
+                });
+            }
+
+            function isPrimaryOcr(type) {
+                return document.getElementById(baseOcrPrimaryValueId + type).value === "true";
+            }
+
+            function onPrimaryChanged(){
+                var selected = document.querySelector("input[name='primaryOcr']:checked").value;
+                updatePrimaryOcr(baseOcrPrimaryValueId + selected);
+            }
+
+            function updatePrimaryOcr(checkedId){
+                document.querySelectorAll("input[class='ocrPrimaryValue']").forEach(function(elem){
+                    elem.value = (elem.id === checkedId) ? 'true' : 'false';
+                });
+            }
+        })();
+         
+        // Save and Restore form data
+        (function(){
+            'use strict';
+
+            window.saveFormValues = saveFormValues;
+            window.restoreFormValues = restoreFormValues;
+
+            var formValues = {};
+
+            var baseOppFormId = '{! $Component.oppForm }';
+
+            function saveFormValues() {
+                document.querySelectorAll('input:not([type=button]), select').forEach(function(elem){
+                    if (!elem.id) return;
+
+                    var key = elem.id;
+                    if (elem.id.indexOf(baseOppFormId) === 0) {
+                        formValues[key] = elem.value;
+                    } else if (elem.id.indexOf('radio_') === 0) {
+                        formValues[key] = elem.checked;
+                    }
+                });
+            }
+
+            function restoreFormValues() {
+                for (var key in formValues) {
+                    var elem = document.getElementById(key);
+                    if (elem) {
+                        restoreValue(elem, formValues[key]);
+                    }
+                }
+            }
+
+            function restoreValue(elem, value) {
+                try {
+                    if (elem.type === 'radio') {
+                        elem.checked = value;
+                    } else {
+                        elem.value = value;
+                    }
+                } catch(err) {
+                    console.error(err);
+                }
+            }
+        })();
+    
+    window.onload = setFocus
+    function setFocus() {
+        document.getElementById("hiddenElement").focus();
+    }
+    
+    function openLookup(baseURL, width, modified, searchParam){
+    var originalbaseURL = baseURL;
+    var originalwidth = width;
+    var originalmodified = modified;
+    var originalsearchParam = searchParam;
+    console.log('AccountId:','{!Opportunity.accountId}');
+    var lookupType = baseURL.substr(baseURL.length-3, 3);
+        console.log('lookupType:',lookupType);
+    if (modified == '1') baseURL = baseURL + searchParam;
+    console.log('baseURL:',baseURL);
+    var isCustomLookup = false;
+
+    // Following "003" is the lookup type for Contact object so change this as per your standard or custom object
+    if(lookupType == "003"){
+
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+      if(urlArr.length > 2) {
+        urlArr = urlArr[1].split('=');
+        txtId = urlArr[1];
+      }
+
+      // Following is the url of Custom Lookup page. You need to change that accordingly
+      baseURL = "/apex/CustomContactLookup?accId={!Opportunity.accountId}&txt=" + txtId;
+
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.oppForm}");
+      if (modified == '1') {
+        baseURL = baseURL + "&lksearch=" + searchParam;
+      }
+
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+      if(txtId.indexOf('Influencer') > -1 || txtId.indexOf('DecisionMaker') > -1 || txtId.indexOf('ProcurementSigner') > -1 || txtId.indexOf('Sponsor') > -1 || txtId.indexOf('EconomicBuyer') > -1 || txtId.indexOf('Champion') > -1 || txtId.indexOf('OnboardingContact') > -1){
+        isCustomLookup = true;
+      }
+    }
+
+
+    if(isCustomLookup == true){
+        console.log('baseURL:'+baseURL);
+      openPopup(baseURL, "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    }
+    else {
+      if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+      openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    } 
+  }
+    
+    
+    </script>
+
+    <apex:outputPanel id="Errors">
+         <apex:pageMessages />
+    </apex:outputPanel>
+    <apex:form id="oppForm" html-novalidate="true" rendered="{!isFormRendered}">
+        <input id="hiddenElement" type="hidden" />
+        <apex:inputHidden value="{!Opportunity.Opportunity_Type__c }"/>
+        <apex:inputHidden value="{!Opportunity.SBQQ__PrimaryQuote__c}"/>
+        <!-- sunji03 - US466294 - Tensor H2 Eligibility criteria for SFDC CPQ vs Sterling, change to one checkbox for "Saleforce CPQ" only.-->
+        <apex:inputHidden value="{!Opportunity.Salesforce_CPQ_Eligibility_Route__c}"/>
+        <apex:sectionHeader title="Opportunity Edit" subtitle="{!Opportunity.Name}"/>
+        <apex:pageBlock title="Opportunity Edit" id="Title" mode="edit">
+            <!-- Title -->
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!onSave}" />
+
+                <apex:commandButton value="Cancel" action="{!onCancel}" immediate="true"/>
+            </apex:pageBlockButtons>
+            
+            
+            <!-- Opportunity Required Fields -->
+            <apex:pageBlockSection title="Opportunity Details" collapsible="false" id="oppDetails">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Opportunity Owner"/>
+                    <apex:outputText value="{!Opportunity.Owner.Name}" />
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!Opportunity.RecordTypeId}" />
+                <apex:outputField value="{!Opportunity.Name}"/>
+                <apex:inputField value="{!Opportunity.CloseDate}" rendered="{! (!isStage0Opp || showCloseDate)}" />
+                
+                <apex:pageBlockSectionItem rendered="{! !showCloseDate}">
+                    <!-- This is provided to have a blank space on page layout -->
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem helpText="{!$ObjectType.Opportunity.fields.StageName.inlineHelpText}">
+                <apex:outputLabel value="{!$ObjectType.Opportunity.fields.StageName.label}"/>
+                <apex:actionRegion >
+                    <apex:inputField value="{!Opportunity.StageName}" >
+                    <apex:actionSupport event="onchange" action="{!onStageNameChange}" rerender="Errors,QuoteDetails,DealDetails,OpportunityContactRoles,AdditionalInfo,CAServices,Referralinfo,OnboardingSection,MeddpiccDetails,oppDetails" status="overlayStatus" onbeforedomupdate="saveFormValues()" oncomplete="restoreFormValues()" />
+                    </apex:inputField>
+                </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                
+                <apex:inputField value="{!Opportunity.AccountId}" required="true"/>
+                <apex:inputField value="{!Opportunity.ClosedReason__c}" required="{!showClosedReason}" rendered="{!showClosedReason}" />
+                
+                <apex:pageBlockSectionItem helpText="{!$ObjectType.Opportunity.fields.Type.inlineHelpText}" rendered="{! !isStage0Opp}">
+                <apex:outputLabel value="{!$ObjectType.Opportunity.fields.Type.label}"/>
+                <apex:actionRegion >
+                    <apex:inputField value="{!Opportunity.Type}" required="{! !isStage0Opp}">
+                    <apex:actionSupport event="onchange" action="{!onTypeChange}" rerender="Errors,TransactionType,AdditionalInfo,QuoteDetails" status="overlayStatus" onbeforedomupdate="saveFormValues()" oncomplete="restoreFormValues()" />
+                    </apex:inputField>
+                </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+
+                <apex:inputField value="{!Opportunity.Inside_Outside__c}" required="true" rendered="{! !isStage0Opp}"/>
+                <apex:inputField value="{!Opportunity.Contract_Type__c}" required="true" rendered="{! !isStage0Opp}"/>
+                <apex:outputField value="{!Opportunity.CurrencyIsoCode}" rendered="{! (!currencyedit && !isStage0Opp)}"/>
+                <apex:pageBlockSectionItem helpText="{!$ObjectType.Opportunity.fields.CurrencyIsoCode.inlineHelpText}" rendered="{! (currencyedit && !isStage0Opp)}">
+                <apex:outputLabel value="{!$ObjectType.Opportunity.fields.CurrencyIsoCode.label}"/>
+                <apex:actionRegion >
+                    <apex:inputField value="{!Opportunity.CurrencyIsoCode}" required="{! !isStage0Opp}">
+                    <apex:actionSupport event="onchange" action="{!onCurrencyChange}" rerender="Errors,oppDetails" status="overlayStatus" />
+                    </apex:inputField>
+                </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:outputField rendered="false" value="{!Opportunity.CreatedDate}"/>
+                <apex:pageBlockSectionItem />
+            </apex:pageBlockSection>
+
+
+                     <apex:outputPanel id="MeddpiccDetails">
+            <apex:pageBlockSection title="MEDDPICC" id="meddpiccsec" columns="2" showHeader="TRUE">
+                
+                <apex:pageBlockSectionItem >
+                    {!$ObjectType.Opportunity.fields.Identified_Pain__c.label}
+                        <img src="/s.gif" style="right:-12px;" class="helpOrb" title="{!$ObjectType.Opportunity.Fields.Identified_Pain__c.inlineHelpText}" />
+                        <apex:inputField style="width:303px; height:62px;" value="{!Opportunity.Identified_Pain__c}" required="{!isIdentifiedPainRequired}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    {!$ObjectType.Opportunity.fields.Competitor__c.label}
+                        <img src="/s.gif" style="right:-12px;" class="helpOrb" title="{!$ObjectType.Opportunity.Fields.Competitor__c.inlineHelpText}" />
+                        <apex:inputField value="{!Opportunity.Competitor__c}" required="{!isPrimaryCompetitorRequired}">
+                    </apex:inputField>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    {!$ObjectType.Opportunity.fields.Metrics__c.label}
+                        <img src="/s.gif" style="right:-12px;" class="helpOrb" title="{!$ObjectType.Opportunity.Fields.Metrics__c.inlineHelpText}" />
+                        <apex:inputField style="width:303px; height:62px;" value="{!Opportunity.Metrics__c}" required="{!isMetricsRequired}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    {!$ObjectType.Opportunity.fields.Other_Competitor__c.label}
+                        <img src="/s.gif" style="right:-12px;" class="helpOrb" title="{!$ObjectType.Opportunity.Fields.Other_Competitor__c.inlineHelpText}" />
+                      
+                    <apex:inputField value="{!Opportunity.Other_Competitor__c}" />
+                    
+                </apex:pageBlockSectionItem>
+                
+                
+                <apex:pageBlockSectionItem >
+                    {!$ObjectType.Opportunity.fields.Decision_Criteria__c.label}
+                        <img src="/s.gif" style="right:-12px;" class="helpOrb" title="{!$ObjectType.Opportunity.Fields.Decision_Criteria__c.inlineHelpText}" />
+                        <apex:inputField style="width:303px; height:62px;" value="{!Opportunity.Decision_Criteria__c}" required="{!isDecisionCriteriaRequired}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    {!$ObjectType.Opportunity.fields.Paper_Process__c.label}
+                        <img src="/s.gif" style="right:-12px;" class="helpOrb" title="{!$ObjectType.Opportunity.Fields.Paper_Process__c.inlineHelpText}" />
+                        <apex:inputField style="width:303px; height:62px;" value="{!Opportunity.Paper_Process__c}" required="{!isPaperProcessRequired}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    {!$ObjectType.Opportunity.fields.Decision_Process__c.label}
+                        <img src="/s.gif" style="right:-12px;" class="helpOrb" title="{!$ObjectType.Opportunity.Fields.Decision_Process__c.inlineHelpText}" />
+                        <apex:inputField style="width:303px; height:62px;" value="{!Opportunity.Decision_Process__c}" required="{!isDecisionProcessRequired}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    {!$ObjectType.Opportunity.fields.Next_Steps__c.label}
+                        <img src="/s.gif" style="right:-12px;" class="helpOrb" title="{!$ObjectType.Opportunity.Fields.Next_Steps__c.inlineHelpText}" />
+                        <apex:inputField style="width:303px; height:62px;" value="{!Opportunity.Next_Steps__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputText value="Economic Buyer"/>     
+                    <apex:inputField id="EconomicBuyer" label="Economic Buyer" value="{!EconomicBuyer.ContactId}" required="{!isEconomicBuyerRequired}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputText value="Champion"/>     
+                    <apex:inputField id="Champion" label="Champion" value="{!Champion.ContactId}" required="{!isChampionRequired}"/>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            </apex:outputPanel>
+      
+                            
+            <apex:outputPanel id="QuoteDetails">
+            <apex:pageBlockSection title="Quote Information" columns="2" rendered="{! (isQuoteInfoRequired && !isStage0Opp)}">    
+            <!-- sunji03 - US466294 - Tensor H2 Eligibility criteria for SFDC CPQ vs Sterling, change to one checkbox for "Saleforce CPQ" only.-->
+            <apex:pageBlockSectionItem id="SalesforceCPQQuoteDesc">
+             <apex:actionRegion >
+                <apex:inputCheckbox id="SalesforceCPQCheckbox" value="{!Opportunity.Salesforce_CPQ_Eligibility_Route__c}" >
+                 <apex:actionSupport event="onchange" rerender="QuoteDetails" status="overlayStatus" />
+                        </apex:inputCheckbox>
+                 </apex:actionRegion>
+                <apex:outputText value="{!SalesforceCPQRouteLabel}" escape="false" /> 
+            </apex:pageBlockSectionItem>        
+            </apex:pageBlockSection>
+            </apex:outputPanel>
+            
+            <!-- Additional Information for Start and End Date-->
+            <apex:outputPanel id="DealDetails" rendered="{!!productexists}">
+            <apex:pageBlockSection title="Deal Details" columns="2" >
+                
+                <apex:inputField id="StartDate" value="{!Opportunity.Start_Date__c}" required="{!isStartEndDateRequired}"/>
+                <apex:inputField id="EndDate" value="{!Opportunity.End_Date__c}" required="{!isStartEndDateRequired}"/>    
+  
+            </apex:pageBlockSection>
+            </apex:outputPanel>
+            
+            
+            <apex:outputPanel id="CAServices">
+            <apex:pageBlockSection id="Services" title="CA Services Information" >
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Opportunity.fields.Will_CA_Services_Be_Used__c.label}"/>
+                            <apex:actionRegion >
+                                <apex:inputField value="{!Opportunity.Will_CA_Services_Be_Used__c}" required="{!isServicesRequired}">
+                                    <apex:actionSupport event="onchange" action="{!onServiceChange}" rerender="Errors,CAServices" status="overlayStatus" />
+                                </apex:inputField>
+                            </apex:actionRegion>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:inputField id="NoCAService" value="{!Opportunity.No_CA_Service_Reason__c}"
+                                     rendered="{!Opportunity.Will_CA_Services_Be_Used__c == 'No'}"
+                                     required="{!Opportunity.Will_CA_Services_Be_Used__c == 'No'}"/>
+                    <apex:inputField id="YesCAService" value="{!Opportunity.Services_Transaction_Type__c}"
+                                     rendered="{!Opportunity.Will_CA_Services_Be_Used__c == 'Yes'}"
+                                     required="{!Opportunity.Will_CA_Services_Be_Used__c == 'Yes'}"/>
+                   <apex:inputField id="YesCAService1" value="{!Opportunity.Sales_Business_Unit__c}"
+                                    rendered="{!Opportunity.Will_CA_Services_Be_Used__c == 'Yes'}"
+                                    required="{!Opportunity.Will_CA_Services_Be_Used__c == 'Yes'}"/>
+            </apex:pageBlockSection>
+            </apex:outputPanel>
+            
+            <apex:outputPanel id="OnboardingSection">
+             <apex:pageBlockSection title="Onboarding" columns="2" >   
+                 <apex:pageBlockSectionItem >
+                      <apex:outputText value="Onboarding Contact"/>     
+                      <apex:inputField id="OnboardingContact" label="Onboarding Contact" value="{!OnboardingContact.ContactId}" required="{!isOnboardingContactRequired}"/>
+                 </apex:pageBlockSectionItem>        
+                 <apex:pageBlockSectionItem >
+                    {!$ObjectType.Opportunity.fields.Onboarding_Contact_Language__c.label}
+                    <apex:actionRegion >
+                        <apex:inputField id="OnboardingLanguage" value="{!Opportunity.Onboarding_Contact_Language__c}" required="{!isOnboardingContactRequired}" />
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Opportunity.fields.Purchase_Reason__c.label}"/>
+                    <apex:inputField id="PurchaseReason" value="{!Opportunity.Purchase_Reason__c}" required="{!isOnboardingContactRequired}" />
+                </apex:pageBlockSectionItem>                  
+            </apex:pageBlockSection>
+            </apex:outputPanel>
+
+            <!-- OCR's -->
+            <apex:outputPanel id="OpportunityContactRoles" style="margin: 2px auto;">
+            <apex:pageBlockSection id="OppContactRoles" title="Opportunity Contact Roles" columns="1">
+                    <apex:panelGrid columns="3" cellpadding="5" cellspacing="1">
+                        <apex:outputText style="font-weight:700" value="Primary"/>
+                        <apex:outputText style="font-weight:700" value="Contact"/>
+                        <apex:outputText style="font-weight:700" value="Role"/>
+                        
+                        <input type="radio" name="primaryOcr" id='radio_Influencer' value="Influencer" onclick="onPrimaryChanged()"/>
+                        <apex:inputField id="Influencer" label="Influencer" value="{!Influencer.ContactId}" required="false"/>
+                        <apex:outputText value="Influencer"/>
+                        
+                        <input type="radio" name="primaryOcr" id='radio_DecisionMaker' value="DecisionMaker" onclick="onPrimaryChanged()"/>
+                        <apex:inputField id="DecisionMaker" label="Decision Maker" value="{!DecisionMaker.ContactId}" required="false"/>
+                        <apex:outputText value="Decision Maker"/>
+                        
+                        <input type="radio" name="primaryOcr" id='radio_ProcurementSigner' value="ProcurementSigner"  onclick="onPrimaryChanged()"/>
+                        <apex:inputField id="ProcurementSigner" label="Procurement/Signer" value="{!ProcurementSigner.ContactId}" required="false"/>
+                        <apex:outputText value="Procurement/Signer"/>
+                        
+                        <input type="radio" name="primaryOcr" id='radio_Sponsor' value="Sponsor"  onclick="onPrimaryChanged()"/>
+                        <apex:inputField id="Sponsor" label="Executive Sponsor" value="{!Sponsor.ContactId}" required="false"/>
+                        <apex:outputText value="Executive Sponsor"/>
+
+
+                    </apex:panelGrid>
+                
+                <apex:inputHidden value="{!Influencer.IsPrimary}" id="_Influencer" html-class="ocrPrimaryValue"/>
+                <apex:inputHidden value="{!DecisionMaker.IsPrimary}" id="_DecisionMaker" html-class="ocrPrimaryValue"/>
+                <apex:inputHidden value="{!ProcurementSigner.IsPrimary}" id="_ProcurementSigner" html-class="ocrPrimaryValue"/>
+                <apex:inputHidden value="{!Sponsor.IsPrimary}" id="_Sponsor" html-class="ocrPrimaryValue"/>
+            </apex:pageBlockSection>
+            </apex:outputPanel>
+            
+             <!-- Additional Information for Milestones-->
+            <apex:outputPanel id="AdditionalInfo">
+            <apex:pageBlockSection title="Additional Information" rendered="{!(isWinLossRequired || isOrderNumberRequired)}">
+                     <apex:inputField id="OrderNumber" value="{!Opportunity.Order_Number__c}" rendered="{!(isOrderNumberRequired)}"/>
+                <apex:pageBlockSectionItem rendered="{!isWinLossRequired}">
+                    <apex:outputLabel value="{!$ObjectType.Opportunity.fields.ReasonField__c.label}"/>
+                    <apex:actionRegion >
+                    <apex:inputField id="WinLoss" value="{!Opportunity.ReasonField__c}" required="{!isWinLossRequired}" >
+                        <apex:actionSupport event="onchange" rerender="WinLossDescPanel,AdditionalInfo" status="overlayStatus" onbeforedomupdate="saveFormValues()" oncomplete="restoreFormValues()" />
+                    </apex:inputField>
+                </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!isWinLossRequired}">
+                    <apex:outputLabel value="{!$ObjectType.Opportunity.fields.Other_Win_Loss_Reason__c.label}" for="othId"/>
+                    <apex:outputPanel id="WinLossDescPanel">
+                    <apex:inputField id="WinLossDesc" value="{!Opportunity.Other_Win_Loss_Reason__c}" required="{!Opportunity.ReasonField__c == 'Other'}" /> 
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem rendered="{!IF(Opportunity.ReasonField__c  = 'Duplicate', true, false)}">
+                    <apex:outputLabel value="{!$ObjectType.Opportunity.fields.Related_Opportunity__c.label}"/>
+                    
+                    <apex:inputField id="WinLossDesc" value="{!Opportunity.Related_Opportunity__c}" required="{!Opportunity.ReasonField__c == 'Duplicate'}" /> 
+                    
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            </apex:outputPanel>
+            
+            <!-- Transaction Type -->
+            <apex:outputPanel id="TransactionType">
+            <apex:pageBlockSection id="Type" title="Additional Information for Transaction Type" rendered="{!renderType}">
+                    <apex:inputField id="ServiceProviderPlatform" value="{!Opportunity.Cloud_Platform__c}" rendered="{!Opportunity.Type=='xSP'}" required="true"/>
+                    <apex:inputField id="ServiceProviderClient" value="{!Opportunity.Service_Provider_Client__c}" rendered="{!Opportunity.Type == 'xSP'}"/>
+                    <apex:inputField id="Partner" value="{!Opportunity.Reseller__c}" rendered="{!(opportunity.Type=='1 Tier' || opportunity.Type=='2 Tier')}" required="true"/>
+                    <apex:inputField id="Distributor" value="{!Opportunity.Distributor_6__c}" rendered="{!(opportunity.Type=='2 Tier')}" required="true"/>
+            </apex:pageBlockSection>
+            </apex:outputPanel>
+            
+            <!--Referral required field-->
+            <apex:outputPanel id="Referralinfo">
+            <apex:pageBlockSection id="ReferralActivity" title="Referral information" rendered="{!isContractsigned && (Opportunity.LeadSource == 'Partner Referral' || Opportunity.IsReferral_UpSellUpdate__c == true)}">
+                 <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Opportunity.fields.List_of_Activities__c.label}"/>
+                    
+                    <apex:inputField value="{!Opportunity.List_of_Activities__c}" required="{!isContractsigned && (Opportunity.LeadSource == 'Partner Referral' || Opportunity.IsReferral_UpSellUpdate__c == true)}" /> 
+                    
+                </apex:pageBlockSectionItem>
+                    
+              </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

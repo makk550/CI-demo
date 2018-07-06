@@ -1,0 +1,237 @@
+<apex:page id="pg" tabStyle="Opportunity" controller="OpportunitySummaryReportController"  contenttype="{!contenttype}" >
+    <script>
+        if(document.all)
+            if(this.parent.location.href.indexOf('https') > -1)
+                 this.parent.location.href = this.parent.location.href.replace('https','http');
+    </script>
+    
+    <style>
+            .headerRow
+            {
+                 background-color:#aaaaff;
+            }
+            .even
+            {
+                background-color:#E0E0E0;
+            }
+        </style>
+    <apex:form id="frm" rendered="{!contenttype==''}">
+       <apex:sectionHeader title="Opportunity Summary Report"  rendered="{!contenttype==''}" />
+        <apex:includeScript value="/soap/ajax/15.0/connection.js"/>
+        <apex:includeScript value="/soap/ajax/15.0/apex.js"/>
+        <script>
+          
+            function isDependentValueValidForSelectedParent(parentSelIndex, depValue)
+            {
+                var b64 = new sforce.Base64Binary("");
+                var validFor = depValue.validFor;
+                var decodedVF = b64.decode(validFor);
+                var bits = decodedVF.charCodeAt(parentSelIndex >> 3);
+                if((bits & (0x80 >> (parentSelIndex%8))) != 0)
+                {
+                    return true;
+                }
+                return false;
+           }
+            
+            // obj : Name of the object where both the master and dependent picklist or attributes.
+            // controllerFieldName : Name of the master picklist field in the Object
+            // selIndex : Index of the selected option in the master picklist
+            // depFieldName : Name of the dependent picklist field in the Object
+            // depElementId : Id of the dependent picklist element in the page
+        
+            sforce.connection.sessionId = '{!$Api.Session_ID}';
+            
+            function loadDependentPicklist(obj, controllerFieldName,depFieldName, controllerFieldIdOnPage, depFieldIdOnPage)
+            {
+            
+               selIndex  =document.getElementById(controllerFieldIdOnPage).selectedIndex -1;
+               var objDescribe = sforce.connection.describeSObject(obj);
+               var depField = null;
+                   for (var i=0; i<objDescribe.fields.length; i++)
+                   {
+                        if (objDescribe.fields[i].type == "picklist" && objDescribe.fields[i].name == depFieldName && objDescribe.fields[i].controllerName == controllerFieldName)
+                        {
+                            depField = objDescribe.fields[i];
+                            break;
+                        } 
+                   }
+                if (depField != null)
+                {
+                    var values = depField.picklistValues;
+                    cmb = document.getElementById(depFieldIdOnPage);
+                    cmb.disabled = false;
+                    cmb.options.length =1;
+                    
+                    for (var i=0; i<values.length; i++)
+                    {
+                        var label = values[i].label;
+                        var value = values[i].value;
+                        if (isDependentValueValidForSelectedParent(selIndex, values[i]) == true)
+                        {
+                          cmb.options.add(new Option(value, label));
+                        }
+                    }
+                }
+                
+                if(selIndex < 0)
+                    {
+                        document.getElementById(depFieldIdOnPage).selectedIndex = 0;
+                        document.getElementById(depFieldIdOnPage).disabled = true;           
+                    }                 
+                       
+       
+            }
+          
+            function assignCorrespondingValues(controllerFieldIdOnPage, controllerCorrespFieldId, hdId)
+            {
+               ctrl = document.getElementById(controllerCorrespFieldId);
+               selIndex = 0;
+               if(document.getElementById(hdId))
+                   document.getElementById(hdId).value = document.getElementById(controllerFieldIdOnPage).value;
+               for(index =0; index < ctrl.options.length; index ++)
+                  { 
+                      if(ctrl.options[index].value == document.getElementById(controllerFieldIdOnPage).value)
+                       {
+                           selIndex = index;
+                           break;    
+                       }
+                  }
+                ctrl.selectedIndex = selIndex;
+            }
+                 
+            </script>
+            <apex:pageBlock id="pb" mode="detail">
+              <input type="hidden" value="" id="hdval" />  
+              <apex:pageBlockSection title="Filters" columns="2" id="pbs1">
+                     <apex:pageBlockSectionItem >
+                            <apex:outputlabel >Milestone</apex:outputlabel>
+                             <apex:selectList value="{!Milestone}" multiselect="true" size="3">
+                                <apex:selectOptions value="{!lstMilestone}"/>
+                            </apex:selectList>
+                     </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem >
+                            <apex:outputlabel >Inside/Outside</apex:outputlabel>
+                             <apex:selectList value="{!lstSelInsideOutside}" multiselect="true" size="3">
+                                <apex:selectOptions value="{!lstInsideOut}"/>
+                            </apex:selectList>
+                     </apex:pageBlockSectionItem>
+                    
+                     <apex:pageBlockSectionItem id="pbsiType" >
+                            <apex:outputlabel >{!$ObjectType.Product2.fields.family.label}</apex:outputlabel>
+                             <apex:selectList value="{!oType}" id="cmbType" multiselect="true" size="3">
+                                <apex:selectOptions value="{!lstType}"/>
+                            </apex:selectList>
+                     </apex:pageBlockSectionItem>
+                     
+                     <apex:pageBlockSectionItem id="pbsiBU" >
+                            <apex:outputlabel >Business Unit</apex:outputlabel>
+                            <apex:selectList value="{!obusinessUnit}" id="cmbBu" multiselect="false" size="1">
+                                <apex:selectOptions value="{!lstAllBusinessUnit}" />
+                        </apex:selectList>    
+                     </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem id="pbsiArea" >
+                            <apex:outputlabel >{!$ObjectType.Account.fields.Sales_Area__c.label}</apex:outputlabel>
+                             <apex:selectList value="{!oArea}" id="cmbArea" onchange="loadDependentPicklist('Account', 'Sales_Area__c', 'Sales_Region__c', '{!$Component.pg.frm.pb.pbs1.pbsiArea.cmbArea}', 'Region')" multiselect="false" size="1">
+                                <apex:selectOptions value="{!lstArea}"/>
+                            </apex:selectList>
+                     </apex:pageBlockSectionItem>
+                     
+                    <apex:pageBlockSectionItem >
+                            <apex:outputlabel >Account Team Member Role</apex:outputlabel>
+                             <apex:selectList value="{!AccountTeamMemberRole}" multiselect="false" size="1">
+                                <apex:selectOptions value="{!lstAccountTeamMemberRole}"/>
+                            </apex:selectList>
+                     </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem id="pbsiRegion" >
+                            <apex:outputlabel >{!$ObjectType.Account.fields.Sales_Region__c.label}</apex:outputlabel>
+                            <select id="Region" disabled = '{!oArea== null}'  onchange="assignCorrespondingValues('Region','{!$Component.pg.frm.pb.pbs1.pbsiRegion2.cmbRegion}', '{!$Component.pg.frm.pb.pbs1.pbsiRegion2.hdRegion}')" >
+                                   <option value="">--None--</option>
+                            </select>
+                     </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem id="pbsiRegion2" >
+                        <apex:inputHidden value="{!oRegion}" id="hdRegion"   />   
+                        <apex:selectList value="{!Region}" id="cmbRegion" style="visibility:hidden" multiselect="false" size="1">
+                            <apex:selectOptions value="{!lstAllRegion}" />
+                        </apex:selectList>    
+                     </apex:pageBlockSectionItem>
+              </apex:pageBlockSection>
+              <apex:pageBlockSection >
+                <apex:outputPanel >
+                          <apex:commandButton value="Run Report" action="{!Run}"  />
+                            <apex:commandButton value="Export Report" action="{!Export}"  />
+                      </apex:outputPanel>    
+              </apex:pageBlockSection>
+              <apex:pageBlockSection title="Report" columns="1" id="pbReport">
+                  <apex:outputPanel style="HEIGHT: 50px" >
+               
+                          <apex:PageBlockTable value="{!lstReport}" var="rpt" cellpadding="2" id="tblReport" style="width:100%">
+                                            <apex:column headerClass="headerRow">
+                                                    <apex:facet name="header" >Account Team Member PMF</apex:facet>
+                                                    <apex:outputText value="{!rpt.atmpmf}"/>
+                                            </apex:column>
+                                            <apex:column headerClass="headerRow">
+                                                    <apex:facet name="header">Account Team Member Name</apex:facet>
+                                                    <apex:outputText value="{!rpt.atmname}"/>
+                                            </apex:column>
+                                             <apex:column headerClass="headerRow">
+                                              <apex:facet name="header">Sales Price (converted)</apex:facet>
+                                                  <apex:OutputText value="{0,number,#,###,###,##0.00}">
+                                                        <apex:Param value="{!rpt.salesprice}" />
+                                                  </apex:OutputText>
+                                             </apex:column>
+                                            <apex:column headerClass="headerRow">
+                                                    <apex:facet name="header">{!$ObjectType.Account.fields.Sales_Area__c.label}</apex:facet>
+                                                    <apex:outputText value="{!rpt.Territory}"/>
+                                            </apex:column>
+                                            <apex:column headerClass="headerRow">
+                                                    <apex:facet name="header">{!$ObjectType.Account.fields.Sales_Region__c.label}</apex:facet>
+                                                    <apex:outputText value="{!rpt.Region}"/>
+                                            </apex:column>
+                                            
+                                          
+                        </apex:PageBlockTable>
+                  </apex:outputPanel>
+             </apex:pageBlockSection>   
+             <script>
+                 if (document.getElementById('{!$Component.pg.frm.pb.pbs1.pbsiArea.cmbArea}') != null && document.getElementById('{!$Component.pg.frm.pb.pbs1.pbsiArea.cmbArea}').selectedIndex != 0) {
+                     loadDependentPicklist('Account', 'Sales_Area__c', 'Sales_Region__c', '{!$Component.pg.frm.pb.pbs1.pbsiArea.cmbArea}', 'Region');
+                     ctrl = document.getElementById('Region');
+                     for (index = 0; index < ctrl.options.length; index++) {
+                         if (ctrl.options[index].value == document.getElementById('{!$Component.pg.frm.pb.pbs1.pbsiRegion2.hdRegion}').value) {
+                             ctrl.selectedIndex = index;
+                             break;
+                         }
+                     }
+                 }
+                 else
+                     document.getElementById('Region').disabled = true; 
+                 </script>
+          </apex:pageBlock>
+          </apex:form>       
+                       <apex:dataTable value="{!lstReport}" var="rpt" cellpadding="2" id="tblReport" rowClasses="odd,even" style="width:100%" rendered="{!contenttype!=''}">
+                                    <apex:column headerClass="headerRow">
+                                            <apex:facet name="header" >Account Team Member PMF</apex:facet>
+                                            <apex:outputText value="{!rpt.atmpmf}"/>
+                                    </apex:column>
+                                    <apex:column headerClass="headerRow">
+                                            <apex:facet name="header">Account Team Member Name</apex:facet>
+                                            <apex:outputText value="{!rpt.atmname}"/>
+                                    </apex:column>
+                                    <apex:column headerClass="headerRow">
+                                            <apex:facet name="header">Sales Price (converted)</apex:facet>
+                                            <apex:OutputText value="{0,number,#,###,###,##0.00}">
+                                                    <apex:Param value="{!rpt.salesprice}" />
+                                            </apex:OutputText>
+                                    </apex:column>
+                                    <apex:column headerClass="headerRow">
+                                                    <apex:facet name="header">{!$ObjectType.Account.fields.Sales_Area__c.label}</apex:facet>
+                                                    <apex:outputText value="{!rpt.Territory}"/>
+                                    </apex:column>
+                                    <apex:column headerClass="headerRow">
+                                                    <apex:facet name="header">{!$ObjectType.Account.fields.Sales_Region__c.label}</apex:facet>
+                                                    <apex:outputText value="{!rpt.Region}"/>
+                                    </apex:column>
+                               
+                </apex:dataTable>
+</apex:page>

@@ -1,0 +1,62 @@
+<apex:page standardController="User_Skills__c" extensions="UserSkillsComponentSelection" standardStylesheets="true">
+    <apex:stylesheet value="{!URLFOR($Resource.bpstyles, 'styles.min.css')}" />
+    <script type="text/javascript">
+    function selectAllCheckboxes(obj,receivedInputID){
+        var inputCheckBox = document.getElementsByTagName("input");                  
+        for(var i=0; i<inputCheckBox.length; i++){          
+            if(inputCheckBox[i].id.indexOf(receivedInputID)!=-1){                                     
+                inputCheckBox[i].checked = obj.checked;
+            }
+        }
+    }
+    
+    
+   <!-- For identifying enter key press and changing the action to do search same as the search button -->
+    function disableEnterKey(ev)  {
+        if (window.ev && window.ev.keyCode == 13 || ev.which == 13) {
+            doSearch();
+           return false;
+         } 
+        else 
+              return true;
+         
+     }
+    
+    
+    </script>
+    <apex:form >
+        
+        <!--Action function tied to  the new name  -->
+       <apex:actionFunction name="doSearch" action="{!componentresult}"/>
+        
+        
+        <apex:pageBlock title="User Skills Component Select" >
+            <apex:pageBlockButtons >
+                <apex:commandbutton action="{!componentresult}" value="Search" rerender="table" />
+                <apex:commandbutton action="{!save}" value="Save" />
+                <apex:commandButton action="{!cancel}" value="Cancel" />
+                
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection >
+                <apex:inputField value="{!CA_Product.CA_Product_Controller__c}" label="CA Product" id="enterKey" onkeypress="return disableEnterKey(event)"
+                               />
+                 
+                
+            </apex:pageBlockSection>
+           
+           
+                <apex:pageBlockTable value="{!CAProductWrapper}" var="c" id="table" >
+                  
+                <apex:column >
+                    
+                   
+                    <apex:facet name="header"><apex:inputCheckbox onclick="selectAllCheckboxes(this,'inputId')" rendered="{!checkall}">
+                        </apex:inputCheckbox></apex:facet>
+                    <apex:inputCheckbox value="{!c.checkbox}" id="inputId"/>
+                </apex:column>
+                <apex:column value="{!c.productcomponent.Component_Code__c}" />
+                <apex:column value="{!c.productcomponent.Component_Text__c}" />
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

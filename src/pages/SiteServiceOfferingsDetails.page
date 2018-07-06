@@ -1,0 +1,50 @@
+<apex:page standardcontroller="Site_Association__c" extensions="SiteServiceOfferingsController" action="{!executeDetails}" sidebar="false" showHeader="false" >
+    <apex:form >       
+        <apex:pageBlock title="Active Service Offerings for Site:{!topsSiteID}" >
+            
+            <apex:pageMessages id="errors" rendered="{!noOfferingsExists}" />
+
+            <apex:pageBlockSection title="Contracted Offerings" columns="1" rendered="{!!noOfferingsExists}">
+                        <apex:pageMessages id="errors" rendered="{!!isDetailsPresent}" />
+                        <apex:pageBlockTable value="{!lighetningCCRlist}" var="entitlementDetailsWrapper"  rendered="{!isDetailsPresent}" style="width: 100%">
+                            <apex:column headerValue="Product Name" value="{!entitlementDetailsWrapper.ca_product_name__c}" style="width: 15%"/>     
+                            <apex:column headerValue="Offering" value="{!entitlementDetailsWrapper.offering_cd__c}" style="width: 12%"/>
+                             <apex:column headerValue="Precedence" value="{!precedenceMap[entitlementDetailsWrapper.offering_cd__c]}" style="width: 12%"/>
+                            <apex:column headerValue="Engineer" value="{!entitlementDetailsWrapper.dse_pmf_key__c}" style="width: 10%"/>
+                             <apex:column headerValue="Role" value="{!entitlementDetailsWrapper.dse_role__c}" style="width: 5%"/>
+                            <apex:column headerValue="Start Date" style="width: 10%"> 
+                                <!--apex:outputText value="{!LEFT(entitlementDetailsWrapper.offering_start_dtm__c,10)} "></apex:outputText-->
+                                  <apex:outputText value="{0,date,MM'/'dd'/'yyyy}"><apex:param value="{!entitlementDetailsWrapper.offering_start_dtm__c}" /></apex:outputText>
+                            </apex:column>
+                           
+                            <apex:column headerValue="End Date" style="width: 10%"> 
+                                <!--apex:outputText value="{!LEFT(entitlementDetailsWrapper.offering_end_dtm__c,10)} "></apex:outputText-->
+                                  <apex:outputText value="{0,date,MM'/'dd'/'yyyy}"><apex:param value="{!entitlementDetailsWrapper.offering_end_dtm__c}" /></apex:outputText>
+                            </apex:column>
+                            <apex:column headerValue="SAP Contract" value="{!entitlementDetailsWrapper.sap_contract_num__c}" />
+                            <apex:column headerValue="SAP Line" value="{!entitlementDetailsWrapper.contract_line_num__c}" />
+                             <apex:column headerValue="Clarity Key" value="{!entitlementDetailsWrapper.clarity_key__c}" />
+                        </apex:pageBlockTable>
+                </apex:pageBlockSection>
+                     
+                    <apex:pageBlockSection title="Non-Contract Offerings" columns="1" rendered="{!!noOfferingsExists}">
+                        <apex:pageMessages id="errors" rendered="{!!isNCROfferingExists}"/>
+                        <apex:pageBlockTable value="{!ncrlist}"  var="ncr" title="Non-Contract Offerings" rendered="{!isNCROfferingExists}" style="width: 100%">
+                                <apex:column headerValue="Product Name" value="{!ncr.CA_Product_Controller__r.Name}" style="width: 15%"/>
+                                <apex:column headerValue="Offering" value="{!ncr.Offering_Business_Rules__r.Offering_Code__c}"  style="width: 12%"/>
+                                <apex:column headerValue="Precedence" value="{!ncr.Offering_Business_Rules__r.Precedence__c}"  style="width: 12%"/>              
+                                <apex:column headerValue="Engineer" style="width: 10%">
+                                    <apex:outputText value="" />
+                                </apex:column> 
+                                <apex:column headerValue="Role" style="width: 5%">
+                                    <apex:outputText value="" />
+                                </apex:column>
+                                <apex:column headerValue="Start Date" value="{!ncr.Start_Date__c}"  style="width: 10%"/>
+                                <apex:column headerValue="End Date" value="{!ncr.End_Date__c}" style="width: 10%"/>
+                                <apex:column headerValue="Non-Contract ID" value="{!ncr.name}" />
+                        </apex:pageBlockTable>         
+                    </apex:pageBlockSection>
+
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

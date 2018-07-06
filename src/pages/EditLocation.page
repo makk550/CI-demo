@@ -1,0 +1,120 @@
+<apex:page showHeader="{!IF($CurrentPage.parameters.showHeader == 'false','false','true')}" 
+    sidebar="{!IF($CurrentPage.parameters.showHeader == 'false','false','true')}" 
+    standardController="Partner_Location__c" 
+    extensions="EditLocationControllerExtension"
+    action="{!doOnLoad}"
+    id="p"
+    language="{!preferredLanguageCode}">
+     <apex:pageMessages id="Messages"/>  
+    <!-- DISPLAY PAGE LOAD ERROR IF ONE EXISTS -->
+    <apex:outputPanel rendered="{!errorOccurred}">
+        <apex:variable var="errorMsg" value="{!$Label.msgnogeoapikey}" rendered="{!errorCode == ERROR_NO_MAP_API_KEY}"/>
+        <apex:variable var="errorMsg" value="{!$Label.msginvalidpagestate}" rendered="{!errorCode == ERROR_NO_ACCOUNT_ID}"/>
+        <apex:pageMessage severity="error" strength="2" title="{!errorMsg}"/>
+    </apex:outputPanel>
+
+    <!-- OTHERWISE, DISPLAY DETAILS SCREEN -->
+    <apex:outputPanel rendered="{!AND(NOT(errorOccurred),NOT(showConfirmation))}">
+    
+    <apex:sectionHeader title="{!$Label.locationwizardtitle}"
+        subtitle="{!$Label.step1of2subtitle}"/>
+        <apex:form id="theForm1">
+            <apex:pageBlock title="{!$Label.titlelocationedit}" mode="edit">
+            <apex:pageBlockButtons location="top" >
+                    <apex:commandButton action="{!doDetailsDone}" value="{!$Label.btnnext}"/>
+                    <apex:commandButton action="{!cancel}" value="{!$Label.btncancel}"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection title="{!$Label.titleinformation}" columns="1" showHeader="true">                
+                    <apex:inputHidden value="{!location.Account__c}"/>
+                    <apex:inputHidden value="{!location.Latitude__c}"/>
+                    <apex:inputHidden value="{!location.Longitude__c}"/>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$Label.location_name}"/>
+                        <apex:inputField required="true" value="{!location.Name}"/>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:inputField value="{!location.Website__c}"/>
+                    <apex:inputField value="{!location.Point_of_Contact_Name__c}"/>
+                    <apex:inputField value="{!location.Point_of_Contact_Phone__c}"/>
+                    <apex:inputField value="{!location.Point_of_Contact_Email__c}"/>
+                                        
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$Label.description}" for="description"/>
+                        <apex:inputTextarea cols="80" rows="3" id="description" value="{!location.Description__c}" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$Label.isprimary}" for="primary"/>
+                        <apex:inputCheckbox id="primary" value="{!location.Is_Primary__c}" 
+                            disabled="{!IF(ISNULL(primary),'true','false')}"/>
+                    </apex:pageBlockSectionItem>
+
+                    
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="{!$Label.contactaddress}" columns="1" showHeader="true">
+                
+                    <apex:inputField required="true" value="{!location.Street__c}"/>
+                    <apex:inputField required="true" value="{!location.City__c}"/>
+                    <apex:inputField required="false" value="{!location.State_Province__c}"/>
+                    <apex:inputField required="false" value="{!location.Postal_Code__c}"/>
+                    <apex:inputField required="true" value="{!location.Country__c}"/>
+                </apex:pageBlockSection>
+              
+                <apex:pageBlockSection title="{!$Label.titleeditcustomfield}" rendered="{!fields.size>0}" columns="1" showHeader="true">
+                    <c:EditFields editFields="{!fields}" rendered="true" />
+                </apex:pageBlockSection>
+                 
+            </apex:pageBlock>
+        </apex:form>
+    </apex:outputPanel>
+
+
+    <apex:outputPanel rendered="{!AND(NOT(errorOccurred),showConfirmation)}">
+    <form>
+        <input id="p:f:address" type="hidden" value="{!location.Street__c} {!location.City__c}, {!location.State_Province__c}  {!location.Postal_Code__c}"/>
+        <input id="p:f:partnerName" type="hidden" value="{!location.Name}"/>
+        <input id="p:f:isNew" type="hidden" value="{!IF(ISNULL(location.ID),'true','false')}"/>
+    </form>
+
+    <apex:includeScript value="{!$Resource.prototype_js}"/>
+    
+    <apex:includeScript value="https://maps.googleapis.com/maps/api/js?v=3.exp"/>
+    
+    <apex:includeScript value="{!$Resource.EditLocationConfirmation_js}"/>
+    <apex:sectionHeader title="{!$Label.locationwizardtitle}"
+        subtitle="{!$Label.Step2Of2SubTitle} &quot;{!location.Street__c} {!location.City__c}, {!location.State_Province__c}  {!location.Postal_Code__c}&quot;"/>
+    <apex:form id="f">  
+        <apex:actionFunction action="{!handleLocationFound}" name="fireLocationFound" rerender="save,message"/>
+        <apex:actionFunction action="{!handleLocationNotFound}" name="fireLocationNotFound" rerender="save,message"/>
+
+        <apex:inputHidden id="longitude" value="{!location.Longitude__c}"/>
+        <apex:inputHidden id="latitude" value="{!location.Latitude__c}"/>
+        
+        <apex:pageBlock id="pb" title="{!$Label.partner_location_edit}" mode="edit">
+            <apex:pageBlockButtons location="top" id="pbb" >
+                <apex:commandButton action="{!doConfirmationPrevious}" value="{!$Label.previous}"/>
+                <apex:commandButton disabled="{!IF(OR(lookingForLocation,NOT(locationFound)),'true','false')}" 
+                    id="save" action="{!doConfirmationDone}" value="{!$Label.btnsave}"/>
+                <apex:commandButton action="{!cancel}" value="{!$Label.btncancel}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="{!$Label.map}" columns="1" showHeader="false" collapsible="false">
+                <apex:outputPanel id="message"> 
+                    <apex:pageMessage summary="{!$Label.msgFindingAddress} &quot;{!location.Street__c} {!location.City__c}, {!location.State_Province__c}  {!location.Postal_Code__c}&quot;.  {!$Label.msgPleaseWait}" 
+                        severity="info" 
+                        strength="3" 
+                        rendered="{!IF(lookingForLocation,'true','false')}"/>
+                    <apex:pageMessage summary="{!$Label.locationNotFound} &quot;{!location.Street__c} {!location.City__c}, {!location.State_Province__c}  {!location.Postal_Code__c}&quot;.  {!$Label.msgDifferentAddress}" 
+                        severity="error" 
+                        strength="3" 
+                        rendered="{!IF(AND(NOT(lookingForLocation),NOT(locationFound)),'true','false')}"/>
+                    <apex:pageMessage summary="{!$Label.msgConfirmLocation} &quot;{!location.Street__c} {!location.City__c}, {!location.State_Province__c}  {!location.Postal_Code__c}&quot;.  {!$Label.msgDragCorrectLocation}" 
+                        severity="confirm" 
+                        strength="3"  
+                        rendered="{!IF(AND(NOT(lookingForLocation),locationFound),'true','false')}"/>
+                </apex:outputPanel>
+                <div id="map_canvas" style="width: 950px; height: 400px"></div>
+            </apex:pageBlockSection>
+            </apex:pageBlock>
+    </apex:form>
+    </apex:outputPanel>
+</apex:page>

@@ -1,0 +1,29 @@
+<apex:page >
+</apex:page>
+<!-- class not used to be deleted
+<apex:page Controller="Renewal_ConvertToOpportunityWithDate" >
+    <apex:sectionHeader title="Generate Opportunities from Renewals"/>
+    <Apex:form >
+    <apex:pagemessages ></apex:pagemessages>
+        <apex:pageBlock >
+              <apex:pageBlockButtons ><apex:commandButton value="Generate Opportunities" action="{!Convert }" /></apex:pageBlockButtons>    
+              <apex:pageBlockSection >
+              <apex:pageBlockSectionItem >
+                     <apex:outputLabel value="Segmentation: " for="regionID"/>
+                     <apex:selectList id="regionID" value="{!segmentation}" size="1" >
+                        <apex:selectOptions value="{!items}"/>
+                     </apex:selectList>
+                     </apex:pageBlockSectionItem><br/>
+                      <apex:pageBlockSectionItem >
+                             <apex:outputLabel >Start Date</apex:outputLabel>   <apex:inputField value="{!ac.Contract_End_Date__c}"/>
+                     </apex:pageBlockSectionItem>
+                     <br/>
+                     <apex:pageBlockSectionItem >
+                             <apex:outputLabel style="margin-left:20px">End Date</apex:outputLabel> <apex:inputField value="{!ac.Agreement_Acceptance_Date__c}"/>
+                     </apex:pageBlockSectionItem>
+                     <br/>
+                             
+             </apex:pageBlockSection>
+        </apex:pageBlock>    
+    </Apex:form>
+</apex:page>-->

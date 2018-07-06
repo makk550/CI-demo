@@ -1,0 +1,113 @@
+<apex:page id="popUpPage" showHeader="false" sidebar="false" controller="HomePageControllerClass" action="{!init}">
+        <!-- custom styles used within the application -->
+        <style>
+          .addNL {font-weight: bold}
+          .inactiveTab { background-color: lightgrey; color:black; background-image:none}
+          .secondaryPalette { 
+                background-color:#638658;
+                border-color:#638658;
+            }
+          .pbSubheader {
+                background-color:#222;
+                font-weight:bold;
+                font-size: 91%;
+                padding:2px 2px 2px 5px;
+                margin-top: 15px;
+                overflow: hidden;
+                margin-bottom: 2px;
+            }
+          .pbSubheader.first {
+                margin-top: 0;
+            }
+            body .bDashboard .tertiaryPalette {
+                background-color: #638658;
+                border-color: #638658;
+            }       
+            .apexp .detailList .list td, .apexp .detailList .list th, .apexp .editPage .bPageBlock .detailList .list tr td, .apexp .editPage .bPageBlock .detailList .list tr th {
+                border-bottom:1px solid #E3DEB8;
+                color:#333333;
+                padding:4px 2px 4px 5px;
+            }
+            .Custom18Tab .tertiaryPalette, .individualPalette .Custom18Block .tertiaryPalette {
+                background-color:#638658;
+                border-color:#638658;
+            }
+        </style>
+        <script language="JavaScript">
+	        // function to set values for the hidden variables
+	        function showDetailView(month,compId)
+	        {
+	            document.getElementById(compId).value = month;
+	        }
+        </script>            
+        <div class="bPageTitle">
+            <div class="ptBody secondaryPalette">
+                <div class="content">
+                    <apex:image value="/s.gif" alt="Home" styleClass="pageTitleIcon"/>
+                        <h1 class="pageType">Opportunity Details<span class="titleSeparatingColon1"></span></h1>
+                        <h2 class="pageDescription"></h2> 
+                        <div class="blank">&nbsp; </div>
+                </div>      
+            </div>
+         </div>
+	<apex:form id="popUpForm">
+		<apex:inputHidden id="selMonth"/>
+        <apex:outputPanel rendered="true" id="popUpPanel">
+			<apex:pageBlock id="popUpPB" title="{!popUpPageBlockTitle}">
+			    <apex:CommandLink id="backLinkId" immediate="true" action="{!monthlyView}" reRender="popUpPanel" rendered="{! !monthTableStatus}" style="{font-weight: bold}">Back<b/></apex:CommandLink>
+	    		<apex:pageBlockTable value="{!monthwiseOpps}" var="pbtVar1" id="popUp_pbt1" width="100%" rendered="{!monthTableStatus}">
+	    			<apex:column style="text-align: right;vertical-align:middle;">
+	                	<apex:facet name="header">                     
+	                    	<div style="text-align: right;vertical-align:middle;">
+	                        	Month
+	                        </div>
+	                     </apex:facet>
+	                     <apex:commandLink value="{!pbtVar1.month}" onclick="javascript:showDetailView('{!pbtVar1.month}','{!$Component.selMonth}')" style="text-align:right" action="{!opportunityDetailView}" 
+	                     title="View opportunities for {!pbtVar1.month}" reRender="popUpPanel"/>
+	                </apex:column>
+	                <apex:column style="text-align: right;vertical-align:middle;">
+		            	<div style="{vertical-align:right;text-align:right}">
+		                	<apex:facet name="header">
+		                    	<div style="text-align: right;vertical-align:middle;">
+		                         	Opportunity Amount
+		                        </div>              
+		                    </apex:facet>
+		                    <apex:outputText value="{!pbtVar1.oppAmount}" />
+		                </div>
+	                </apex:column>    		     	
+	    		</apex:pageBlockTable>
+
+	    		<apex:pageBlockTable value="{!monthwiseOppDetail}" var="pbtVar2" id="popUp_pbt2" width="100%" rendered="{! !monthTableStatus}">
+	    			<apex:column style="text-align: right;vertical-align:middle;">
+	                	<apex:facet name="header">                     
+	                    	<div style="text-align: right;vertical-align:middle;">
+	                        	Opportunity Name
+	                        </div>
+	                     </apex:facet>
+	                     <apex:outputText value="{!pbtVar2.oppName}"/>
+	                </apex:column>
+	                <apex:column style="text-align: right;vertical-align:middle;">
+		            	<div style="{vertical-align:right;text-align:right}">
+		                	<apex:facet name="header">
+		                    	<div style="text-align: right;vertical-align:middle;">
+		                         	Opportunity Amount
+		                        </div>              
+		                    </apex:facet>
+	                        <apex:outputText value="{!pbtVar2.oppAmount}"/>
+		                </div>
+	                </apex:column>    		     	
+	                <apex:column style="text-align: right;vertical-align:middle;">
+		            	<div style="{vertical-align:right;text-align:right}">
+		                	<apex:facet name="header">
+		                    	<div style="text-align: right;vertical-align:middle;">
+		                         	Opportunity Stage
+		                        </div>              
+		                    </apex:facet>
+	                        <apex:outputText value="{!pbtVar2.oppStage}"/>
+		                </div>
+	                </apex:column>    		     	
+	    		</apex:pageBlockTable>
+	    	</apex:pageBlock>
+	    </apex:outputPanel>
+    </apex:form> 
+</apex:page>

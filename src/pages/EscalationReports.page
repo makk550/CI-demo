@@ -1,0 +1,126 @@
+<apex:page standardController="Escalation__c" extensions="EscalationsReportExtension"> 
+<html>
+<head>
+<style>
+table {
+    border:2px ;
+    border-collapse:collapse ;
+    width: 100%;
+    padding: 1px;
+    font-family:calibri;
+    font-size:115%
+}
+
+th {
+    border: 1px solid #000000;
+    text-align: left;
+    padding: 0px;
+}
+td {
+    border: 1px solid #000000;
+    text-align: left;
+    padding: 1px;
+}
+</style>
+</head>
+<body>
+<table >
+    <tr>
+      <td rowspan="2"   align="CENTER" bgcolor="#1e2a2c" style="width:10px" >
+      <apex:image id="theImage" value="{!URLFOR($Resource.CALogo2018)}" width="60" height="50" style="verticle-align:middle" alt="Description of image here"/>
+      
+      </td>
+      <td  colspan="4" align="CENTER" bgcolor="#1e2a2c" style="">
+      <font color="#FFFFFF" size="3" face="calibri"><h3 >Global Escalation Management</h3></font>
+      </td>
+      </tr>
+      <tr style="border:0px"> 
+      <td  colspan="4" align="CENTER" bgcolor="#1e2a2c" style="">
+      <font color="#FFFFFF" size="3" face="calibri"><h3 >Escalation Report</h3></font>
+      </td>
+      
+      </tr>
+</table>
+<table>
+  <col width="200" />
+  <col />
+  <col width="200" />
+      <tr align="LEFT">
+      <th bgcolor="#97ccf1" color="#FFFFF">Escalation Id</th>
+      <td style="font-family:calibri">{!Escalation__c.Escalation_Number__c}</td>
+      <th bgcolor="#97ccf1" color="#FFFFF">Status</th>
+      <td style="font-family:calibri">{!Escalation__c.Escalation_Status__c}</td>
+   </tr>
+   <tr align="LEFT">
+      <th bgcolor="#97ccf1">Customer Name</th>
+      <td style="font-family:calibri">{!Escalation__c.Site_Association_Name__r.Name}</td>
+      <th bgcolor="#97ccf1">CES Scoring</th>
+      <td style="font-family:calibri">{!Escalation__c.CES_Scoring__c} - {!Escalation__c.CES_Status_Color__c}</td>
+   </tr>
+   <tr align="LEFT">
+      <th bgcolor="#97ccf1">Escalation Open Date</th>
+      <td style="font-family:calibri">{!datetimeVal}</td>
+      <th bgcolor="#97ccf1">Business Unit/Product</th>
+      <td style="font-family:calibri">{!Escalation__c.GBU1__c}/{!Escalation__c.Primary_Product__r.name}</td>
+   </tr>
+   <tr align="LEFT">
+      <th colspan="1" bgcolor="#97ccf1">Customer Environment</th>
+      <td colspan="3" style="font-family:calibri">{!Escalation__c.Customer_Environment__c}</td>
+   </tr>
+   <tr align="LEFT">
+      <th colspan="1" bgcolor="#97ccf1">Executive Summary</th>
+      
+      <td colspan="3" >
+       <apex:outputText value="{!Escalation__c.Executive_Summary1__c}" escape="false" style="font-family:calibri"/>
+      </td>
+   </tr>
+      <tr align="LEFT">
+      <th colspan="1" bgcolor="#97ccf1">Business Impact</th>
+      <td colspan="3" style="font-family:calibri">{!Escalation__c.Business_Impact__c}</td>
+   </tr>
+   <tr align="LEFT">
+      <th colspan="1" bgcolor="#97ccf1">Resolution Criteria</th>
+      <td colspan="3" style="font-family:calibri">{!Escalation__c.Resolution_Criteria__c}</td>
+   </tr>
+   <!--<tr align="LEFT">
+      <th colspan="1" bgcolor="#97ccf1">Escalation Status Summary</th>
+      <td colspan="3">
+      <apex:outputText value="{!Escalation__c.Executive_Summary__c}" escape="false" style="font-family:calibri"/>
+      </td>
+   </tr>-->
+   <tr align="LEFT">
+      <th colspan="1" bgcolor="#97ccf1">Next Actions</th>
+      
+      <td colspan="3" >
+       <apex:outputText value="{!Escalation__c.Current_Status_and_Next_Action__c}" escape="false" style="font-family:calibri"/>
+      </td>
+   </tr>
+   <!--<tr align="LEFT">
+      <th colspan="1" bgcolor="#97ccf1">Next Escalation Report Update</th>
+      <td colspan="3">{!Escalation__c.Next_Alert_Due_Date__c}</td>
+   </tr>-->  
+   <tr align="LEFT">
+      <th colspan="1" bgcolor="#97ccf1">Escalation Manager</th>
+      <td colspan="3" style="font-family:calibri">{!Escalation__c.Owner.Name}</td>
+   </tr>  
+   <!--<tr align="LEFT">
+      <th colspan="1" bgcolor="#97ccf1">Escalation Technical Contact</th>
+      <td colspan="3">{!Escalation__c.Business_Technical_Architect__c}</td>
+      
+   </tr>-->  
+      <th colspan="4" align="C" bgcolor="#1e2a2c" style="">
+      <BR/>
+      </th>
+</table>
+</body>
+</html>
+<apex:form >
+<div style="text-align:center">
+<!--
+<apex:commandButton value="Back to Escalation"  action="{!save}"> 
+</apex:commandButton> 
+-->
+<apex:commandButton action="{!returnToEscalation}" value="Back to Escalation" rendered="{!IF(NOT(ISBLANK(currentRecordId)),true,false)}" immediate="true"/>
+</div>
+</apex:form>       
+</apex:page>

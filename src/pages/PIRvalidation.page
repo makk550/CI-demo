@@ -1,0 +1,7 @@
+<apex:page standardController="Opportunity_Registration__c">
+    <apex:outputPanel rendered="{!Opportunity_Registration__c.Registration_Status__c == 'Partially Approved' && Opportunity_Registration__c.hasAttachment__c == false}">
+        <p Style="color:red;font-weight:bold;">
+            Please attach the teaming agreement in order to submit the PIR to the 3rd approver for FINAL approval.
+            
+        </p><br/></apex:outputPanel>
+</apex:page>

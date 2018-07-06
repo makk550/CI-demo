@@ -1,0 +1,86 @@
+<apex:page >
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1"/>
+     </head>
+    <body>
+     <style type='text/css'>
+	.embeddedServiceHelpButton .helpButton .uiButton { background-color: #005290; font-family: "Salesforce Sans", sans-serif; }
+	.embeddedServiceHelpButton .helpButton .uiButton:focus { outline: 1px solid #005290; }
+</style>
+
+<script type='text/javascript' src='https://service.force.com/embeddedservice/4.1/esw.min.js'></script>
+<script type='text/javascript'>
+var initESW = function(gslbBaseURL) {
+embedded_svc.settings.displayHelpButton = true; //Or false
+embedded_svc.settings.language = ''; //For example, enter 'en' or 'en-US'
+
+//embedded_svc.settings.defaultMinimizedText = '...'; //(Defaults to Chat with an Expert)
+//embedded_svc.settings.disabledMinimizedText = '...'; //(Defaults to Agent Offline)
+
+//embedded_svc.settings.loadingText = ''; //(Defaults to Loading)
+//embedded_svc.settings.storageDomain = 'yourdomain.com'; //(Sets the domain for your deployment so that visitors can navigate subdomains during a chat session)
+
+// Settings for Live Agent
+embedded_svc.settings.avatarImgURL = '';
+embedded_svc.settings.prechatBackgroundImgURL = '';
+embedded_svc.settings.waitingStateBackgroundImgURL = '';
+embedded_svc.settings.smallCompanyLogoImgURL = '';
+//embedded_svc.settings.directToButtonRouting = function(prechatFormData) {
+// Dynamically changes the button ID based on what the visitor enters in the pre-chat form.
+//Returns a valid button ID.
+//};
+
+embedded_svc.settings.enabledFeatures = ['LiveAgent'];
+embedded_svc.settings.entryFeature = 'LiveAgent';
+//embedded_svc.settings.prepopulatedPrechatFields = {}; //Sets the auto-population of pre-chat form fields
+ 
+    embedded_svc.settings.extraPrechatFormDetails = [ 
+         { "label": "issue","value": "Overriding page level subject", "displayToAgent": true}
+        ,{ "label": "issuedesc", "value": "Test Desc","displayToAgent": true}
+        ,{ "label": "caseOrigin", "value": "Chat","displayToAgent": true}
+        ,{ "label": "siteId","value": "a26a0000001D5zC","displayToAgent": true}
+        ,{ "label": "status","value": "Open","displayToAgent": true}
+        ,{ "label": "caproduct","value": "a7Za0000000PB8f","displayToAgent": true}
+        ,{ "label": "contact","value": "003a000002PwvZt","displayToAgent": true}
+        ,{ "label": "businesshours","value": "01ma00000000PaH","displayToAgent": true}
+        ,{ "label": "casewithoutentitlement","value": "true","displayToAgent": true}
+        
+
+   	 ];
+    
+    embedded_svc.settings.extraPrechatInfo = [
+        {"entityName":"Site_Association__c",
+         "showOnCreate":true,
+         "linkToEntityName":"Case",
+         "linkToEntityField":"Site_Association__c",
+         "saveToTranscript":"CaseId",
+         "entityFieldMaps":[
+             {"isExactMatch":true,"fieldName":"Id","doCreate":false,"doFind":true,"label":"siteId"}
+         ]},
+        {"entityName":"CA_Product_Controller__c",
+         "showOnCreate":true,
+         "linkToEntityName":"Case",
+         "linkToEntityField":"CA_Product_Controller__c",
+         "saveToTranscript":"CaseId",
+         "entityFieldMaps":[
+             {"isExactMatch":true,"fieldName":"Id","doCreate":false,"doFind":true,"label":"caproduct"}
+         ]},
+        { "entityName": "Case", 
+         "showOnCreate": true,
+         "saveToTranscript":"CaseId",
+           "entityFieldMaps":[
+               { "isExactMatch": false,"fieldName": "Description", "doCreate": true,"doFind": false,"label": "issuedesc"},
+               { "isExactMatch": false,"fieldName": "Subject", "doCreate": true,"doFind": false,"label": "issue"},
+               { "isExactMatch": false,"fieldName": "Origin", "doCreate": true,"doFind": false,"label": "caseOrigin"},
+               { "isExactMatch": false,"fieldName": "Status", "doCreate": true,"doFind": false,"label": "status"},
+               { "isExactMatch": false,"fieldName": "BusinessHoursId", "doCreate": true,"doFind": false,"label": "businesshours"},
+               { "isExactMatch": false,"fieldName": "Case_Created_without_Entitlement__c", "doCreate": true,"doFind": false,"label": "casewithoutentitlement"}
+           ]}
+    ];
+    
+  //embedded_svc.settings.extraPrechatInfo =[];
+    
+embedded_svc.init('https://ca--FSB1.cs79.my.salesforce.com', 'https://fsb1-caideation.cs79.force.com/SnapIn', gslbBaseURL, '00D1h0000008jLh', 'SnapInPOC', { baseLiveAgentContentURL: 'https://c.la2-c2cs-ord.salesforceliveagent.com/content', deploymentId: '572a00000004aAi', buttonId: '5731h00000000Bc', baseLiveAgentURL: 'https://d.la2-c2cs-ord.salesforceliveagent.com/chat', eswLiveAgentDevName: 'EmbeddedServiceLiveAgent_Parent04I1h0000008OIAEA2_1628c431a6a'}); };if (!window.embedded_svc) { var s = document.createElement('script'); s.setAttribute('src', 'https://ca--FSB1.cs79.my.salesforce.com/embeddedservice/4.1/esw.min.js'); s.onload = function() { initESW(null); }; document.body.appendChild(s); } else { initESW('https://service.force.com'); }</script> 
+    </body>   
+
+</apex:page>

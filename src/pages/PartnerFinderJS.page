@@ -1,0 +1,276 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" contentType="text/javascript" >
+   
+jQuery.noConflict();
+
+var PartnerLocationMapController = Class.create({
+    initialize: function(mapDivFieldID,locationJSONDataFieldID){
+        this.locationJSONDataFieldID = locationJSONDataFieldID;
+        this.mapDivFieldID=mapDivFieldID;
+        this.map=null;
+        this.initializeMap();
+        
+    },
+    initializeMap: function(){
+        if(this.map==null) 
+        if($('map_canvas')!=null ){
+            this.map = new google.maps.Map($('map_canvas'));
+           
+            this.updateMap();
+        }
+    },
+    updateMap: function(){
+        //this.map.clearOverlays();
+        
+        this.pointLookup = new Hash();
+        
+        this.locationLookup = new Hash();
+        
+        var locations = $F(this.locationJSONDataFieldID).evalJSON().locations;
+    
+        var bounds = new google.maps.LatLngBounds();
+        
+        var points = [];
+        var point;
+        locations.each(function(location){
+            if(location.name!=null){
+                
+                point = new google.maps.LatLng(location.latitude, location.longitude);
+                point.id = location.id;
+                point.recordNumber = location.recordNumber;
+                point.name = location.name;
+                point.city = location.city;
+                point.street = location.street;
+                point.state = location.state;
+                point.country = location.country;
+                point.postalCode = location.postalCode;
+                point.icon ="{!$Resource.red_dot_png}";
+               
+                points.push(point);
+                
+                bounds.extend(point);
+                
+                var properties2 = {
+                position: point,
+                map: this.map,
+                icon:"{!$Resource.red_dot_png}"                
+                }; 
+    
+                <!--var marker = new google.maps.Marker(point);-->
+                 var marker = new google.maps.Marker(properties2);
+                 
+                 marker.title=point.name;
+                 marker.info = new google.maps.InfoWindow({
+                      content: '<b>'+ point.recordNumber  + '-</b> '+ 
+                                            '<b> ' + point.name + '</b><br/>' + 
+                                            (Object.isUndefined(point.street) || (point.street==null) || point.street.blank() ?'': point.street + ', ') + 
+                                            (Object.isUndefined(point.city) || (point.city==null) || point.city.blank() ?'': point.city + ', ') + 
+                                            (Object.isUndefined(point.state) || (point.state==null) || point.state.blank() ?' ': point.state + '  ') + 
+                                            (Object.isUndefined(point.postalCode) || (point.postalCode==null) || point.postalCode.blank() ?'': point.postalCode ) + 
+                                            '<br/>' + 
+                                            point.country
+                    });
+                 google.maps.event.addListener(marker, 'click', function() {
+                      marker.info.open(this.map, marker);
+                    });
+                
+                
+                this.pointLookup.set(point.id,marker);
+                
+                marker.setMap(this.map);
+                
+                this.locationLookup.set(location.id,location);
+                
+            }
+            
+        }.bind(this));
+        
+        var address = $('thePage:theForm:txtLocation');
+        var searchPointMarker = null;
+        if(address)
+        if(!address.value.blank()){
+            //location specified so add point to represent search location
+            // Create our "tiny" marker icon
+    
+           
+            var searchPoint = new google.maps.LatLng(    $F('thePage:theForm:GeocodeLatitude'), 
+                                              $F('thePage:theForm:GeocodeLongitude'));
+            var properties = {
+                        position: searchPoint,
+                        map: this.map,
+                        icon:"{!$Resource.blue_dot_png}"
+                        
+                }; 
+            searchPointMarker = new google.maps.Marker(properties);
+            
+            bounds.extend(searchPoint);
+            searchPointMarker.title=address.value;
+            searchPointMarker.info = new google.maps.InfoWindow({
+                      content: '<b>' + address.value  + '</b>' 
+                    });
+                 google.maps.event.addListener(searchPointMarker, 'click', function() {
+                      searchPointMarker.info.open(this.map, searchPointMarker);
+                    });
+            searchPointMarker.setMap(this.map);
+            
+        }
+      
+        this.map.setCenter(bounds.getCenter());
+        
+        this.map.fitBounds(bounds);
+       
+        
+    }, 
+    showLocation: function(id){
+        var location = this.locationLookup.get(id);
+    var temp = this.pointLookup.get(id);
+    
+     var infowindow  = new google.maps.InfoWindow({
+                      content: '<b>'+ location.recordNumber + '-</b> '+ '<b>' + location.name + '</b><br/>' 
+            + (Object.isUndefined(location.street)?'': location.street + ', ') + location.city + ', ' + location.state + '  ' + location.postalCode + '<br/>' + location.country
+                    });
+      google.maps.event.addListener(this.pointLookup, 'click', function() {
+                      infowindow.open(this.map, this.pointLookup);
+                    });
+     infowindow.open(this.map,this.pointLookup.get(id));
+    console.log('temp'+temp);
+    }
+});
+
+var controller;
+function updateMap(){
+    if(!Object.isUndefined(controller)){
+        
+        controller.map=null;
+        controller.initializeMap();
+        controller.updateMap();
+        
+    }   
+}
+
+function getZoomByBounds( map, bounds ){
+  var MAX_ZOOM = map.mapTypes.get( map.getMapTypeId() ).maxZoom || 21 ;
+  var MIN_ZOOM = map.mapTypes.get( map.getMapTypeId() ).minZoom || 0 ;
+  console.log('  var MAX_ZOOM '+MAX_ZOOM );
+  var ne= map.getProjection().fromLatLngToPoint( bounds.getNorthEast() );
+  var sw= map.getProjection().fromLatLngToPoint( bounds.getSouthWest() ); 
+  console.log('  var ne '+ne);
+  var worldCoordWidth = Math.abs(ne.x-sw.x);
+  var worldCoordHeight = Math.abs(ne.y-sw.y);
+  console.log('  var worldCoordWidth '+worldCoordWidth);
+  //Fit padding in pixels 
+  var FIT_PAD = 40;
+
+ 
+
+for( var zoom = MAX_ZOOM; zoom >= MIN_ZOOM; --zoom ){ 
+    console.log(' var zoom > '+ zoom );
+    var powzoom = 1; 
+    for(var i=1; i &lt;= zoom; i++)
+        {
+        powzoom=(powzoom * 2);
+        }
+    // Converting The Decimal Number To Binary
+    console.log('powzoom> '+powzoom);
+    powzoom=(powzoom >>> 0).toString(2);
+    powzoom = Number(powzoom);
+    console.log('powzoom'+powzoom);
+      if( (((worldCoordWidth*powzoom)+(2*FIT_PAD)) &lt; (map.getDiv()).style.width) &amp;(((worldCoordHeight*powzoom)+(2*FIT_PAD)) &lt; (map.getDiv()).style.height)){
+       
+       console.log('inside IF');
+       return zoom;
+      }
+          
+  }
+  return 0;
+} 
+ 
+function showLocation(locationId){
+    if(!Object.isUndefined(controller)){
+        controller.showLocation(locationId);
+    }   
+} 
+
+function searchButtonClicked(){
+    var address = $F('thePage:theForm:txtLocation');
+    if(!address.blank()){
+        showAddress(address);
+    } else {
+        triggerSearch();        
+    }
+}
+
+function keypressed(event){
+    if(window.event){ // IE
+        keynum = event.keyCode;
+    }
+    else if(event.which){ // Netscape/Firefox/Opera
+    
+        keynum = event.which;
+    }
+    if(keynum=='13'){
+        showBusyDialog('{!JSENCODE($Label.searching)}', '{!JSENCODE($Label.please_wait)}'); 
+        searchButtonClicked();
+    }
+}
+
+function showAddress(address) {
+    var mygc = new google.maps.Geocoder();
+
+    mygc.geocode({'address' : address}, function(results, status){
+     if (status === google.maps.GeocoderStatus.OK) {
+       
+        $('thePage:theForm:GeocodeLatitude').value=results[0].geometry.location.lat() ;
+        $('thePage:theForm:GeocodeLongitude').value=results[0].geometry.location.lng() ;
+          triggerSearch();
+          
+    }
+    else {
+    
+        alert('not found');
+        triggerSearch();
+     }
+    });
+}
+
+
+function showBusyDialog(title,body){
+    jQuery('#dialog').dialog('open');
+}
+
+function hideBusyDialog(){
+    jQuery('#dialog').dialog("close"); 
+}
+
+document.observe('dom:loaded', function() {
+    controller = new PartnerLocationMapController('map_canvas','thePage:theForm:LocationData');
+    new Ajax.Autocompleter(
+        'thePage:theForm:txtSearchFor', 
+        'keywordChoices', 
+        '{!$Page.PartnerSearchAutoComplete}' ,
+        {   minChars: 2,
+            frequency: 0.1,
+            tokens: ','
+        });
+    new Ajax.Autocompleter('thePage:theForm:txtLocation', 
+        'addressChoices', 
+        '{!$Page.PartnerSearchAutoComplete}' ,
+        {   minChars: 2,
+            frequency: 0.1,
+            tokens: ','
+        });
+    jQuery('#dialog').dialog({
+        autoOpen: false,
+        bgiframe: true,
+        closeOnEscape: false,
+        dialogClass: 'dialog_style',
+        draggable: false,
+        height: 100,
+        minHeight: 100,
+        modal: true,
+        open: function(event, ui) { jQuery(".ui-dialog-titlebar-close").hide(); },
+        position: 'top',
+        resizable: false
+    });
+}, false);
+ 
+</apex:page>

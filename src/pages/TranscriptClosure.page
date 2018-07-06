@@ -1,0 +1,18 @@
+<apex:page standardController="Case" extensions="controlTranscript" showHeader="false" sidebar="false">
+    
+<apex:form >
+  <apex:pageBlock title="Transcript Closure">
+  <apex:pageBlockSection >
+<apex:inputField value="{!lObj.closure_reason__c}" required="true"/>
+
+<apex:inputField value="{!Case.Category__c}" label="Root Cause Category"/>
+
+<apex:inputTextarea value="{!Case.Resolution__c}" label="Resolution"/>
+
+  </apex:pageBlockSection>
+  <apex:pageBlockButtons >
+  <apex:commandButton action="{!saveRecord}" value="Save" oncomplete="window.close();"/>
+  </apex:pageBlockButtons>
+  </apex:pageBlock>
+  </apex:form>
+</apex:page>

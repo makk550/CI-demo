@@ -1,0 +1,58 @@
+<apex:page standardController="TAQ_Account_Team__c" extensions="TAQ_AddTeamMember_Ext" >
+ <apex:form >
+
+ <apex:sectionHeader title="Add/Edit Account Team" subtitle="{!TAQ_Account_Team__c.TAQ_Account__r.Name}" />
+ <apex:pagemessages />
+ <apex:pageblock >
+ <apex:pageBlockButtons >
+         <apex:commandbutton value="Save & Submit" action="{!saveSubmitRows}"/>
+         <apex:commandbutton value="Save & Submit Later" action="{!saveRows}"/>
+         <apex:commandbutton value="Cancel" action="{!goBack}" />
+ </apex:pageBlockButtons>
+ <apex:pageblocktable id="accteamllistTable" value="{!accteamlist}" var="eachRec">
+<!--    <apex:column headerValue="Delete">
+     <apex:commandLink value="Delete" action="{!deletemem}">
+         <apex:param value="{!eachRec.id}" assignTo="{!delid}" />
+     </apex:commandLink> 
+    </apex:column> -->
+    <apex:column headerValue="Account Owner" rendered="{!isnonPartner}"> 
+        <apex:inputfield rendered="true"    value="{!eachRec.Is_Account_Owner__c}"/>
+        <apex:outputfield rendered="false"  value="{!eachRec.Is_Account_Owner__c}"/>
+    </apex:column>
+    <apex:column headerValue="Role"  rendered="{! isnonPartner}" >
+        <apex:inputfield value="{!eachRec.Role__c}" />
+        <apex:outputfield rendered="false" value="{!eachRec.Role__c}"/>
+    </apex:column>
+    
+    <!-- ***Removed as part of FY15***
+    <apex:column headerValue="Primary/Secondary" rendered="{!isnonPartner}">
+        <apex:inputfield value="{!eachRec.Primary_Secondary__c}"/>
+        <apex:outputfield rendered="false" value="{!eachRec.Primary_Secondary__c}"/>
+    </apex:column>
+    -->
+    <apex:column headerValue="Percentage" rendered="{!isnonPartner}">
+        <apex:inputfield value="{!eachRec.Percentage__c}"/>
+        <apex:outputfield rendered="false" value="{!eachRec.Percentage__c}"/>
+    </apex:column>
+    <apex:column headerValue="PMF Key">
+        <apex:inputfield required="false" value="{!eachRec.PMFKey__c}"/>
+       <!-- <apex:outputfield rendered="{!eachRec.id !=null}" value="{!eachRec.PMFKey__c}"/> -->
+    </apex:column>
+      <apex:column headerValue="Partner Role(s)"  rendered="{! !isnonPartner}" >
+        <apex:inputfield value="{!eachRec.Partner_Role__c}" />
+    </apex:column>
+    <apex:column headerValue="Effective Date" rendered="{!isnonPartner}">
+        <apex:inputfield value="{!eachRec.Effective_Date__c}" required="false"/>
+        <apex:outputfield rendered="false" value="{!eachRec.Effective_Date__c}"/>
+    </apex:column>
+ </apex:pageblocktable>
+ <center><apex:commandbutton rerender="accteamllistTable"  value="Add More" action="{!addMoreRows}" status="statusmsg"/>
+
+ </center>
+ <center>
+      <!--    <apex:commandbutton rerender="accteamllistTable" value="Save" action="{!saveRows}" status="statusmsg"/> -->
+ </center>
+ <apex:actionStatus startText="Processing..." id="statusmsg"/>
+ </apex:pageblock>
+ </apex:form> 
+</apex:page>

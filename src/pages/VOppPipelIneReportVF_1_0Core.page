@@ -1,0 +1,167 @@
+<apex:page controller="VOppPipelineReportHelper_1_0Core">
+    <script>
+        function getData() {
+            alert("Fetching data, Click OK to continue.");
+        }
+    </script>
+
+    <style>
+    .header TABLE{
+        BACKGROUND-COLOR: #FFFFFF;
+        FONT-WEIGHT: normal; 
+        FONT-SIZE: 1.0em; 
+        COLOR: #000; 
+        FONT-FAMILY: 'Verdana', 'Geneva', sans-serif;
+                
+    }
+    .header TH{
+        BACKGROUND-COLOR: #AAAAAA
+    }
+
+    .header TD{
+        BACKGROUND-COLOR: #EEEEEE;
+        BORDER-TOP: #dddddd 1px solid;
+        BORDER-BOTTOM: #dddddd 1px solid
+    }
+
+    TABLE {
+        FONT-WEIGHT: normal; 
+        FONT-SIZE: 1.0em; 
+        COLOR: #333; 
+        FONT-FAMILY: 'Verdana', 'Geneva', sans-serif;
+        TEXT-ALIGN:right
+    }
+
+    </style>
+    <apex:form >
+        <apex:pageBlock title="Pipeline Reporting" mode="edit">
+            
+            Select Date :<apex:selectList style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedDate}" multiselect="flase" size="1">
+            <apex:selectOptions value="{!dateItems}"/>
+            </apex:selectList>
+            &nbsp;&nbsp;
+            
+            <apex:outputLabel value="Select:" for="theAreaType"/>
+            <apex:selectList style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedField}" multiselect="false" size="1" id="theAreaType" >
+            <apex:selectOptions value="{!fieldItems}"/>
+            </apex:selectList>
+            <apex:commandButton value="Go!" id="Go" action="{!populateFieldList}"/>
+            &nbsp;
+          
+            <apex:outputLabel value="Select Region:" rendered="{!showRegionList}"  for="theRegion"/>
+            <apex:selectList rendered="{!showRegionList}" style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedRegion}" multiselect="true" size="5" id="theRegion">
+            <apex:selectOptions value="{!regionItems}"/>
+            </apex:selectList>
+
+            
+            <apex:outputLabel value="Select Area:" rendered="{!showAreaList}"  for="theArea"/>
+            <apex:selectList rendered="{!showAreaList}" style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedArea}" multiselect="true" size="5" id="theArea">
+            <apex:selectOptions value="{!areaItems}"/>
+            </apex:selectList>
+
+            <apex:outputLabel value="Select Territory/Country:" rendered="{!showTerritoryList}"  for="theTerritory"/>
+            <apex:selectList rendered="{!showTerritoryList}" style="FONT-SIZE: 0.8em;FONT-WEIGHT: Bold; COLOR: #000; " value="{!selectedTerritory}" multiselect="true" size="5" id="theTerritory">
+            <apex:selectOptions value="{!territoryItems}"/>
+            </apex:selectList>
+
+            <apex:commandButton value="Generate Report" id="GenerateReport" action="{!populateData}"/>
+        </apex:pageBlock>
+        <apex:outputText rendered="{!showDataTable}" style="FONT-WEIGHT: bold;" value="USD in thousands(000's)"></apex:outputText>
+        <apex:pageBlock rendered="{!showDataTable}" mode="edit" title="1.1 Regional Pipeline Coverage">
+            <apex:pageBlockTable columnsWidth="20px,20px" value="{!OppPipeLineBean}" var="bean" id="theTable" width="100%" rowClasses="odd,even"  styleClass="tableClass">
+                <apex:column width="10%">
+                    <apex:facet name="header">{!selectedColumn}</apex:facet>
+                    <apex:outputText value="{!bean.region}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/> 
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Qualified <br> Pipeline $'s</apex:facet>
+                    <apex:outputText value="{!bean.totalPriceQualiPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Closed<br>Won $'s</apex:facet>
+                    <apex:outputText value="{!bean.totalPriceClosedWonPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Pipeline <br>& Won $'s</apex:facet>
+                    <apex:outputText value="{!bean.totalPricePipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Qualified <br>Pipeline <br>Opportunities</apex:facet>
+                    <apex:outputText value="{!bean.totalQualiPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Closed <br> Won <br>Opportunities</apex:facet>
+                    <apex:outputText value="{!bean.totalClosedWonPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Total <br>Opportunities</apex:facet>
+                    <apex:outputText value="{!bean.totalPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Current <br>Commit $'s</apex:facet>
+                    <apex:outputText value="{!bean.totalPriceCommitPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Current <br>Qtr Target $'s</apex:facet>
+                    <apex:outputText value="{!bean.totalPriceTargetPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Commit vs <br>Target</apex:facet>
+                    <apex:outputText value="{!bean.percentCommitBudgetPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>%
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Commit /<br>Pipeline & Won <br>Coverage</apex:facet>
+                    <apex:outputText value="{!bean.percentCommitWonPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Target /<br> Pipeline & Won <br>Coverage</apex:facet>
+                    <apex:outputText value="{!bean.percentBudgetWonPipelines}" style="{!if(bean.region='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>                
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+        <apex:pageBlock rendered="{!showDataTable}" mode="edit" title="1.2 Product Pipeline Coverage">
+            <apex:pageBlockTable value="{!OppPipeLineBeanForBU}" var="bean" id="theTable" width="100%" rowClasses="odd,even" styleClass="tableClass">
+                <apex:column width="15%">
+                    <apex:facet name="header">BU</apex:facet>
+                    <apex:outputText value="{!bean.bu}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="15%">
+                    <apex:facet name="header">NCV Driver</apex:facet>
+                    <apex:outputText value="{!bean.ncv}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="15%">
+                    <apex:facet name="header">Qualified <br> Pipeline $'s</apex:facet>
+                    <apex:outputText value="{!bean.totalPriceQualiPipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="15%">
+                    <apex:facet name="header">Closed<br>Won $'s</apex:facet>
+                    <apex:outputText value="{!bean.totalPriceClosedWonPipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="15%">
+                    <apex:facet name="header">Pipeline <br>& Won $'s</apex:facet>
+                    <apex:outputText value="{!bean.totalPricePipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Qualified <br>Pipeline <br>Opportunities</apex:facet>
+                    <apex:outputText value="{!bean.totalQualiPipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Closed <br> Won <br>Opportunities</apex:facet>
+                    <apex:outputText value="{!bean.totalClosedWonPipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Total <br>Opportunities</apex:facet>
+                    <apex:outputText value="{!bean.totalPipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Current <br>Qtr Target $'s</apex:facet>
+                    <apex:outputText value="{!bean.totalPriceTargetPipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+                <apex:column width="10%">
+                    <apex:facet name="header">Target /<br> Pipeline & Won <br>Coverage</apex:facet>
+                    <apex:outputText value="{!bean.percentBudgetWonPipelines}" style="{!if(bean.bu='Total','font-weight: bold', 'color:black')}"/>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock>            
+    </apex:form>
+</apex:page>

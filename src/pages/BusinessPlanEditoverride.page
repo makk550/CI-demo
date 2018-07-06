@@ -1,0 +1,43 @@
+<apex:page standardController="Business_Plan_New__c" extensions="BusinessPlanEditoverrideController">
+  <script type="text/javascript" src="/js/functions.js"></script> 
+    <script src="/soap/ajax/15.0/connection.js" type="text/javascript"></script> 
+    <script>
+        window.onload = new function(){
+            executeOnloadFunction();
+        }
+        function executeOnloadFunction(){
+            var userPermission="{!isUserHaveEditPer}";
+            var ErrorMessage="{!$Label.BP_Editpermission_Message}"
+            //alert('userPermission --->'+userPermission);
+            var bpid = '{!Business_Plan_New__c.Id}'; 
+            var accountId ='{!Business_Plan_New__c.Account__c}'
+            var fiscalyear ='{!Business_Plan_New__c.Plan_Fiscal_Year__c}';
+            fiscalyear=fiscalyear.replace("FY ", "");
+            var currentBPyear = parseInt(fiscalyear);
+            var curDate = new Date();
+            var curYear = parseInt(curDate.getFullYear());
+            var curMonth = parseInt(curDate.getMonth());
+            if(curMonth > 2)
+                curYear = curYear+1;
+            else
+                curYear =curYear;
+            var isEditvalid;
+            if(currentBPyear < curYear){
+                if(userPermission =='YES'){
+                	isEditvalid ='YES';
+                }else{
+                    isEditvalid = 'NO';
+                 }
+            }else{
+                isEditvalid ='YES';
+             }
+            if(isEditvalid == 'YES'){
+                window.parent.location.href = "{!$Site.prefix}/apex/BusinessPlanEdit?id="+bpid+"&nooverride=1";
+            }else{
+                alert(ErrorMessage);
+                window.parent.location.href = "{!$Site.prefix}/apex/AccountViewOverride?id="+accountId+"&nooverride=1";
+            }
+             
+        }
+    </script>     
+</apex:page>

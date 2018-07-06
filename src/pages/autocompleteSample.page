@@ -1,0 +1,109 @@
+<apex:page standardController="Case" extensions="DemoAutoComplete" sidebar="false" id="pageId" standardStylesheets="true" showHeader="true">
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+
+
+<link rel="stylesheet" href="/resources/demos/style.css" />
+    
+    <script>
+                
+          function passRelease(Val){
+            if(Val!='-None-'){
+                releaseFunc(Val);
+                document.getElementById('errorMessage').innerHTML = '';
+            }else{
+                document.getElementById('errorMessage').innerHTML = 'Please select the valid option.';
+            }
+        }         
+                
+                
+        if(typeof jQuery != 'undefined'){
+           $j =jQuery.noConflict();
+       }
+         $j(function() {            
+             $j("input.auto001").autocomplete({
+                source: function(request, response){
+                    getMyData(response ,request.term);
+                },
+                select: function(event, ui){
+                    $j("input.auto001").val(ui.item.value);
+                   // $j('input.auto002').val(ui.item.id);
+                    refresh();                    
+                    return false;
+                }            
+            });            
+            
+        });
+        
+
+        
+        function getMyData(response,param){
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.DemoAutoComplete.getAccounts}',
+                param, 
+                function(result, event){
+                    if (event.status) {                        
+                        var objList = [];
+                        for(var i = 0; i < result.length; i++){
+                            var obj = new Object();
+                            obj.label = result[i].Name;
+                            obj.value = result[i].Name;
+                            obj.id = result[i].Id;
+                            objList.push(obj);
+                        }
+                        response(objList);
+                    }else {
+                        alert(event.message);
+                    }
+                }, 
+                {escape: true}
+            );
+        }
+</script>
+    
+    <apex:form id="mainForm"> 
+                <apex:actionfunction name="refresh" action="{!Refresh}" rerender="pageBlockTable"/> 
+                <span id="errorMessage" style="font-size:14px;color:red;"/>
+                <apex:pagemessages escape="false"/>
+                
+        <apex:pageBlock title="Product Release and Component Details" id="pageBlockTable">      
+            <apex:pageblockSection columns="1"> 
+            <apex:pageBlockSectionItem helpText="Select any Product" LabelTitle="Select a Product: ">            
+                <apex:outputLabel value="Select a Product: ">
+                    <apex:inputText id="sai_val" styleClass="auto001" style="width:25%" value="{!productName}">                                     
+                     </apex:inputText>                                                       
+                </apex:outputLabel>
+             </apex:pageBlockSectionItem> 
+             
+             <apex:pageBlockSectionItem helpText="Select a Release for the Product" LabelTitle="CA Product Release: ">                
+                <apex:outputLabel value="CA Product Release: ">
+                    <apex:selectList value="{!productReleaseValue}" style="width:15%" size="1" onchange="passRelease(this.value)">
+                        <apex:selectOptions value="{!proudctRelease}"/>
+                        <apex:actionSupport event="onchange" status="waitStatus" reRender="pageBlockTable" />
+                    </apex:selectList>
+                </apex:outputLabel>                
+             </apex:pageBlockSectionItem> 
+            
+            <apex:pageBlockSectionItem helpText="Select a Product Component" LabelTitle="CA Product Component: "> 
+                <apex:outputLabel value="CA Product Component: " id="CompId">
+                    <apex:selectList value="{!productComponentValue}" size="1" style="width:15%">
+                        <apex:selectOptions value="{!ProudctComponent}"/>
+                    </apex:selectList>
+                </apex:outputLabel>                
+             </apex:pageBlockSectionItem> 
+             
+            </apex:pageblockSection>                
+        <apex:outputPanel id="panelId">
+            <apex:actionFunction name="releaseFunc" action="{!releaseFunc}" reRender="pageBlockTable">
+                <apex:param name="releaseId" value=""/>
+            </apex:actionFunction>
+        </apex:outputPanel>
+        </apex:pageblock>
+        
+ 
+     
+        
+</apex:form>
+</apex:page>

@@ -1,0 +1,8 @@
+<apex:page showHeader="true" 
+	sidebar="false" 
+	standardStylesheets="true" >
+ 
+	<iframe scrolling="auto" id="iframe" name="iframe" frameborder="0" 
+		src="{!$Page.PartnerSearch}" width="100%" height="6000 px"/>
+
+</apex:page>

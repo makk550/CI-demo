@@ -1,0 +1,31 @@
+<apex:page showHeader="true"
+    sidebar="true" 
+    standardStylesheets="true" >
+    <style>
+     body{
+         min-width : 800px;
+     }
+    </style>
+    <script type="text/javascript">
+  
+        function recalculateDimension(event){
+            var iframe = document.getElementById('iframe');
+            if(document.addEvenListener){
+                iframe.height = window.outerHeight;
+            }else{
+                iframe.height = document.documentElement.clientHeight;
+            }
+        }  
+        //if not ie
+        if(document.addEventListener){
+            window.addEventListener('load', recalculateDimension, false);
+        } else {
+            //if ie
+            window.attachEvent('onload', recalculateDimension);
+        }
+    
+    </script>
+    
+    <iframe id="iframe" name="iframe" frameborder="0" scrolling="true"
+        src="{!$Page.PartnerDetails}" width="100%"/>
+</apex:page>

@@ -1,0 +1,33 @@
+<apex:page controller="masterTrackerSanboxSettingsController">
+
+    <apex:pageMessages ></apex:pageMessages>
+    
+    <apex:form >
+        
+        <apex:sectionHeader title="Master Tracker Settings"/>
+        
+        <apex:pageBlock title="Available Sandboxes" rendered="{!renderRecord}">
+            
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save" action="{!onsave}"/>
+            </apex:pageBlockButtons>
+            
+            Please select the sandboxes that will be used for QA and UAT for the release.
+            
+            <br/><br/>            
+            
+            <apex:pageBlockSection >
+            
+                <apex:inputCheckbox label="FSB1" value="{!fsb1}"/>
+                <apex:inputCheckbox label="FSB2" value="{!fsb2}"/>
+                <apex:inputCheckbox label="FSB3" value="{!fsb3}"/>
+                <apex:inputCheckbox label="FSB4" value="{!fsb4}"/>
+                <apex:inputCheckbox label="FSB5" value="{!fsb5}"/>
+                
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+        
+    </apex:form>
+    
+</apex:page>

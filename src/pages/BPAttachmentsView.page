@@ -1,0 +1,27 @@
+<apex:page controller="BPAttachmentsViewController">
+    <apex:stylesheet value="{!URLFOR($Resource.bpstyles, 'styles.landing.min.css')}" />
+    <apex:pageBlock title="Business Plan Attachment(s)"></apex:pageBlock>
+    <apex:outputLink value="bpListview"> Back to Business Plan list </apex:outputLink>
+    <apex:pageBlock >
+            <apex:pageblocksection >
+                <apex:pageBlockTable style="width:250%;align:left" value="{!Attachments}" var="att">
+                    <apex:column >
+                        <apex:outputLink value="/servlet/servlet.FileDownload?file={!att.Id}" target="_blank"> {!att.Name} </apex:outputLink>
+                        <apex:facet name="header"> {!$ObjectType.Attachment.Fields.Name.Label} </apex:facet>
+                    </apex:column>
+                   <apex:column value="{!CEILING(att.bodylength/1024)} KB">
+                        <apex:facet name="header"> Size </apex:facet>
+                    </apex:column>
+                    <apex:column value="{!att.CreatedDate}">
+                        <apex:facet name="header"> {!$ObjectType.Attachment.Fields.CreatedDate.Label} </apex:facet>
+                    </apex:column>
+                   <apex:column value="{!att.lastModifiedDate}">
+                        <apex:facet name="header"> {!$ObjectType.Attachment.Fields.lastModifiedDate.Label} </apex:facet>
+                    </apex:column>
+                  <!-- <apex:column value="{!bp.Plan_Fiscal_Year__c}">
+                        <apex:facet name="header"> {!$ObjectType.Business_Plan_New__c.Fields.Plan_Fiscal_Year__c.Label} </apex:facet>
+                    </apex:column> -->
+                </apex:pageBlockTable>
+            </apex:pageblocksection>
+        </apex:pageBlock>
+</apex:page>

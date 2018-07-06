@@ -1,0 +1,590 @@
+<apex:page controller="PartnerDetailsController"
+    sidebar="true" 
+    showHeader="false" 
+    standardStylesheets="false" 
+    action="{!doOnLoad}" id="Page" language="{!preferredLanguageCode}"> 
+    <apex:stylesheet value="{!$Page.PartnerFinderCSS}"/>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Partner Details</title> 
+  
+<apex:outputPanel rendered="{!isIE}">
+<style type="text/css">
+.textbox_sm {
+    background:transparent url({!$Resource.bg_input_png}) repeat-x scroll 0 0;
+    height:18px;
+    padding:1px 0px 5px 0px;
+    width:51px;
+}
+
+.textbox_sm select {
+    background:transparent none repeat scroll 0 0;
+    border-style:none;
+    color:black;
+    font-size:11px;
+    height:20px;
+    width:51px;
+    padding-top:2px; padding-right:2px;
+}
+
+.textbox_med {
+    background:transparent url({!$Resource.bg_input_png}) repeat-x scroll 0 0;
+    height:18px;
+    padding:0px 0px 5px 0px;
+    width:150px;
+}
+
+.textbox_med select {
+    background:transparent none repeat scroll 0 0;
+    border-style:none;
+    color:black;
+    font-size:11px;
+    height:20px;
+    width:150px;
+    padding-top:0px; padding-right:2px;
+}
+
+.textbox_lrg {
+    background:transparent url({!$Resource.bg_input_png}) repeat-x scroll 0 0;
+    height:18px;
+    padding:1px 0px 5px 0px;
+    width:400px;
+}
+
+.textbox_lrg select {
+    background:transparent none repeat scroll 0 0;
+    border-style:none;
+    color:black;
+    font-size:11px;
+    height:20px;
+    width:400px;
+    padding-top:2px; padding-right:2px;
+}
+
+.textbox_filter {
+    background:transparent url({!$Resource.bg_input_png}) repeat-x scroll 0 0;
+    height:18px;
+    padding:1px 0px 5px 0px;
+    width:275px;
+}
+
+.textbox_filter select {
+    background:transparent none repeat scroll 0 0;
+    border-style:none;
+    color:black;
+    font-size:11px;
+    height:20px;
+    width:275px;
+    padding-top:2px; padding-right:2px;
+}
+
+</style>
+</apex:outputPanel>
+</head>
+
+<body>
+    <apex:outputPanel id="Top"/>
+    <apex:outputPanel rendered="{!AND(errorOccurred,errorCode != TERMS_REQUIRED)}">
+        <apex:variable var="errorMsg" value="{!$Label.msgemptyidparam}" rendered="{!errorCode == EMPTY_ID_PARAM}"/>
+        <apex:variable var="errorMsg" value="{!$Label.msgrecordnotfound}" rendered="{!errorCode == RECORD_NOT_FOUND}"/>
+        <apex:variable var="errorMsg" value="{!$Label.msgaccessdenied}" rendered="{!errorCode == ACCESS_DENIED}"/>
+        <apex:pageMessage severity="error" strength="2" title="{!errorMsg}"/>
+    </apex:outputPanel>
+    <!-- OTHERWISE, DISPLAY DETAILS SCREEN --> 
+
+                    <apex:pageMessages />
+    <apex:outputPanel rendered="{!AND(errorOccurred,errorCode == TERMS_REQUIRED)}">
+            <!-- Term and Conditions Content -->
+            
+                <apex:form >
+
+
+                    <apex:outputPanel styleClass="container" style="background:url({!URLFOR($Resource.bg_container_gif)}) top center;" layout="block">
+                    <!-- USE LABELS -->
+                        <h2>{!$Label.termsandconditionstitle}</h2> 
+ 
+                    <div>
+                        <table width="912" border="0" cellspacing="0" cellpadding="5" class="partner_search">
+                            <tr>
+                                <td colspan="3" align="center" style="border:5px solid #000000">
+                                    <apex:iframe src="{!TermsAndConditionsURL}"  scrolling="true" height="400px" id="theIframe"/>
+                                </td>  
+                            </tr> 
+                            <tr>
+                                <td width="45%">
+                                </td>
+                                <td colspan="2" align="center">
+                                    <apex:outputPanel layout="block">
+                                        <apex:commandLink action="{!updateTermsAndContitionsStatus}" styleClass="ovalbutton">
+                                            <span>{!$Label.termsandconditionsbuttonagree}</span>
+                                        </apex:commandLink>
+                                    </apex:outputPanel>
+
+                                </td>
+                            </tr>
+
+                        </table>
+    
+                    </div>
+                </apex:outputPanel>
+            
+
+            <div class="bottom_bar"><img src="{!$Resource.bottom_bar_gif}" /></div>
+        </apex:form>
+            
+            
+       </apex:outputPanel>
+        <apex:outputPanel rendered="{!NOT(errorOccurred)}">
+        <!-- INCLUDE SCRIPTS -->
+        <apex:includeScript value="{!$Resource.prototype_js}"/>
+        <apex:includeScript value="https://maps.googleapis.com/maps/api/js?v=3"/>
+        <apex:includeScript value="{!$Page.PartnerDetailsJS}"/> 
+       <!--  
+        <apex:includeScript value="{!$Resource.PartnerDetails_js}"/>
+    --> 
+        <apex:form id="Form">
+        <apex:inputHidden id="LocationData" value="{!locationsInJson}"/>
+
+        <div class="main_title">  
+
+            <table style="width:100%">
+                    <tbody>
+                    <tr>
+                        <td colspan="3">
+                            <apex:outputLink rendered="{!NOT(isCurrentUserAdmin)}" 
+                                            style="color:#3FA2C2;
+                                                    font-family:Arial,Helvetica,sans-serif;
+                                                    font-size:12px;
+                                                    font-weight:normal;
+                                                    text-decoration:none;" 
+                                            value="{!$Page.PartnerSearch}?l={!preferredLanguageCode}&{!searchStateParams}">{!$Label.linkbacktosearch}</apex:outputLink>
+                        </td>
+                    </tr>
+                    <tr>
+                    <td style="width:40%;">
+                    <!-- <span class="main_text">{!IF(isCurrentUserAdmin,'My Public Profile',$Label.partnerdetailsmaintitle)}</span> -->
+                        <span class="main_text">{!$Label.partnerdetailsmaintitle}</span>
+
+                    </td>
+                    <td style="width:30%;">
+                        <apex:outputPanel id="PageMessages" >
+                        <apex:outputPanel styleClass="message" rendered="{!messages.size>0}" layout="block"
+                                          style="width:100%; font-family:'Arial',sans-serif;font-size:12px;">
+                            <ul>         
+                                <apex:repeat var="msg" value="{!messages}">
+                                    <li>{!msg}</li>
+                                </apex:repeat>
+                            </ul>
+                        </apex:outputPanel>
+                        </apex:outputPanel>
+                    </td>
+                    <td style="width:30%;">
+                        <apex:outputPanel id="PublishControlPanel">
+            <apex:outputPanel rendered="{!isCurrentUserAdmin}">
+                <apex:outputPanel rendered="{!partnerRecord.isEnabled}">
+                    <div class="other_status">
+                         <apex:commandLink action="{!updatePublishStatus}" 
+                                            reRender="PublishControlPanel, PageMessages"  >
+                                <apex:param name="publish" value="No"/>
+                                <img src="{!$Resource.redbox_png}" />  {!$Label.unpublish} 
+                         </apex:commandLink>
+                    </div>
+                    <div class="current_status">{!$Label.currentstatus}: <img src="{!$Resource.greenbox_png}" /> {!$Label.published}
+                    </div> 
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!NOT(partnerRecord.isEnabled)}">
+                    <div class="other_status">
+                         <apex:commandLink action="{!updatePublishStatus}" 
+                                            reRender="PublishControlPanel, PageMessages"  >
+                                <apex:param name="publish" value="Yes"/>
+                                <img src="{!$Resource.greenbox_png}" /> {!$Label.publish}   
+                         </apex:commandLink>
+                    </div>
+                    <div class="current_status">{!$Label.currentstatus}: <img src="{!$Resource.redbox_png}" /> {!$Label.unpublished}
+                    </div> 
+
+                </apex:outputPanel>
+            
+            </apex:outputPanel>
+            </apex:outputPanel>
+                    </td>
+                    </tr>
+                    </tbody>
+                </table>            
+
+        </div>
+
+    <div class="container">
+
+<div class="details_header">
+<div class="detail_logo">
+    <apex:image height="50" width="150" rendered="{!LEN(partnerRecord.logoId)>0}"  value="{!URLFOR($Action.Attachment.Download, partnerRecord.logoId)}"/><br/>
+</div> 
+<apex:outputPanel rendered="{!activeTab='Details'}">
+    <h1>{!$Label.headerpartnerdetails} - {!partnerRecord.name}</h1>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!activeTab='Locations'}">
+    <h1>{!$Label.headerpartnerlocations} - {!partnerRecord.name}</h1>
+</apex:outputPanel>
+</div> 
+
+<div class="detail_listing">
+        <table width="626" border="0" align="left" cellpadding="5" cellspacing="0">   
+            <apex:repeat var="detailField" value="{!partnerDetailFieldsBasic}">
+                <apex:outputPanel rendered="{!detailField.notBlank}">
+                <tr>
+                    <td width="145" class="border">
+                        <apex:outputText value="{!detailField.label}:"/>
+                    </td>
+                    <td width="461"  class="border">
+                        <apex:outputText value="{!detailField.typedValue}"/>
+                    </td>           
+                </tr>
+                </apex:outputPanel>
+            </apex:repeat>
+        </table>
+
+  <apex:outputPanel styleClass="contact_partner" rendered="{!NOT(ISNULL(partnerContactLocation))}" layout="block"> 
+      <img src="{!$Resource.contact_partner_top_gif}" />
+      <table width="254" border="0" cellpadding="0" cellspacing="0">
+        <apex:outputPanel rendered="{!LEN(partnerContactLocation.Point_of_Contact_Email__c)>0}">
+        <tr>
+          <td colspan="2" align="left" valign="top"><div class="buttonwrapper">
+         <apex:commandLink action="{!toggleEmail}" styleClass="ovalbutton"><span>{!$Label.btncontactpartner}</span></apex:commandLink>
+            </div></td>
+        </tr>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!LEN(partnerContactLocation.Point_of_Contact_Phone__c)>0}">
+        <tr>
+          <td align="left" valign="top"><strong>{!$Label.contactphone}:</strong></td>
+          <td align="left" valign="top">{!partnerContactLocation.Point_of_Contact_Phone__c}</td>
+        </tr>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!OR(
+                                        LEN(partnerContactLocation.Street__c)>0,
+                                        LEN(partnerContactLocation.City__c)>0,
+                                        LEN(partnerContactLocation.State_Province__c)>0,
+                                        LEN(partnerContactLocation.Postal_Code__c)>0
+                                        )}">
+        <tr> 
+          <td align="left" valign="top"><strong>{!$Label.contactaddress}:</strong></td>
+          <td align="left" valign="top" class="last">{!partnerContactLocation.Street__c}<br />
+            {!partnerContactLocation.City__c}, {!partnerContactLocation.State_Province__c}, {!partnerContactLocation.Postal_Code__c}<br />
+            <br />
+            <a target="_blank" 
+               href="http://maps.google.com/maps?saddr=&daddr={!partnerContactLocation.Street__c}+{!partnerContactLocation.City__c}+{!partnerContactLocation.State_Province__c}+{!partnerContactLocation.Postal_Code__c}&hl=en">{!$Label.drivingdirections}</a></td>
+        </tr>
+        </apex:outputPanel>
+      </table>
+  </apex:outputPanel>
+</div>
+<div style="clear:both">&nbsp;</div>
+
+<apex:outputPanel id="tabList">
+
+<div class="memberSortBox" style="overflow: hidden; margin-bottom: 10px;">   <span class="left_round">&nbsp;</span>
+    <ul style="list-style-type:none;">
+     <apex:outputPanel rendered="{!IF(activeTab='Details',true,false)}">
+          <li class="isActive" >
+          <a title="{!$Label.tabcompanydetails}" href="#">
+                <span>{!$Label.tabcompanydetails}</span></a>
+          </li>
+     </apex:outputPanel>
+     <apex:outputPanel rendered="{!IF(activeTab='Details',false,true)}">
+         <li>
+            <apex:commandLink action="{!clickTab}" 
+                        value="{!$Label.tabcompanydetails}" 
+                        title="{!$Label.tabcompanydetails}" >
+                    <apex:param name="tab" value="Details"/> 
+            </apex:commandLink>
+        </li>
+     </apex:outputPanel>
+
+   <!--     <li> <a href="#" title="projects"> <span>Projects</span></a></li>
+      <li> <a href="#" title="Documents">Documents</a></li>
+   --> 
+     <apex:outputPanel rendered="{!IF(activeTab='Locations',true,false)}">
+        <li class="isActive"><a title="{!$Label.tablocations}" href="#">
+                <span>{!$Label.tablocations}</span></a></li>
+      </apex:outputPanel>
+     <apex:outputPanel rendered="{!IF(activeTab='Locations',false,true)}">
+       <li>
+            <apex:commandLink action="{!clickTab}" 
+                        value="{!$Label.tablocations}" 
+                        title="{!$Label.tablocations}" 
+                         >
+                    <apex:param name="tab" value="Locations"/>
+            </apex:commandLink>
+        </li>
+    </apex:outputPanel> 
+    
+    <apex:outputPanel rendered="{!isCurrentUserAdmin}">
+        <li class="right_link"><a href="{!$Page.Logo}?accountId={!partnerRecord.id}&retURL={!$Page.PartnerDetails}&cancelURL={!$Page.PartnerDetails}&showHeader=false">{!IF(LEN(partnerRecord.logoRecordId)>0,$Label.editlogo,$Label.addlogo)}</a></li>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF(isCurrentUserAdmin && activeTab='Details',true,false)}">
+        <li class="right_link">
+            <apex:commandLink action="{!clickTab}" 
+                    value="{!$Label.edit_locations}" 
+                    title="{!$Label.edit_locations}">
+                <apex:param name="tab" value="Locations"/>
+            </apex:commandLink>
+        </li>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!IF(isCurrentUserAdmin && activeTab='Locations',true,false)}">
+        <li class="right_link"><a href="{!$Page.EditLocation}?retURL={!$Page.PartnerDetails}&cancelURL={!$Page.PartnerDetails}&showHeader=false" title="Locations">{!$Label.add_new_location}</a></li>
+    </apex:outputPanel> 
+    <apex:outputPanel rendered="{!IF(isCurrentUserAdmin,true,false)}">
+        <li class="right_link"><apex:commandLink id="toggleEditDetail" action="{!toggleEditDetail}" value="{!$Label.linkeditdetails}"/></li>
+    </apex:outputPanel>
+    </ul>
+</div>
+</apex:outputPanel>
+<apex:outputPanel id="tabDetails">
+
+    <apex:outputPanel id="companyDetailsTab" rendered="{!IF(activeTab='Details',true,false)}">
+    
+    <div class="detail_listing">    
+  
+    <table cellspacing="0" cellpadding="5" border="0" width="905">  
+            <apex:repeat var="detailField" value="{!partnerDetailFieldsOverview}">
+                <apex:outputPanel rendered="{!LEN(detailField.value)>0}">
+                <tr>
+                    <td width="145" class="border">
+                        <apex:outputText value="{!detailField.label}:"/>
+                    </td>
+                    <td width="740"  class="border">
+                        <apex:outputText value="{!detailField.value}"/>
+                    </td>           
+                </tr>
+                </apex:outputPanel>
+            </apex:repeat>
+        </table>
+    </div>
+    </apex:outputPanel>
+
+
+
+<apex:outputPanel id="locationsTab" rendered="{!IF(activeTab='Locations',true,false)}">
+<!-- 
+========================================
+LOCATION SEARCH WITHIN DETAILS TAKEN OUT BY RICHARD 8/1/09 
+========================================
+<strong><div class="search_container_location">
+<table width="909" border="0" cellspacing="0" cellpadding="5" class="partner_search">
+  <tr>
+    <td width="57" align="right">{!$Label.search}:</td>
+    <td width="197"><div class="textbox"><apex:inputText value="{!searchCriteria.keyword}" id="txtSearchFor" maxlength="128" required="false" />
+                                    <div id="keywordChoices" class="autocomplete"></div></div></td>
+    <td width="56">{!$Label.location}:</td>
+    <td width="204"><div class="textbox"><apex:inputText maxlength="50" id="txtLocation" style="width:250px"  value="{!searchCriteria.address}" />
+                                    <div id="addressChoices" class="autocomplete"></div></div></td>
+    <td width="56">{!$Label.distance}:</td>
+    <td width="61">
+        <div class="textbox_sm">
+            <apex:selectList id="ddlDistance" value="{!searchCriteria.distance}" size="1" style="width:50px" >
+                <apex:selectOption itemValue="5" itemLabel="5" />
+                <apex:selectOption itemValue="10" itemLabel="10" />
+                <apex:selectOption itemValue="25" itemLabel="25" />
+                <apex:selectOption itemValue="50" itemLabel="50" />
+                <apex:selectOption itemValue="75" itemLabel="75" />
+                <apex:selectOption itemValue="100" itemLabel="100" />
+                <apex:selectOption itemValue="200" itemLabel="200" />
+            </apex:selectList>
+        </div>
+    </td>
+    <td width="64">
+        <div class="textbox_sm">
+            <apex:selectList id="distanceType" 
+                             value="{!searchCriteria.distanceType}" size="1">
+                <apex:selectOption itemValue="miles" itemLabel="mi" />
+                <apex:selectOption itemValue="kilometers" itemLabel="km" />
+            </apex:selectList>
+        </div>
+     </td>
+    <td width="62">     <apex:outputPanel id="pnlBtnSearchBasic" styleClass="buttonwrapper" layout="block">
+            <apex:commandLink id="btnSearchBasic"
+                                styleClass="ovalbutton" 
+                                rerender="resultsPanel, Messages, LocationData" 
+                                status="processingStatus" 
+                                action="{!search}" oncomplete="updateMap()"><span>{!$Label.btngo}</span>
+            </apex:commandLink> 
+        </apex:outputPanel> </td>
+    <td width="62">&nbsp;</td>
+  </tr>
+</table>
+</div></strong> 
+
+========================================
+(END LOCATION SEARCH) 
+========================================
+ -->
+    <apex:actionFunction name="deleteLocation" 
+                         action="{!deleteLocation}" 
+                         rerender="LocationData, resultsPanel, messages"
+                         oncomplete="showLocation('{!locationPaginator.pageStartPositionDisplayFriendly}')" 
+                         >
+         <apex:param name="firstParam" assignTo="{!deleteLocationId}" value="" />       
+    </apex:actionFunction>
+    <apex:outputPanel id="resultsPanel">
+       <apex:outputPanel rendered="{!locations.size==0}">
+            <div class="detail_listing">
+                <div align="left">
+                    <div align="left">
+                        <span>{!$Label.you_havent_set_up_any_locations_yet}</span>
+                    </div>
+                    <div>
+                    &nbsp;
+                    </div>
+                    <div align="left">
+                        <apex:outputLink styleClass="ovalbutton" 
+                            value="{!$Page.EditLocation}?retURL={!$Page.PartnerDetails}&cancelURL={!$Page.PartnerDetails}&showHeader=false" ><span>{!$Label.add_new_location}</span>
+                        </apex:outputLink>
+                    </div>
+                </div>
+            </div>
+       </apex:outputPanel>
+       <apex:outputPanel rendered="{!locations.size>0}">
+        <div class="detail_listing">
+
+        <ol class="loclist">
+ 
+            <apex:repeat var="location" value="{!locations}">
+                <li>
+                <!--  
+                    <div class="loc_number"><apex:outputLink value="#map_canvas" onclick="showLocation('{!location.serialNumber}')"><strong><apex:outputText value="{!location.serialNumber}" /></strong></apex:outputLink></div>
+                -->
+                <div class="loc_details">
+                    <apex:outputLink value="#map_canvas" onclick="showLocation('{!location.serialNumber}')"><strong><apex:outputText value="{!location.serialNumber}. " /></strong>{!location.name}</apex:outputLink><br/>  
+                <!--  
+                    <apex:outputLink value="{!$Page.PartnerDetails}?id={!location.id}" >{!location.name}</apex:outputLink><br/>
+                -->
+                    {!location.street}<br />
+                    <a href="#" class="location_link">{!location.city},
+                    {!location.state}</a><br />
+                    <apex:outputPanel rendered="{!LEN(location.postalCode)>0}">
+                        {!location.postalCode}<br />
+                    </apex:outputPanel>
+                    
+                    <apex:repeat var="locField" rendered="{!NOT(ISNULL(location.detailFields))}" value="{!location.detailFields}">
+                        <apex:outputPanel rendered="{!LEN(locField.value)>0}">
+                            <strong><apex:outputText value="{!locField.label}:"/></strong>&nbsp;<apex:outputText value="{!locField.value}"/><br/>
+                        </apex:outputPanel>
+                    </apex:repeat>
+                    
+                    <!-- <a class="contact_branch"
+                        onclick="">Contact this branch</a>-->
+                        <!-- 
+                    <apex:outputPanel rendered="{!locations.size>1}">
+                            <apex:outputLink value="#map_canvas" onclick="showLocation('{!location.serialNumber}')">{!$Label.showonmap}</apex:outputLink><br/>  
+                    </apex:outputPanel>
+                         -->
+                    <apex:outputPanel id="EditPartnerLoc" rendered="{!isCurrentUserAdmin}">
+                        <apex:outputLink value="{!$Page.EditLocation}?retURL={!$Page.PartnerDetails}&cancelURL={!$Page.PartnerDetails}&id={!location.id}&showHeader=false" styleClass="admin_link"  >{!$Label.linklocationedit}</apex:outputLink>&nbsp;|&nbsp; 
+                        <apex:outputLink value="#map_canvas" onclick="confirmDeletion('{!location.id}')" styleClass="admin_link">{!$Label.linklocationdelete}</apex:outputLink>
+                        <!--  <apex:commandLink styleClass="admin_link"  action="{!deleteLocation}" value="delete" 
+                                                reRender="LocationData, resultsPanel" status="updateLocationStatus"  >
+                                <apex:param name="locId" value="{!location.id}"/>
+                        
+                        </apex:commandLink>
+                       -->
+                    </apex:outputPanel>
+                </div>
+                </li>
+            </apex:repeat>
+
+
+        </ol>
+
+        <div id="map_canvas" class="location_map" style="width: 600px; height: 300px"></div>
+
+        <div class="paginationBox"
+            style="overflow: hidden; width: 400px; margin-left: 3px;">
+            <apex:outputPanel id="paginationTable" rendered="{!IF(locationPaginator.recordCount>0,true,false)}" layout="block">
+                    <!-- pagination controls -->
+                    <table width="942" cellspacing="0" cellpadding="0" border="0"
+                        class="pagination">
+                        <tbody>
+                        <!--    <tr>
+                                <td width="163" valign="top" align="left">
+                                    <apex:outputText >Page {!IF(locationPaginator.pageCount=0, 0, locationPaginator.pageNumberDisplayFriendly)} of {!locationPaginator.pageCount} in {!locationPaginator.recordCount} results </apex:outputText>
+                                </td>
+                            </tr>
+                        -->
+                            <tr>
+                                    
+                                <td valign="top" align="left">
+                                
+                                <apex:actionStatus startText="updating..." 
+                                                    startStyle="color: #F00; font-weight: bold;"
+                                                    stopText="" 
+                                                    onStop="showLocation('{!locationPaginator.pageStartPositionDisplayFriendly}')" 
+                                                    id="updateLocationStatus"/>
+                                <!-- <div style="overflow: hidden;" class="paginationBox">-->
+                                <div class="paginationBox"  style="width: 30%;">
+                                <ul>
+                                    <li><apex:commandLink action="{!locationPaginator.first}" rendered="{!locationPaginator.hasPrevious}"
+                                              rerender="LocationData, resultsPanel" styleClass="grey_arrow" status="updateLocationStatus">&#060;&#060;</apex:commandlink></li>
+                                    <li><apex:commandLink action="{!locationPaginator.previous}" 
+                                                          styleClass="grey_arrow" rendered="{!locationPaginator.hasPrevious}"
+                                                          rerender="LocationData, resultsPanel" 
+                                                          status="updateLocationStatus">&#060;</apex:commandlink></li>
+                                    <apex:repeat value="{!locationPaginator.previousSkipPageNumbers}" var="skipPageNumber">
+                                        <apex:outputPanel ><li>
+                                            <apex:commandLink action="{!skipToLocation}" value="{!skipPageNumber+1}" 
+                                                              reRender="LocationData, resultsPanel" status="updateLocationStatus"  >
+                                                <apex:param name="pageNumber" value="{!skipPageNumber}"/>
+                                            </apex:commandLink></li>
+                                        </apex:outputPanel>
+                                    </apex:repeat>                                  
+                                    <li class="isActive">
+                                        <a title="1" href="#">
+                                            <span>{!locationPaginator.pageNumber+1}</span>
+                                        </a>
+                                    </li>
+                                    <apex:repeat value="{!locationPaginator.nextSkipPageNumbers}" var="skipPageNumber">
+                                        <apex:outputPanel id="NextPageLinks">
+                                            <li><apex:commandLink action="{!skipToLocation}" 
+                                            status="updateLocationStatus" reRender="LocationData, resultsPanel" value="{!skipPageNumber+1}" >
+                                                <apex:param name="pageNumber" value="{!skipPageNumber}"/>
+                                            </apex:commandLink></li>
+                                        </apex:outputPanel>
+                                    </apex:repeat>
+                                    
+                                    <li><apex:commandLink action="{!locationPaginator.next}" rendered="{!locationPaginator.hasNext}" styleClass="grey_arrow"
+                                              rerender="LocationData, resultsPanel" status="updateLocationStatus">&#062;</apex:commandlink></li>
+                                    <li><apex:commandLink action="{!locationPaginator.last}" rendered="{!locationPaginator.hasNext}" styleClass="grey_arrow" 
+                                              rerender="LocationData, resultsPanel" status="updateLocationStatus">&#062;&#062;</apex:commandlink></li>
+                                </ul>
+                                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                
+                </apex:outputPanel> <!-- pagination -->
+        
+        </div>
+        
+        </div>
+       </apex:outputPanel>
+        
+        </apex:outputPanel>
+        
+
+</apex:outputPanel>
+
+
+</apex:outputPanel>
+
+
+   
+        </div>
+
+<div class="bottom_bar"><img src="{!$Resource.bottom_bar_gif}" /></div>
+</apex:form>
+</apex:outputPanel>
+</body>
+</html>
+
+</apex:page>

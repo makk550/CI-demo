@@ -1,0 +1,417 @@
+<apex:page showHeader="true" standardController="Opportunity" id="EditPartnerOpp" extensions="EditPartnerOpportunity">
+    <link href="/servlet/servlet.FileDownload?file=01530000001ojYs" rel="stylesheet" type="text/css"/>
+    <link href="/servlet/servlet.FileDownload?file=01530000001ojYx" rel="stylesheet" type="text/css"/>
+    <link href="/servlet/servlet.FileDownload?file=01530000001ojZ7" rel="stylesheet" type="text/css"/>
+<script> 
+     var newWin=null;  
+     
+      window.onload = function loadPage(){
+     try {
+         var accountid = "{!Opportunity.AccountId}";                
+          if(accountid != null && accountid != "") {
+          //alert("Account ID");
+                     document.getElementById('EditPartnerOpp:theform:theBlock:pbs3:hdnAccountID').value = accountid;  }                                     
+       
+         //EditPartnerOpp:theform:theBlock:pbs3:j_id40:AccName
+          if(document.getElementById('EditPartnerOpp:theform:theBlock:pbs3:hdnAccountName').value != ""){
+          // alert("Account Name");
+            document.getElementById('targetName').innerHTML = document.getElementById('EditPartnerOpp:theform:theBlock:pbs3:hdnAccountName').value;
+          }
+       
+        
+        var Distiaccountid = "{!Opportunity.Distributor_6__c}";
+                                                                                
+        if(Distiaccountid != null && Distiaccountid != ""){
+        // alert("Assign Distributor ID");
+             document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnDistiAccountID').value = Distiaccountid;   
+            
+             }              
+         
+        if(document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnDistiAccountName').value != ""){
+       // alert("Assign Distributor Account Name");
+            document.getElementById('targetNameDisti').innerHTML = document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnDistiAccountName').value;
+        
+        }        
+
+        var contactid = "{!Opportunity.Distributor_Contact__c}";
+        if(contactid != null && contactid!= ""){
+        //alert("Assign Distributor contact Id");
+           document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnContactID').value = contactid;}
+        
+        if(document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnContactName').value != ""){
+        //alert("Assign Contact Name");
+                document.getElementById('targetDistiContact').innerHTML = document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnContactName').value;
+            }
+        } catch(err)
+        {
+        //alert("The error :" + err.message);
+        }
+    }
+    function clearValue()
+     {     
+    
+             document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnDistiAccountID').value = ''; 
+             
+             document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnDistiAccountName').value = ''; 
+            document.getElementById('targetNameDisti').innerHTML = '';
+             
+            document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnContactID').value = '';
+            document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnContactName').value = '';
+             document.getElementById('targetDistiContact').innerHTML = ''; 
+          
+                       
+        
+     }
+
+                    
+     function openLookupPopup(searchPage,name, id)  
+     {         
+        var pageName = "Opportunity";
+        var url="{!$Site.prefix}/apex/" + searchPage +"?namefield=" + name + "&idfield=" + id + "&parentPage=" + pageName;   
+        newWin=window.open(url, 'Popup','height=500,width=1000,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+     
+            if (window.focus)    
+                {    newWin.focus();   
+            }           return false;    
+     }      
+     
+     function openContactLookup(searchPage,name, id)  
+     {          
+        
+        var Distiaccountid = "{!Opportunity.Distributor_6__c}";
+                                                                                  
+        if(Distiaccountid != null && Distiaccountid != "")
+             document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnDistiAccountID').value = Distiaccountid;                 
+
+        if(document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnDistiAccountID').value == ""){
+            alert("Please select Distributor Account");
+        }
+        else
+        {
+             var accountId = document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnDistiAccountID').value ; 
+             /*var url="/apex/" + searchPage +"?namef=" + name + "&idf=" + id + "&accId=" + accountId + "&emailf=" + contactEmail + "&phonef=" + contactPhone
+                             + "&mobilef=" + contactMobile + "&faxf=" + contactFax + "&titlef=" + contactTitle;        */
+            var url="{!$Site.prefix}/apex/" + searchPage +"?namef=" + name + "&idf=" + id + "&accId=" + accountId ;   
+            newWin=window.open(url, 'Popup','height=500,width=600,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');   
+
+            if (window.focus)    
+                {    newWin.focus();   
+            }           
+            return false;
+         }    
+     }           
+     
+     function closeLookupPopup()  
+     {     
+            if (null!=newWin)     
+            {        
+                newWin.close();     
+            }    
+     }    
+    function onSave()
+    {
+        
+        var oppTypeComp = document.getElementById('EditPartnerOpp:theform:theBlock:pbs3:j_id49:Type');
+       
+       //alret(document.getElementById('EditPartnerOpp:theform:theBlock:pbs3:j_id49:Type').value);
+      if(document.getElementById('EditPartnerOpp:theform:theBlock:pbs3:j_id49:Type').value ==  '1 Tier')
+          if(document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:j_id55:partnerAcc_lkid').value == '')
+                alert('For 1 Tier Opportunity a Partner is required');
+
+      if( oppTypeComp.value ==  '2 Tier')
+          if(document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:j_id55:partnerAcc_lkid').value == ''  || document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnDistiAccountID').value == ''){
+                alert('For Type 2 Tier Opportunity, Partner and Distributor should be populated');
+                return false;
+          }       
+      if(document.getElementById('EditPartnerOpp:theform:theBlock:pbs3:j_id49:Type').value ==  'Direct')
+          if(document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:j_id55:partnerAcc_lkid').value != '' || document.getElementById('EditPartnerOpp:theform:theBlock:PartnerInfo:hdnDistiAccountID').value != '')
+                alert('Partner and Distributor fields must be blank for Direct opportunity');          
+    }
+     </script>
+ <apex:pagemessages ></apex:pagemessages>
+<apex:sectionHeader title=" New Opportunity"/>  
+  <apex:form id="theform">
+      <apex:pageBlock title="Opportunity Edit" mode="edit" id="theBlock">
+        <apex:pageBlockButtons >
+            <apex:commandButton onclick="return onSave();"  action="{!UpdateOpportunity}" value="Save"/>
+            <apex:commandButton action="{!Cancel}" value="Cancel"/>
+        </apex:pageBlockButtons>           
+            <apex:pageBlockSection id="pbs3" columns="2" title="Sell To" >                
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Opportunity Owner" for="OppOwner"/>
+                              <apex:outputText id="oppOwner" value="{!Opportunity.Owner.Name}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Sales Price" for="SalesPrice"/>
+                              <apex:outputText id="SalesPrice" value="{!Opportunity.Partner_Sales_Price__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Opportunity Name" for="OppName"/>
+                              <apex:inputField styleClass="requiredInput" id="OppName" value="{!Opportunity.Name}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="" />
+                    </apex:pageblockSectionItem>
+
+                    <apex:pageblockSectionItem >                                                          
+                         <apex:outputLabel value="End User Account Name" for="AccName"/> 
+                         <apex:outputPanel styleClass="requiredInput"  layout="block" >
+                         <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <div id="targetName" style="float:left;font-size:12px">{!Opportunity.Account.Name}</div>  &nbsp;                    
+                                   <!-- Modified the Code by JADMR01 on 13/2/2014 
+                                        Navigation to New Search Screen for Account -->
+                                    <a href="#" onclick="openLookupPopup('DE_AccSearch_VFP','{!$Component.hdnAccountName}', '{!$Component.hdnAccountID}'); return false">
+                                    <!-- 
+                                    <a href="#" onclick="openLookupPopup('CAEndUserAccountSearch','{!$Component.hdnAccountName}', '{!$Component.hdnAccountID}'); return false">
+                                    -->
+                                        <img title="Account Name Lookup (New Window)" class="lookupIcon" alt="Account Name Lookup (New Window)" src="/s.gif"/>                 
+                                    </a>                         
+                     </apex:outputPanel>                    
+                    </apex:pageblockSectionItem>
+                   <apex:inputHidden id="hdnAccountName" value="{!endUserAccountName}"/>
+                   <apex:inputHidden id="hdnAccountID" value="{!hdnAccountId}"/>  
+
+                     <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Opportunity Currency" for="OppCurr"/>
+                              <apex:inputField id="OppCurr" value="{!Opportunity.CurrencyIsoCode}"/>
+                    </apex:pageblockSectionItem>
+                <!--
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="{!$ObjectType.Opportunity.fields.Site_Association__c.label}" for="SiteAssoc"/>
+                              <apex:inputField id="SiteAssoc" value="{!Opportunity.Site_Association__c}"/>
+                    </apex:pageblockSectionItem>
+				-->
+                    <apex:pageblockSectionItem helpText="{!$ObjectType.Opportunity.Fields.Type.inlineHelpText}">                                                                                 
+                                 <apex:outputLabel value="Type" for="Type"/>                                                                                                                     
+                                 <apex:inputField required="true" id="Type" value="{!Opportunity.Type}"/>                                                                   
+                          </apex:pageblockSectionItem>                                   
+            </apex:pageBlockSection>
+                <apex:pageBlockSection id="PartnerInfo" columns="2" title="Partner Information">                                    
+                        <apex:pageblockSectionItem >                            
+                                  <apex:outputLabel value=""/>
+                                                </apex:pageblockSectionItem>                        
+                        <apex:pageblockSectionItem >                            
+                                  <apex:outputLabel value=""/>
+                                                </apex:pageblockSectionItem>                                                                        
+                        <apex:pageblockSectionItem >                            
+                                   <!-- <apex:outputLabel value="Partner" for="PartnerAcc"/>                                                                     
+                                   <apex:inputField id="partnerAcc" value="{!Opportunity.Reseller__c}" /> -->
+
+                            <apex:outputLabel value="Partner" for="PartnerAcc"/>   
+                            <table>
+                                <tr>
+                                    <td>                                            
+                                        <div id="targetNameResell" style="float:left;font-size:12px">{!Opportunity.Reseller__r.Name}</div>  &nbsp;                    
+                                    </td>
+                                    <td>
+                                        <a href="#" onclick="openLookupPopup('CAResellerAccountSearch','{!$Component.hdnResellAccountName}', '{!$Component.hdnResellAccountID}'); return false">
+                                            <img title="Account Name Lookup (New Window)" class="lookupIcon" alt="Account Name Lookup (New Window)" src="/s.gif"/>                 
+                                        </a>  
+                                    </td>
+                                </tr>
+                            </table> 
+                              
+                        </apex:pageblockSectionItem> 
+                        
+                        <apex:inputHidden id="hdnResellAccountName" value="{!resellbutorAccName}"/>
+                        <apex:inputHidden id="hdnResellAccountID" value="{!hdnresellAccountId}"/> 
+
+                <apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="Partner Expected Close Date" for="PartnerExpCloseDate"/>
+                          <apex:inputField id="PartnerExpCloseDate" value="{!Opportunity.Reseller_Close_Date__c}"/>
+                </apex:pageblockSectionItem>                    
+                <apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="Partner Opportunity Owner" for="PartnerOppOwner"/>                           
+                          <apex:inputField id="PartnerOppOwner" rendered="{!opportunity.Reseller_Contact__c != null}"  value="{!Opportunity.Reseller_Contact__c}"/>
+                </apex:pageblockSectionItem>                    
+                 <apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="Partner Sales Milestone" for="PartnerSalesMilestone"/>
+                          <apex:inputField id="PartnerSalesMilestone" value="{!Opportunity.Reseller_Sales_Milestone__c}"/>
+                </apex:pageblockSectionItem>                    
+                 <apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="Partner Sales Next Step" for="PartnerSalesNextStep"/>
+                          <apex:inputField id="PartnerSalesNextStep" value="{!Opportunity.Reseller_Sales_Next_Step__c}"/>
+                </apex:pageblockSectionItem>                    
+                 <apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="Partner Win/Loss Reason" for="PartnerWinOrLoss"/>
+                          <apex:inputField id="PartnerWinOrLoss" value="{!Opportunity.Reseller_Win_Loss_Reason__c}"/>
+                </apex:pageblockSectionItem>
+                 <apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="Partner Next Step Due Date" for="PartnerNextStepDueDate"/>
+                          <apex:inputField id="PartnerNextStepDueDate" value="{!Opportunity.Reseller_Next_Step_Due_Date__c}"/>
+                </apex:pageblockSectionItem>
+                <apex:pageblockSectionItem >                            
+                         <apex:outputLabel value="Partner Deal Lost To" for="PartnerDealLostTo"/>
+                         <apex:inputField id="PartnerDealLostTo" value="{!Opportunity.Reseller_Name__c}"/>
+                </apex:pageblockSectionItem>
+                <apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="Partner Description" for="Partnerdesc"/>
+                          <apex:inputField id="Partnerdesc" value="{!Opportunity.Reseller_Description__c}"/>
+                </apex:pageblockSectionItem>                    
+                 <!--<apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="Partner Product Notes" for="PartnerProductNotes"/>
+                          <apex:inputField id="PartnerProductNotes" value="{!Opportunity.Reseller_Product_Name__c}"/>
+                </apex:pageblockSectionItem> -->             
+ 
+               <apex:pageblockSectionItem >
+                                                                         
+                         <apex:outputLabel value="Distributor" for="distiName"/>   
+                         <table><tr>
+                                <td>                                            
+                                <div id="targetNameDisti" style="float:left;font-size:12px">{!Opportunity.Distributor_6__r.Name}</div>  &nbsp;                    
+                                </td>
+                                <td>
+                                    <a href="#" onclick="openLookupPopup('CADistributorAccountSearch','{!$Component.hdnDistiAccountName}', '{!$Component.hdnDistiAccountId}'); return false">
+                                        <img title="Account Name Lookup (New Window)" class="lookupIcon" alt="Account Name Lookup (New Window)" src="/s.gif"/>                 
+                                    </a>  
+                                    </td>
+                                    <td>
+                                    <a href="#" onclick="clearValue('CADistributorAccountSearch','{!$Component.hdnDistiAccountName}', '{!$Component.hdnDistiAccountId}'); return true">clear</a>
+                              </td></tr></table> 
+                    </apex:pageblockSectionItem>
+
+                                                 <apex:inputHidden id="hdnDistiAccountName" value="{!distributorAccName}"/>
+                   <apex:inputHidden id="hdnDistiAccountID" value="{!hdnDistiAccountId}"/>  
+                                                 
+                                                 
+
+                    <apex:pageblockSectionItem >                               
+                         <apex:outputLabel value="Distributor Contact" for="DistiContact"/>                          
+                                <div id="targetDistiContact" style="float:left;font-size:12px">{!Opportunity.Distributor_Contact__r.Name}</div>  &nbsp;                    
+                                    <a href="#" onclick="openContactLookup('cadisticontactsearch','{!$Component.hdnContactName}', '{!$Component.hdnContactID}'); return false">
+                                        <img title="Contact Name Lookup (New Window)" class="lookupIcon" alt="Contact Name Lookup (New Window)" src="/s.gif"/>                 
+                                    </a>                                              
+                    </apex:pageblockSectionItem>
+                   <apex:inputHidden id="hdnContactName" value="{!endUserContact}"/>
+                   <apex:inputHidden id="hdnContactID" value="{!hdnContactId}"/>                                      
+
+            
+                 <!--<apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="IQ Number" for="IQNumber"/>
+                          <apex:inputField id="IQNumber" value="{!Opportunity.IQ_Number__c}"/>
+                </apex:pageblockSectionItem> IQ Number field deleted in Release 14.8 Requirement 2.1-->             
+                 <apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="Order Number" for="OrderNumber"/>
+                          <apex:inputField id="OrderNumber" value="{!Opportunity.Order_Number__c}"/>
+                </apex:pageblockSectionItem>     
+                <apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="Rebate Eligible" for="RebateEligible"/>
+                          <apex:inputField id="RebateEligible" value="{!Opportunity.Rebate_Eligible__c}"/>
+                </apex:pageblockSectionItem>
+                <!--<apex:pageBlockSectionItem helpText="{!$ObjectType.Opportunity.Fields.Partner_Engagement__c.inlineHelpText}">                            
+                          <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Partner_Engagement__c.Label}"/>
+                          <apex:inputField value="{!Opportunity.Partner_Engagement__c}" required="true"/>
+                </apex:pageblockSectionItem>-->
+                <apex:outputLabel ></apex:outputLabel>
+                <!--<apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Reason__c.Label}"/>
+                          <apex:inputField value="{!Opportunity.Reason__c}"/>
+                </apex:pageblockSectionItem>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:pageblockSectionItem >                            
+                          <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.Other_Fulfillment_Only_Reason__c.Label}"/>
+                          <apex:inputField value="{!Opportunity.Other_Fulfillment_Only_Reason__c}"/>
+                </apex:pageblockSectionItem>-->     
+ </apex:pageBlockSection>
+
+            <apex:pageBlockSection id="LeadInformation" columns="2" title="Lead Information" >                
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Teleprospecting Rep Name" for="TelRepName"/>
+                              <apex:inputField id="TelRepName" value="{!Opportunity.Teleprospecting_Rep_Name__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Decision making process identified" for="DecMakingIdetified"/>
+                              <apex:inputField id="DecMakingIdetified" value="{!Opportunity.Decision_making_process_identified__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Opportunity Approved and Funded (BUDGET)" for="OppApproved"/>
+                              <apex:inputField id="OppApproved" value="{!Opportunity.Decision_making_process_identified__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Technical environments identified" for="TechEnvironments"/>
+                              <apex:inputField id="TechEnvironments" value="{!Opportunity.Technical_environments_identified__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Decision Makers/Key Players (AUTHORITY)" for="DecisionMakers"/>
+                              <apex:inputField id="DecisionMakers" value="{!Opportunity.Decision_Makers_Key_Players_AUTHORITY__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Competitors identified" for="Competitors"/>
+                              <apex:inputField id="Competitors" value="{!Opportunity.Competitors_identified__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Primary Challenges Documented (NEED)" for="PrimaryChallenges"/>
+                              <apex:inputField id="PrimaryChallenges" value="{!Opportunity.Primary_Challenges_Documented_NEED__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Lead Source  " for="LeadSource"/>
+                              <apex:inputField id="LeadSource" value="{!Opportunity.LeadSource}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Timeframe identified (TIMELINE)" for="TimeFrame"/>
+                              <apex:inputField id="TimeFrame" value="{!Opportunity.Timeframe_identified_TIMELINE__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Sales Ready Lead" for="SalesReadyLead"/>
+                              <apex:inputField id="SalesReadyLead" value="{!Opportunity.Sales_Ready_Lead__c}"/>
+                    </apex:pageblockSectionItem>                    
+</apex:pageBlockSection>
+            <apex:pageBlockSection id="SellThrou_Service" columns="2" title="Sell Through: Service Provider Outsourcer" >                
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Service Provider Client" for="serviceProvi"/>
+                              <apex:inputField id="serviceProvi" value="{!Opportunity.Service_Provider_Client__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Cloud Platform" for="cloudPlatform"/>
+                              <apex:inputField id="cloudPlatform" value="{!Opportunity.Cloud_Platform__c}"/>
+                    </apex:pageblockSectionItem>
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Outsourcer" for="Outsourcer"/>
+                              <apex:inputField id="Outsourcer" value="{!Opportunity.Outsoucer__c}"/>
+                    </apex:pageblockSectionItem>
+</apex:pageBlockSection>
+            <apex:pageBlockSection id="SellWithAlliance" columns="2" title="Sell With: Alliance Influence and Technology Partner" >                
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Alliance Partner " for="alliancePartner"/>
+                              <apex:inputField id="serviceProvi" value="{!Opportunity.Partner_1__c}"/>
+                    </apex:pageblockSectionItem>                    
+</apex:pageBlockSection>
+            <apex:pageBlockSection id="DealRegistration" columns="2" title="Deal Registration">                
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Deal Registration Submitted Date" for="DealReg"/>
+                              <apex:outputText id="DealReg" value="{!Opportunity.Deal_Registration_Submitted_Date__c}"/>
+                    </apex:pageblockSectionItem>                    
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Deal Program" for="DealProgram"/>
+                              <apex:outputText id="DealProgram" value="{!Opportunity.Deal_Program__c}"/>
+                    </apex:pageblockSectionItem>          
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Deal Approval Status" for="DealApprovalStatus"/>
+                              <apex:outputText id="DealApprovalStatus" value="{!Opportunity.Deal_Approval_Status__c}"/>
+                    </apex:pageblockSectionItem>          
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Deal Registration Expiration Date" for="DealRegExpirationDate"/>
+                              <apex:outputText id="DealRegExpirationDate" value="{!Opportunity.Deal_Expiration_Date__c}"/>
+                    </apex:pageblockSectionItem>          
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Additional Deal Registration Information" for="AdditionalDealReg"/>
+                              <apex:outputText id="AdditionalDealReg" value="{!Opportunity.Additional_Deal_Registration_Information__c}"/>
+                    </apex:pageblockSectionItem>          
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Deal Rejection Reason" for="dealRejectionReason"/>
+                              <apex:outputText id="dealRejectionReason" value="{!Opportunity.Deal_Rejection_Reason__c}"/>
+                    </apex:pageblockSectionItem>          
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Total Reseller Discount" for="TotalResellerDiscount"/>
+                              <apex:outputText id="TotalResellerDiscount" value="{!Opportunity.Total_Reseller_Discount__c}"/>
+                    </apex:pageblockSectionItem>          
+                    <apex:pageblockSectionItem >                            
+                              <apex:outputLabel value="Deal Registration Rejection Reason Other" for="DealRegistrationRejectionReason"/>
+                              <apex:outputText id="DealRegistrationRejectionReason" value="{!Opportunity.Deal_Registration_Rejection_Reason_Other__c}"/>
+                    </apex:pageblockSectionItem>          
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+
+</apex:page>

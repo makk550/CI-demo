@@ -1,0 +1,39 @@
+<apex:page controller="BPListViewController">
+        <apex:stylesheet value="{!URLFOR($Resource.bpstyles, 'styles.landing.min.css')}" />
+
+        <apex:pageBlock title="Business Plan"></apex:pageBlock>
+        <div class="button-area">
+            <apex:form >
+                <apex:commandbutton action="/apex/BusinessPlanEdit?retURL=/apex/bpListView" value="New Business Plan" styleClass="btn button"/>
+            </apex:form>    
+        </div>    
+      <!--  <apex:listViews type="Business_Plan_New__c" /> --> <!-- MANAR08 AR:2427 Comment this line -->       
+        
+        
+        <apex:pageBlock >
+            <apex:pageblocksection >
+                <apex:pageBlockTable style="width:250%;align:left" value="{!RelatedBPs}" var="bp">
+                    <apex:column >
+                        <apex:outputLink value="/{!bp.Id}"> {!bp.Name} </apex:outputLink>
+                        <apex:facet name="header"> {!$ObjectType.Business_Plan_New__c.Fields.Name.Label} </apex:facet>
+                    </apex:column>
+                    <apex:column value="{!bp.Status__c}">
+                        <apex:facet name="header"> {!$ObjectType.Business_Plan_New__c.Fields.Status__c.Label} </apex:facet>
+                    </apex:column>
+                    <apex:column value="{!bp.UserAttachmentExternalLink__c}">
+                        <apex:facet name="header"> Attachment </apex:facet>
+                    </apex:column>
+                    <apex:column value="{!bp.CreatedDate}">
+                        <apex:facet name="header"> {!$ObjectType.Business_Plan_New__c.Fields.CreatedDate.Label} </apex:facet>
+                    </apex:column>
+                    <apex:column value="{!bp.lastModifiedDate}">
+                        <apex:facet name="header"> {!$ObjectType.Business_Plan_New__c.Fields.lastModifiedDate.Label} </apex:facet>
+                    </apex:column>
+                  <!-- <apex:column value="{!bp.Plan_Fiscal_Year__c}">
+                        <apex:facet name="header"> {!$ObjectType.Business_Plan_New__c.Fields.Plan_Fiscal_Year__c.Label} </apex:facet>
+                    </apex:column> -->
+                </apex:pageBlockTable>
+            </apex:pageblocksection>
+        </apex:pageBlock>
+         
+</apex:page>

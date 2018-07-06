@@ -1,0 +1,13 @@
+<apex:page >
+    
+    <apex:includeScript value="{!$Resource.jquery1_11}"/>
+
+    <apex:sectionHeader title="Customer Registration Flow"/>
+  <flow:interview name="Customer_Registration" finishLocation="{!URLFOR('/500/o')}"  ></flow:interview>
+  <script  type="application/javascript">
+     /* $("input[type='radio']").click(function() { 
+        console.log($(this).attr('value')); 
+        $("input[value='Next']")[0].click();
+      });*/
+    </script>
+</apex:page>

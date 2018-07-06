@@ -1,0 +1,5 @@
+<apex:page controller="JustInTimeController" action="{!init}">    
+  <apex:outputPanel id="pnlErrorMessage" rendered="{!ShowErrorMessage}">
+ <apex:outputText style="font-style:italic" value="{!errorMessage}"></apex:outputText>
+ </apex:outputPanel> 
+</apex:page>

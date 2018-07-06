@@ -1,0 +1,121 @@
+<apex:page standardController="Account_Plan3__c" extensions="AccountPlanControllerExtension">
+<apex:form >
+  <apex:pageBlock title="{!IF(ActivityLookupNumber=='1', 'Most Recent and Next Joint Customer Review', IF(ActivityLookupNumber=='2','Recent CA Executive Interactions (Players, Timing)','Upcoming Events to Support Strategy & Objectives (Customer, Visits, Partner)'))}" id="pb">
+  <apex:outputField value="{!Account_Plan3__c.Account__r.Name}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.selected_tasks__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.CA_Executive_Sponsors__c }" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Recent_CA_Executive_Interactions__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Upcoming_Events__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Account__c}" rendered="false"/>
+  
+  <apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_1__r.HVN__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_2__r.HVN__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_3__r.HVN__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_4__r.HVN__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_5__r.HVN__c}" rendered="false"/>
+  <apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_1__r.HVN_ID__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_2__r.HVN_ID__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_3__r.HVN_ID__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_4__r.HVN_ID__c}" rendered="false"/>
+  <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_5__r.HVN_ID__c}" rendered="false"/>
+  
+  <apex:pageMessages />
+  <apex:pageBlockButtons >
+      <apex:commandButton value="Save Activities" action="{!saveActivities}"/>
+      <!-- <apex:commandButton action="{!URLFOR($Action.Account_Plan3__c.edit,id)}" value="Cancel"/> -->
+      <apex:commandButton action="{!cancelActivityLookup}" value="Cancel"/>
+  </apex:pageBlockButtons>
+    <apex:selectRadio value="{!activityType}">
+        <apex:selectOption itemLabel="Show Events" itemValue="Events"/>
+        <apex:selectOption itemLabel="Show Tasks" itemValue="Tasks"/>
+        <apex:actionSupport event="onchange" action="{!switchView}"/>
+    </apex:selectRadio>
+    <apex:pageBlockTable value="{!eventView}" var="a" style="{!IF(activityType=='Events','','display:none')}">
+      <apex:column headerValue="Selected">
+        <apex:inputCheckbox value="{!a.selected}"/>
+      </apex:column>
+      <!-- 
+      <apex:column headerValue="Id">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Id, a.anEvent.Id)}"/>
+        </apex:column>
+        -->
+        <apex:column headerValue="Subject">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.subject, a.anEvent.subject)}"/>
+        </apex:column>
+        <apex:column headerValue="Name">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.who.name, a.anEvent.who.name)}"/>
+        </apex:column>
+        <apex:column headerValue="Related To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.WhatId, a.anEvent.WhatId)}">
+              {!IF(a.isTask, a.aTask.What.Name, a.anEvent.What.Name)}
+            </apex:outputLink>
+        </apex:column>
+        <apex:column headerValue="Task">
+          <apex:inputCheckbox value="{!a.isTask}" disabled="true"/>
+        </apex:column>
+        <apex:column headerValue="Due Date">
+            <apex:outputText value="{!a.formattedDate}"/>
+        </apex:column>
+        <apex:column headerValue="Status">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Status, null)}"/>
+        </apex:column>
+        <apex:column headerValue="Priority">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Priority, null)}"/>
+        </apex:column>
+        <apex:column headerValue="Assigned To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.OwnerId, a.anEvent.OwnerId)}">
+              {!IF(a.isTask, a.aTask.Owner.Name, a.anEvent.Owner.Name)}
+            </apex:outputLink>
+        </apex:column>
+    </apex:pageBlockTable>
+    
+    <apex:pageBlockTable value="{!taskView}" var="a" style="{!IF(activityType=='Tasks','','display:none')}">
+      <apex:column headerValue="Selected">
+        <apex:inputCheckbox value="{!a.selected}"/>
+      </apex:column>
+      <!-- 
+      <apex:column headerValue="Id">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Id, a.anEvent.Id)}"/>
+        </apex:column>
+        -->
+        <apex:column headerValue="Subject">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.subject, a.anEvent.subject)}"/>
+        </apex:column>
+        <apex:column headerValue="Name">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.who.name, a.anEvent.who.name)}"/>
+        </apex:column>
+        <apex:column headerValue="Related To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.WhatId, a.anEvent.WhatId)}">
+              {!IF(a.isTask, a.aTask.What.Name, a.anEvent.What.Name)}
+            </apex:outputLink>
+        </apex:column>
+        <apex:column headerValue="Task">
+          <apex:inputCheckbox value="{!a.isTask}" disabled="true"/>
+        </apex:column>
+        <apex:column headerValue="Due Date">
+            <apex:outputText value="{!a.formattedDate}"/>
+        </apex:column>
+        <apex:column headerValue="Status">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Status, null)}"/>
+        </apex:column>
+        <apex:column headerValue="Priority">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Priority, null)}"/>
+        </apex:column>
+        <apex:column headerValue="Assigned To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.OwnerId, a.anEvent.OwnerId)}">
+              {!IF(a.isTask, a.aTask.Owner.Name, a.anEvent.Owner.Name)}
+            </apex:outputLink>
+        </apex:column>
+    </apex:pageBlockTable>
+    
+    <!-- next, previous and page info -->
+    <apex:commandLink action="{!doPrevious}" rendered="{!hasPrevious}" value="Previous" />
+    <apex:outputLabel rendered="{!NOT(hasPrevious)}" value="Previous" />
+ 
+    <apex:outputLabel value=" (page {!pageNumber} of {!totalPages}) " />
+ 
+    <apex:commandLink action="{!doNext}" rendered="{!hasNext}" value="Next" />
+    <apex:outputLabel rendered="{!NOT(hasNext)}" value="Next" />
+  </apex:pageBlock>
+</apex:form>
+</apex:page>

@@ -1,0 +1,139 @@
+<apex:page Controller="LighteningCBRCertificationController" id="pageId">
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" />
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js" />
+    <apex:form id="formId" >
+        
+        <script type="text/javascript">
+        $(document).ready(function(){
+            $('#searchListNames').keyup(function(){
+                searchTable($(this).val());
+            });
+        });
+        function searchTable(searchText)
+        {
+            /*get Table using its Id */
+            console.log('searchText:'+searchText);
+            var table = $('table[id$=table1]');
+            table.find('tr').each(function(index, row){
+                var allCells = $(row).find('td');
+                if(allCells.length > 0)
+                {
+                    var found = false;
+                    allCells.each(function(index, td)
+                                  {
+                                      var regExp = new RegExp(searchText, 'gim');
+                                      if(regExp.test($(td).text()))
+                                      {     
+                                          //added to skip the contents of script tag
+                                          if($(td).has('script').length > 0){
+                                                var regExp1 = new RegExp(searchText, 'gim');
+                                                var tt = $(td).find('a');
+                                                if(regExp1.test(tt.html())){
+                                                        found = true;
+                                                        return false;
+                                                }                                
+                                            }
+                                            else{
+                                                found = true;
+                                                return false;
+                                            }
+                                      }
+                                  });
+                    if(found == true)$(row).show();else $(row).hide();
+                }
+            });
+        }
+        
+        var checkedOrNot = '';
+        var checkIdVal = '';
+        
+        function checkBoxvalue(cbrId){
+          var buttonId = cbrId+'_button';
+          document.getElementById(buttonId).disabled = false;
+          checkIdVal = cbrId;
+          checkedOrNot = document.getElementById(cbrId).checked;
+        }
+        
+        function saveSelectedData(cbrIdval){
+            if(checkIdVal == cbrIdval){
+                urlValue = window.location.href;
+                saveFTKCertified(cbrIdval, checkedOrNot, urlValue); 
+            }else{
+                alert('Please select the valid collection');
+            }
+        }
+        
+        </script>
+        
+        <apex:pageBlock id="pb" title="Certifications Total Records:{!noOfRecords}">
+                           
+                      <div style="width:600px;margin:10px auto;">
+                <table cellpadding="2" cellspacing="2" width="100%">
+                    <script>
+                        $('#searchListNames').keyup(function(){
+                            searchTable($(this).val());
+                        });
+                    </script>
+                    <tr><td style="width:105px"><b>Filter By Any Text:</b></td>
+                        <td style="width:400px"><input type="text" id="searchListNames" /></td> 
+                    </tr>
+                </table>
+            </div>    
+            
+             <apex:pageblockTable value="{!cbrcertlist}" var="cbr" columnsWidth="3%,5%,12%,15%,5%,5%,10%,5%,5%,10%,5%" id="table1">
+                 <apex:column headerValue="Action" rendered="{!showButtons}">
+                     <input type="button" onClick="saveSelectedData('{!cbr.id}');" id="{!cbr.id}_button" value="Save" disabled="true"/>
+                    <!--apex:commandButton onClick="saveSelectedData('{!cbr.id}');" id="saveButton" value="Save" disabled="true"/-->
+                 </apex:column>
+                <apex:column headerValue="Name">
+                    <apex:commandLink action="{!displayRecord}">{!cbr.Employee_Name__c}
+                        <apex:param name="contactID" value="{!cbr.SFDC_ID__c}" assignTo="{!contactID}" />                        
+                    </apex:commandLink>
+                </apex:column>
+                 <apex:column headerValue="Company" value="{!certAccountMap[cbr.ldap_id__c]}"/>
+                <apex:column headerValue="LDAP ID" value="{!cbr.ldap_id__c}"/>
+                <apex:column headerValue="Badge" value="{!cbr.badge__c}"/>             
+                <apex:column headerValue="CA Product Name" value="{!cbr.ca_product_name__c}"/>
+                <apex:column headerValue="Certified" value="{!cbr.certified__c}"/>
+                <apex:column headerValue="Certification Status" value="{!cbr.certified_status_text__c}"/> 
+                <apex:column headerValue="Status Reason" value="{!cbr.status_reason__c}"/>
+                <apex:column headerValue="Product Certification Effective Date" value="{!cbr.valid_from__c}"/>
+                <apex:column headerValue="Product Certification End Date" value="{!cbr.valid_to__c}"/>
+                <apex:column headerValue="Type" value="{!cbr.Employee_Type__c}"/>
+                <apex:column headerValue="FTK Certified" rendered="{!IF(showButtons,true,false)}">
+                    <input type="checkbox" name="checkboxField" id="{!cbr.Id}" checked="{!cbr.FTK_Certified__c}" value="{!cbr.FTK_Certified__c}" onChange="checkBoxvalue('{!cbr.Id}')"/>
+                    <script>
+                        var cbrValue = '{!cbr.Id}';
+                        if(document.getElementById(cbrValue).value == "false"){
+                          document.getElementById(cbrValue).removeAttribute("checked");
+                        }
+                    </script>
+                 </apex:column>
+                 <apex:column headerValue="FTK Certified" rendered="{!IF(showButtons,false,true)}">
+                     <apex:inputCheckbox value="{!cbr.FTK_Certified__c}" disabled="true"/>
+                 </apex:column> 
+                
+            </apex:pageblockTable>
+            <apex:outputPanel id="output">
+                <apex:actionFunction name="saveFTKCertified" action="{!saveFTKCertified}" reRender="pageId">
+                    <apex:param name="cbrIdval" value=""/>
+                    <apex:param name="checkedOrNot" value=""/>   
+                    <apex:param name="urlValue" value=""/>
+                </apex:actionFunction>
+            </apex:outputPanel>
+            
+            
+            <apex:panelGrid columns="10"> 
+                <apex:commandButton status="fetchStatus" reRender="pb" value="|<" action="{!setCon.first}" disabled="{!!setCon.hasPrevious}" title="First Page"/>
+                <apex:commandButton status="fetchStatus" reRender="pb" value="<" action="{!setCon.previous}" disabled="{!!setCon.hasPrevious}" title="Previous Page"/>
+                <apex:commandButton status="fetchStatus" reRender="pb" value=">" action="{!setCon.next}" disabled="{!!setCon.hasNext}" title="Next Page"/>
+                <apex:commandButton status="fetchStatus" reRender="pb" value=">|" action="{!setCon.last}" disabled="{!!setCon.hasNext}" title="Last Page"/>
+                <apex:outputText >{!(setCon.pageNumber * size)+1-size}-{!IF((setCon.pageNumber * size)>noOfRecords, noOfRecords,(setCon.pageNumber * size))} of {!noOfRecords}</apex:outputText>
+                <apex:commandButton status="fetchStatus" reRender="pb" value="Refresh" action="{!refresh}" title="Refresh Page"/>
+                <apex:outputPanel style="color:#4AA02C;font-weight:bold">
+                    <apex:actionStatus id="fetchStatus" startText="Fetching..." stopText=""/>
+                </apex:outputPanel>
+            </apex:panelGrid> 
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

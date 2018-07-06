@@ -1,0 +1,61 @@
+<apex:page controller="AdminUiStandaloneContrl" id="page1">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">
+    </script>
+    
+    <div id="overlay_div" class="waiting" style="position:fixed; top:0; left:0; height:100%; width:100%; z-index:2000; background-color:#999; opacity:.6; display:none;" />
+        <div style="position:fixed; top:35%; left:45%; width:150px; height:115px; background-color:#FFF; border:#FF0000 thin solid; z-index:2001; display:none;" align="center" class="ui-corner-all waiting">
+            <div align="center" style="margin-top:17px;">
+                <img src="{!$Resource.loadingGif}" />
+            </div>
+                <div align="center" id="waiting_msg">Working...</div>
+         </div>
+                <apex:actionStatus id="overlayStatus" onstart="$('.waiting').show();" onstop="$('.waiting').hide();" />
+                    
+    <apex:pageMessages ></apex:pageMessages>
+    <apex:form >
+        <apex:pageBlock title="Admin for Manual Fulfillment">
+          
+                                   <!-- Added as part of US340517  -->
+
+             <div style="align:left;font-family:Arial,Helvetica,sans-serif;font-weight: bold;font-size: 1.0em;">
+                 <apex:outputLabel value="Select Option to search Records : "/>
+                <apex:selectList value="{!selectedVale}" size="1" style="width:180px; height: 20px" >
+                        <apex:selectOption itemValue="" itemLabel=""/>
+                        <apex:selectOption itemValue="Email" itemLabel="Email"/>
+                        <apex:selectOption itemValue="Product Instance Id" itemLabel="Product Instance Id"/>
+                        <apex:selectOption itemValue="Subscription Name" itemLabel="Subscription Name"/>
+                        <apex:selectOption itemValue="Contract Number" itemLabel="Contract Number"/>
+                          <apex:actionSupport event="onchange" reRender="SampleView" status="overlayStatus"/>
+
+                    </apex:selectList>
+                 
+             </div>
+            
+           
+        </apex:pageBlock>
+         <apex:pageBlock id="SampleView"  >
+             <apex:OutputPanel rendered="{!IF(selectedVale == 'Email',true,false)}">
+                 <apex:outputLabel value="Enter Email: " />
+                   <apex:inputText value="{!cemail}"/>
+                 </apex:OutputPanel>
+             <apex:OutputPanel rendered="{!IF(selectedVale == 'Product Instance Id', true, false)}">
+                  <apex:outputLabel value="Product Instance Id: "/>
+                   <apex:inputText value="{!prodId}"  />
+                </apex:OutputPanel>
+               <apex:OutputPanel rendered="{!IF(selectedVale == 'Contract Number', true, false)}">
+                  <apex:outputLabel value="Contract Number: "/>
+                   <apex:inputText value="{!contractNumber}"  />
+                </apex:OutputPanel>
+                 <apex:OutputPanel rendered="{!IF(selectedVale == 'Subscription Name', true, false)}">
+                  <apex:outputLabel value="Subscription Name: "/>
+                   <apex:inputText value="{!subScriptionName}"  />
+                </apex:OutputPanel>
+           
+               <apex:commandButton value="Find Entitlements" action="{!validateAndsearch}"  style="align:left" rendered="{!IF(selectedVale !=null,true,false)}"/>
+            
+              </apex:pageBlock>
+        
+          
+    </apex:form>
+</apex:page>

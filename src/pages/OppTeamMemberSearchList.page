@@ -1,0 +1,58 @@
+<apex:page standardController="OpportunityTeamMember" extensions="OppTeamMemberAddController" showheader="false" sidebar="false">
+    <script>
+
+             winMain=window.opener;       
+             function fillIn(name,id)    {       
+                   
+                    if (null==winMain)       
+                    {          
+                        winMain=window.parent.opener; 
+                            
+                    }    
+                 
+                    var ele=winMain.document.getElementById('{!$CurrentPage.parameters.targetfield}');
+                 
+                 ele.value=name;
+                ele=winMain.document.getElementById('{!$CurrentPage.parameters.targetId}');
+                 
+                 ele.value=id;
+                 /*ele=winMain.document.getElementById('{!$CurrentPage.parameters.targetfield}'); 
+                    ele.value=id;*/ 
+                    
+            
+                    CloseWindow();    
+            
+                }      
+                function CloseWindow()    { 
+            
+                    winMain=window.opener;       
+                    if (null==winMain)       
+                    {          
+                        winMain=window.parent.opener;       
+                    }       
+                 winMain.closeLookupPopup();  
+                 
+                }
+        </script>
+    
+     <apex:form Id="TheForm">
+            <apex:pageBlock id="TheBlock">
+    			<apex:pageBlockSection columns="3">
+                    <apex:pageBlockSectionItem ><b>Username</b></apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem ><b>Role</b></apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem ><b>Email</b></apex:pageBlockSectionItem>
+                    
+                    <apex:repeat value="{!AllActiveOtherUsers}" var="activeusers" >
+        	
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLink value="#" onclick="fillIn('{!activeusers.Name}','{!activeusers.Id}')">{!activeusers.Name}</apex:outputLink>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem > {!activeusers.UserRole.Name}</apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem > {!activeusers.Email}</apex:pageBlockSectionItem>
+           
+        			</apex:repeat>
+        
+                </apex:pageBlockSection>
+         </apex:pageBlock>
+    </apex:form>
+</apex:page>

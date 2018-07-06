@@ -1,0 +1,7 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false"
+           applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" standardController="Account"
+           extensions="AccountView" tabStyle="Account">
+   
+    <apex:outputText escape="false" value="{!ABMHTML}">
+    </apex:outputText>
+</apex:page>

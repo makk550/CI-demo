@@ -1,0 +1,71 @@
+<apex:page controller="LighteningSupportOfferingsController" action="{!getSupportOfferings}">
+       <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" />
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js" />
+    <apex:form >
+    <script type="text/javascript">
+          $(document).ready(function(){
+                $('#searchListNames').keyup(function(){
+                    searchTable($(this).val());
+                });
+            });
+         function searchTable(searchText)
+            {
+                /*get Table using its Id */
+                var table = $('table[id$=tblData]');
+                table.find('tr').each(function(index, row){
+                    var allCells = $(row).find('td');
+                    if(allCells.length > 0)
+                    {
+                        var found = false;
+                        allCells.each(function(index, td)
+                        {
+                            var regExp = new RegExp(searchText, 'gim');
+                            if(regExp.test($(td).text()))
+                            {
+                                //added to skip the contents of script tag
+                                if($(td).has('script').length > 0){
+                                    var regExp1 = new RegExp(searchText, 'gim');
+                                    var tt = $(td).find('a');
+                                    if(regExp1.test(tt.html())){
+                                        found = true;
+                                        return false;
+                                    }                                
+                                }
+                                else{
+                                    found = true;
+                                    return false;
+                                }
+                            }
+                        });
+                        if(found == true)$(row).show();else $(row).hide();
+                    }
+                });
+            }   
+        </script>
+        <apex:pageMessages id="errors" />
+        <apex:pageBlock title="Support Offerings Total Records :{!totalCount}" rendered="{!isDetailsPresent}">
+            
+             <div style="width:700px;margin:10px auto;">
+                        <table cellpadding="2" cellspacing="2" width="100%">
+                            <tr><td style="width:105px"><b>Filter By Any Text:</b></td>
+                                <td style="width:400px"><input type="text" id="searchListNames" /></td> 
+                            </tr>
+                        </table>
+                    </div>      
+            
+            <apex:pageblockTable value="{!offeringsList}" var="offerings" columnsWidth="10%,20%,10%,15%,15%,15%" id="tblData">
+                <apex:column headerValue="Tops Site Id" value="{!offerings.tops_site_id__c}"/>
+                <apex:column headerValue="CA Product Name" value="{!offerings.ca_product_name__c}"/>
+                <apex:column headerValue="Offering Code" value="{!offerings.offering_cd__c}"/>
+                <apex:column headerValue="Offering Start Date" value="{!offerings.offering_start_dtm__c}"/>
+                <apex:column headerValue="Offering End Date" value="{!offerings.offering_end_dtm__c}"/>
+                <apex:column headerValue="Offering Cancel Date" value="{!offerings.offering_cancel_dtm__c}"/>
+                <apex:column headerValue="SAP Contract Num" value="{!offerings.sap_contract_num__c}"/>
+                <apex:column headerValue="DSE PMF Key" value="{!offerings.dse_pmf_key__c}"/>
+                <apex:column headerValue="DSE Role" value="{!offerings.dse_role__c}"/>
+                <apex:column headerValue="Clarity Key" value="{!offerings.clarity_key__c}"/>
+                <apex:column headerValue="Contract Line Num" value="{!offerings.contract_line_num__c}"/>
+            </apex:pageblockTable>  
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

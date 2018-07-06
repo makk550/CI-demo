@@ -1,0 +1,1301 @@
+<apex:page standardStylesheets="true" showHeader="true" sidebar="false" controller="CustomKnowledgeEditController" id="pageid">
+   
+    <script src="/jslibrary/1515433094000/sfdc/Knowledge.js" type="text/javascript"></script>
+    <script src="{!$Resource.knowledge}/Jquery/jquery-1.12.4.js"></script>
+    <script>jQuery.noConflict();</script>
+    <script src="{!$Resource.knowledge}/Jquery/jquery-ui.js"></script>
+    <!--apex:stylesheet value="{!URLFOR($Resource.bpstyles, 'styles.min.css')}" /--> 
+    <script type="text/javascript">
+        var MOTIF_KEY='KnowledgePublishing';
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (){
+            // alert('Hello!');
+            //alert($("#j_id0:j_id6:j_id7").innerHTML);
+            var content = document.body.textContent || document.body.innerText;
+            var hasText = content.indexOf("Channel:")>-1;
+            if(hasText){
+                //alert('Its PREVIEW');
+            } 
+        });  
+    </script>
+    <apex:stylesheet value="{!$Resource.knowledge}/Jquery/jquery-ui.css"/>
+    <style>
+        [id$="editButton"] {
+            display:none !important;
+        }
+        .tipclass{
+            background-image: url(/img/help/helpOrbs.gif);
+            background-repeat: no-repeat;
+            width: 16px;
+            height: 15px;
+        }
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            width: 500px;
+            margin-left: -250px;
+            top:100px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        .goToArticleButton {
+            display:none !important;
+        }
+        .indicator-local {
+            height: 31px;
+            width: 9px;
+            right: 0;
+            overflow: hidden;
+            display:block;
+        }
+        .collapsed {
+            background: url(/img/alohaSkin/sidebar_sprite.png) 0px -93px no-repeat;
+        }
+        .expanded {
+            background: url(/img/alohaSkin/sidebar_sprite.png) 0px -31px no-repeat;
+        }
+        .cke_contents {
+            min-height:300px!important;
+        }
+        .ui-resizable { position: relative;}
+        .ui-resizable-handle { position: absolute;font-size: 0.1px; display: block; }
+        .ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle { display: none; }
+        .ui-resizable-n { cursor: n-resize; height: 7px; width: 100%; top: -5px; left: 0; }
+        .ui-resizable-s { cursor: s-resize; height: 7px; width: 100%; bottom: -5px; left: 0; }
+        .ui-resizable-e { cursor: e-resize; width: 7px; right: -5px; top: 0; height: 100%; }
+        .ui-resizable-w { cursor: w-resize; width: 7px; left: -5px; top: 0; height: 100%; }
+        .ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: 1px; bottom: 1px; }
+        .ui-resizable-sw { cursor: sw-resize; width: 9px; height: 9px; left: -5px; bottom: -5px; }
+        .ui-resizable-nw { cursor: nw-resize; width: 9px; height: 9px; left: -5px; top: -5px; }
+        .ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}
+        .ui-icon-gripsmall-diagonal-se { background: linear-gradient(to bottom right, white, white, gray, black); }    
+    </style>
+    
+    <knowledge:articleRendererToolBar articleId="{!kav.knowledgearticleId}" showChatter="true"/>
+    
+    
+    <table>
+        <tr align="top">
+            <td align="top" style="vertical-align:top;min-width:322px;" id="LeftCol">
+                <apex:form id="assignmentForm">
+                    <apex:pageBlock title="Approval Assignment" rendered="{!NOT(needsNewVersion)}">
+                        <apex:commandButton value="Submit For Approval" action="{!enableAssignment}" style="float:right;margin-top:-40px;" reRender="assignmentForm" rendered="{!AND(articleComplete,NOT(assignmentActive),NOT(isLocked),NOT(openAssignment))}"/>
+                        
+                        <apex:pageBlockSection columns="1" id="assignmentFields">
+                            <apex:outputField value="{!kav.AssignedToId}" rendered="{!NOT(assignmentActive)}"/>
+                            <apex:outputField value="{!kav.AssignedById}" rendered="{!NOT(assignmentActive)}"/>
+               
+                            <!--apex:outputField value="{!kav.AssignmentDueDate}" rendered="{!NOT(assignmentActive)}"/-->
+                            <apex:selectList id="assignOpts" label="Assign To" value="{!assignmentAssigneeId}" size="1" rendered="{!assignmentActive}">
+                                <apex:selectOptions value="{!assigneeOptions}"/>
+                            </apex:selectList>
+                            
+                            <!--apex:inputText value="{!assignmentDueDate}" rendered="{!assignmentActive}" label="Assignment Due Date"/-->
+                            <!--apex:inputCheckbox value="{!assignmentSendEmail}" rendered="{!assignmentActive}" label="Send Assignment Email"/-->
+                            
+                        </apex:pageBlockSection>
+                        <apex:commandButton value="Cancel" action="{!disableAssignment}"  reRender="assignmentForm,apprHistTable" rendered="{!AND(articleComplete,assignmentActive)}" style="margin-left:80px;"/>
+                        <apex:commandButton value="Submit" action="{!assignArticle}"  reRender="assignmentForm" rendered="{!AND(articleComplete,assignmentActive)}"/>
+                        
+                    </apex:pageBlock>
+                </apex:form>
+                <apex:pageBlock title="Approvals" id="approvalHistory">
+
+                    <apex:outputText rendered="{!AND(articleComplete,isPublisher)}">
+                        <a href="/apex/CustomKnowledgeApproval?articleId={!kav.Id}" class="btn" style="float:right;margin-top:-40px;text-decoration: none;">AQI Review</a>
+                    </apex:outputText>
+                    
+                    <apex:pageBlockTable value="{!approvals}" var="appr" id="apprHistTable"
+                                         rowClasses="odd,even" styleClass="tableClass">
+                        <apex:column >
+                            <apex:facet name="header">Action</apex:facet>
+                            <apex:outputText rendered="{!IF(AND(appr.Steps[0].StepStatus == 'Started',isPublisher),true,false)}">
+                                <a href="/apex/CustomKnowledgeApproval?id={!appr.Id}&articleId={!kav.Id}">Approve/Reject</a>
+                            </apex:outputText>
+                            
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header">Status</apex:facet>
+                            <apex:outputField value="{!appr.Steps[0].StepStatus}"/><apex:outputText rendered="{!NOT(ISBLANK(appr.Steps[0].Comments))}"><img src="/s.gif" class="apprtip tipclass" title="{!appr.Steps[0].Comments}"/></apex:outputText>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header">By</apex:facet>
+                            <apex:outputText value="{!appr.Steps[0].Actor.Name}"/><br/>
+                            <apex:outputField value="{!appr.Steps[0].CreatedDate}"/>
+                        </apex:column>
+                        
+                    </apex:pageBlockTable>
+                    
+                </apex:pageBlock>
+                <apex:pageBlock title="Properties">
+                    <apex:pageBlockSection columns="1">
+                        <apex:outputField value="{!kav.ArticleNumber}" />
+                        <apex:outputField value="{!kav.PublishStatus}" />
+                        <apex:outputField value="{!kav.CreatedById}" />
+                        <apex:outputField value="{!kav.Scheduled_Publication_Date__c}" />
+                        <apex:outputField value="{!kav.LastModifiedById}" />
+                        <apex:outputField value="{!kav.IsVisibleInApp}" />
+                        <apex:outputField value="{!kav.IsVisibleInPkb}" />
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+                
+            </td>
+            <td align="top" style="vertical-align:top;min-width:9px;max-width:9px;" id="showHideLeftCol" class="">
+                <span id="showHideButtons" class="indicator-local expanded">&nbsp;</span>
+            </td>
+            <td width="100%" align="top" style="vertical-align:top;">
+                <apex:form id="articleForm">
+                    <apex:pageBlock id="articleBlock">
+                        
+                        <apex:pageMessages id="articleMessages"/>
+                        <apex:pageBlockButtons id="artbuttons">
+                        <div style="margin-left:100px;">
+                            <apex:commandButton action="{!save}" value="Save Article" reRender="" rendered="{!AND(NOT(isLocked),NOT(AND(NOT(isPublisher),openAssignment)))}"/>
+
+                            <apex:commandButton action="{!attachAndReturnToCase}" value="Attach and Return to Case" rendered="{!IF(AND(NOT(ISBLANK(caseId)),articleComplete),true,false)}" />
+                            <apex:commandButton action="{!returnToCase}" value="Return to Case" rendered="{!IF(NOT(ISBLANK(caseId)),true,false)}" immediate="true"/> 
+                            <apex:commandButton action="{!publishPopup}" value="Publish" rendered="{!AND(NOT(isLocked),validated,articleComplete,isPublisher,NOT(openAssignment))}"/>
+                            <apex:commandButton action="{!createNewVersion}" value="Edit" rendered="{!needsNewVersion}" onclick="if(!confirm('Are you sure you want to create a new version of this article?')){return false};"/>
+                            <apex:commandButton action="{!archiveArticle}" value="Archive" rendered="{!AND(needsNewVersion,isPublisher,NOT(kav.PublishStatus=='Archived'))}" onclick="if(!confirm('Are you sure you want to archive this article?')){return false};"/>
+                            <apex:outputText rendered="{!articleComplete}">
+                                <a href="/knowledge/publishing/articlePreview.apexp?id={!kav.KnowledgeArticleId}&popup=true&pubstatus={!IF(kav.PublishStatus=='Draft','d',IF(kav.PublishStatus=='Archived','a','o'))}&preview=true" target="new" class="btn" style="text-decoration: none;">Preview</a>
+                            </apex:outputText>
+                            <a href="#" class="btn" style="text-decoration: none;" onclick="if(confirm('Are you sure you want abandon your changes?')){window.close();return false;};">Cancel</a>
+                        </div>
+                        </apex:pageBlockButtons>   
+                        <apex:pageBlockSection id="articleFields" columns="1" rendered="{!NOT(isLocked)}">
+                            <apex:outputField value="{!kav.ArticleNumber}" />
+                            <!--apex:outputField value="{!kav.VersionNumber}" /-->
+                            <apex:inputField value="{!kav.Title}" required="true" style="min-width:300px;" id="titleField" onblur="setUrl();"/>
+                            <apex:inputField value="{!kav.URLName}" required="true" style="min-width:300px;" id="urlField" rendered="{!NOT(existingVersion)}"/>
+                            <apex:outputField value="{!kav.URLName}" style="min-width:300px;" rendered="{!existingVersion}"/>
+                            <apex:inputField value="{!kav.Summary}" required="true" style="min-width:300px;" />
+                            <apex:inputField value="{!kav.ValidationStatus}" required="true" style="min-width:300px;" />
+                            <apex:inputField value="{!kav.RecordTypeId}" required="true" style="min-width:300px;" />
+                            <apex:repeat value="{!editFields}" var="editfield">
+                                <apex:pageBlockSectionItem rendered="{!editfield.Required__c}">
+                                    <apex:outputLabel value="{!editfield.Display_Label__c}" />
+                                    <apex:outputPanel >
+                                        <div class="requiredInput">
+                                            <div class="requiredBlock"></div>
+                                            <apex:inputField value="{!kav[editfield.API_Name__c]}" label="{!editfield.Display_Label__c}" required="{!editfield.Required__c}" style="min-width:300px;"/>
+                                        </div>
+                                    </apex:outputPanel>
+                                    
+                                </apex:pageBlockSectionItem>
+                                <apex:inputField value="{!kav[editfield.API_Name__c]}" label="{!editfield.Display_Label__c}" required="{!editfield.Required__c}" rendered="{!NOT(editfield.Required__c)}" style="min-width:300px;"/>    
+                            </apex:repeat>
+                            <apex:inputField value="{!kav.Notes__c}" style="min-width:300px;" />
+                            <apex:pageBlockSectionItem rendered="{!kav.File_attachment__Name__s == null}">
+                                <apex:outputLabel value="" />
+                                <apex:commandButton value="Attach File" action="{!allowAttachment}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!AND(kav.File_attachment__Name__s == null,allowAttach)}">
+                                <apex:outputLabel value="File Attachment" />  
+                                <apex:inputFile value="{!d.Body}" filename="{!d.Name}"/>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!AND(kav.File_attachment__Name__s == null,allowAttach)}">
+                                <apex:outputLabel />  
+                                <apex:outputText value="If multiple files are required for this article, please zip them into a single file for attachment. Maximum upload size is 25 MB. File will upload when Save button is clicked."/>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!AND(kav.File_attachment__Name__s == null,allowAttach)}">
+                                <apex:outputLabel value="" />
+                                <apex:commandButton value="Cancel" action="{!cancelAttachment}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!kav.File_attachment__Name__s != null}">
+                                <apex:outputLabel value="File Attachment" />
+                                <apex:outputLink value="/servlet/fileField?entityId={!kav.Id}&field=File_attachment__Body__s" >
+                                    <apex:outputfield value="{!kav.File_attachment__Name__s}"/>
+                                </apex:outputLink>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!kav.File_attachment__Name__s != null}">
+                                <apex:outputLabel value="" />
+                                <apex:commandButton value="Replace Attachment" action="{!replaceAttachment}" />
+                            </apex:pageBlockSectionItem>
+
+                        </apex:pageBlockSection>
+                        <apex:pageBlockSection id="articleFieldsRO" columns="1" rendered="{!isLocked}">
+                            <apex:outputField value="{!kav.ArticleNumber}" />
+                            <!--apex:outputField value="{!kav.VersionNumber}" /-->
+                            <apex:outputField value="{!kav.Title}" style="min-width:300px;"/>
+                            <apex:outputField value="{!kav.URLName}" style="min-width:300px;" />
+                            <apex:outputField value="{!kav.Summary}" style="min-width:300px;" />
+                            <apex:outputField value="{!kav.ValidationStatus}" style="min-width:300px;" />
+                            <apex:outputField value="{!kav.RecordTypeId}" style="min-width:300px;" />
+                            <apex:repeat value="{!editFields}" var="editfield">
+                                <apex:outputField value="{!kav[editfield.API_Name__c]}" label="{!editfield.Display_Label__c}" style="min-width:300px;"/>
+                            </apex:repeat>
+                            <apex:outputField value="{!kav.Notes__c}" style="min-width:300px;" />
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="File Attachment" />
+                                <apex:outputLink value="/servlet/fileField?entityId={!kav.Id}&field=File_attachment__Body__s" rendered="{!kav.File_attachment__Name__s != null}">
+                                    <apex:outputfield value="{!kav.File_attachment__Name__s}"/>
+                                </apex:outputLink>
+                            </apex:pageBlockSectionItem>
+
+                        </apex:pageBlockSection>
+                        <apex:outputPanel id="tstpopup">
+                            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+                            <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">
+                                <apex:selectRadio value="{!publishOption}" layout="pageDirection">
+                                    <div>
+                                        
+                                    <apex:selectOption itemLabel="Publish Now" itemValue="now" ></apex:selectOption></div><br />
+                                    <div>
+                                        
+                                    <apex:selectOption itemLabel="Schedule Publication" itemValue="future"></apex:selectOption></div>
+                                </apex:selectRadio>
+                                <p>
+                                    Publish On: <apex:inputField value="{!t.ActivityDate}" label="Publish On:"/>                            
+                                </p>
+                                <p>
+                                    <apex:inputCheckbox value="{!publishNowMajorVersion}"/> Flag as new version
+                                </p>
+                                
+                                <apex:commandButton value="Cancel" action="{!closePublishPopup}" rerender="tstpopup"/>
+                                <apex:commandButton value="Publish" action="{!publishArticle}" rerender="tstpopup" status="counterStatus"/>
+                                <apex:actionStatus startText=" Processing the stuff " stopText="" id="counterStatus" > <apex:facet name="start" >Processing... <img src="/apexpages/devmode/img/saveStatus.gif" /> </apex:facet></apex:actionStatus>
+                            </apex:outputPanel>
+                        </apex:outputPanel> 
+                        
+                    </apex:pageBlock>
+                    
+                <!--/apex:form-->
+                
+                
+                
+                
+                
+                <apex:pageMessages id="successMsg" escape="false"/>
+                <!--apex:form id="articleForm" rendered="{!IF(errorFlag,false,true)}"-->
+                    <!--apex:commandButton action="{!updateKbArticle}" value="Test"/-->
+                    <span id="errorMessage" style="font-size:14px;color:red;"/>
+                    
+                    <apex:actionStatus id="loadingStatus">
+                        <!-- loading message -->
+                        <apex:facet name="start">
+                            <apex:outputPanel >
+                                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.70; z-index: 1000; background-color: black;">
+                                    &nbsp;
+                                </div>
+                                <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                                    <div style="display: inline-block; padding: 2px; width: 125px;">
+                                        <apex:image value="/img/loading32.gif" style="float: left; margin: 8px;"/>
+                                        <span style="display: inline-block; padding: 10px 0px;color:#3366ff;font-size:140%;font-family:Arial, Helvetica, sans-serif;">Please Wait...</span>
+                                    </div>
+                                </div>
+                            </apex:outputPanel>
+                        </apex:facet>
+                        <apex:facet name="stop"> </apex:facet>
+                    </apex:actionStatus>
+                    
+                    <apex:pageBlock title="Product Selection" id="pageBlockTable" rendered="{!IF(showBlock,true,false)}">
+                        <div style="display:none;"><b>Article:</b> &nbsp;&nbsp;<input type="text" id="inputTagId" readonly="true" value="{!articleId}"/><br/><br/></div>
+                        <apex:outputPanel id="fnctId" style="display:none;">
+                            <apex:outputPanel id="pId">
+                                <apex:outputLabel ><b>Product Details</b></apex:outputLabel><br/><br/>
+                                <apex:pageBlockTable value="{!listOfWrapperProductDetails}" var="productDetail">
+                                    <apex:column headerValue="Action" rendered="{!AND(NOT(needsNewVersion),NOT(openAssignment))}">
+                                        <a id="editId_{!productDetail.productIdVal}" onclick="editAssociation(this.id,'{!productDetail.productId}','{!productDetail.primaryProduct}');return false;"> Edit</a><label id="spanId_{!productDetail.primaryProduct}_{!productDetail.productIdVal}">&nbsp;|&nbsp;<a id="removeId_{!productDetail.productIdVal}" onclick="removeProduct(this.id,'{!productDetail.primaryProduct}','{!productDetail.componentIds}','{!productDetail.releaseIds}');return false;">Remove</a></label>
+                                        <script>
+                                        var listSize = {!wrapperSize};
+                                        var hidePrimary = document.getElementById('spanId_{!productDetail.primaryProduct}_{!productDetail.productIdVal}').id;
+                                        var splitHidePrimary = hidePrimary.split('_');
+                                        var flagVal = splitHidePrimary[1];//hidePrimary.substr('spanId_'.length,hidePrimary.length);
+                                        if(flagVal == 'true' && listSize!=1 && '{!productDetail.articlePreviousStatus}'!='Rejected'){
+                                            document.getElementById(hidePrimary).style.display = 'none';    
+                                        }
+                                        if(flagVal == 'true' && '{!productDetail.articlePreviousStatus}'=='Rejected'){
+                                            document.getElementById('editId_{!productDetail.productIdVal}').style.display = 'none';
+                                            document.getElementById(hidePrimary).style.display = 'none'; 
+                                        }
+                                        
+                                        if('{!listOfProcessInstance}'.length>2){
+                                            document.getElementById('editId_{!productDetail.productIdVal}').style.display = 'none';
+                                            document.getElementById('spanId_{!productDetail.primaryProduct}_{!productDetail.productIdVal}').style.display = 'none';
+                                        }
+                                        </script>
+                                    </apex:column>
+                                    <apex:column headerValue="Primary">
+                                        <apex:inputCheckbox value="{!productDetail.primaryProduct}" disabled="true"/>
+                                    </apex:column>
+                                    <apex:column headerValue="Product(s)" value="{!productDetail.productId}"/>
+                                    <apex:column headerValue="Product Component(s)">
+                                        <apex:outputText escape="false" value="{!productDetail.componentNames}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="Product Release(s)">
+                                        <apex:outputText escape="false" value="{!productDetail.releaseNames}"/>
+                                    </apex:column>
+                                </apex:pageBlockTable>
+                                <br/>
+                            </apex:outputPanel><br/>
+                        </apex:outputPanel>
+                        <div id="productNameId" style="display:block;">
+                            <apex:outputText rendered="{!AND(NOT(isLocked),NOT(openAssignment))}">
+                                <b>Add Product:</b> &nbsp;&nbsp;<input type="text" id="productTagId" size="30" onfocus="productNameAndIdMap();return false;"/><br/><br/> 
+                            </apex:outputText>
+                        </div>
+                        <apex:outputPanel id="panelCompId" style="display:none;">
+                            <apex:outputPanel id="componentId">
+                                <apex:outputLabel value="CA Product Component:" rendered="{!IF(showComp,true,false)}" style="font-weight:bold;"/>&nbsp;<br/><br/>
+                                <apex:outputLabel rendered="{!IF(showComp,true,false)}">
+                                    <table id="errorTableComp" style="display:none;">
+                                        <tr id="errorTableFirstRowComp"></tr>
+                                    </table>
+                                    <table id="normalTableComp" style="display:none;">
+                                        <tr>
+                                            <th>Available Component(s)</th>
+                                            <th></th>
+                                            <th>Selected Component(s)</th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <apex:outputPanel id="avaiableComp">
+                                                    <apex:selectList value="{!componentName}" size="8" multiselect="true" id="componentLeftId">
+                                                        <apex:selectOptions value="{!ProductComponent}"/>
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                            </td>
+                                            <td>
+                                                <b>&nbsp;&nbsp;&nbsp;Add</b><br/>
+                                                &nbsp;&nbsp;<img src="/img/s.gif" alt="Add" class="rightArrowIcon" title="Add" onclick="addComponents('{!$component.componentLeftId}','{!$component.componentRightId}');return false;"/><br/>
+                                                &nbsp;&nbsp;<img src="/img/s.gif" alt="Remove" class="leftArrowIcon" title="Remove" onclick="removeComponents('{!$component.componentLeftId}','{!$component.componentRightId}');return false;"/><br/>
+                                                <b>Remove</b>
+                                            </td>
+                                            <td>
+                                                <apex:outputPanel id="selectedComp">
+                                                    <apex:selectList value="{!selectedComponentName}" size="8" multiselect="true" id="componentRightId">
+                                                        <apex:selectOptions value="{!SelectedComponents}"/>
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </apex:outputLabel>
+                            </apex:outputPanel><br/><br/>
+                            <apex:outputPanel id="releaseId">
+                                <apex:outputLabel value="CA Product Release:" rendered="{!IF(showComp,true,false)}" style="font-weight:bold;"/>&nbsp;<br/><br/>
+                                <apex:outputLabel rendered="{!IF(showComp,true,false)}">
+                                    <table id="errorTable" style="display:none;">
+                                        <tr id="errorTableFirstRow"></tr>
+                                    </table>
+                                    <table id="normalTable" style="display:none;">
+                                        <tr>
+                                            <th>Available Release(s)</th>
+                                            <th></th>
+                                            <th>Selected Release(s)</th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <apex:outputPanel id="avaiableRelease">
+                                                    <apex:selectList value="{!releaseName}" size="8" multiselect="true" id="ReleaseLeftId">
+                                                        <apex:selectOptions value="{!Release}"/>
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                            </td>
+                                            <td>
+                                                <b>&nbsp;&nbsp;&nbsp;Add</b><br/>
+                                                &nbsp;&nbsp;<img src="/img/s.gif" alt="Add" class="rightArrowIcon" title="Add" onclick="addRelease('{!$component.ReleaseLeftId}','{!$component.ReleaseRightId}');return false;"/><br/>
+                                                &nbsp;&nbsp;<img src="/img/s.gif" alt="Remove" class="leftArrowIcon" title="Remove" onclick="removeRelease('{!$component.ReleaseLeftId}','{!$component.ReleaseRightId}');return false;"/><br/>
+                                                <b>Remove</b>
+                                            </td>
+                                            <td>
+                                                <apex:outputPanel id="selectedRelease">
+                                                    <apex:selectList value="{!selectedReleaseName}" size="8" multiselect="true" id="ReleaseRightId">
+                                                        <apex:selectOptions value="{!SelectedReleases}"/>
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </apex:outputLabel>
+                            </apex:outputPanel>
+                        </apex:outputPanel>    
+                    </apex:pageBlock>
+                    <apex:outputPanel id="renderNewList">
+                        <div id="divId" style="display:none;">{!listOfProductWrapperClass1}</div>
+                        <input type="hidden" id="newStringId" value="{!listOfProductWrapperClass1}"/>
+                        <input type="hidden" id="sizeOfList" value="{!wrapperSize}"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel id="renderKCSList">
+                        <div id="divsId" style="display:none;">{!showFlag}</div>
+                        <input type="hidden" id="newStrisngId" value="{!showFlag}"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel id="continueId" style="display:none;">
+                        <apex:commandButton id="continueButtonId" value="Continue" onclick="continueToNext('{!$Component.pageBlockTable.componentRightId}','{!$Component.pageBlockTable.ReleaseRightId}');return false;"/>
+                    </apex:outputPanel>
+                    <!--apex:outputPanel id="canclePageId" style="display:none;" rendered="{!NOT(needsNewVersion)}">
+                        <apex:commandButton id="cancelButtonId" value="Cancel" onclick="navigateToNewWindow();return false;"/>
+                    </apex:outputPanel-->
+                    <apex:outputPanel id="refreshId" style="display:none;">
+                        <apex:commandButton id="refreshButtonId" value="Refresh" onclick="refreshFunc(this.id);return false;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel id="buttonsId" style="display:none;">
+                        <apex:commandButton value="+Add Another Product" id="saveAssociation" onclick="showAnotherAssociation();return false;"/><!--continueToNext('{!$Component.pageBlockTable.componentRightId}','{!$Component.pageBlockTable.ReleaseRightId}');return false;"/-->
+                        <!--apex:commandButton value="Save Association" id="saveButton" onclick="submitDetails('saveButton');return false;"/-->
+                        <apex:commandButton value="Save Product Associations" id="saveAndCloseButton" onclick="submitDetails('saveAndCloseButton');return false;"/><br/>
+                        <span id="errorMessage" style="font-size:14px;color:black;font-style: italic;font-family: Times New Roman, Times, serif;"></span>
+                    </apex:outputPanel>
+                    <apex:outputPanel id="saveButtonId" style="display:none;">
+                        <apex:commandButton value="Update Association" id="updateAssociation" onclick="continueToNext('{!$Component.pageBlockTable.componentRightId}','{!$Component.pageBlockTable.ReleaseRightId}');return false;"/>
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel id="panelId">
+                        <apex:actionFunction name="componentFun" action="{!productComponent}" reRender="componentId,releaseId,successMsg" status="loadingStatus" oncomplete="displaySelectionSection('{!mapOfComponent}','{!mapOfRelease}');return false;">
+                            <apex:param name="productName" value=""/>
+                        </apex:actionFunction>
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel id="removePanelId">
+                        <apex:actionFunction name="callRemoveProduct" action="{!callRemoveProduct}" reRender="removePanelId,pId,productNameId,successMsg,componentId,releaseId,renderNewList" status="loadingStatus">
+                            <apex:param name="productId" value=""/>
+                            <apex:param name="productFlag" value=""/>
+                            <apex:param name="productComponent" value=""/>
+                            <apex:param name="productRelease" value=""/>
+                            <apex:param name="artNum" value=""/>
+                        </apex:actionFunction>
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel id="editPanelId">
+                        <apex:actionFunction name="fetchValuesForEdit" action="{!fetchValuesForEdit}" reRender="editPanelId,pId,componentId,successMsg,releaseId" status="loadingStatus" oncomplete="showEditDetails();return false;">
+                            <apex:param name="productRecordId" value=""/>
+                        </apex:actionFunction>
+                    </apex:outputPanel>
+                    <apex:outputPanel id="productAssociationId">
+                        <apex:outputPanel id="productAssociatId">
+                            <apex:actionFunction name="createPrimaryProductAssociation" action="{!createPrimaryProductAssociation}" reRender="productAssociatId,successMsg,pId,productNameId,componentId,releaseId,renderNewList" status="loadingStatus">
+                                <apex:param name="productId" value=""/>
+                                <apex:param name="articleNum" value=""/>
+                                <apex:param name="prepareCompString" value=""/>
+                                <apex:param name="prepareReleaseString" value=""/>
+                            </apex:actionFunction>
+                        </apex:outputPanel>
+                    </apex:outputPanel> 
+                    
+                    <apex:outputPanel id="saveAssociationId">
+                        <apex:actionFunction name="submitProductAssociation" action="{!submitProductAssociation}" reRender="saveAssociationId,successMsg" status="loadingStatus" oncomplete="navigateToNewWindow();return false;">
+                            <apex:param name="buttonId" value=""/>
+                        </apex:actionFunction>
+                    </apex:outputPanel> 
+                </apex:form>
+            </td>
+        </tr>
+    </table>
+    
+    
+    <script>
+    var listOfComp = [];
+    var productId='';
+    var articleNum='';
+    var existingValue = '';
+    var primaryFlag = '';
+    
+    function onloadFunc(){
+        if({!showFlag}){
+            document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.fnctId}').style.display = 'block';
+        }
+        //document.getElementById('{!$Component.pageId.articleForm.canclePageId}').style.display='block';
+        if('{!listOfProcessInstance}'.length>2){
+            document.getElementById('productNameId').style.display = 'none';    
+        }
+    }
+    onloadFunc();
+    
+    function productNameAndIdMap(){
+        if(document.getElementById('newStringId').value!=''){
+            var hiddenFieldValue = document.getElementById('divId').innerHTML;
+            callAutoComplete(JSON.parse(hiddenFieldValue));
+        }else{
+            var productNameValues = [{!listOfProductWrapperClass}];
+            callAutoComplete(productNameValues);
+        }
+    }
+    
+    function displaySelectionSection(mapOfComp, mapOfRelease){
+        if(mapOfComp=='' && mapOfRelease=='' && existingValue!=''){
+            document.getElementById('errorTableFirstRowComp').innerHTML = 'No component(s) associated with product <b>'+existingValue+'</b>. Please use refresh button to select different product.';
+            document.getElementById('errorTableComp').style.display='block';
+            document.getElementById('errorTableFirstRow').innerHTML = 'No release(s) associated with product <b>'+existingValue+'</b>. Please use refresh button to select different product.';
+            document.getElementById('errorTable').style.display='block';
+            document.getElementById('errorMessage').innerHTML = '';
+            document.getElementById('pageid:articleForm:articleBlock:articleMessages').innerHTML = '';
+            document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display = 'none';
+            document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='none';
+            document.getElementById('{!$Component.pageId.articleForm.refreshId}').style.display = 'block';
+        }else if(mapOfComp=='' && existingValue!=''){
+            document.getElementById('errorMessage').innerHTML = '';
+            document.getElementById('pageid:articleForm:articleBlock:articleMessages').innerHTML = '';
+            document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display = 'none';
+            document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='none';
+            document.getElementById('errorTableFirstRowComp').innerHTML = 'No component(s) associated with product <b>'+existingValue+'</b>. Please use refresh button to select different product.';
+            document.getElementById('errorTableComp').style.display='block';
+            document.getElementById('normalTableComp').style.display='none';
+            document.getElementById('normalTable').style.display='block';
+            document.getElementById('{!$Component.pageId.articleForm.refreshId}').style.display = 'block';
+        }else if(mapOfRelease=='' && existingValue!=''){
+            document.getElementById('errorTable').style.display='block';
+            document.getElementById('normalTable').style.display='none';
+            document.getElementById('normalTableComp').style.display='block';
+            /*if(document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.fnctId}').style.display=='none'){
+                    document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display = 'none';
+                    document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='none';
+                    document.getElementById('{!$Component.pageId.articleForm.refreshId}').style.display = 'block';
+                    document.getElementById('errorTableFirstRow').innerHTML = 'No release(s) associated with product <b>'+existingValue+'</b>. Please use refresh button to select different product.';
+                }else{*/
+                document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display = 'block';
+                document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='none';
+                document.getElementById('{!$Component.pageId.articleForm.refreshId}').style.display = 'none';
+                document.getElementById('errorTableFirstRow').innerHTML = 'No release(s) associated with product <b>'+existingValue+'</b> but you can proceed with product association process.';
+                //}
+            }else{
+                document.getElementById('errorMessage').innerHTML = '';
+                document.getElementById('pageid:articleForm:articleBlock:articleMessages').innerHTML = '';
+                document.getElementById('normalTable').style.display='block';
+                document.getElementById('normalTableComp').style.display='block';
+                document.getElementById('errorTableFirstRowComp').innerHTML = '';
+                document.getElementById('errorTableComp').style.display='none';
+                document.getElementById('errorTableFirstRow').innerHTML = '';
+                document.getElementById('errorTable').style.display='none';
+                document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display = 'block';
+                document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.panelCompId}').style.display = 'block';
+                document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='none';
+                document.getElementById('{!$Component.pageId.articleForm.refreshId}').style.display = 'none';
+            }
+        }
+    
+    function callAutoComplete(productNameValues){
+        jQuery('#productTagId').autocomplete({
+            source: productNameValues,
+            select: function(event,ui){
+                if(ui.item.value!='' && ui.item.label!=''){
+                    passProductId(ui.item.Id);
+                    existingValue = ui.item.label;
+                }         
+            }
+        });
+    }
+    
+    function passProductId(Val){
+        if(Val!='-None-'){
+            productId = Val;
+            componentFun(Val);
+            document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display = 'block';
+            document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.panelCompId}').style.display = 'block';
+            document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='none';
+            //document.getElementById('{!$Component.pageId.articleForm.canclePageId}').style.display='none';
+            document.getElementById('errorMessage').innerHTML = '';
+        }else{
+            document.getElementById('errorMessage').innerHTML = 'Please select the valid product name.';
+        }
+    }
+    
+    function continueToNext(componentVal, releaseVal){
+        console.log('in continue to next');
+        saveAndAddAssociation(componentVal, releaseVal);
+        if(document.getElementById('errorMessage').innerHTML == ''){
+            document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='block';    
+            document.getElementById('productNameId').style.display ='none';
+        }
+    }
+    
+    function showAnotherAssociation(){
+        document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display = 'none';
+        //document.getElementById('{!$Component.pageId.articleForm.canclePageId}').style.display='block';
+        document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.panelCompId}').style.display = 'block';
+        document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='none';
+        document.getElementById('errorMessage').innerHTML = '';
+        document.getElementById('productNameId').style.display ='block';
+        
+    }
+    
+    function addComponents(leftCompId,rightCompId){
+        var removeArray = [];
+        var selectedComp = document.getElementById(leftCompId);
+        var newAddedComp = document.getElementById(rightCompId);
+        var count = 0;
+        if(selectedComp.length>=1 && newAddedComp.length>=1){
+            for(var k=0;k<selectedComp.options.length;k++){
+                if(selectedComp.options[k].selected && selectedComp.options[k].text!='All components are selected' && selectedComp.options[k].text!='No Component Found'){
+                    if(newAddedComp.options[0].text == 'No Component Selected'){
+                        newAddedComp.remove(0);
+                    }
+                    newAddedComp.options[newAddedComp.length] = new Option(selectedComp.options[k].text, selectedComp.options[k].value);
+                    removeArray[count] = selectedComp.options[k].value;
+                    count++;
+                }
+            }
+            
+            if(removeArray.length>0){
+                for(var i=0;i<removeArray.length;i++){
+                    for(var j=0;j<selectedComp.length;j++){
+                        if(selectedComp.options[j].value == removeArray[i]){
+                            selectedComp.remove(j);
+                            break;
+                        }
+                    }
+                }
+                
+                if(selectedComp.length==0){
+                    selectedComp.options[0] = new Option('All components are selected', 'All'); 
+                }
+            }
+        }else{
+            document.getElementById('errorMessage').innerHTML = 'No component found.';
+        }
+        
+    }
+    
+    function removeComponents(leftCompId,rightCompId){
+        var addArray = [];
+        var selectedComp = document.getElementById(rightCompId);
+        var newAddedComp = document.getElementById(leftCompId);
+        var count = 0;
+        
+        if(selectedComp.length>=1 && newAddedComp.length>=1){
+            for(var l=0;l<selectedComp.options.length;l++){
+                if(selectedComp.options[l].selected && selectedComp.options[l].text!='No Component Selected'){
+                    if(newAddedComp.options[0].text == 'All components are selected'){
+                        newAddedComp.remove(0);
+                    }
+                    newAddedComp.options[newAddedComp.length] = new Option(selectedComp.options[l].text, selectedComp.options[l].value);
+                    addArray[count] = selectedComp.options[l].value;
+                    count++;
+                }
+            }
+            
+            if(addArray.length>0){
+                for(var i=0;i<addArray.length;i++){
+                    for(var j=0;j<selectedComp.length;j++){
+                        if(selectedComp.options[j].value == addArray[i]){
+                            selectedComp.remove(j);
+                            break;
+                        }
+                    }
+                }
+                
+                if(selectedComp.length==0){
+                    selectedComp.options[0] = new Option('No Component Selected', '-None-');   
+                }
+            }
+        }
+    }
+    
+    function addRelease(leftReleaseId,rightReleaseId){
+        var removeArray = [];
+        var selectedComp = document.getElementById(leftReleaseId);
+        var newAddedComp = document.getElementById(rightReleaseId);
+        var count = 0;
+        if(selectedComp.length>=1 && newAddedComp.length>=1){
+            for(var k=0;k<selectedComp.options.length;k++){
+                if(selectedComp.options[k].selected && selectedComp.options[k].text!='All Releases are selected' && selectedComp.options[k].text!='No Release Found'){
+                    if(newAddedComp.options[0].text == 'No Release Selected'){
+                        newAddedComp.remove(0);
+                    }
+                    newAddedComp.options[newAddedComp.length] = new Option(selectedComp.options[k].text, selectedComp.options[k].value);
+                    removeArray[count] = selectedComp.options[k].value;
+                    count++;
+                }
+            }
+            if(removeArray.length>0){
+                for(var i=0;i<removeArray.length;i++){
+                    for(var j=0;j<selectedComp.length;j++){
+                        if(selectedComp.options[j].value == removeArray[i]){
+                            selectedComp.remove(j);
+                            break;
+                        }
+                    }
+                }
+                
+                if(selectedComp.length==0){
+                    selectedComp.options[0] = new Option('All Releases are selected', 'All'); 
+                }
+            }
+        }else{
+            document.getElementById('errorMessage').innerHTML = 'No Release found.';
+        }
+        
+    }
+    
+    function removeRelease(leftReleaseId,rightReleaseId){
+        var addArray = [];
+        var selectedComp = document.getElementById(rightReleaseId);
+        var newAddedComp = document.getElementById(leftReleaseId);
+        var count = 0;
+        
+        if(selectedComp.length>=1 && newAddedComp.length>=1){
+            for(var l=0;l<selectedComp.options.length;l++){
+                if(selectedComp.options[l].selected && selectedComp.options[l].text!='No Release Selected'){
+                    if(newAddedComp.options[0].text == 'All Releases are selected'){
+                        newAddedComp.remove(0);
+                    }
+                    newAddedComp.options[newAddedComp.length] = new Option(selectedComp.options[l].text, selectedComp.options[l].value);
+                    addArray[count] = selectedComp.options[l].value;
+                    count++;
+                }
+            }
+            
+            if(addArray.length>0){
+                for(var i=0;i<addArray.length;i++){
+                    for(var j=0;j<selectedComp.length;j++){
+                        if(selectedComp.options[j].value == addArray[i]){
+                            selectedComp.remove(j);
+                            break;
+                        }
+                    }
+                }
+                
+                if(selectedComp.length==0){
+                    selectedComp.options[0] = new Option('No Release Selected', 'All');   
+                }
+            }
+        }
+    }
+    
+    function saveAndAddAssociation(componentVal,releaseVal){
+        var selectedComponentVal = document.getElementById(componentVal);
+        var selectedReleaseVal = document.getElementById(releaseVal);
+        var articleNum = document.getElementById('inputTagId').value;
+        var prepareCompString = '';
+        var prepareReleaseString = '';
+        if(productId!='' && selectedReleaseVal!='' && selectedComponentVal!='' && articleNum!=''){
+            //if(productId!='' && selectedReleaseVal!='' && selectedComponentVal!=''){
+            var k = document.getElementById('sizeOfList').value;
+            //if((k=='0' && (primaryFlag==true || primaryFlag=='') && selectedComponentVal.options[0].value!='-None-' && selectedReleaseVal.options[0].value!='-None-' && selectedReleaseVal.options[0].value!='All')|| ((primaryFlag=='false' || primaryFlag=='') && k!='0' && selectedComponentVal.options[0].value!='-None-') || (primaryFlag=='true' && k!='0' && selectedComponentVal.options[0].value!='-None-' && selectedReleaseVal.options[0].value!='-None-' && selectedReleaseVal.options[0].value!='All')){
+            if(selectedComponentVal.options[0].value!='-None-'){    
+                for(var k=0;k<selectedComponentVal.length;k++){
+                    prepareCompString = prepareCompString +selectedComponentVal.options[k].value+';';
+                }
+                
+                for(var j=0;j<selectedReleaseVal.length;j++){
+                    prepareReleaseString = prepareReleaseString +selectedReleaseVal.options[j].value+';';
+                }
+                document.getElementById('errorMessage').innerHTML = '';
+                createPrimaryProductAssociation(productId, articleNum, prepareCompString, prepareReleaseString);
+                document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.fnctId}').style.display = 'block';
+                document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.panelCompId}').style.display = 'none';
+                document.getElementById('productTagId').value = '';
+                jQuery("#productTagId").removeAttr('readonly');
+                document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='block';
+                document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display ='none';
+                document.getElementById('{!$Component.pageId.articleForm.saveButtonId}').style.display = 'none';
+            }else{
+                document.getElementById('errorMessage').innerHTML = 'Please select the valid component(s).';
+            }
+        }else{
+            document.getElementById('errorMessage').innerHTML = 'Please select the valid combination.';
+        }
+        console.log('done save and add');
+    }
+    
+    function removeProduct(productId,productFlag,productComponent,productRelease){
+        primaryFlag = '';
+        var artNum = document.getElementById('inputTagId').value;
+        var responseResult = '';
+        if(productFlag=='true'){
+            responseResult = confirm('If you delete the primary product then current selections on the screen will be gone. Are you sure?');
+        }else{
+            responseResult = confirm('Are you sure?');
+        }
+        
+        if(responseResult){
+            callRemoveProduct(productId,productFlag,productComponent,productRelease,artNum);
+            document.getElementById('productTagId').value = '';
+            document.getElementById('productNameId').style.display = 'block';
+        }
+        if(responseResult && productFlag=='true'){
+            document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.fnctId}').style.display = 'none';
+            document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='none';
+            document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display ='none';
+        }
+    }
+    
+    function editAssociation(productRecordId, productName, primaryFlagVal){
+        primaryFlag = primaryFlagVal;
+        document.getElementById('productTagId').value=productName;
+        jQuery("#productTagId").attr('readonly', 'true');
+        document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.fnctId}').style.display = 'none';
+        document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='none';
+        document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.panelCompId}').style.display = 'block';
+        document.getElementById('{!$Component.pageId.articleForm.saveButtonId}').style.display = 'block';
+        document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display ='none';
+        document.getElementById('{!$Component.pageId.articleForm.refreshId}').style.display = 'none';
+        //document.getElementById('{!$Component.pageId.articleForm.canclePageId}').style.display='none';
+        var splitProductId = productRecordId.substr('editId_'.length,productRecordId.length);
+        productId = splitProductId;
+        fetchValuesForEdit(splitProductId);
+    }
+    
+    function showEditDetails(){
+        if(document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.ReleaseLeftId}').options[0].value == 'All' && document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.ReleaseRightId}').options[0].value=='-None-'){
+            document.getElementById('errorTableFirstRow').innerHTML = 'No release(s) associated with product <b>'+document.getElementById('productTagId').value+'</b> but you can proceed with product association process.';
+            document.getElementById('errorTable').style.display='block';
+            document.getElementById('normalTable').style.display='none';
+        }else{
+            document.getElementById('errorTableFirstRow').innerHTML = '';
+            document.getElementById('errorTable').style.display='none';
+            document.getElementById('normalTable').style.display='block';
+        }
+        document.getElementById('errorTableComp').style.display='none';
+        document.getElementById('normalTableComp').style.display='block';
+    }
+    
+    function submitDetails(buttonId){
+        submitProductAssociation(buttonId);
+    }
+    
+    function callDisplayTable(flagVal,wrapperDetails){
+        if(flagVal == true){
+            document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.fnctId}').style.display = 'block';
+            document.getElementById('newStringId').value= wrapperDetails;
+            document.getElementById('divId').innerHTML= wrapperDetails;
+        }
+    }
+    
+    function refreshFunc(tagId){
+        if(document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.fnctId}').style.display == 'none'){
+            document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.fnctId}').style.display = 'none';
+            document.getElementById('productTagId').value='';
+            jQuery("#productTagId").removeAttr('readonly');
+            document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='none';
+            document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.panelCompId}').style.display = 'none';
+            document.getElementById('{!$Component.pageId.articleForm.saveButtonId}').style.display = 'none';
+            document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display ='none';
+            document.getElementById('{!$Component.pageId.articleForm.refreshId}').style.display = 'none';
+        }else{
+            document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.fnctId}').style.display = 'block';
+            document.getElementById('productTagId').value='';
+            jQuery("#productTagId").removeAttr('readonly');
+            document.getElementById('productNameId').style.display = 'none';
+            document.getElementById('{!$Component.pageId.articleForm.buttonsId}').style.display ='block';
+            document.getElementById('{!$Component.pageId.articleForm.pageBlockTable.panelCompId}').style.display = 'none';
+            document.getElementById('{!$Component.pageId.articleForm.saveButtonId}').style.display = 'none';
+            document.getElementById('{!$Component.pageId.articleForm.continueId}').style.display ='none';
+            document.getElementById('{!$Component.pageId.articleForm.refreshId}').style.display = 'none';
+        }
+    }
+    
+    function navigateToNewWindow(){
+        /*var currentLoc = window.location.hostname;//ca--dkm--c.cs54.visual.force.com
+            var splitByDot = currentLoc.split('.');
+            if(splitByDot[0]!='' && splitByDot[1]!=''){
+                var splitByHypen = splitByDot[0].split('--');
+                if('{!listOfProcessInstance}'.length>2){
+                    var newURL = window.location.protocol+'//'+splitByHypen[0]+'--'+splitByHypen[1]+'.'+splitByDot[1]+'.my.salesforce.com/knowledge/publishing/articleDraftDetail.apexp?id={!knowledgeArticleIdVal}';
+                    window.location = newURL;
+                }else{
+                    var newURL = window.location.protocol+'//'+splitByHypen[0]+'--'+splitByHypen[1]+'.'+splitByDot[1]+'.my.salesforce.com/knowledge/publishing/articleForm.apexp?id={!knowledgeArticleIdVal}';
+                    window.location = newURL;
+                }
+            }*/
+        }
+    
+    
+    </script>
+    
+    <script type="text/javascript">
+
+        function doPreviewArticle() {
+            var pp = window.open('/knowledge/publishing/articlePreview.apexp?id=kA01k0000004hcD&popup=true&pubstatus=d&preview=true', 'articlePreview');
+
+            // Make sure that the preview window get the focus.
+            if(pp) {
+                focusPreview = function() { pp.focus(); };
+
+                if(window.addEventListener) window.addEventListener("load",focusPreview,false);
+                else if(window.attachEvent) window.attachEvent("onload", focusPreview); // IE non standard function to add event listener
+            }
+        }
+
+        function handlePreviewOK() {
+            var isImmediatePreview = document.getElementById("PreviewDlgImmediate").checked;
+            if(isImmediatePreview) {
+                doPreviewArticle();
+            } else {
+                if ((urlNameField.value.length == 0) && (titleField.value.length > 0)) {
+                    cleanUrlNameAndQuickSavePreview(titleField.value);
+                } else {
+                    quickSaveAndPreviewAction();
+                }
+            }
+        }
+
+        function setupPreviewDialog() {
+            if (!areRtaFieldsReady()) return;
+
+            showPreviewDlg();
+            document.getElementById("PreviewDlgImmediate").checked = true;
+        }
+
+        function updateFormFromResult(result) {
+            if (result != undefined && result.hasImpact!= undefined) {
+                Ext.fly('articleEdit:createDocumentForm:hasTranslationImpact').dom.value = result.hasImpact;
+            }
+        }
+
+        function assignDialogWithResult(result) {
+            updateFormFromResult(result);
+            assignDialog();
+        }
+
+        function assignDialog() {
+            if (!areRtaFieldsReady()) return;
+            callSetupAssignArticleDialog();
+        }
+
+        function quickSaveWithResult(result) {
+            updateFormFromResult(result);
+            quickSave();
+        }
+
+        function quickSave() {
+            if (!areRtaFieldsReady()) return;
+
+            showLoadingScreen();
+            if ((urlNameField.value.length == 0) && (titleField.value.length > 0)) {
+                cleanUrlNameAndQuickSave(titleField.value);
+            } else {
+                quickSaveAction();
+            }
+        }
+
+        function saveWithResult(result) {
+            updateFormFromResult(result);
+            save();
+        }
+
+        function saveAndSubmitForApprovalWithResult(result) {
+            updateFormFromResult(result);
+            saveAndSubmitForApproval();
+        }
+
+        function save() {
+            if (!areRtaFieldsReady()) return;
+
+            showLoadingScreen();
+            if ((urlNameField.value.length == 0) && (titleField.value.length > 0)) {
+                cleanUrlNameAndSave(titleField.value);
+            } else {
+                saveAction();
+            }
+        }
+
+        function confirmSubmit() {
+            var msg = Knowledge.LC.getLabel("Submit", "submit_confirm");
+            return ((Modal.confirm && Modal.confirm(msg)) || (!Modal.confirm && window.confirm(msg)));
+        }
+
+        function saveAndSubmitForApproval() {
+            if (!areRtaFieldsReady()) return;
+
+            if (!confirmSubmit()) return;
+
+            showLoadingScreen();
+            if ((urlNameField.value.length == 0) && (titleField.value.length > 0)) {
+                cleanUrlNameAndSaveAndSubmitForApproval(titleField.value);
+            } else {
+                saveAndSubmitForApprovalAction();
+            }
+        }
+            function translate() {
+                if (areRtaFieldsReady()) {
+                    translateDlgInvoke();
+                }
+            }
+
+        sfdcPage.updateDirtyState(false ? GenericSfdcPage.STATE_ERROR : GenericSfdcPage.STATE_DIRTY);
+    </script>
+    
+    <script type="text/javascript">
+        Ext.onReady(function() {
+            var toolbarElems = new Array();
+
+                toolbarElems.push({
+                    type: "button",
+                    id: "SaveArticle",
+                    label: "Save & Close",
+                        //handler: save,
+                    tooltip: "Save and close"
+                });
+
+                if (true) {
+                    toolbarElems.push({
+                        type: "button",
+                        id: "QuickSave",
+                        label: "Save",
+                            //handler: quickSave,
+                        tooltip: "Save and continue editing"
+                    });
+                }
+
+                toolbarElems.push({
+                    type: "button",
+                    id: "Cancel",
+                    label: "Cancel",
+                    //handler: cancel,
+                    tooltip: "Cancel changes and close"
+                });
+
+                toolbarElems.push({
+                        type: "separator"
+                    });
+
+                var elemsCount = toolbarElems.length;
+
+                if (Knowledge.getConstant("hasApprovalProcess")) {
+                    toolbarElems.push({
+                        type: "button",
+                        id: "piSubmit",
+                        label: "Submit for Approval",
+                        tooltip: "Submit for Approval",
+                        disabled: !Knowledge.getConstant("hasSubmitForApproval"),
+                        //handler: (Knowledge.getConstant("hasMultipleTranslations") ? saveAndSubmitForApprovalWithTranslations : saveAndSubmitForApproval)
+                    });
+                }
+
+                if (true) {
+                    toolbarElems.push({
+                        type: "button",
+                        id: "AssignArticle",
+                        disabled: false,
+                            //handler: assignDialog,
+                        label: "Assign...",
+                        tooltip: "Assign"
+                    });
+                }
+
+                if (true) {
+                    toolbarElems.push({
+                        type: "button",
+                        id: "PublishArticle",
+                        disabled: false,
+                            //handler: setupPublishArticleDialog,
+                        label: "Publish...",
+                        tooltip: "Publish now or later"
+                    });
+                }
+
+                if (false) {
+                   toolbarElems.push({
+                        type: "button",
+                        id: "TranslateArticle",
+                        disabled: false,
+                            //handler: translate,
+                        label: "Submit For Translation..."
+                    });
+                 }
+
+                if (toolbarElems.length - elemsCount > 0) {
+                    toolbarElems.push({
+                        type: "separator"
+                    });
+                }
+
+                toolbarElems.push({
+                    type: "button",
+                    id: "PreviewArticle",
+                    disabled: false,
+                        //handler: setupPreviewDialog,
+                    label: "Preview"
+                });
+
+            /*var toolbar = new articleFormToolbar({
+                renderTo: 'actionPanel',
+                elems: toolbarElems
+            });*/
+
+
+            function cancel() {
+                if(false && false) {
+                    top.DesktopContext.fireCloseTab(window.name, false, null, true);
+                    return;
+                }
+                showLoadingScreen();
+                cancelAction();
+            }
+
+            // only increment if the RTA is editable
+            /*Ext.select("tr.TypeRICH_TEXT_AREA_editable").each(function(el)  {
+                 kbiframesnumber++;
+               });
+
+            if (kbiframesnumber==0) {
+                kbRTAReady = true;
+            }*/
+
+             FileFieldInputElement.startUpload = function(btn) {
+                 /*for (var i=0; i< toolbar.toolbar.items.getCount(); i++) {
+                    var button = toolbar.toolbar.items.get(i);
+                    if (button.wasDisabled == null) { //only process buttons that were not previously disabled
+                        button.wasDisabled = button.disabled;
+                        if (!button.wasDisabled) {
+                            button.disable();
+                            button.disableCount=1;
+                        }
+                    } else if (!button.wasDisabled) {
+                        button.disableCount++;
+                    }
+                }
+
+                 Sfdc.Array.forEach(Ext.query("input[class=btn][type=submit]"), function (item) {
+                    if (item.name != btn.name) { // do not disable the current button
+                        if (item.wasDisabled == null) {
+                            item.wasDisabled = item.disabled;
+                            if (!item.wasDisabled) {
+                                item.disabled = true;
+                                item.disableCount=1;
+                            }
+                        } else if (!item.wasDisabled) {
+                            item.disableCount++;
+                        }
+                    }
+                });*/
+            }
+
+            FileFieldInputElement.stopUpload = function() {
+                /*for (var i=0; i< toolbar.toolbar.items.getCount(); i++) {
+                    var button = toolbar.toolbar.items.get(i);
+                    if (!button.wasDisabled) {
+                        if (button.disableCount==1) {
+                            button.enable();
+                            button.wasDisabled = null;
+                        } else {
+                            button.disableCount--;
+                        }
+                    }
+                }
+
+                Sfdc.Array.forEach(Ext.query("input[class=btn][type=submit]"), function (item) {
+                    if (!item.wasDisabled) {
+                        if (item.disableCount === 1) {
+                            item.disabled = false;
+                            item.wasDisabled = null;
+                        } else {
+                            item.disableCount--;
+                        }
+                    }
+                });*/
+            }
+            sfdcPage.save = save;
+
+            //Ext.EventManager.onWindowResize(articleForm.resizeContentFields);
+            //articleForm.resizeContentFields();
+            
+            //if (false) {
+            //doPreviewArticle();
+            //}
+        });
+    </script>
+
+    <script type="text/javascript">
+        if (typeof KnowledgeCKEditor !== "undefined") {
+                KnowledgeCKEditor.languageSelectItems = '';
+                KnowledgeCKEditor.masterLanguageCode = 'en_US';
+                KnowledgeCKEditor.publishStatusSelectItems = {'Published' : '0','Draft' : '1','Draft Translations' : '4'};
+            //chatter.getToolbox().setToken('{!$Api.Session_ID}');
+        }
+    </script>
+     <script>
+    // Cookies
+        function createCookie(name, value, days) {
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                var expires = "; expires=" + date.toGMTString();
+            }
+            else var expires = "";               
+
+            document.cookie = name + "=" + value + expires + "; path=/";
+        }
+
+        function readCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            createCookie(name, "", -1);
+        }
+    jQuery( "#showHideLeftCol" ).click(function() {    
+      jQuery( "#LeftCol" ).toggle( "slow", function() {
+        jQuery("#showHideButtons").toggleClass("collapsed");
+        jQuery("#showHideButtons").toggleClass("expanded");
+        if (jQuery("#showHideButtons").hasClass("collapsed")) {
+            createCookie("collapsed","true",999);
+        } else {
+            createCookie("collapsed","false",999);
+        }
+      });
+
+      
+    });
+
+    jQuery( document ).ready(function() {
+        if (readCookie("collapsed") == "true") {
+            jQuery( "#LeftCol" ).toggle( "fast", function() {
+                jQuery("#showHideButtons").toggleClass("collapsed");
+                jQuery("#showHideButtons").toggleClass("expanded");
+              });
+        }
+    });
+
+    function setUrl() {
+        var urlVal = jQuery("[id$='urlField']").val();
+        if (urlVal == '') {
+            var titleVal = jQuery("[id$='titleField']").val().trim().toLowerCase();
+            titleVal = titleVal.replace(/\W+/g, " ");
+            titleVal = titleVal.replace(new RegExp('_', 'g'), ' ');
+            var titleArray = titleVal.split(' ');
+            var titleJoined = titleArray.join('-');
+            var newUrlVal = titleJoined.substr(0,255);
+            jQuery("[id$='urlField']").val(newUrlVal);
+        }
+    }
+
+    function makeSize(){
+        console.log('makesize');
+        jQuery('.cke_contents').each(function( index ) {
+            console.log('in resize');
+            jQuery(this).resizable();
+        });
+    }
+
+    jQuery(window).on('load', function() {
+        console.log('in load');
+        jQuery(".apprtip").tooltip();
+        var check = function(){
+            if(jQuery('.cke_contents').size() >0 ){
+                makeSize();
+            }
+            else {
+                setTimeout(check, 1000); // check again in a second
+            }
+        }
+
+        check();    
+    });
+
+    </script>
+    
+</apex:page>

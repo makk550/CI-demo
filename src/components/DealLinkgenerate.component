@@ -1,0 +1,4 @@
+<apex:component controller="DealLinkgenerateController" access="global">
+  <apex:attribute name="OpportunityId" id="OpportunityId" type="Id" description="Opportunity Id" assignTo="{!oppId}"/> 
+    {!GeneratedLink}
+</apex:component>

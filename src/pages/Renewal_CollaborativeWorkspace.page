@@ -1,0 +1,200 @@
+<apex:page standardController="Account" extensions="Renewal_Collabrativeworkspace_extension" >
+  <apex:form >
+  <apex:sectionHeader title="Collaborative Workspace" subtitle="{!account.name}" />  
+  <apex:pageblock title="Account Details">  
+     <apex:pageblockSection columns="2" title="Account Information">
+       <apex:pageBlockSectionItem >
+         <apex:outputlabel value="Account Name" for="account__name"/>
+         <apex:outputfield value="{!account.name}" id="account__name"/>
+     </apex:pageBlockSectionItem>
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Account Owner" for="account__owner"/>
+        <apex:outputfield value="{!account.OwnerId}" id="account__owner"/>
+    </apex:pageBlockSectionItem>
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Region" for="GEO"/>
+        <apex:outputfield value="{!account.GEO__c}" id="GEO"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Enterprise ID" for="EnterpriseId"/>
+        <apex:outputfield value="{!account.Enterprise_ID__c}" id="EnterpriseId"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Area" for="area"/>
+        <apex:outputfield value="{!account.Sales_Area__c}" id="area"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Enterprise Account Name" for="EntAccName"/>
+        <apex:outputfield value="{!account.Enterprise_Account_Name__c}" id="EntAccName"/>
+    </apex:pageBlockSectionItem>
+
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Territory/Country" for="salesregion"/>
+        <apex:outputfield value="{!account.Sales_Region__c}" id="salesregion"/>
+    </apex:pageBlockSectionItem>
+
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Country" for="Country"/>
+        <apex:outputfield value="{!account.Region_Country__c}" id="Country"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputlabel value="Annual Sales" for="sales"/>
+        <apex:outputfield value="{!account.Annual_Sales__c}" id="sales"/>
+    </apex:pageBlockSectionItem>
+    
+  </apex:pageblockSection>
+ </apex:pageblock>
+
+
+   <apex:pageblock id="Listopp" title="Opportunities" >
+    <apex:pageBlockButtons location="top">
+        <apex:commandButton action="{!URLFOR($Action.Opportunity.New)}" value="New Opportunity" />
+    </apex:pageBlockButtons>
+
+     <apex:pageBlockTable value="{!Opplist}" var="o"  id="table">
+        <apex:column headervalue="Action">
+        <apex:commandlink action="{!URLFOR($Action.Opportunity.Edit,o.id)}" value="Edit">        
+        </apex:commandlink>|
+        <apex:commandlink action="{!URLFOR($Action.Opportunity.Delete,o.id)}" value="Del">        
+        </apex:commandlink>
+        </apex:column>
+        <apex:column >
+            <apex:commandLink value="{!o.RPD_Status_Formula__c}" action="/apex/Renewal_FinanceReview?id={!o.id}" />
+            <apex:facet name="header">           
+                <apex:commandLink action="{!sort}" value="RPD Status{!IF(sortExpression=='RPD_Status_Formula__c',IF(sortDirection='ASC','▼','▲'),'')}" rerender="Listopp" >             
+                <apex:param value="RPD_Status_Formula__c" name="column" assignTo="{!sortExpression}" ></apex:param>           
+                </apex:commandLink>         
+            </apex:facet>       
+        </apex:column>
+        
+        <apex:column >
+        <apex:commandlink action="{!URLFOR($Action.Opportunity.View,o.id)}" value="{!o.Name}"></apex:commandlink>                 
+            <apex:facet name="header">           
+                <apex:commandLink action="{!sort}" value="Opportunity Name{!IF(sortExpression=='Name',IF(sortDirection='ASC','▼','▲'),'')}" rerender="Listopp" >             
+                <apex:param value="Name" name="column" assignTo="{!sortExpression}" ></apex:param>           
+                </apex:commandLink>         
+            </apex:facet>       
+        </apex:column>
+        
+           
+        <apex:column value="{!o.StageName}">
+        <apex:facet name="header">           
+                <apex:commandLink action="{!sort}" value="Sales Milestone{!IF(sortExpression=='StageName',IF(sortDirection='ASC','▼','▲'),'')}" >             
+                <apex:param value="StageName" name="column" assignTo="{!sortExpression}" ></apex:param>           
+                </apex:commandLink>         
+            </apex:facet> 
+        </apex:column>
+
+        <apex:column value="{!o.CloseDate}">
+         <apex:facet name="header">           
+                <apex:commandLink action="{!sort}" value="Close Date{!IF(sortExpression=='CloseDate',IF(sortDirection='ASC','▼','▲'),'')}" >             
+                <apex:param value="CloseDate" name="column" assignTo="{!sortExpression}" ></apex:param>           
+                </apex:commandLink>         
+            </apex:facet> 
+        </apex:column>        
+        <apex:column value="{!o.OwnerId}">
+        <apex:facet name="header">           
+                <apex:commandLink action="{!sort}" value="Opportunity Owner{!IF(sortExpression=='OwnerId',IF(sortDirection='ASC','▼','▲'),'')}" >             
+                <apex:param value="OwnerId" name="column" assignTo="{!sortExpression}" ></apex:param>           
+                </apex:commandLink>         
+            </apex:facet> 
+        </apex:column>
+        <apex:column value="{!o.RecordTypeId}">
+         <apex:facet name="header">           
+                <apex:commandLink action="{!sort}" value="Opportunity Record Type{!IF(sortExpression=='RecordTypeId',IF(sortDirection='ASC','▼','▲'),'')}" >             
+                <apex:param value="RecordTypeId" name="column" assignTo="{!sortExpression}" ></apex:param>           
+                </apex:commandLink>         
+            </apex:facet> 
+        </apex:column>
+        <apex:column value="{!o.Type}">
+        <apex:facet name="header">           
+                <apex:commandLink action="{!sort}" value="Type{!IF(sortExpression=='Type',IF(sortDirection='ASC','▼','▲'),'')}" >             
+                <apex:param value="Type" name="column" assignTo="{!sortExpression}" ></apex:param>           
+                </apex:commandLink>         
+            </apex:facet> 
+        </apex:column>
+        <apex:column value="{!o.ExpectedRevenue}">
+        <apex:facet name="header">           
+                <apex:commandLink action="{!sort}" value="Expected Revenue{!IF(sortExpression=='ExpectedRevenue',IF(sortDirection='ASC','▼','▲'),'')}" >             
+                <apex:param value="ExpectedRevenue" name="column" assignTo="{!sortExpression}" ></apex:param>           
+                </apex:commandLink>         
+            </apex:facet> 
+        </apex:column>
+        <apex:column value="{!o.AccountId}">
+        <apex:facet name="header">           
+                <apex:commandLink action="{!sort}" value="Account Name{!IF(sortExpression=='AccountId',IF(sortDirection='ASC','▼','▲'),'')}" >             
+                <apex:param value="AccountId" name="column" assignTo="{!sortExpression}" ></apex:param>           
+                </apex:commandLink>         
+            </apex:facet> 
+        </apex:column>
+     </apex:pageBlockTable>
+     <apex:commandLink action="{!previous}" rerender="Listopp" rendered="{!oppHasPrevious}"   value="Previous Page"></apex:commandLink>|
+     <apex:commandLink action="{!next}" rerender="Listopp" rendered="{!oppHasNext}"  value="Next Page"></apex:commandLink>      
+  </apex:pageblock>
+  
+  <apex:pageblock id="ListContracts" title="Active Contracts" >
+  <apex:pageBlockButtons location="top">
+        <apex:commandButton action="{!URLFOR($Action.Active_Contract__c.New)}" value="New Active Contract" />
+    </apex:pageBlockButtons>
+     <apex:pageBlockTable value="{!contracts}" var="contract" rendered="{!NOT(ISNULL(contracts))}">
+        <apex:column headervalue="Action">
+        <apex:commandlink action="{!URLFOR($Action.Active_Contract__c.Edit,contract.id)}" value="Edit">        
+        </apex:commandlink>|
+        <apex:commandlink action="{!URLFOR($Action.Active_Contract__c.Delete,contract.id)}" value="Del">        
+        </apex:commandlink>
+        </apex:column>
+        <apex:column headerValue="Sales Document">
+        <apex:commandlink action="{!URLFOR($Action.Active_Contract__c.View,contract.id)}" value="{!contract.Name}"></apex:commandlink>
+        </apex:column>
+        
+        <apex:column value="{!contract.Status_Formula__c}"/>
+        <apex:column value="{!contract.Contract_Start_Date__c}"/>
+        <apex:column value="{!contract.Contract_End_Date__c}"/>
+        <apex:column value="{!contract.Raw_Maint_Calc_LC__c}"></apex:column>
+        <apex:column value="{!contract.ATTRF_CRV__c}"/>
+        <apex:column value="{!contract.AOCV__c}"/>
+        <apex:column value="{!contract.OCV__c}"/>
+        <apex:column value="{!contract.Region__c}"/>
+        <apex:column value="{!contract.Area__c}"/>
+        <apex:column value="{!contract.Territory_Country__c}"/>
+     </apex:pageBlockTable>
+     <apex:commandLink action="{!previous}" rerender="ListContracts" rendered="{!contractHasPrevious}"   value="Previous Page"></apex:commandLink>|
+     <apex:commandLink action="{!next}" rerender="ListContracts" rendered="{!contractHasNext}"  value="Next Page"></apex:commandLink>
+    <apex:outputLabel value="No records to display" rendered="{!(ISNULL(contracts))}" styleClass="noRowsHeader"></apex:outputLabel>
+  </apex:pageblock>
+  
+    <apex:pageblock id="ListRenewals" title="Renewals">
+    <apex:pageBlockButtons location="top">
+        <apex:commandButton action="{!URLFOR($Action.Renewal__c.New)}" value="New Renewal" />
+    </apex:pageBlockButtons>
+     <apex:pageBlockTable value="{!renewals}" var="renewal" rendered="{!NOT(ISNULL(renewals))}" id="tblRenewal">
+        <apex:column headervalue="Action">
+        <apex:commandlink action="{!URLFOR($Action.Renewal__c.Edit,renewal.id)}" value="Edit">        
+        </apex:commandlink>|
+        <apex:commandlink action="{!URLFOR($Action.Renewal__c.Delete,renewal.id)}" value="Del">        
+        </apex:commandlink>
+        </apex:column>
+        <apex:column headerValue="Renewal Name">
+         <apex:commandlink action="{!URLFOR($Action.Renewal__c.View,renewal.id)}" value="{!renewal.Name}"></apex:commandlink>       
+        </apex:column>
+        <apex:column value="{!renewal.Account__c}"/>
+        <apex:column value="{!renewal.Segmentation__c}"/>
+        <apex:column value="{!renewal.Local_Currency__c}"></apex:column>
+        <apex:column value="{!renewal.OCV__c}"/>
+        <apex:column value="{!renewal.Projected_Renewal__c}"/>
+        <apex:column value="{!renewal.Expected_Close_Date__c}"/>
+        <apex:column value="{!renewal.Region__c}"/>
+        <apex:column value="{!renewal.Area__c}"/>
+        <apex:column value="{!renewal.Territory_Country__c}"/>        
+     </apex:pageBlockTable>
+     <apex:commandLink action="{!previous}" rerender="ListRenewals" rendered="{!hasPrevious}"   value="Previous Page"></apex:commandLink>|
+     <apex:commandLink action="{!next}" rerender="ListRenewals" rendered="{!hasNext}"  value="Next Page"></apex:commandLink>     
+    <apex:outputLabel value="No records to display" rendered="{!(ISNULL(contracts))}" styleClass="noRowsHeader"></apex:outputLabel>
+  </apex:pageblock>
+</apex:form>
+
+</apex:page>

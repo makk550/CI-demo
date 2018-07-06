@@ -1,0 +1,25 @@
+<apex:page controller="Duplicateleadsearchcontroller" >
+	<apex:form >
+        <apex:pageMessages ></apex:pageMessages>
+		 <apex:PageBlock title="Duplication Leads">
+                 <div style="width:100%;">
+                     
+                 <div style="width:50%;float:left;">
+             <apex:pageBlockTable value="{!dupeleadlist}" var="dls" id="saikumar">
+                    <apex:column headerValue="Lead Name">
+          			 	<apex:outputLink value="/{!dls.lds.id}" target="_blank">{!dls.lds.Name}</apex:outputLink>
+          			 </apex:column>
+                     
+                 </apex:pageBlockTable>
+                        </div>
+                     <div style="width:50%;float:left;">
+                     <apex:pageBlockTable value="{!dupeopplist}" var="dps" id="sesi">
+                         <apex:column headerValue="Opportunity Name">
+          			 	<apex:outputLink value="/{!dps.opty.id}" target="_blank">{!dps.opty.Name}</apex:outputLink>
+          			 </apex:column>
+                         </apex:pageBlockTable>
+                     </div>
+                      </div>
+        </apex:PageBlock>
+    </apex:form>
+</apex:page>

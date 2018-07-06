@@ -1,0 +1,7 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="PartnerSearchAutoCompleteController">
+<ul>
+	<apex:repeat value="{!results}" var="choice" id="theRepeat">
+	<li>{!choice}</li> 
+	</apex:repeat>
+</ul>
+</apex:page>

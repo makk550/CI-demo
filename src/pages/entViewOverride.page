@@ -1,0 +1,2 @@
+<apex:page action="{!redirect}" standardController="EntitlementPDD__c" extensions="EntitlementControllerExtension">
+</apex:page>

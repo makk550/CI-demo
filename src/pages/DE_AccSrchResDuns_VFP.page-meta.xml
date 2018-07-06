@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>29.0</apiVersion>
+    <availableInTouch>false</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <description>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th class=&quot;labelCol vfLabelColTextWrap&quot; scope=&quot;row&quot;&gt;&lt;label for=&quot;thePage:theTemplate:theForm:thePageBlock:thePageBlockSection:j_id26&quot;&gt;Available for Salesforce mobile apps&lt;/label&gt;&lt;/th&gt;&lt;td class=&quot;data2Col&quot;&gt;&lt;input name=&quot;thePage:theTemplate:theForm:thePageBlock:thePageBlockSection:j_id26&quot; id=&quot;thePage:theTemplate:theForm:thePageBlock:thePageBlockSection:j_id26&quot; type=&quot;checkbox&quot; value=&quot;1&quot; /&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th class=&quot;labelCol vfLabelColTextWrap&quot; scope=&quot;row&quot;&gt;&lt;label for=&quot;thePage:theTemplate:theForm:thePageBlock:thePageBlockSection:token&quot;&gt;Require CSRF protection on GET requests&lt;/label&gt;&lt;/th&gt;&lt;td class=&quot;data2Col&quot;&gt;&lt;input name=&quot;thePage:theTemplate:theForm:thePageBlock:thePageBlockSection:token&quot; id=&quot;thePage:theTemplate:theForm:thePageBlock:thePageBlockSection:token&quot; type=&quot;checkbox&quot; value=&quot;1&quot; /&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td class=&quot;data2Col last&quot; colspan=&quot;2&quot;&gt;&lt;span id=&quot;thePage:theTemplate:theForm:thePageBlock:thePageBlockSection:resetPreview&quot;&gt;&lt;span id=&quot;thePage:theTemplate:theForm:thePageBlock:thePageBlockSection:resetPreview.start&quot; style=&quot;display: none;&quot; /&gt;&lt;span id=&quot;thePage:theTemplate:theForm:thePageBlock:thePageBlockSection:resetPreview.stop&quot; /&gt;&lt;script type=&quot;text/javascript&quot;&gt;//&lt;![CDATA[
+window.document.getElementById(&apos;thePage:theTemplate:theForm:thePageBlock:thePageBlockSection:resetPreview.stop&apos;).onstop=function(){resetPreview(true, &apos;Visualforce Page : DE_AccSrchResDuns_VFP&apos;, &apos;/apex/DE_AccSrchResDuns_VFP&apos;, &apos;Preview DE_AccSrchResDuns_VFP in New Window&apos;);};
+//]]&gt;
+&lt;/script&gt;&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;</description>
+    <label>DE_AccSrchResDuns_VFP</label>
+</ApexPage>

@@ -1,0 +1,133 @@
+<!--VF Page to allow users to create different types of access request-->
+<!--Comment added by BAJPI01, 26/6/2016-->
+<apex:page standardController="Access_Request__c" extensions="AccessRequestSubmitCtlr" cache="false"  showHeader="true">
+
+<style>
+
+.links {
+    padding-top: 10px;
+    padding-right: 5px;
+    padding-bottom: 0;
+    padding-left: 0;
+    float: right;
+    text-align: right;
+    vertical-align: middle;
+    font-size: 91%;
+    white-space: nowrap;
+}
+
+</style>
+    <apex:form id="theform" StyleClass="mainForm">
+        
+        <apex:sectionHeader title="New Access Request"/>
+        <!--Create Access Request Section Starts here, renders when user selects create Access Request Type-->
+        <apex:pageblock mode="detail" tabStyle="Access_Request__c" title="Enter Access Request Details" rendered="{!createAR}">
+       
+        
+        <apex:pageBlockSection id="ARfields" title="Request Details :" showHeader="TRUE"  >
+           
+            
+                <apex:inputField id="ReqFor" value="{!accReq.Request_For__c}" required="true"/>
+                <apex:inputField id="Status" value="{!accReq.Status__c}" />
+                
+                <apex:pageBlockSectionItem HelpText="{!$ObjectType.Access_Request__c.Fields.Access_for_URL__c.InlineHelpText}" >
+                {!$ObjectType.Access_Request__c.Fields.Access_for_URL__c.label}
+                <apex:inputField value="{!accReq.Access_for_URL__c}" style="width:320px;" required="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem HelpText="{!$ObjectType.Access_Request__c.Fields.Mirror__c.InlineHelpText}">
+                {!$ObjectType.Access_Request__c.Fields.Mirror__c.label}
+                <apex:inputField value="{!accReq.Mirror__c}" required="true"/>
+                </apex:pageBlockSectionItem>
+                <apex:inputField id="resonforReq" value="{!accReq.Reason_for_the_request__c}" required="true"/>
+                <apex:inputField id="region" value="{!accReq.Region__c}" required="true"/>                
+                <apex:inputField id="Comments" style="width:323px;height:81px" value="{!accReq.Comments__c}"/>
+                <apex:inputField id="SDTicket" value="{!accReq.SD_Ticket__c}"/>
+                
+                
+           
+                
+         </apex:pageBlockSection>
+		 
+		 <apex:pageBlockButtons location="bottom">
+		 <apex:commandButton id="svBtn" action="{!SaveSubmitAR}" value="Save And Submit for Approval" />        <!--Method used to save and auto submit access request-->
+		 </apex:pageBlockButtons>
+		 
+	</apex:pageblock>
+    <!--Create Access Request Section Starts here--> 
+        
+    <!--Create Mirror A User Section Starts here, renders when user selects create Mirror a User Type-->    
+    <apex:pageblock mode="detail" tabStyle="Access_Request__c" title="Enter Mirror Details" rendered="{!mirrorUser}">
+       
+        
+        <apex:pageBlockSection id="ARfields" title="Request Details :" showHeader="TRUE"  >
+           
+            
+                <apex:inputField id="ReqFor" value="{!accReq.Request_For__c}" required="true"/>
+                <apex:inputField id="Status" value="{!accReq.Status__c}" />
+                
+              
+                
+                <apex:pageBlockSectionItem HelpText="{!$ObjectType.Access_Request__c.Fields.Mirror__c.InlineHelpText}">
+                {!$ObjectType.Access_Request__c.Fields.Mirror__c.label}
+                <apex:inputField value="{!accReq.Mirror__c}" required="true"/>
+                </apex:pageBlockSectionItem>
+                <apex:inputField id="resonforReq" value="{!accReq.Reason_for_the_request__c}" required="true"/>
+                <apex:inputField id="region" value="{!accReq.Region__c}" required="true"/>                
+                <apex:inputField id="Comments" style="width:283px;height:96px;" value="{!accReq.Comments__c}" required="true"/>
+                <apex:inputField id="SDTicket" value="{!accReq.SD_Ticket__c}"/>
+                
+                
+           
+                
+         </apex:pageBlockSection>
+		 
+		 <apex:pageBlockButtons location="bottom">
+		 <apex:commandButton id="svMirrBtn" action="{!SaveSubmitMirror}" value="Save And Submit for Approval" /> <!--Method used to save mirror a user request and auto submit for approval-->        
+		 </apex:pageBlockButtons>
+		 
+	</apex:pageblock>
+    <!--Create Mirror a User Section End here-->    
+    
+    <!--Create Service Desk Section Starts here,renders when user selects create Service Desk Ticket Type-->    
+        
+     <apex:pageblock mode="detail" tabStyle="Access_Request__c" title="Enter details for Service Desk Ticket" rendered="{!createSD}">
+       
+        
+        <apex:pageBlockSection id="ARfields" title="Service Desk Details :" showHeader="TRUE" rendered="{!!isCreateSDTicket}" >
+           
+            
+                <apex:inputField id="ReqFor" value="{!accReq.Request_For__c}" required="true"/>
+                <apex:inputField id="Status" value="{!accReq.Status__c}" />
+                <apex:inputField id="resonforReq" value="{!accReq.Reason_for_the_request__c}" required="true"/>
+                <apex:inputField id="region" value="{!accReq.Region__c}" required="true"/>                
+                <apex:inputField id="Comments" style="width:319px;height:68px;" value="{!accReq.Comments__c}" required="true"/>
+                <apex:inputField id="SDTicket" value="{!accReq.SD_Ticket__c}"/>
+                
+                
+           
+                
+         </apex:pageBlockSection>
+         <!--
+         <apex:pageBlockSection id="SDTicket" rendered="{!isCreateSDTicket}">
+            <apex:outputLabel styleClass="SDT1" rendered="{!isCreateSDticket}">SD Comments : </apex:outputLabel>
+            <apex:inputTextarea value="{!approverComment}" styleClass="SDT2"/> 
+        </apex:pageBlockSection>
+         
+         <apex:pageBlockSection id="btnsBlk1" >
+            <div align="center" draggable="false" >
+              <apex:commandButton id="CSDTBtn" action="{!createSDTicket}" value="Create Ticket" rendered="{!isCreateSDticket}"/> <!--This method saves the Acess Request and auto submits for approval
+            </div>
+        </apex:pageBlockSection>
+		 -->
+		 <apex:pageBlockButtons location="bottom">
+		 <apex:commandButton id="svBtn2" action="{!SaveAR}" value="Save & Create SD Ticket" rendered="{!!isCreateSDticket}"/>    <!--This method creates a service desk ticket and updates the AR created-->    
+		 </apex:pageBlockButtons>
+		 
+	</apex:pageblock>
+        
+    </apex:form>
+    
+    
+    
+</apex:page>

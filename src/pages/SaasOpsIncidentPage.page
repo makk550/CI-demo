@@ -1,0 +1,25 @@
+<apex:page standardController="External_RnD__c" extensions="CreateExternalRndClass">
+     <apex:detail subject="{!External_RnD__c.Id}" relatedList="false" title="true" inlineEdit="true" showChatter="true">
+     </apex:detail>
+   <apex:form >
+    <apex:pageBlock rendered="{!IF(External_RnD__c.SaaS_Type__c!=null, true, false)}">
+      <apex:pageBlockButtons location="top">
+                <apex:commandButton value="New Comment"  action="{!newComment}" />
+      </apex:pageBlockButtons>  
+      <apex:pageBlockTable value="{!External_RnD__c.Work_Request_Comments__r}" var="comment">  
+         <apex:column Headervalue="Comments" >
+            <apex:outputField value="{!comment.Comments__c}"/>
+         </apex:column>
+         <apex:column headerValue="Created By">
+            <apex:outputField value="{!comment.CreatedById}"/> &nbsp;
+            <apex:outputField value="{!comment.CreatedDate}"/>
+         </apex:column>
+         <apex:column headerValue="last Modified By">
+            <apex:outputField value="{!comment.LastModifiedById}"/> &nbsp;
+            <apex:outputField value="{!comment.LastModifiedDate}"/>
+         </apex:column>
+      </apex:pageBlockTable> 
+    </apex:pageBlock>
+   </apex:form>
+   <apex:relatedList list="CombinedAttachments" rendered="{!IF(External_RnD__c.SaaS_Type__c!=null, true, false)}"/>
+</apex:page>

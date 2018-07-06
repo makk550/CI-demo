@@ -1,0 +1,105 @@
+<apex:page standardController="OpportunityLineItem"  >
+<script>
+function validateInput(){
+    if(document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec2}").style.display=="block"){
+        if((document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec2.License_Type__c}").value=="")||(document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec2.To_be_implemented_by__c}").value=="")){
+            document.getElementById("License_Type_MSG").style.display="block";
+            return false;
+        }else{
+            document.getElementById("License_Type_MSG").style.display="none";
+            return true;
+        }
+        if(document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec2.To_be_implemented_by__c}").value==""){
+            document.getElementById("To_be_implemented_by_MSG").style.display="block";
+            return false;
+        }else{
+            document.getElementById("To_be_implemented_by_MSG").style.display="none";
+            return true;
+        }
+
+    }else{
+        return true;
+    }
+}
+</script>
+    <apex:form id="CustomEditPage" onsubmit="return validateInput();" >
+    
+        <apex:pageBlock title="{!opportunitylineitem.PricebookEntry.Name}" mode="edit" id="pgBlock">
+            <apex:pageBlockButtons >                    
+                    <apex:commandButton action="{!save}" value="Save"/>
+                    <apex:commandButton action="{!cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Opportunity Line Item Edit" columns="1" id="pgBlockSec1">
+                   <apex:outputField value="{!opportunitylineitem.Opportunity.Name}"/>
+                   <apex:outputField value="{!opportunitylineitem.PricebookEntry.Name}"/>
+                   <apex:inputField value="{!opportunitylineitem.Business_Type__c}" id="busType" required="{!opportunitylineitem.PricebookEntry.Product2.Family == 'Product'}" rendered="{!opportunitylineitem.PricebookEntry.Product2.Market_Focus_Area__c == 'RMDM'}" /> 
+                   <apex:inputField value="{!opportunitylineitem.UnitPrice}" required="true"/>     
+                    <apex:inputField value="{!opportunitylineitem.Term_Month__c}" rendered="{!opportunitylineitem.PricebookEntry.Product2.Market_Focus_Area__c != 'ISBU' && opportunitylineitem.PricebookEntry.Product2.Market_Focus_Area__c != 'RMDM' }"  />
+                    <span id="License_Type_MSG" style="display:none">
+                      <b><font color="red">Error: Please select some value for license type and To be Implemented by.</font> </b>
+                    </span>                                           
+                    <c:licenseTypeWithHelpLink fieldvalue="{!opportunitylineitem}" id="License_Type__c" rendered="{!opportunitylineitem.PricebookEntry.Product2.Market_Focus_Area__c != 'ISBU' && opportunitylineitem.PricebookEntry.Product2.Market_Focus_Area__c != 'RMDM' }"  />
+                                                                                                               
+                  <center>
+                    <span id="To_be_implemented_by_MSG" style="display:none">
+                        <b><font color="red">Error: Please select some value for To be Implemented by.</font> </b>
+                    </span>
+                </center>                      
+                    <apex:inputField value="{!opportunitylineitem.To_be_implemented_by__c}" id="To_be_implemented_by__c"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form> 
+<script>
+      if(document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec1.busType}") != null)
+        {
+            var fam = '{!opportunitylineitem.PricebookEntry.Product2.Family}';
+            ctrl = document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec1.busType}");
+           // alert(document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec1.busType}"));
+           // alert(document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec1.busType}").length);
+           // alert(document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec1.busType}").options[0].text);
+           var vlen = ctrl.length;
+            for (var i=0; i< vlen;  i++){
+                    if((ctrl.options[i].text != 'NCV' && ctrl.options[i].text != 'Maintenance'  &&  ctrl.options[i].text != '--None--')|| (fam != 'Product'))
+                               if(ctrl.options[i].text != '--None--')
+                                   {
+                                       ctrl.remove(i);
+                                       i--;
+                                       vlen --;
+                                     
+                                   }     
+                }
+        }
+  
+
+    //8TH JUN 2009, ADDED BY MOHAMMAD AFZAL, PMFKEY = afzmo01, CR:13886523
+    //The new field License Type and To Be implemented are fields that should magically appear only if
+    //the product selected is with (NEW)  and they are not RMDM and ISBU products 
+    //15TH JUL 2009, ADDED BY KOH, MERVIN, PMFKEY = kohme02, CR:14843849
+    //The license type and To Be implemented fields to appear for (CAPACITY)
+    //START
+    function enableLicenseType(){
+        var selectedProduct = "{!opportunitylineitem.PricebookEntry.Name}"; 
+        //9TH JUL 2009
+        var sRecordTypeId = "{!opportunitylineitem.Opportunity.RecordTypeId}";//01230000000GfiBAAS
+        //
+        // 28TH JULY 2009, COMMENTED BY MOHAMMAD AFZAL, PMFKEY = afzmo01, CR:14844244
+        // TO INCLUDE IND-VALUE OPPORTUNITIES WHILE DISPLAYING THE PICKLISTS.
+        //if((sRecordTypeId!="01230000000GfiBAAS" && selectedProduct.toLowerCase().indexOf("new)")!=-1)||(sRecordTypeId!="01230000000GfiBAAS" && selectedProduct.toLowerCase().indexOf("(capacity)")!=-1)){
+        if(selectedProduct.toLowerCase().indexOf("new)")!=-1 || selectedProduct.toLowerCase().indexOf("(capacity)")!=-1){
+            var selectedBU = "{!opportunitylineitem.PricebookEntry.Product2.Market_Focus_Area__c}"; 
+            if(selectedBU!="" && selectedBU!="ISBU" && selectedBU!="RMDM"){
+                if(document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec2}"))
+                    document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec2}").style.display="block";
+            }else{ 
+                if(document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec2}"))            
+                    document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec2}").style.display="none";
+            }
+        }else{
+                if(document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec2}"))
+                    document.getElementById("{!$Component.CustomEditPage.pgBlock.pgBlockSec2}").style.display="none";
+        }
+    }
+    enableLicenseType();
+    //END
+</script>
+</apex:page>

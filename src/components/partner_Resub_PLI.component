@@ -1,0 +1,4 @@
+<apex:component controller="modifyresubcontroller" access="global" id="partnerResubPLI">
+ <apex:attribute name="oppid" id="oppid" assignTo="{!opportunityid}" type="id" description="Opportunity ID" />
+{!internaladdedproduct}
+</apex:component>

@@ -1,0 +1,6 @@
+<apex:page standardController="PIR_Product_Price__c">
+  <!-- Begin Default Content REMOVE THIS -->
+  <h6>Insufficient Access</h6>
+  This content is not available for editing.
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

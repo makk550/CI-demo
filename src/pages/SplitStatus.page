@@ -1,0 +1,79 @@
+<apex:page controller="SplitStatusController" title="Split Status" action="{!loadAll}">
+	<apex:form id="frm">
+	<apex:pageBlock title="Split processing results">
+		<apex:pageBlockSection >
+			<apex:outputLabel value="TAQ Batch (pre-processor)" style="font-weight:bold"/>
+			<apex:outputLabel value="Split Batch (main, second)" style="font-weight:bold"/>
+			<apex:outputField value="{!job1.CreatedDate}"/>
+			<apex:outputField value="{!job2.CreatedDate}"/>
+			<apex:outputField value="{!job1.CompletedDate}"/>
+			<apex:outputField value="{!job2.CompletedDate}"/>
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Status"/>
+				<apex:panelGrid columns="2">
+					<apex:outputField value="{!job1.Status}" rendered="{!job1.Status != 'Processing'}"/>
+					<apex:outputPanel style="color:red" rendered="{!job1 == null || job1.Status == 'Processing' || job1.Status == 'Preparing'}"> 
+						<img src="/img/loading.gif"/> {!job1.Status} 
+					</apex:outputPanel>				         
+				</apex:panelGrid>			
+			</apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Status"/>
+				<apex:panelGrid columns="2">
+					<apex:outputField value="{!job2.Status}" rendered="{!job2.Status != 'Processing'}"/>
+					<apex:outputPanel style="color:red" rendered="{!job2 == null || job2.Status == 'Processing' || job2.Status == 'Preparing'}"> 
+						<img src="/img/loading.gif"/> {!job2.Status} 
+					</apex:outputPanel>				         
+				</apex:panelGrid>			
+			</apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="ETA"/>
+				<apex:outputText value="{!ETA1}"/>
+			</apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="ETA"/>
+				<apex:outputText value="{!ETA2}"/>
+			</apex:pageBlockSectionItem>
+			<apex:outputField value="{!job1.ExtendedStatus}"/>
+			<apex:outputField value="{!job2.ExtendedStatus}"/>
+			<apex:outputField value="{!job1.TotalJobItems}"/>
+			<apex:outputField value="{!job2.TotalJobItems}"/>
+			<apex:outputField value="{!job1.JobItemsProcessed}"/>
+			<apex:outputField value="{!job2.JobItemsProcessed}"/>
+			<apex:outputField value="{!job1.NumberOfErrors}"/>
+			<apex:outputField value="{!job2.NumberOfErrors}"/>
+			<apex:outputField value="{!job1.CreatedById}"/>
+			<apex:outputField value="{!job2.CreatedById}"/>
+			<apex:commandButton action="{!startFirstBatch}" value="Start Pre-Processor Batch" rendered="{!renderButtons}" reRender="frm"/> 
+			<apex:commandButton action="{!startSecondBatch}" value="Start Main Split Batch" rendered="{!renderButtons}" reRender="frm"/> 
+		</apex:pageBlockSection>
+		<apex:actionPoller action="{!loadAll}" reRender="frm" interval="60"/>
+		 		
+		<apex:pageBlockTable value="{!lines}" var="line">
+			<apex:column >
+				<apex:facet name="header">Count</apex:facet>
+				<apex:outputText value="{!line.cnt}"/>
+			</apex:column> 
+			<apex:column >
+				<apex:facet name="header">TAQ update reason</apex:facet>
+				<apex:outputText value="{!line.taqReason}"/>
+			</apex:column> 
+			<apex:column >
+				<apex:facet name="header">Split Reason</apex:facet>
+				<apex:outputText value="{!line.splitReason}"/>
+			</apex:column> 
+			<apex:column >
+				<apex:facet name="header">Explanation</apex:facet>
+				<apex:outputText value="{!line.expl}"/>
+			</apex:column> 
+			<apex:column >
+				<apex:facet name="header">Samples with Last Modified Date</apex:facet>
+				<apex:repeat value="{!line.samples}" var="smpl">
+				    <apex:outputLink style="white-space: nowrap" value="/{!smpl.Id}" >{!smpl.User.Name} &nbsp; <apex:outputField value="{!smpl.LastModifiedDate}"/></apex:outputLink>
+				    <br/>
+                </apex:repeat> 				
+			</apex:column> 
+		</apex:pageBlockTable>
+	</apex:pageBlock>
+	</apex:form>
+</apex:page>

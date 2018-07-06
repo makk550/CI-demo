@@ -1,0 +1,467 @@
+<apex:page id="pg"  controller="OpportunityDetailsReport_controller" tabstyle="Opportunity" contenttype="{!contenttype}">
+     <script>
+        if(document.all)
+            if(this.parent.location.href.indexOf('https') > -1)
+                 this.parent.location.href = this.parent.location.href.replace('https','http');
+    </script>
+   <style>
+           .headerRow
+             {
+                 background-color:#aaaaff;
+             }
+            .even
+            {
+                background-color:#E0E0E0;
+            }
+        </style>
+    <apex:form id="frm" rendered="{!contenttype==''}" >
+       <apex:sectionHeader title="Opportunity Details Report"  />
+        <apex:includeScript value="/soap/ajax/15.0/connection.js"/>
+        <apex:includeScript value="/soap/ajax/15.0/apex.js"/>
+        <script>
+            function isDependentValueValidForSelectedParent(parentSelIndex, depValue) {
+                var b64 = new sforce.Base64Binary("");
+                var validFor = depValue.validFor;
+                var decodedVF = b64.decode(validFor);
+                var bits = decodedVF.charCodeAt(parentSelIndex >> 3);
+                if ((bits & (0x80 >> (parentSelIndex % 8))) != 0) {
+                    return true;
+                }
+                return false;
+            }
+            // obj : Name of the object where both the master and dependent picklist or attributes.
+            // controllerFieldName : Name of the master picklist field in the Object
+            // selIndex : Index of the selected option in the master picklist
+            // depFieldName : Name of the dependent picklist field in the Object
+            // depElementId : Id of the dependent picklist element in the page
+            sforce.connection.sessionId = '{!$Api.Session_ID}';
+            function loadDependentPicklist(obj, controllerFieldName, depFieldName, controllerFieldIdOnPage, depFieldIdOnPage) {
+                selIndex = document.getElementById(controllerFieldIdOnPage).selectedIndex - 1;
+                var objDescribe = sforce.connection.describeSObject(obj);
+                var depField = null;
+                for (var i = 0; i < objDescribe.fields.length; i++) {
+                    if (objDescribe.fields[i].type == "picklist" && objDescribe.fields[i].name == depFieldName && objDescribe.fields[i].controllerName == controllerFieldName) {
+                        depField = objDescribe.fields[i];
+                        break;
+                    }
+                }
+                if (depField != null) {
+                    var values = depField.picklistValues;
+                    cmb = document.getElementById(depFieldIdOnPage);
+                    cmb.disabled = false;
+                    cmb.options.length = 1;
+
+                    for (var i = 0; i < values.length; i++) {
+                        var label = values[i].label;
+                        var value = values[i].value;
+                        if (isDependentValueValidForSelectedParent(selIndex, values[i]) == true) {
+                            cmb.options.add(new Option(value, label));
+                        }
+                    }
+                }
+
+                if (selIndex < 0) {
+                    document.getElementById(depFieldIdOnPage).selectedIndex = 0;
+                    document.getElementById(depFieldIdOnPage).disabled = true;
+                }
+
+
+            }
+
+            function assignCorrespondingValues(controllerFieldIdOnPage, controllerCorrespFieldId, hdId) {
+                ctrl = document.getElementById(controllerCorrespFieldId);
+                selIndex = 0;
+                if (document.getElementById(hdId))
+                    document.getElementById(hdId).value = document.getElementById(controllerFieldIdOnPage).value;
+                for (index = 0; index < ctrl.options.length; index++) {
+                    if (ctrl.options[index].value == document.getElementById(controllerFieldIdOnPage).value) {
+                        selIndex = index;
+                        break;
+                    }
+                }
+                ctrl.selectedIndex = selIndex;
+            }       
+            </script>
+            <apex:pageBlock id="pb" mode="detail">
+            <apex:pageBlockSection title="Filters" columns="1" id="pbs1"  rendered="{!contenttype==''}" >
+                  <input type="hidden" value="" id="hdval" />  
+                     <apex:pageBlockSectionItem >
+                            <apex:outputlabel >Milestone</apex:outputlabel>
+                             <apex:selectList value="{!Milestone}" multiselect="true" size="3">
+                                <apex:selectOptions value="{!lstMilestone}"/>
+                            </apex:selectList>
+                     </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem >
+                            <apex:outputlabel >Inside/Outside</apex:outputlabel>
+                             <apex:selectList value="{!lstSelInsideOutside}" multiselect="true" size="3">
+                                <apex:selectOptions value="{!lstInsideOut}"/>
+                            </apex:selectList>
+                     </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem id="pbsiType" >
+                            <apex:outputlabel >{!$ObjectType.Product2.fields.family.label}</apex:outputlabel>
+                             <apex:selectList value="{!oType}" id="cmbType" multiselect="true" size="3">
+                                <apex:selectOptions value="{!lstType}"/>
+                            </apex:selectList>
+                     </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem id="pbsiBU" >
+                            <apex:outputlabel >Business Unit</apex:outputlabel>
+                            <apex:selectList value="{!businessUnit}" id="cmbBu"  multiselect="false" size="1">
+                            <apex:selectOptions value="{!lstAllBusinessUnit}" />
+                           </apex:selectList> 
+                        
+                     </apex:pageBlockSectionItem>
+                 
+                      <apex:pageBlockSectionItem id="pbsiArea" >
+                            <apex:outputlabel >{!$ObjectType.Account.fields.Sales_Area__c.label}</apex:outputlabel>
+                             <apex:selectList value="{!oArea}" id="cmbArea" onchange="loadDependentPicklist('Account', 'Sales_Area__c', 'Sales_Region__c', '{!$Component.pg.frm.pb.pbs1.pbsiArea.cmbArea}', 'Region')" multiselect="false" size="1">
+                                <apex:selectOptions value="{!lstArea}"/>
+                            </apex:selectList>
+                     </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem id="pbsiRegion" >
+                            <apex:outputlabel >{!$ObjectType.Account.fields.Sales_Region__c.label}</apex:outputlabel>
+                            <select id="Region" onchange="assignCorrespondingValues('Region','{!$Component.pg.frm.pb.pbs1.pbsiRegion2.cmbRegion}', '{!$Component.pg.frm.pb.pbs1.pbsiRegion2.hdRegion}')" >
+                                   <option value="">--None--</option>
+                            </select>
+                     </apex:pageBlockSectionItem>
+                     
+                    <apex:pageBlockSectionItem >
+                            <apex:outputlabel >Account Team Member Role</apex:outputlabel>
+                             <apex:selectList value="{!AccountTeamMemberRole}" multiselect="false" size="1">
+                                <apex:selectOptions value="{!lstAccountTeamMemberRole}"/>
+                            </apex:selectList>
+                     </apex:pageBlockSectionItem>
+                 
+                     <apex:pageBlockSectionItem id="pbsiRegion2" >
+                        <apex:inputHidden value="{!oRegion}" id="hdRegion"   />   
+                        <apex:selectList value="{!Region}" id="cmbRegion"  style="visibility:hidden" multiselect="false" size="1">
+                            <apex:selectOptions value="{!lstAllRegion}" />
+                        </apex:selectList>    
+                     </apex:pageBlockSectionItem>
+                      
+              </apex:pageBlockSection>
+              <apex:pageBlockSection >
+                <apex:outputPanel >
+                          <apex:commandButton value="Run Report" action="{!Run}"  />
+                            <apex:commandButton value="Export Report" action="{!Export}"  />
+                      </apex:outputPanel>    
+              </apex:pageBlockSection>
+            <apex:PageBlockSection title="Report" columns="1">
+                <apex:PageBlockTable id="pbt1" value="{!lst_report}" var="rpt">
+                     <apex:column >
+                        <apex:facet name="header">
+                            EA Id
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.acc_eaid}" />
+                    </apex:column>
+                    
+                     <apex:column headervalue="Account Name">
+                        <apex:outPutText value="{!rpt.acc_Name }" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Inside/Outside
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.oppli_insout}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Team Role
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.atm_role}" />
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">
+                            Account Team Member
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.atm_name}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Account Team Member PMF
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.atm_pmf}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Area
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.acc_area }" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Territory
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.acc_territory }" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Country
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.acc_country}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Business Type
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.oppli_bustype}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Sales Milestone
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.oppli_milestone}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Won
+                        </apex:facet>
+                        <apex:inputCheckbox disabled="true"  value="{!rpt.opp_won}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Closed
+                        </apex:facet>
+                        <apex:inputCheckbox disabled="true" value="{!rpt.opp_closed}" />
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">
+                        {!$ObjectType.Opportunity.fields.Opportunity_Number__c.label}
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.opp_number}" />
+                    </apex:column>
+                    <apex:column headervalue="Sales Price(converted)">
+                         <apex:OutputText value="{0,number,#,###,###,##0.00}">
+                            <apex:Param value="{!rpt.opp_totalpriceconv}" />
+                        </apex:OutputText>
+                    </apex:column>
+                    <apex:column headervalue="Amount(converted)">
+                        <apex:OutputText value="{0,number,#,###,###,##0.00}">
+                        <apex:Param value="{!rpt.opp_amountconv}" />
+                        </apex:OutputText>
+                    </apex:column>
+                    <apex:column headervalue="{!$ObjectType.Product2.fields.family.label}">
+                        <apex:outPutText value="{!rpt.prd_family }" />
+                    </apex:column>
+                    <apex:column headervalue="Product Name">
+                        <apex:outPutText value="{!rpt.prd_name}" />
+                    </apex:column>
+                    <apex:column headervalue="Business Unit">
+                        <apex:outPutText value="{!rpt.prd_bu}" />
+                    </apex:column>
+                    <apex:column headervalue="NCV Driver">
+                        <apex:outPutText value="{!rpt.prd_ncvdriver}" />
+                    </apex:column>
+                    <apex:column headervalue="Opportunity Type">
+                        <apex:outPutText value="{!rpt.opp_opptype}" />
+                    </apex:column>
+                    <apex:column headervalue="Close Date (line item)">
+                        <apex:outPutText value="{!rpt.oppli_closedate}" />
+                    </apex:column>
+                     <apex:column headervalue="Reseller">
+                        <apex:outPutText ></apex:outPutText>
+                    </apex:column>
+                     <apex:column headervalue="Lead ID">
+                        <apex:outPutText value="{!rpt.opp_leadid }" />
+                    </apex:column>
+                     <apex:column headervalue="Sales Next Step">
+                        <apex:outPutText value="{!rpt.opp_salesnextstep }" />
+                    </apex:column>
+                     <apex:column headervalue="Next Step Due Date">
+                        <apex:outPutText value="{!rpt.opp_nextstepduedate }" />
+                    </apex:column>
+                     <apex:column headervalue="Prepaid Funds">
+                        <apex:inputCheckbox disabled="true"  value="{!rpt.oppli_prepaidfunds}" />
+                    </apex:column>
+                     <apex:column headervalue="Deal Term">
+                        <apex:outPutText value="{!rpt.oppli_dealterm}" />
+                    </apex:column>
+                     <apex:column headervalue="Original Deal Term (Months)">
+                        <apex:outPutText value="{!rpt.oppli_origdealterm}" />
+                    </apex:column>
+                     <apex:column headervalue="Original Expiration Date">
+                        <apex:outPutText value="{!rpt.oppli_origexpdate}" />
+                    </apex:column>
+                     <apex:column headervalue="Account Record Type">
+                        <apex:outPutText value="{!rpt.acc_recordtype }" />
+                    </apex:column>
+                             <apex:column headervalue="Parent Enterprise Account ID">
+                        <apex:outPutText value="{!rpt.acc_parentEntId}" />
+                    </apex:column>
+                     <apex:column headervalue="Parent Enterprise Account Name">
+                        <apex:outPutText value="{!rpt.acc_parentEntName}" />
+                    </apex:column>
+                    <apex:column headervalue="Partner">
+                        <apex:outPutText value="{!rpt.opp_partner}"></apex:outPutText>
+                    </apex:column>
+                    
+                </apex:PageBlockTable>
+            </apex:PageBlockSection>
+              <script>
+                  if (document.getElementById('{!$Component.pg.frm.pb.pbs1.pbsiRegion2.cmbRegion}') != null && document.getElementById('{!$Component.pg.frm.pb.pbs1.pbsiRegion2.cmbRegion}').selectedIndex != 0) 
+                  {
+                      loadDependentPicklist('Account', 'Sales_Area__c', 'Sales_Region__c', '{!$Component.pg.frm.pb.pbs1.pbsiArea.cmbArea}', 'Region');
+                      ctrl = document.getElementById('Region');
+                      for (index = 0; index < ctrl.options.length; index++) {
+                          if (ctrl.options[index].value == document.getElementById('{!$Component.pg.frm.pb.pbs1.pbsiRegion2.cmbRegion}').value) {
+                              ctrl.selectedIndex = index;
+                              break;
+                          }
+                      }
+                  }
+                  else
+                      document.getElementById('Region').disabled = true; 
+                 </script>
+        </apex:PageBlock> 
+    </apex:form>
+    
+     <apex:dataTable value="{!lst_Report}" var="rpt" cellpadding="2" id="tblReport" rowClasses="odd,even" style="width:100%" rendered="{!contenttype!=''}">
+                     <apex:column >
+                        <apex:facet name="header">
+                            EA Id
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.acc_eaid}" />
+                    </apex:column>
+                    
+                     <apex:column headervalue="Account Name">
+                        <apex:outPutText value="{!rpt.acc_Name }" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Inside/Outside
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.oppli_insout}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Team Role
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.atm_role}" />
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">
+                            Account Team Member
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.atm_name}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Account Team Member PMF
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.atm_pmf}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Area
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.acc_area }" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Territory
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.acc_territory }" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Country
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.acc_country}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Business Type
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.oppli_bustype}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Sales Milestone
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.oppli_milestone}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Won
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.opp_won}" />
+                    </apex:column>
+                     <apex:column >
+                        <apex:facet name="header">
+                            Closed
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.opp_closed}" />
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">
+                        {!$ObjectType.Opportunity.fields.Opportunity_Number__c.label}
+                        </apex:facet>
+                        <apex:outPutText value="{!rpt.opp_number}" />
+                    </apex:column>
+                    <apex:column headervalue="Sales Price(converted)">
+                         <apex:OutputText value="{0,number,#,###,###,##0.00}">
+                            <apex:Param value="{!rpt.opp_totalpriceconv}" />
+                        </apex:OutputText>
+                    </apex:column>
+                    <apex:column headervalue="Amount(converted)">
+                        <apex:OutputText value="{0,number,#,###,###,##0.00}">
+                        <apex:Param value="{!rpt.opp_amountconv}" />
+                        </apex:OutputText>
+                    </apex:column>
+                  
+                    <apex:column headervalue="{!$ObjectType.Product2.fields.family.label}">
+                        <apex:outPutText value="{!rpt.prd_family }" />
+                    </apex:column>
+                    <apex:column headervalue="Product Name">
+                        <apex:outPutText value="{!rpt.prd_name}" />
+                    </apex:column>
+                    <apex:column headervalue="Business Unit">
+                        <apex:outPutText value="{!rpt.prd_bu}" />
+                    </apex:column>
+                    <apex:column headervalue="NCV Driver">
+                        <apex:outPutText value="{!rpt.prd_ncvdriver}" />
+                    </apex:column>
+                    <apex:column headervalue="Opportunity Type">
+                        <apex:outPutText value="{!rpt.opp_opptype}" />
+                    </apex:column>
+                    <apex:column headervalue="Close Date (line item)">
+                        <apex:outPutText value="{!rpt.oppli_closedate}" />
+                    </apex:column>
+                     <apex:column headervalue="Reseller">
+                        <apex:outPutText ></apex:outPutText>
+                    </apex:column>
+                     <apex:column headervalue="Lead ID">
+                        <apex:outPutText value="{!rpt.opp_leadid }" />
+                    </apex:column>
+                     <apex:column headervalue="Sales Next Step">
+                        <apex:outPutText value="{!rpt.opp_salesnextstep }" />
+                    </apex:column>
+                     <apex:column headervalue="Next Step Due Date">
+                        <apex:outPutText value="{!rpt.opp_nextstepduedate }" />
+                    </apex:column>
+                     <apex:column headervalue="Prepaid Funds">
+                        <apex:outPutText value="{!rpt.oppli_prepaidfunds}" />
+                    </apex:column>
+                     <apex:column headervalue="Deal Term">
+                        <apex:outPutText value="{!rpt.oppli_dealterm}" />
+                    </apex:column>
+                     <apex:column headervalue="Original Deal Term (Months)">
+                        <apex:outPutText value="{!rpt.oppli_origdealterm}" />
+                    </apex:column>
+                     <apex:column headervalue="Original Expiration Date">
+                        <apex:outPutText value="{!rpt.oppli_origexpdate}" />
+                    </apex:column>
+                     <apex:column headervalue="Account Record Type">
+                        <apex:outPutText value="{!rpt.acc_recordtype }" />
+                    </apex:column>
+                             <apex:column headervalue="Parent Enterprise Account ID">
+                        <apex:outPutText value="{!rpt.acc_parentEntId}" />
+                    </apex:column>
+                     <apex:column headervalue="Parent Enterprise Account Name">
+                        <apex:outPutText value="{!rpt.acc_parentEntName}" />
+                    </apex:column>
+                      <apex:column headervalue="Partner">
+                        <apex:outPutText value="{!rpt.opp_partner}"></apex:outPutText>
+                    </apex:column>
+                </apex:dataTable>
+    
+</apex:page>

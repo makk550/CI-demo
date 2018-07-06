@@ -1,0 +1,21 @@
+<apex:page standardController="Renewal__c" extensions="Renewals_CustomChangeOwner" tabStyle="Renewal__c">
+  <apex:sectionHeader title="Mass Ownership Edit"/>  
+  <style>
+    .dmlError { color: red; font-weight: strong;}
+  </style>
+  This screen allows you to transfer a renewal from one user to another.
+  
+  <apex:form >
+  <apex:pageBlock >
+  <apex:messages styleClass="dmlError"/>
+  <apex:pageBlockSection title="Select New Owner" collapsible="false">
+      <apex:inputField value="{!newOwner.OwnerId}">
+      </apex:inputField>
+  </apex:pageBlockSection><br/>
+  <center>
+      <apex:commandButton value="Save" action="{!save}"/>
+      <apex:commandButton value="Cancel" action="{!cancel}"/>
+  </center>
+  </apex:pageBlock>  
+  </apex:form>
+</apex:page>

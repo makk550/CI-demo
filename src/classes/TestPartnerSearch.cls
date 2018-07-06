@@ -1,0 +1,2 @@
+@isTest
+private class TestPartnerSearch {}

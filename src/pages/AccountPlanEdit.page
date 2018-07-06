@@ -1,0 +1,1579 @@
+<apex:page standardController="Account_Plan3__c" extensions="AccountPlanControllerExtension">
+<style>
+textarea{ resize:none }
+.headerClass {
+            background: white url('/img/alohaSkin/grid_headerbg.gif') 0 bottom repeat-x;
+            background-image: url(/img/alohaSkin/grid_headerbg.gif);
+            background-repeat-x: repeat;
+            background-repeat-y: no-repeat;
+            background-attachment: initial;
+            background-position-x: 0px;
+            background-position-y: 100%;
+            background-origin: initial;
+            background-clip: initial;
+            background-color: #cfeef8;
+            border: 1px solid black;
+            border-width: 0 0 1px 1px;
+            border-top-width: 0px;
+            border-right-width: 0px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            color: black;
+            font-size: .9em;
+            font-weight: bold;
+            padding: 5px 2px 4px 5px;
+            padding-top: 5px;
+            padding-right: 2px;
+            padding-bottom: 4px;
+            padding-left: 5px;
+            text-align:left;
+            vertical-align:bottom;
+           }
+           
+       .trBG
+           {
+                    background-color:white;
+                  
+            }
+                
+          .trBG:hover
+            {
+                    background-color:#cfeef8;
+                  //  border: solid black 1px;
+            }
+         .requiredField
+         {
+            background-color: #C00;
+            width: 3px;
+            bottom: 1px;
+         }
+         
+         .vfHelpText a            {position:relative;}
+        .vfHelpText a span       {display: none;}
+        .vfHelpText a:hover span {display: block;
+                                  position:absolute;
+                                  top:1.25em;
+                                  padding:2px 5px;
+                                  left:-7.5em; width:15em;
+                                  z-index:100;
+                                  border:1px solid orange;
+                                  background-color:#FEFDB9;
+                                  color:black;
+                                  white-space: pre-wrap;
+                                  font-weight:normal;
+                                 }        
+</style>
+<!-- <apex:sectionHeader title="Account Plan Summary" subtitle="{!IF(ISBLANK(Account_Plan3__c.Name), Account_Plan3__c.Account__r.Name + ' - Account Plan Summary', Account_Plan3__c.Name)}"/> -->
+<apex:sectionHeader title="Account Plan Summary" subtitle="{!Account_Plan3__c.Account__r.Name + ' - Account Plan Summary'}"/>
+<apex:form id="theForm">
+<apex:inputHidden value="{!New_Event_URL}" id="eUrl"/>
+<script>
+    document.getElementById('{!$Component.eUrl}').value = "{!URLFOR($Action.Activity.NewEvent, null, [RecordType='01230000000DOEM', what_id=Account_Plan3__c.Account__c])}";
+</script>
+<div style="display:none">
+<apex:inputField value="{!Account_Plan3__c.Account__c}" />
+</div>
+  <apex:pageBlock title="Account Plan Edit" mode="edit" id="thePB">
+      <apex:pageMessages />
+      <apex:pageBlockButtons >
+          <apex:commandButton action="{!save}" value="Save"/>
+          <!-- <apex:commandButton action="{!IF(ISBLANK(Id),URLFOR($Action.Account.View, Account_Plan3__c.Account__c),URLFOR($Action.Account_Plan3__c.View, Id))}" value="Cancel" immediate="true"/> -->
+          <input type="button" class="btn" onclick="if ((Modal.confirm && Modal.confirm('Pressing Cancel will not save any updates to Account Plan, press OK to Continue')) || (!Modal.confirm && window.confirm('Pressing Cancel will not save any updates to Account Plan, press OK to Continue'))) navigateToUrl('{!IF(ISBLANK(Account_Plan3__c.Id),URLFOR($Action.Account.View, Account_Plan3__c.Account__c),URLFOR($Action.Account_Plan3__c.View, Account_Plan3__c.Id))}','DETAIL','cancel');" value="Cancel"/>
+      </apex:pageBlockButtons>
+      <apex:pageBlockSection title="Account Details" columns="1">
+          <apex:inputField value="{!Account_Plan3__c.CA_Executive_Sponsors__c}" rendered="false"/>
+          <apex:inputField value="{!Account_Plan3__c.selected_tasks__c}" rendered="false"/>
+          <apex:inputField value="{!Account_Plan3__c.Account__c}" rendered="false"/>
+          <apex:inputField value="{!Account_Plan3__c.Logo__c}" rendered="false"/>
+          <apex:inputField value="{!Account_Plan3__c.CA_Account_ID__c}" rendered="false"/>
+          <!-- <apex:inputField value="{!Account_Plan3__c.Fiscal_Year_End__c}" rendered="false"/> -->
+          <apex:inputField value="{!Account_Plan3__c.Recent_CA_Executive_Interactions__c}" rendered="false"/>
+          <apex:inputField value="{!Account_Plan3__c.Upcoming_Events__c}" rendered="false"/>
+          <!-- <apex:inputField value="{!Account_Plan3__c.Plan_Finalize_Budget_Begin_Date__c}"/>
+          <apex:inputField value="{!Account_Plan3__c.Plan_Finalize_Budget_End__c}"/> -->
+          
+          <apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_1__r.HVN__c}" rendered="false"/>
+          <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_2__r.HVN__c}" rendered="false"/>
+          <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_3__r.HVN__c}" rendered="false"/>
+          <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_4__r.HVN__c}" rendered="false"/>
+          <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_5__r.HVN__c}" rendered="false"/>
+          <apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_1__r.HVN_ID__c}" rendered="false"/>
+          <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_2__r.HVN_ID__c}" rendered="false"/>
+          <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_3__r.HVN_ID__c}" rendered="false"/>
+          <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_4__r.HVN_ID__c}" rendered="false"/>
+          <apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_5__r.HVN_ID__c}" rendered="false"/>
+          
+          <apex:inputField value="{!Account_Plan3__c.Fiscal_Year__c}" rendered="false"/>
+          
+          <apex:inputField value="{!Account_Plan3__c.Annual_Spend_to_Date__c}" />
+          <!-- <apex:inputField value="{!Account_Plan3__c.Fiscal_Year_End__c}" /> -->
+          <apex:inputfield value="{!Account_Plan3__c.Account__r.Account_Fiscal_Year__c}" label="Account Fiscal Year - End" />
+          
+          <apex:pageBlockSectionItem helpText="{!$ObjectType.Account_Plan3__c.fields.Plan_Finalize_Budget_Begin_Date__c.inlineHelpText}">
+              <apex:outputLabel value="Plan & Finalize Budget"/>
+              <apex:outputPanel >
+                <apex:inputField value="{!Account_Plan3__c.Plan_Finalize_Budget_Begin_Date__c}"/>
+                <apex:outputText value="To"/>
+                <apex:inputField value="{!Account_Plan3__c.Plan_Finalize_Budget_End__c}"/>
+              </apex:outputPanel>
+          </apex:pageBlockSectionItem>
+          <!-- <apex:inputField value="{!Account_Plan3__c.Sign_off_Begin_Date__c}"/>
+          <apex:inputField value="{!Account_Plan3__c.Sign_off_End_Date__c}"/> -->
+          <apex:pageBlockSectionItem helpText="{!$ObjectType.Account_Plan3__c.fields.Sign_off_Begin_Date__c.inlineHelpText}">
+              <apex:outputLabel value="Sign-off Date"/>
+              <apex:outputPanel >
+                <apex:inputField value="{!Account_Plan3__c.Sign_off_Begin_Date__c}"/>
+                <apex:outputText value="To"/>
+                <apex:inputField value="{!Account_Plan3__c.Sign_off_End_Date__c}"/>
+              </apex:outputPanel>
+          </apex:pageBlockSectionItem>
+          
+          <apex:inputField value="{!Account_Plan3__c.Capex_Budget__c}"/>
+          <apex:inputField value="{!Account_Plan3__c.Opex_Budget_LOB__c}"/>
+          <apex:inputField value="{!Account_Plan3__c.Opex_Budget_BU__c}"/>
+          <apex:inputField value="{!Account_Plan3__c.Opex_Budget_SU__c}"/>
+          <apex:pageBlockSectionItem helpText="{!$ObjectType.Account_Plan3__c.Fields.Contractual_Details__c.inlineHelpText}">
+              <apex:outputlabel value="Contractual Details" for="cdetails"/>
+              <apex:inputTextarea id="cdetails" value="{!Account_Plan3__c.Contractual_Details__c}" style="width:95%" rows="6"/>
+          </apex:pageBlockSectionItem>
+          <input type="button" class="btn" value="View Active Contracts" onclick="window.open('/a1v?rlid=00N300000064Uwt&id={!Account_Plan3__c.Account__c}','_blank','width=800,height=600,location=no,dependent=no,resizable=yes,toolbar=no,status=no,directories=no,menubar=no,scrollbars=yes')"/>
+      </apex:pageBlockSection>
+      
+      <apex:pageBlockSection title="Account Relationships and History" columns="1">
+      <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Key Account Relationships</apex:facet>
+      <apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_1__c}"/>
+      <apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_2__c}"/>
+      <apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_3__c}"/>
+    </apex:panelGrid> -->
+    <apex:outputPanel >
+      <apex:pageBlock title="Key Account Relationships">
+        <apex:facet name="header">
+          <apex:outputPanel styleClass="pbHeader">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="pbTitle">
+                    <h2 class="mainTitle" style="display:inline"><apex:outputText value="Key Account Relationships"/></h2>
+                    <span class="vfHelpText">
+                        <apex:outputLink value="javascript:return false;">
+                            <img src="/s.gif" alt="" class="helpOrb" />
+                            <span>{!$ObjectType.Account_Plan3__c.fields.Key_Account_Relationship_1__c.inlineHelpText}</span>
+                        </apex:outputLink>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+          </apex:outputPanel>
+        </apex:facet>
+        <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <tr class="headerRow">
+            <!-- <th style="width:10%">Contact</th> -->
+            <th>Contact</th>
+            <!-- <th>Title</th>
+            <th>Coverage Level</th> -->
+            <th>LOB (BU/SU) Targets</th>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <!--
+            <td>
+                <div class="requiredInput">
+                    <div class="requiredBlock"></div>
+                    <apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_1__c}"/>
+                </div>
+            </td>
+            -->
+            <td><apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_1__c}"/></td>
+            <!-- <td><apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_1__r.title}"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.Coverage_Level_1__c}" style="width:95%"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.LOB_BU_SU_Target_1__c}"/></td> -->
+            <td><apex:inputField value="{!Account_Plan3__c.Sales_Coverage_Business_Unit_1__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_2__c}"/></td>
+            <!-- <td><apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_2__r.title}"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.Coverage_Level_2__c}" style="width:95%"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.LOB_BU_SU_Target_2__c}"/></td> -->
+            <td><apex:inputField value="{!Account_Plan3__c.Sales_Coverage_Business_Unit_2__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_3__c}"/></td>
+            <!-- <td><apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_3__r.title}"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.Coverage_Level_3__c}" style="width:95%"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.LOB_BU_SU_Target_3__c}"/></td> -->
+            <td><apex:inputField value="{!Account_Plan3__c.Sales_Coverage_Business_Unit_3__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_4__c}"/></td>
+            <!-- <td><apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_3__r.title}"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.Coverage_Level_3__c}" style="width:95%"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.LOB_BU_SU_Target_3__c}"/></td> -->
+            <td><apex:inputField value="{!Account_Plan3__c.Sales_Coverage_Business_Unit_4__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Key_Account_Relationship_5__c}"/></td>
+            <!-- <td><apex:outputField value="{!Account_Plan3__c.Key_Account_Relationship_3__r.title}"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.Coverage_Level_3__c}" style="width:95%"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.LOB_BU_SU_Target_3__c}"/></td> -->
+            <td><apex:inputField value="{!Account_Plan3__c.Sales_Coverage_Business_Unit_5__c}"/></td>
+          </tr>
+        </table>
+      </apex:pageBlock>
+    </apex:outputPanel>
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">LOB (BU/SU) Targets</apex:facet>
+      <apex:inputTextarea value="{!Account_Plan3__c.LOB_BU_SU_Targets__c}" style="width:95%" rows="6"/>
+    </apex:panelGrid> -->
+    
+    <apex:outputPanel >
+    <apex:pageBlock title="CA Executive Sponsor(s)" id="pb">
+      <apex:facet name="header">
+          <apex:outputPanel styleClass="pbHeader">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="pbTitle">
+                    <h2 class="mainTitle" style="display:inline"><apex:outputText value="CA Executive Sponsor(s)"/></h2>
+                    <span class="vfHelpText">
+                        <apex:outputLink value="javascript:return false;">
+                            <img src="/s.gif" alt="" class="helpOrb" />
+                            <span>{!$ObjectType.Account_Plan3__c.fields.CA_Executive_Sponsor_1__c.inlineHelpText}</span>
+                        </apex:outputLink>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+          </apex:outputPanel>
+      </apex:facet>
+ <!-- <apex:pageBlockButtons >
+        <apex:commandButton action="{!addUserRow}" value="Add New Row" reRender="pb" status="myStatus" rendered="{!IF(eSize < 10, true, false)}" oncomplete="hideUserPicklists()" />
+        <apex:actionStatus startText="Updating" stopText="" id="myStatus" />
+      </apex:pageBlockButtons>
+      <apex:pageBlockTable value="{!userList}" var="ul" id="testTable">
+        <apex:column headerValue="Action">
+          <apex:commandButton value="Delete" action="{!deleteExecUser}" reRender="pb" status="myStatus">
+              <apex:param name="uid" value="{!ul.Capex_Budget__c}" assignTo="{!contIdChosen}"/>
+          </apex:commandButton>
+        </apex:column>
+        <apex:column headerValue="User">
+          <apex:inputField value="{!ul.CA_Executive_Sponsor_1__c}"/>
+        </apex:column>
+      </apex:pageBlockTable> -->
+      <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <tr class="headerRow">
+            <th>User</th>           
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.CA_Executive_Sponsor_1__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.CA_Executive_Sponsor_2__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.CA_Executive_Sponsor_3__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.CA_Executive_Sponsor_4__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.CA_Executive_Sponsor_5__c}"/></td>
+          </tr>
+      </table>
+      <!-- <apex:inputField value="{!Account_Plan3__c.CA_Executive_Sponsors__c}"/> -->
+    </apex:pageBlock>  
+    </apex:outputPanel>  
+      
+      <apex:outputPanel >
+    <table width="100%">
+      <tr>
+        <td width="125px">
+          <apex:outputLabel value="Pertinent History" styleClass="labelCol first "/>
+          <span class="vfHelpText">
+            <apex:outputLink value="javascript:return false;">
+              <img src="/s.gif" alt="" class="helpOrb" />
+              <span>{!$ObjectType.Account_Plan3__c.fields.Pertinent_History__c.inlineHelpText}</span>
+            </apex:outputLink>
+          </span>
+        </td>
+        <td>
+          <apex:inputTextarea value="{!Account_Plan3__c.Pertinent_History__c}" rows="6" style="width:95%"/>
+        </td>
+      </tr>
+    </table>
+    </apex:outputPanel>
+      <!-- <apex:inputTextarea value="{!Account_Plan3__c.Pertinent_History__c}" rows="6" style="width:95%"/> -->
+      </apex:pageBlockSection>
+      
+      <apex:pageBlockSection title="Account Strategy and Objectives" columns="2">
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Overall Account Strategy</apex:facet>
+      <apex:inputTextarea value="{!Account_Plan3__c.Overall_Account_Strategy__c}" style="width:95%" rows="6"/>
+    </apex:panelGrid> -->
+    <apex:pageBlockSectionItem helpText="{!$ObjectType.Account_Plan3__c.Fields.Overall_Account_Strategy__c.inlineHelpText}">
+        <apex:outputText value="Overall Account Strategy" />
+      <apex:outputPanel >
+        <div class="requiredInput">
+          <div class="requiredBlock"></div>
+          <apex:inputTextarea value="{!Account_Plan3__c.Overall_Account_Strategy__c}" style="width:95%" rows="6" />
+        </div>
+      </apex:outputPanel>  
+    </apex:pageBlockSectionItem>
+    
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Key Account Objectives</apex:facet>
+      <apex:inputTextarea value="{!Account_Plan3__c.Key_Account_Objectives__c}" style="width:95%" rows="6"/>
+    </apex:panelGrid> -->
+    
+    <apex:pageBlockSectionItem helpText="{!$ObjectType.Account_Plan3__c.Fields.Key_Account_Objectives__c.inlineHelpText}">
+      <apex:outputText value="Key Account Objectives" />        
+      <apex:outputPanel >
+        <div class="requiredInput">
+          <div class="requiredBlock"></div>
+          <apex:inputTextarea value="{!Account_Plan3__c.Key_Account_Objectives__c}" style="width:95%" rows="6"/>
+        </div>
+      </apex:outputPanel>
+    </apex:pageBlockSectionItem>
+  </apex:pageBlockSection>
+      
+      <apex:pageBlockSection title="Customer's Business Environment" columns="2">
+  <!--       
+  <apex:outputPanel >
+      <table border="1" cellspacing="0" width="100%">
+          <tr>
+              <th>External Business Climate and Trends</th>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.External_Business_Climate_Trends_1__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.External_Business_Climate_Trends_2__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.External_Business_Climate_Trends_3__c}"/></td>
+          </tr>
+      </table>
+  </apex:outputPanel>
+  -->
+  
+  <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">External Business Climate and Trends</apex:facet>
+      <apex:inputField value="{!Account_Plan3__c.External_Business_Climate_Trends_1__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.External_Business_Climate_Trends_2__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.External_Business_Climate_Trends_3__c}" style="width:95%"/>
+  </apex:panelGrid> -->
+  
+  <!-- <apex:pageBlock mode="edit">
+      <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <tr class="headerRow">
+              <th>External Business Climate and Trends</th>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.External_Business_Climate_Trends_1__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.External_Business_Climate_Trends_2__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.External_Business_Climate_Trends_3__c}" style="width:95%"/></td>
+          </tr>
+      </table>
+    </apex:pageBlock> -->
+    
+    <apex:pageBlockSectionItem helpText="{!$ObjectType.Account_Plan3__c.Fields.External_Business_Climate_Trends__c.inlineHelpText}">
+      <apex:outputText value="External Business Climate & Trends" />
+      
+      <apex:outputPanel >
+        <div class="requiredInput">
+          <div class="requiredBlock"></div>
+          <apex:inputTextarea value="{!Account_Plan3__c.External_Business_Climate_Trends__c}" style="width:95%" rows="6"/>
+        </div>
+      </apex:outputPanel>
+    </apex:pageBlockSectionItem>
+  
+  <!-- <apex:pageBlock mode="edit">
+  <apex:pageBlockTable value="{!$ObjectType.Account_Plan3__c.FieldSets.Stated_Business_Priorities}" var="f">
+      <apex:column headerValue="Stated Business Priorities">
+          <apex:inputField value="{!Account_Plan3__c[f]}" style="width:95%"/>
+      </apex:column>
+  </apex:pageBlockTable>
+  </apex:pageBlock> -->
+  
+  <!--
+  <apex:outputPanel >
+      <table border="1" cellspacing="0" width="100%">
+          <tr>
+              <th>Stated Business Priorities</th>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Stated_Business_Priorities_1__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Stated_Business_Priorities_2__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Stated_Business_Priorities_3__c}"/></td>
+          </tr>
+      </table>
+  </apex:outputPanel>
+  -->        
+  <apex:pageBlockSectionItem helpText="{!$ObjectType.Account_Plan3__c.Fields.Stated_Business_Priorities__c.inlineHelpText}">
+        <apex:outputText value="Stated Business Priorities" />
+      <apex:outputPanel >
+        <div class="requiredInput">
+          <div class="requiredBlock"></div>
+          <apex:inputTextarea value="{!Account_Plan3__c.Stated_Business_Priorities__c}" style="width:95%" rows="6"/>
+        </div>
+      </apex:outputPanel>
+  </apex:pageBlockSectionItem>
+  <!--        
+  <apex:outputPanel >
+      <table border="1" cellspacing="0" width="100%">
+          <tr>
+              <th colspan="2">Underlying Business Initiatives</th>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_1__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_1__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_2__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_2__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_3__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_3__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_4__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_4__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_5__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_5__c}"/></td>
+          </tr>
+      </table>
+  </apex:outputPanel>
+  -->
+  
+  <!-- <apex:panelGrid columns="2" border="1" cellspacing="0" width="100%">
+          <apex:facet name="header">Underlying Business Initiatives</apex:facet>
+          <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_1__c}" style="width:95%"/>
+          <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_1__c}"/>
+          <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_2__c}" style="width:95%"/>
+          <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_2__c}"/>
+          <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_3__c}" style="width:95%"/>
+          <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_3__c}"/>
+          <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_4__c}" style="width:95%"/>
+          <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_4__c}"/>
+          <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_5__c}" style="width:95%"/>
+          <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_5__c}"/>
+  </apex:panelGrid> -->
+  
+  <apex:pageBlock mode="edit">
+      <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <tr class="headerRow">
+              <th colspan="2">
+                  <apex:outputText value="Underlying Business Initiatives"/>
+                  <span class="vfHelpText">
+                      <apex:outputLink value="javascript:return false;">
+                          <img src="/s.gif" alt="" class="helpOrb" />
+                          <span>{!$ObjectType.Account_Plan3__c.fields.Underlying_Business_Initiatives_1__c.inlineHelpText}</span>
+                      </apex:outputLink>
+                  </span>
+              </th>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td>
+                  <div class="requiredInput">
+                      <div class="requiredBlock"></div>
+                      <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_1__c}" style="width:95%"/>
+                  </div>
+              </td>
+              <td>
+                  <div class="requiredInput">
+                      <div class="requiredBlock"></div>
+                      <!-- <apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_1__c}"/> -->
+                      <c:InputPicklistNoNone value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_1__c}" field="Account_Plan3__c.Underlying_Business_Initiatives_type_1__c"/>
+                  </div>
+              </td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_2__c}" style="width:95%"/></td>
+              <!-- <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_2__c}"/></td> -->
+              <td><c:InputPicklistNoNone value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_2__c}" field="Account_Plan3__c.Underlying_Business_Initiatives_type_2__c"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_3__c}" style="width:95%"/></td>
+              <!-- <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_3__c}"/></td> -->
+              <td><c:InputPicklistNoNone value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_3__c}" field="Account_Plan3__c.Underlying_Business_Initiatives_type_3__c"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_4__c}" style="width:95%"/></td>
+              <!-- <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_4__c}"/></td> -->
+              <td><c:InputPicklistNoNone value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_4__c}" field="Account_Plan3__c.Underlying_Business_Initiatives_type_4__c"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_5__c}" style="width:95%"/></td>
+              <!-- <td><apex:inputField value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_5__c}"/></td> -->
+              <td><c:InputPicklistNoNone value="{!Account_Plan3__c.Underlying_Business_Initiatives_type_5__c}" field="Account_Plan3__c.Underlying_Business_Initiatives_type_5__c"/></td>
+          </tr>
+      </table>
+    </apex:pageBlock>
+  
+  <!-- <apex:outputPanel >
+      <table border="1" cellspacing="0" width="100%">
+          <tr border="0">
+              <th colspan="2">Corresponding IT Initiatives</th>
+          </tr>
+          <tr border="0">
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_1__c}" style="width:95%"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_1__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_2__c}" style="width:95%"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_2__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_3__c}" style="width:95%"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_3__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_4__c}" style="width:95%"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_4__c}"/></td>
+          </tr>
+          <tr>
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_5__c}" style="width:95%"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_5__c}"/></td>
+          </tr>
+      </table>
+  </apex:outputPanel> -->
+  
+  <apex:pageBlock mode="edit">
+      <!-- <table border="1" cellspacing="0" width="100%"> -->
+      <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <tr class="headerRow">
+              <th colspan="2">
+                  <apex:outputText value="Corresponding IT Initiatives"/>
+                  <span class="vfHelpText">
+                      <apex:outputLink value="javascript:return false;">
+                          <img src="/s.gif" alt="" class="helpOrb" />
+                          <span>{!$ObjectType.Account_Plan3__c.fields.Corresponding_IT_Initiatives_1__c.inlineHelpText}</span>
+                      </apex:outputLink>
+                  </span>
+              </th>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td>
+                  <div class="requiredInput">
+                      <div class="requiredBlock"></div>
+                      <apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_1__c}" style="width:95%"/>
+                  </div>
+              </td>
+              <td>
+                  <div class="requiredInput">
+                      <div class="requiredBlock"></div>
+                      <!-- <apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_1__c}"/> -->
+                      <c:InputPicklistNoNone value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_1__c}" field="Account_Plan3__c.Corresponding_IT_Initiatives_Type_1__c"/>
+                  </div>
+              </td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_2__c}" style="width:95%"/></td>
+              <!-- <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_2__c}"/></td> -->
+              <td><c:InputPicklistNoNone value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_2__c}" field="Account_Plan3__c.Corresponding_IT_Initiatives_Type_2__c"/></td>
+          </tr>
+          <tr class="dataRow"  onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_3__c}" style="width:95%"/></td>
+              <!-- <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_3__c}"/></td> -->
+              <td><c:InputPicklistNoNone value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_3__c}" field="Account_Plan3__c.Corresponding_IT_Initiatives_Type_3__c"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_4__c}" style="width:95%"/></td>
+              <!-- <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_4__c}"/></td> -->
+              <td><c:InputPicklistNoNone value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_4__c}" field="Account_Plan3__c.Corresponding_IT_Initiatives_Type_4__c"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_5__c}" style="width:95%"/></td>
+              <!-- <td><apex:inputField value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_5__c}"/></td> -->
+              <td><c:InputPicklistNoNone value="{!Account_Plan3__c.Corresponding_IT_Initiatives_Type_5__c}" field="Account_Plan3__c.Corresponding_IT_Initiatives_Type_5__c"/></td>
+          </tr>
+      </table>
+    </apex:pageBlock>
+          
+  </apex:pageBlockSection>
+  
+  <apex:pageBlockSection title="Customer Install" columns="1" id="pbs_cill">
+  <apex:pageBlock title="Competitor Install" id="pb_cill">
+  <apex:facet name="header">
+          <apex:outputPanel styleClass="pbHeader">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="pbTitle">
+                    <h2 class="mainTitle" style="display:inline"><apex:outputText value="Competitor Install"/></h2>
+                    <!--
+                    <span class="vfHelpText">
+                      <apex:outputLink value="javascript:return false;">
+                        <img src="/s.gif" alt="" class="helpOrb" />
+                        <span>Where CA has an installed presence within account.</span>
+                      </apex:outputLink>
+                    </span>
+                    -->
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+          </apex:outputPanel>
+      </apex:facet>
+      <!-- <apex:outputPanel style="display:block; width:1200px;overflow:auto" id="pnlACI" > -->
+      <apex:outputPanel style="display:block;width:1200px;overflow:auto" id="pnlACI" >
+             <table cellpadding="4" cellspacing="0" style="width:100%;  border: solid silver 1px" border="1">
+                 <tr >
+                 
+                 <!--
+                      <th class="headerClass requiredInput" ></th>   
+                      <th class="headerClass requiredInput" ><span class="requiredField">&nbsp;</span>GBU</th>
+                      <th class="headerClass requiredInput" ><span class="requiredField">&nbsp;</span>GBU Driver</th>     
+                      <th class="headerClass"><span class="requiredField">&nbsp;</span>Competitor</th >
+                      <th class="headerClass"><span class="requiredField">&nbsp;</span>Competitor Product</th>
+                  -->
+                  
+                      <th class="headerClass"></th>   
+                      <th class="headerClass">GBU</th>
+                      <th class="headerClass">GBU Driver</th>     
+                      <th class="headerClass">Competitor</th >
+                      <th class="headerClass">Competitor Product</th>
+                  
+                      <th class="headerClass" >Renewal Date</th>   
+                      <th class="headerClass"># of License</th >
+                      <th class="headerClass">Competitor Product Install Stickiness</th>
+                      <th class="headerClass" colspan="2" >Is there Opportunity to Replace?</th>   
+                      <th class="headerClass">Contact Support for CA</th >
+                      <th class="headerClass">Contact Relationship</th>
+                 </tr>
+                 <apex:repeat value="{!ec.lstWrap_paged}" var="wr">
+                 
+                    <tr class="trBG">
+                        <td>
+                            <apex:commandLink value="Del" rendered="{!(wr.aci.id != null)}"  action="{!ec.delAccInstall}" >
+                                <apex:param id="delid" name="delid" value="{!wr.aci.id}" assignTo="{!ec.delid}" />
+                            </apex:commandLink>
+                        </td>
+                        
+                        <td>
+                        
+                        <!-- <apex:inputField value="{!wr.aci.CSU__c}" style="width:100px" /> -->
+                        <apex:selectList value="{!wr.csu}" size="1" multiselect="false"  >
+                            <apex:selectOptions value="{!wr.lstcsu}"/>
+                            <apex:actionSupport event="onchange" reRender="drivers" status="dstatus"/>
+                        </apex:selectList>
+                        <apex:actionStatus id="dstatus" startText="updating..."/>
+                        </td>
+                        
+                        <td>
+                        <apex:selectList id="drivers" value="{!wr.driver}" size="1" multiselect="false"  >
+                            <apex:selectOptions value="{!wr.lstDriver}"/>
+                        </apex:selectList>
+                        </td>
+                        
+                        <td><apex:inputField value="{!wr.aci.Top_Competitor__c}" /></td>
+                        <td><apex:inputField value="{!wr.aci.Competitor_Product__c}" /></td>
+
+                        <td><apex:inputField value="{!wr.aci.Renewal_Date__c}"/></td>
+                        <td><apex:inputField value="{!wr.aci.Number_of_Licenses__c}"  /></td>
+                        <td><apex:inputField value="{!wr.aci.Competitor_Product_Install_Stickiness__c}"  /></td>
+                        <td style="border-right:0px"><apex:inputField value="{!wr.aci.Is_there_Opportunity_to_Replace__c}"  id="replaceOpp1" /></td>
+                        <td style="border-left:0px">
+                           <apex:inputField value="{!wr.aci.Replace_Reasons__c}" id="replaceOpp2" />
+                        </td>
+                        <td><apex:inputField value="{!wr.aci.Contact_Support_for_CA__c}" /></td>
+                        <td><apex:inputField value="{!wr.aci.Contact_Relationship__c}" /></td>
+                   </tr>
+                 </apex:repeat>
+                <!-- <apex:image url="{!$Resource.greenCircle}" rendered="true"></apex:image>
+                   -->
+               </table>
+            </apex:outputPanel> 
+            <apex:outputPanel >
+                         <apex:commandButton value="Add More" action="{!ec.addNewACIRow}" status="msgAdd" reRender="pnlACI" />
+                         <apex:actionStatus stopText="" startText="Adding Account Competitor Install Row.." id="msgAdd"></apex:actionStatus>
+            </apex:outputPanel>
+            
+            </apex:pageBlock>
+        
+        <apex:pageBlock title="CA Install">
+        <apex:facet name="header">
+          <apex:outputPanel styleClass="pbHeader">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="pbTitle">
+                    <h2 class="mainTitle" style="display:inline"><apex:outputText value="CA Install"/></h2>
+                    <!--
+                    <span class="vfHelpText">
+                      <apex:outputLink value="javascript:return false;">
+                        <img src="/s.gif" alt="" class="helpOrb" />
+                        <span>Where CA has an installed presence within account.</span>
+                      </apex:outputLink>
+                    </span>
+                    -->
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+          </apex:outputPanel>
+        </apex:facet>
+            
+            <apex:outputpanel rendered="{!ec.CSUsize > 1 || ec.prodgroupsize > 1 ||ec.prodsize > 1 }" id="outFilter">
+                <table cellpadding="5">
+                    <tr>
+                         <td style="vertical-align:top"><apex:pageBlockSectionItem id="sec0" rendered="{!ec.CSUsize > 1}" >
+                                 <apex:outputLabel style="padding-left: 2px;text-align: right;font-size: 91%;font-weight: bold;vertical-align:top">GBU</apex:outputLabel>    <apex:selectList value="{!ec.csu}" size="3" multiselect="true">
+                                    <apex:selectOptions value="{!ec.csus}"/>
+                                   </apex:selectList>
+                            </apex:pageBlockSectionItem> 
+                        </td>
+                        <td style="vertical-align:top"><apex:pageBlockSectionItem rendered="{!ec.driversize > 1}" >
+                                 <apex:outputLabel style="padding-left: 2px;text-align: right;font-size: 91%;font-weight: bold;vertical-align:top">GBU Driver</apex:outputLabel>    <apex:selectList value="{!ec.drivers}" size="3" multiselect="true">
+                                    <apex:selectOptions value="{!ec.driverOptions}"/>
+                                   </apex:selectList>
+                            </apex:pageBlockSectionItem> 
+                        </td>
+                        <td style="vertical-align:top"><apex:pageBlockSectionItem id="sec1" rendered="{!ec.prodgroupsize > 1}" >
+                              <apex:outputLabel style="padding-left: 2px;text-align: right;font-size: 91%;font-weight: bold;vertical-align:top" >Product Group</apex:outputLabel>    <apex:selectList value="{!ec.prodgroup}" size="3" multiselect="true">
+                                    <apex:selectOptions value="{!ec.prodgroups}"/>
+                                </apex:selectList>
+                             </apex:pageBlockSectionItem> 
+                        </td>
+                        <td style="vertical-align:top"><apex:pageBlockSectionItem id="sec2" rendered="{!ec.prodsize > 1}"  >      
+                              <apex:outputLabel style="padding-left: 2px;text-align: right;font-size: 91%;font-weight: bold;vertical-align:top" >Products</apex:outputLabel>  <apex:selectList value="{!ec.prods}" size="3" multiselect="true">
+                                    <apex:selectOptions value="{!ec.products}"/>
+                                </apex:selectList>
+                             </apex:pageBlockSectionItem> 
+                        </td>
+                    </tr>
+                </table>
+                </apex:outputpanel>   
+                 <apex:outputPanel rendered="{!ec.csusize > 1 || ec.prodgroupsize > 1 || ec.prodsize > 1 }">
+                     <apex:commandButton value="Filter" action="{!ec.filteritems}" status="statusFilter" reRender="outLicence" />
+                     <apex:commandButton value="Reset" action="{!ec.resetitems}" status="statusFilter2" reRender="outLicence,outFilter" />
+                     <apex:actionStatus id="statusFilter" startText="Filtering..." stopText="" ></apex:actionStatus>
+                     <apex:actionStatus id="statusFilter2" startText="Reseting..." stopText="" ></apex:actionStatus>
+               
+                 </apex:outputPanel>
+             <apex:outputPanel id="outLicence" >
+             <apex:messages />
+             <table id="CA_INSTALL" cellpadding="4" cellspacing="0" style="width:100%;  border: solid silver 1px" border="1">
+                 <tr >
+                      <th class="headerClass" >GBU</th>
+                      <th class="headerClass" >GBU Driver</th>    
+                      <th class="headerClass">Product Group</th >
+                      <th class="headerClass">Product</th>
+                      <th class="headerClass" >Contact</th>   
+                      <th class="headerClass"><apex:outputLabel title="If this product is across various sites, choose the lesser of both product install statuses" >Product Install Status</apex:outputLabel></th >
+                      <th class="headerClass">Customer Satisfaction</th>
+                      <th class="headerClass" >Cause (if Customer Satisfaction is ‘Not Satisfied’)</th>   
+                 </tr>
+              
+                <apex:repeat value="{!ec.lstWrapACP_paged}" var="WrapAcp">
+                        <tr class="trBG">
+                             <td><apex:outputField value="{!WrapAcp.lstacp[0].Product__r.CSU2__c}"/></td>
+                             <td><apex:outputField value="{!WrapAcp.lstacp[0].Product__r.CSU_Driver__c}"/></td>
+                             <td><apex:outputField value="{!WrapAcp.lstacp[0].Product__r.Product_Group__c}"/></td>
+                             <td><a href="#" onclick="javascript:window.open('/apex/cill_popup?accid={!ec.accid}&acpname={!WrapAcp.lstacp[0].Product__r.Name}&prodid={!WrapAcp.lstacp[0].Product__c}&csuname={!WrapAcp.lstacp[0].Product__r.CSU2__c}&prodgroup={!WrapAcp.lstacp[0].Product__r.Product_Group__c}&prodname={!WrapAcp.lstacp[0].Product__r.Name}');">{!WrapAcp.lstacp[0].Product__r.Name}</a> 
+                             </td>
+                             <td><apex:inputField value="{!WrapAcp.lstacp[0].Contact__c}"/></td>
+                             <td> <apex:outputPanel title="If this product is across various sites, choose the lesser of both product install statuses" > <apex:inputField value="{!WrapAcp.lstacp[0].Product_Install_Status__c}"/></apex:outputPanel></td>                                                                                     
+                             <td><apex:inputField value="{!WrapAcp.lstacp[0].Customer_Satisfaction__c}"/></td>
+                             <td><apex:inputField value="{!WrapAcp.lstacp[0].Cause__c}"/></td>
+                       </tr>
+                  </apex:repeat>
+
+              </table>
+            </apex:outputPanel>
+       </apex:pageBlock>   
+  </apex:pageBlockSection>
+  
+  <apex:pageBlockSection title="Past and Current Projects" columns="1">
+    <!-- <apex:pageBlockSection columns="2"> -->
+    
+    <apex:pageBlockSectionItem helpText="{!$ObjectType.Account_Plan3__c.Fields.Customer_Satisfaction_Scores_Level__c.inlineHelpText}">
+      <apex:outputLabel value="Customer Satisfaction Scores / Level"/>
+      <apex:panelGrid width="100%" columns="2" cellspacing="0" cellpadding="0" border="0">
+        <apex:inputField value="{!Account_Plan3__c.Customer_Satisfaction_Scores_Level__c}"/>
+        <input type="button" value="View Opportunities" onclick="window.open('/006?rlid=RelatedOpportunityList&id={!Account_Plan3__c.Account__c}','_blank','width=800,height=600,location=no,dependent=no,resizable=yes,toolbar=no,status=no,directories=no,menubar=no,scrollbars=yes')" class="btn"/>
+      </apex:panelGrid>
+    </apex:pageBlockSectionItem>
+    <!-- </apex:pageBlockSection> -->
+    <!-- <apex:outputPanel >
+      <table border="1" cellspacing="0" width="100%">
+          <tr>
+              <th>Key Past Projects (Value Delivered)</th>
+          </tr>
+          <tr>
+            <td><apex:inputTextarea value="{!Account_Plan3__c.Key_Past_Projects__c}" style="width:95%" rows="6"/></td>
+          </tr>
+      </table>
+    </apex:outputPanel> -->
+    
+    <apex:inputField value="{!Account_Plan3__c.Key_Past_Projects__c}" style="width:95%"/>
+    <apex:inputField value="{!Account_Plan3__c.Current_Projects__c}" style="width:95%"/>
+    
+    <!--
+    <apex:pageBlock title="Current Projects (Next Steps)" rendered="false">
+    <apex:pageBlockTable value="{!CurrentProjects}" var="cp">
+        <apex:column HeaderValue="Opp Name">
+            <apex:outputLink value="/{!cp.Id}">{!cp.name}</apex:outputLink>
+        </apex:column>
+        <apex:column value="{!cp.Amount}" HeaderValue="Amount"/>
+        <apex:column value="{!cp.Fiscal_Period__c}" HeaderValue="Fiscal Period (FYXX QX) (Opp)"/>
+    </apex:pageBlockTable>
+    </apex:pageBlock>
+    -->
+    
+    <!-- <apex:outputPanel >
+      <table border="1" cellspacing="0" width="100%">
+          <tr>
+              <th>Customer Satisfaction Scores / Level</th>
+          </tr>
+          <tr>
+            <!-- <td><apex:inputTextarea value="{!Account_Plan3__c.Customer_Satisfaction_Scores_Level__c}" style="width:95%" rows="6"/></td>
+            <!-- <td><apex:inputField value="{!Account_Plan3__c.Customer_Satisfaction_Scores_Level__c}"/></td>
+          </tr>
+      </table>
+    </apex:outputPanel> -->
+    
+    <!-- <apex:outputPanel >
+      <table border="1" cellspacing="0" width="100%">
+          <tr>
+              <th>Most Recent and Next Joint Customer Review</th>
+          </tr>
+          <tr>
+            <td><apex:outputLink value="{!$Page.AccountPlanActivities}?id={!Account_Plan3__c.Id}">Click here to edit</apex:outputLink></td>
+          </tr>
+      </table>
+    </apex:outputPanel> -->
+    
+    
+    
+    
+    <!-- <apex:pageBlock mode="edit">
+      <table class="list" border="0" cellpadding="0" cellspacing="0">
+        <thead>
+          <tr class="headerRow">
+            <th>Executive Briefing Center Visits - Last One, Next One</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputTextarea value="{!Account_Plan3__c.EBC_Visits__c}" style="width:95%" rows="6"/></td>
+          </tr>
+        </tbody>
+      </table>
+    </apex:pageBlock> -->
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Executive Briefing Center Visits - Last One, Next One</apex:facet>
+      <apex:inputTextarea value="{!Account_Plan3__c.EBC_Visits__c}" style="width:95%" rows="6"/>
+    </apex:panelGrid> -->
+  </apex:pageBlockSection>
+  <apex:pageBlockSection title="Customer Interactions" columns="1">
+  
+  <apex:pageBlock title="Most Recent and Next Joint Customer Review">
+      <apex:facet name="header">
+          <apex:outputPanel styleClass="pbHeader">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="pbTitle">
+                    <h2 class="mainTitle" style="display:inline"><apex:outputText value="Most Recent and Next Joint Customer Review"/></h2>
+                    <span class="vfHelpText">
+                        <apex:outputLink value="javascript:return false;">
+                            <img src="/s.gif" alt="" class="helpOrb" />
+                            <span>{!$ObjectType.Account_Plan3__c.fields.selected_tasks__c.inlineHelpText}</span>
+                        </apex:outputLink>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+          </apex:outputPanel>
+      </apex:facet>
+      <apex:pageBlockButtons >
+        <!-- <apex:outputLink value="{!$Page.AccountPlanActivities}?id={!Account_Plan3__c.Id}">Click here to edit</apex:outputLink> -->
+        <!-- <apex:outputLink value="{!$Page.AccountPlanActivities}">
+            <apex:outputText value="Click here to edit"/>
+            <apex:param name="id" value="{!Account_Plan3__c.Id}"/>
+        </apex:outputLink> -->
+        <apex:outputPanel rendered="{!Account_Plan3__c.Id == NULL}">
+        <input type="button" class="btn" value="Select Customer Review" onclick="window.alert('The account plan summary must be saved before adding Customer Reviews')" />
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Account_Plan3__c.Id != NULL}">
+        <input type="button" class="btn" value="Select Customer Review" onclick="window.open('{!$Page.AccountPlanActivities}?id={!Account_Plan3__c.Id}&lookupNum=1', '_parent')" />
+        <!-- <input type="button" class="btn" value="New Event" onclick="window.open('{!URLFOR($Action.Activity.NewEvent, null, [RecordType='01230000000DOEM', what_id=Account_Plan3__c.Account__c])}','_blank','width=800,height=600,location=no,dependent=no,resizable=yes,toolbar=no,status=no,directories=no,menubar=no,scrollbars=yes')" /> -->
+        <apex:commandButton value="New Event" action="{!saveAndCreateNewEvent}"/>
+        </apex:outputPanel>
+      </apex:pageBlockButtons>
+      <apex:pageBlockTable value="{!selectedActivities}" var="a">
+        <!-- <apex:column headerValue="Id" rendered="{!a.selected}">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Id, a.anEvent.Id)}"/>
+        </apex:column> -->
+        <apex:column headerValue="Subject">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.Id, a.anEvent.Id)}">{!IF(a.isTask, a.aTask.subject, a.anEvent.subject)}</apex:outputlink>
+        </apex:column>
+        <apex:column headerValue="Name">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.who.name, a.anEvent.who.name)}"/>
+        </apex:column>
+        <apex:column headerValue="Related To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.WhatId, a.anEvent.WhatId)}">
+              {!IF(a.isTask, a.aTask.What.Name, a.anEvent.What.Name)}
+            </apex:outputLink>
+        </apex:column>
+        <!-- <apex:column headerValue="Task" rendered="{!a.selected}">
+          <apex:inputCheckbox value="{!a.isTask}" disabled="true"/>
+        </apex:column> -->
+        <apex:column headerValue="Due Date">
+            <apex:outputText value="{!a.formattedDate}"/>
+        </apex:column>
+        <apex:column headerValue="Status">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Status, null)}"/>
+        </apex:column>
+        <!-- <apex:column headerValue="Priority" rendered="{!a.selected}">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Priority, null)}"/>
+        </apex:column> -->
+        <apex:column headerValue="Assigned To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.OwnerId, a.anEvent.OwnerId)}">
+              {!IF(a.isTask, a.aTask.Owner.Name, a.anEvent.Owner.Name)}
+            </apex:outputLink>
+        </apex:column>
+      </apex:pageBlockTable>
+    </apex:pageBlock>
+  
+  <apex:pageBlock title="Executive Briefing Center Visits - Last One, Next One">
+      <apex:facet name="header">
+          <apex:outputPanel styleClass="pbHeader">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="pbTitle">
+                    <h2 class="mainTitle" style="display:inline"><apex:outputText value="Executive Briefing Center Visits - Last One, Next One"/></h2>
+                    <span class="vfHelpText">
+                        <apex:outputLink value="javascript:return false;">
+                            <img src="/s.gif" alt="" class="helpOrb" />
+                            <span><apex:outputText value="{!$ObjectType.Account_Plan3__c.fields.EBC_Visit_1__c.inlineHelpText}"/></span>
+                        </apex:outputLink>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+          </apex:outputPanel>
+      </apex:facet>
+      <table class="list" border="0" cellpadding="0" cellspacing="0">
+        <thead>
+          <tr class="headerRow">
+            <!-- <th>Executive Briefing Center Visits - Last One, Next One</th> -->
+            <th style="width:10%">Date</th>
+            <th>Visit Objective</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:outputField value="{!Account_Plan3__c.EBC_Visits__c}"/></td>
+          </tr> -->
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.EBC_Visit_Date_1__c}"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.EBC_Visit_1__c}" style="width:95%" /></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.EBC_Visit_Date_2__c}"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.EBC_Visit_2__c}" style="width:95%" /></td>
+          </tr>
+          <!-- <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.EBC_Visit_Date_3__c}"/></td>
+            <td><apex:inputField value="{!Account_Plan3__c.EBC_Visit_3__c}" style="width:95%" /></td>
+          </tr>  -->
+        </tbody>
+      </table>
+    </apex:pageBlock>
+  
+  <!--
+  <apex:pageBlockSectionItem >
+      <apex:outputLabel value="Executive Briefing Center Visits - Last One, Next One" for="currentProjects"/>
+      
+      
+      <apex:inputTextarea value="{!Account_Plan3__c.EBC_Visits__c}" style="width:95%" rows="6" id="currentProjects"/>
+    </apex:pageBlockSectionItem>
+    -->
+    
+    
+    
+    <!-- <apex:pageBlock mode="edit">
+      <table class="list" border="0" cellpadding="0" cellspacing="0">
+        <thead>
+          <tr class="headerRow">
+            <th>Executive Briefing Center Visits - Last One, Next One</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputTextarea value="{!Account_Plan3__c.EBC_Visits__c}" style="width:95%" rows="6"/></td>
+          </tr>
+        </tbody>
+      </table>
+    </apex:pageBlock> -->
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Executive Briefing Center Visits - Last One, Next One</apex:facet>
+      <apex:inputTextarea value="{!Account_Plan3__c.EBC_Visits__c}" style="width:95%" rows="6"/>
+    </apex:panelGrid> -->
+  
+  
+  <!-- <apex:panelGrid columns="2" width="100%"> -->
+  <!-- <apex:pageBlockSection columns="2"> -->
+    
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Recent CA Executive Interactions (Players, Timing)</apex:facet>
+      <apex:outputLink value="{!$Page.AccountPlanActivities}?id={!Account_Plan3__c.Id}">Click here to edit</apex:outputLink>
+    </apex:panelGrid> -->
+    
+    <apex:pageBlock title="Recent CA Executive Interactions (Players, Timing)">
+      <apex:facet name="header">
+          <apex:outputPanel styleClass="pbHeader">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="pbTitle">
+                    <h2 class="mainTitle" style="display:inline"><apex:outputText value="Recent CA Executive Interactions (Players, Timing)"/></h2>
+                    <span class="vfHelpText">
+                        <apex:outputLink value="javascript:return false;">
+                            <img src="/s.gif" alt="" class="helpOrb" />
+                            <span>{!$ObjectType.Account_Plan3__c.fields.Recent_CA_Executive_Interactions__c.inlineHelpText}</span>
+                        </apex:outputLink>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+          </apex:outputPanel>
+      </apex:facet>
+      <apex:pageBlockButtons >
+        <!-- <apex:outputLink value="{!$Page.AccountPlanActivities2}?id={!Account_Plan3__c.Id}">Click here to edit</apex:outputLink> -->
+        <apex:outputPanel rendered="{!Account_Plan3__c.Id!=NULL}">
+            <input type="button" class="btn" value="Select Interactions" onclick="window.open('{!$Page.AccountPlanActivities}?id={!Account_Plan3__c.Id}&lookupNum=2', '_parent')" />
+            <!-- <input type="button" class="btn" value="New Event" onclick="window.open('{!URLFOR($Action.Activity.NewEvent, null, [RecordType='01230000000DOEM', what_id=Account_Plan3__c.Account__c])}', '_parent')" /> -->
+            <apex:commandButton value="New Event" action="{!saveAndCreateNewEvent}"/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Account_Plan3__c.Id==NULL}">
+            <input type="button" class="btn" value="Select Interactions" onclick="window.alert('The Account Plan Summary must be saved before adding events')" />
+        </apex:outputPanel>
+      </apex:pageBlockButtons>
+      <apex:pageBlockTable value="{!selectedActivities2}" var="a">
+        <!-- <apex:column headerValue="Id" rendered="{!a.selected2}">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Id, a.anEvent.Id)}"/>
+        </apex:column> -->
+        <apex:column headerValue="Subject">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.Id, a.anEvent.Id)}">{!IF(a.isTask, a.aTask.subject, a.anEvent.subject)}</apex:outputlink>
+        </apex:column>
+        <apex:column headerValue="Name">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.who.name, a.anEvent.who.name)}"/>
+        </apex:column>
+        <apex:column headerValue="Related To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.WhatId, a.anEvent.WhatId)}">
+              {!IF(a.isTask, a.aTask.What.Name, a.anEvent.What.Name)}
+            </apex:outputLink>
+        </apex:column>
+        <!-- <apex:column headerValue="Task" rendered="{!a.selected2}">
+          <apex:inputCheckbox value="{!a.isTask}" disabled="true"/>
+        </apex:column> -->
+        <apex:column headerValue="Due Date">
+            <apex:outputText value="{!a.formattedDate}"/>
+        </apex:column>
+        <apex:column headerValue="Status">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Status, null)}"/>
+        </apex:column>
+        <!-- <apex:column headerValue="Priority" rendered="{!a.selected2}">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Priority, null)}"/>
+        </apex:column> -->
+        <apex:column headerValue="Assigned To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.OwnerId, a.anEvent.OwnerId)}">
+              {!IF(a.isTask, a.aTask.Owner.Name, a.anEvent.Owner.Name)}
+            </apex:outputLink>
+        </apex:column>
+      </apex:pageBlockTable>
+    </apex:pageBlock>
+    
+    <apex:pageBlock title="CA Accountability Matrix (Internal Plan)">
+      <apex:facet name="header">
+          <apex:outputPanel styleClass="pbHeader">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="pbTitle">
+                    <h2 class="mainTitle" style="display:inline"><apex:outputText value="CA Accountability Matrix (Internal Plan)"/></h2>
+                    <span class="vfHelpText">
+                        <apex:outputLink value="javascript:return false;">
+                            <img src="/s.gif" alt="" class="helpOrb" />
+                            <span>Internal CA Plan that outlines account strategy and objectives.  (details include owners, timing, status)</span>
+                        </apex:outputLink>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+          </apex:outputPanel>
+      </apex:facet>
+      <apex:outputPanel >
+        <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <thead>
+            <tr class="headerRow">
+              <th style="width:95%">Tactics (include relevant linkage)</th>
+              <th>Resource / Owner</th>
+              <th>Begin Date</th>
+              <th>End Date</th>
+              <th>Status (R,Y,G)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <!--
+              <td>
+                  <div class="requiredInput">
+                      <div class="requiredBlock"></div>  
+                      <apex:inputField value="{!Account_Plan3__c.Tactic_1__c}" style="width:95%"/>
+                  </div>
+              </td>
+              -->
+              <td><apex:inputField value="{!Account_Plan3__c.Tactic_1__c}" style="width:95%"/></td>
+              
+              <!--
+              <td>
+                  <div class="requiredInput">
+                      <div class="requiredBlock"></div>
+                      <apex:inputField value="{!Account_Plan3__c.Resource_Owner_1__c}"/>
+                  </div>
+              </td>
+              -->
+              <td><apex:inputField value="{!Account_Plan3__c.Resource_Owner_1__c}"/></td>
+              
+              <!--
+              <td>
+                  <div class="requiredInput">
+                      <div class="requiredBlock"></div>
+                      <apex:inputField value="{!Account_Plan3__c.Timing_1__c}"/>
+                  </div>
+              </td>
+              -->
+              <td><apex:inputField value="{!Account_Plan3__c.Timing_1__c}"/></td>
+              
+              <!--
+              <td>
+                  <div class="requiredInput">
+                      <div class="requiredBlock"></div>
+                      <apex:inputField value="{!Account_Plan3__c.Timing_End_Date_1__c}"/>
+                  </div>
+              </td>
+              -->
+              <td><apex:inputField value="{!Account_Plan3__c.Timing_End_Date_1__c}"/></td>
+              
+              <!--
+              <td>
+                  <div class="requiredInput">
+                      <div class="requiredBlock"></div>
+                      <apex:inputField value="{!Account_Plan3__c.Status_1__c}"/>
+                  </div>
+              </td>
+              -->
+              <td><apex:inputField value="{!Account_Plan3__c.Status_1__c}"/></td>
+              
+            </tr>
+            <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Tactic_2__c}" style="width:95%"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Resource_Owner_2__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Timing_2__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Timing_End_Date_2__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Status_2__c}"/></td>
+            </tr>
+            <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Tactic_3__c}" style="width:95%"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Resource_Owner_3__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Timing_3__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Timing_End_Date_3__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Status_3__c}"/></td>
+            </tr>
+            <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Tactic_4__c}" style="width:95%"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Resource_Owner_4__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Timing_4__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Timing_End_Date_4__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Status_4__c}"/></td>
+            </tr>
+            <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.Tactic_5__c}" style="width:95%"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Resource_Owner_5__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Timing_5__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Timing_End_Date_5__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.Status_5__c}"/></td>
+            </tr>
+          </tbody>
+        </table>
+      </apex:outputPanel>
+    </apex:pageBlock>
+    
+    <!-- <apex:outputPanel >
+      <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Upcoming Events to Support Strategy and Objectives (Customer, Visits, Partner)</apex:facet>
+      <apex:outputLink value="{!$Page.AccountPlanActivities3}?id={!Account_Plan3__c.Id}">Click here to edit</apex:outputLink>
+    </apex:panelGrid>
+    </apex:outputPanel> -->
+    
+    <apex:pageBlock title="Upcoming Events to Support Strategy & Objectives (Customer, Visits, Partner)">
+      <apex:facet name="header">
+          <apex:outputPanel styleClass="pbHeader">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="pbTitle">
+                    <h2 class="mainTitle" style="display:inline"><apex:outputText value="Upcoming Events to Support Strategy & Objectives (Customer, Visits, Partner)"/></h2>
+                    <span class="vfHelpText">
+                      <apex:outputLink value="javascript:return false;">
+                        <img src="/s.gif" alt="" class="helpOrb" />
+                        <span>{!$ObjectType.Account_Plan3__c.fields.Upcoming_Events__c.inlineHelpText}</span>
+                      </apex:outputLink>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+          </apex:outputPanel>
+      </apex:facet>
+      <apex:pageBlockButtons >
+        <!-- <apex:outputLink value="{!$Page.AccountPlanActivities3}?id={!Account_Plan3__c.Id}">Click here to edit</apex:outputLink> -->
+        <apex:outputPanel rendered="{!Account_Plan3__c.Id!=NULL}">
+            <input type="button" class="btn" value="Select Events" onclick="window.open('{!$Page.AccountPlanActivities}?id={!Account_Plan3__c.Id}&lookupNum=3', '_parent')" />
+            <!-- <input type="button" class="btn" value="New Event" onclick="window.open('{!URLFOR($Action.Activity.NewEvent, null, [RecordType='01230000000DOEM', what_id=Account_Plan3__c.Account__c])}', '_parent')" /> -->
+            <apex:commandButton value="New Event" action="{!saveAndCreateNewEvent}"/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Account_Plan3__c.Id==NULL}">
+            <input type="button" class="btn" value="Select Events" onclick="window.alert('The Account Plan Summary must be saved before adding Events')" />
+        </apex:outputPanel>
+      </apex:pageBlockButtons>
+      <apex:pageBlockTable value="{!selectedActivities3}" var="a">
+        <!-- <apex:column headerValue="Id" rendered="{!a.selected3}">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Id, a.anEvent.Id)}"/>
+        </apex:column> -->
+        <apex:column headerValue="Subject">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.Id, a.anEvent.Id)}">{!IF(a.isTask, a.aTask.subject, a.anEvent.subject)}</apex:outputlink>
+        </apex:column>
+        <apex:column headerValue="Name">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.who.name, a.anEvent.who.name)}"/>
+        </apex:column>
+        <apex:column headerValue="Related To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.WhatId, a.anEvent.WhatId)}">
+              {!IF(a.isTask, a.aTask.What.Name, a.anEvent.What.Name)}
+            </apex:outputLink>
+        </apex:column>
+        <!-- <apex:column headerValue="Task" rendered="{!a.selected3}">
+          <apex:inputCheckbox value="{!a.isTask}" disabled="true"/>
+        </apex:column> -->
+        <apex:column headerValue="Due Date">
+            <apex:outputText value="{!a.formattedDate}"/>
+        </apex:column>
+        <apex:column headerValue="Status">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Status, null)}"/>
+        </apex:column>
+        <!-- <apex:column headerValue="Priority" rendered="{!a.selected3}">
+            <apex:outputText value="{!IF(a.isTask, a.aTask.Priority, null)}"/>
+        </apex:column> -->
+        <apex:column headerValue="Assigned To">
+            <apex:outputLink value="/{!IF(a.isTask, a.aTask.OwnerId, a.anEvent.OwnerId)}">
+              {!IF(a.isTask, a.aTask.Owner.Name, a.anEvent.Owner.Name)}
+            </apex:outputLink>
+        </apex:column>
+      </apex:pageBlockTable>
+    </apex:pageBlock>
+    
+    </apex:pageBlockSection>
+    
+    <!-- <apex:outputPanel >
+    <table width="100%">
+      <tr>
+        <td width="125px">
+          <apex:outputLabel value="Pertinent History" styleClass="labelCol first "/>
+        </td>
+        <td>
+          <apex:inputTextarea value="{!Account_Plan3__c.Pertinent_History__c}" rows="6" style="width:95%"/>
+        </td>
+      </tr>
+    </table>
+    </apex:outputPanel> -->
+    
+    <!-- <apex:inputTextarea value="{!Account_Plan3__c.Pertinent_History__c}" style="width:95%" rows="6"/> -->
+    
+    <!-- </apex:panelGrid> -->
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Pertinent History</apex:facet>
+      <apex:inputTextarea value="{!Account_Plan3__c.Pertinent_History__c}" style="width:95%" rows="6"/>
+    </apex:panelGrid> -->
+  <!-- </apex:pageBlockSection> -->
+  
+  <apex:pageBlockSection title="White Space Focus Areas" columns="1">
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Top 5 White Space Focus Areas</apex:facet>
+      <apex:inputField value="{!Account_Plan3__c.White_Space_Focus_Area_1__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.White_Space_Focus_Area_2__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.White_Space_Focus_Area_3__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.White_Space_Focus_Area_4__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.White_Space_Focus_Area_5__c}" style="width:95%"/>
+    </apex:panelGrid> -->
+    <!-- <apex:pageBlock mode="edit">
+        <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <tr class="headerRow">
+            <th>Top 5 White Space Focus Areas</th>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Focus_Area_1__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Focus_Area_2__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Focus_Area_3__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Focus_Area_4__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Focus_Area_5__c}" style="width:95%"/></td>
+          </tr>
+        </table>
+      </apex:pageBlock>-->
+      
+    <apex:outputPanel >
+      <apex:pageBlock title="Top 5 White Space Focus Areas">
+      <apex:facet name="header">
+          <apex:outputPanel styleClass="pbHeader">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="pbTitle">
+                    <h2 class="mainTitle" style="display:inline"><apex:outputText value="Top 5 White Space Focus Areas"/></h2>
+                    <span class="vfHelpText">
+                      <apex:outputLink value="javascript:return false;">
+                        <img src="/s.gif" alt="" class="helpOrb" />
+                        <span>{!$ObjectType.Account_Plan3__c.fields.White_Space_Sales_Coverage_BU_1__c.inlineHelpText}</span>
+                      </apex:outputLink>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+          </apex:outputPanel>
+      </apex:facet>
+        <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <tr class="headerRow">
+            <!-- <th>Top 5 White Space Focus Areas</th> -->
+            <th>Sales Coverage Business Unit</th>
+            <th>Sales Coverage BU Driver</th>
+            <th>Competitor</th>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <!-- <td><apex:outputField value="{!Account_Plan3__c.White_Space_Focus_Area_1__c}"/></td> -->
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Sales_Coverage_BU_1__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Sales_Coverage_BU_Driver_1__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Competitor_1__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <!-- <td><apex:outputField value="{!Account_Plan3__c.White_Space_Focus_Area_2__c}"/></td> -->
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Sales_Coverage_BU_2__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Sales_Coverage_BU_Driver_2__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Competitor_2__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <!-- <td><apex:outputField value="{!Account_Plan3__c.White_Space_Focus_Area_3__c}"/></td> -->
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Sales_Coverage_BU_3__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Sales_Coverage_BU_Driver_3__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Competitor_3__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <!-- <td><apex:outputField value="{!Account_Plan3__c.White_Space_Focus_Area_4__c}"/></td> -->
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Sales_Coverage_BU_4__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Sales_Coverage_BU_Driver_4__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Competitor_4__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+              <!-- <td><apex:outputField value="{!Account_Plan3__c.White_Space_Focus_Area_5__c}"/></td> -->
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Sales_Coverage_BU_5__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Sales_Coverage_BU_Driver_5__c}"/></td>
+              <td><apex:inputField value="{!Account_Plan3__c.White_Space_Competitor_5__c}"/></td>
+          </tr>
+        </table>
+      </apex:pageBlock>
+    </apex:outputPanel>
+      
+  </apex:pageBlockSection>
+  
+  <apex:pageBlockSection title="Competitive Replacement/Rationalization" columns="2">
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Competitive Rationalization Targets</apex:facet>
+      <apex:inputField value="{!Account_Plan3__c.Competitive_Rationalization_Target_1__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.Competitive_Rationalization_Target_2__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.Competitive_Rationalization_Target_3__c}" style="width:95%"/>
+    </apex:panelGrid> -->
+    <!-- <apex:pageBlock mode="edit">
+        <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <tr class="headerRow">
+            <th>Competitive Rationalization Targets</th>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Competitive_Rationalization_Target_1__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Competitive_Rationalization_Target_2__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Competitive_Rationalization_Target_3__c}" style="width:95%"/></td>
+          </tr>
+        </table>
+      </apex:pageBlock> -->
+    <apex:inputField value="{!Account_Plan3__c.Competitive_Rationalization_Targets__c}" style="width:95%"/>
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Preferred Account Partners (GSI, Reseller, Alliances)</apex:facet>
+      <apex:inputField value="{!Account_Plan3__c.Preferred_Account_Partner_1__c}"/>
+      <apex:inputField value="{!Account_Plan3__c.Preferred_Account_Partner_2__c}"/>
+      <apex:inputField value="{!Account_Plan3__c.Preferred_Account_Partner_3__c}"/>
+    </apex:panelGrid> -->
+    <apex:pageBlock mode="edit">
+        <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <tr class="headerRow">
+            <th>
+                <apex:outputText value="Preferred Account Partners (GSI, Reseller, Alliances)"/>
+                <span class="vfHelpText">
+                  <apex:outputLink value="javascript:return false;">
+                      <img src="/s.gif" alt="" class="helpOrb" />
+                      <span>{!$ObjectType.Account_Plan3__c.fields.Preferred_Account_Partner_1__c.inlineHelpText}</span>
+                  </apex:outputLink>
+              </span>
+            </th>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Preferred_Account_Partner_1__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Preferred_Account_Partner_2__c}"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Preferred_Account_Partner_3__c}"/></td>
+          </tr>
+        </table>
+      </apex:pageBlock>
+    
+  </apex:pageBlockSection>
+  
+  <apex:pageBlockSection title="Additional Customer Information" columns="1">
+    <!-- <apex:inputField value="{!Account_Plan3__c.HVN_Org_Chart_Link__c}" style="width:95%"/> -->
+    <apex:outputPanel >
+    <table width="100%">
+      <tr>
+        <td width="125px">
+          <apex:outputLabel value="HVN Org Chart Link" styleClass="labelCol first "/>
+        </td>
+        <td>
+          <apex:inputField value="{!Account_Plan3__c.HVN_Org_Chart_Link__c}" style="width:95%"/>
+        </td>
+      </tr>
+    </table>
+    </apex:outputPanel>
+    <!-- <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%">
+      <apex:facet name="header">Useful Links</apex:facet>
+      <apex:inputField value="{!Account_Plan3__c.Useful_Link_1__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.Useful_Link_2__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.Useful_Link_3__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.Useful_Link_4__c}" style="width:95%"/>
+      <apex:inputField value="{!Account_Plan3__c.Useful_Link_5__c}" style="width:95%"/>
+    </apex:panelGrid> -->
+    <apex:pageBlock mode="edit">
+        <table class="list" border="0" cellpadding="0" cellspacing="0">
+          <tr class="headerRow">
+            <th>
+              <apex:outputText value="Useful Links"/>
+              <span class="vfHelpText">
+                <apex:outputLink value="javascript:return false;">
+                  <img src="/s.gif" alt="" class="helpOrb" />
+                  <span>{!$ObjectType.Account_Plan3__c.fields.Useful_Link_1__c.inlineHelpText}</span>
+                </apex:outputLink>
+              </span>
+            </th>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Useful_Link_1__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Useful_Link_2__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Useful_Link_3__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Useful_Link_4__c}" style="width:95%"/></td>
+          </tr>
+          <tr class="dataRow" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onmouseover="if (window.hiOn){hiOn(this);}">
+            <td><apex:inputField value="{!Account_Plan3__c.Useful_Link_5__c}" style="width:95%"/></td>
+          </tr>
+        </table>
+      </apex:pageBlock>
+    
+  </apex:pageBlockSection>
+  <!-- <apex:pageBlockSection title="Analysis - Key Relationships" columns="1">
+    
+  </apex:pageBlockSection> -->
+  
+  <!-- <apex:pageBlockSection title="Analysis - Current PNCV Pipeline" columns="2">
+    <apex:panelGrid columns="1" border="1" cellspacing="0" width="100%" rendered="false">
+      <apex:facet name="header">Total PNCV Pipeline (INTERNAL ONLY)</apex:facet>
+    </apex:panelGrid>
+    <apex:dataTable value="{!topOpps}" var="opp" border="1" cellspacing="0" width="100%" rendered="false">
+    <apex:facet name="header">Top 3 Opportunities</apex:facet>
+      <apex:column headerValue="Opp Name">
+        <apex:outputLink value="/{!opp.Id}">{!Opp.Name}</apex:outputLink>
+      </apex:column>
+      <apex:column headerValue="Amount" value="{!opp.Amount}"/>
+      <apex:column headerValue="Amount" value="{!opp.CloseDate}"/>
+    </apex:dataTable>
+  </apex:pageBlockSection> -->
+  
+  <!-- <apex:pageBlockSection title="Analysis - CA Accountability Matrix" columns="1">
+    
+  </apex:pageBlockSection> -->
+  
+  <!-- <apex:pageBlockSection title="Collaborate - Planned and Confirmed Events" columns="1">
+    
+    
+  </apex:pageBlockSection> -->
+  </apex:pageBlock>
+  </apex:form>
+  <script>
+  function hideUserPicklists()
+  {
+    //document.getElementById('{!$Component.eUrl}').value = 'test';
+  
+    var picklist = document.getElementsByTagName("select");
+    for(var i=0; i<picklist.length; i++)
+    {
+      if(picklist[i].title=="Search scope")
+      {
+         picklist[i].style.display='none';
+      }
+    }
+   }
+   
+   function fixCillWidth()
+   {
+       document.getElementById('{!$Component.theForm.thePB.pbs_cill.pb_cill.pnlACI}').style.width = document.getElementById('CA_INSTALL').offsetWidth + "px";
+   }
+   
+   hideUserPicklists();
+   fixCillWidth();
+  
+  </script>
+</apex:page>

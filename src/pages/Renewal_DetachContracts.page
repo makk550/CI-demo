@@ -1,0 +1,192 @@
+<apex:page controller="Renewal_DetachContracts" tabStyle="Opportunity">
+     <script language="javascript">
+            function selectAllCheckboxes(obj,receivedInputID){
+            var inputCheckBox = document.getElementsByTagName("input");                  
+            for(var i=0; i<inputCheckBox.length; i++){          
+                if(inputCheckBox[i].id.indexOf(receivedInputID)!=-1){                                     
+                    inputCheckBox[i].checked = obj.checked;
+                }
+            }
+        }
+
+    function ShowOrHide()
+    {
+        if(document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility == 'visible' || document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility == '')
+        {
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility = 'hidden';
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.width = 0;
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.height = 0;
+        }
+        else
+        {
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.visibility = 'visible';
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.width = '100%';
+            document.getElementById('j_id0:j_id2:pb:j_id36').style.height = '100%';
+        }
+        return false;
+    }
+    function checkall(){
+        checkalllineitems();
+    }
+    
+    window.onload = setFocus
+    function setFocus() {
+        document.getElementById("hiddenElement").focus();
+    }
+    
+    </script>
+    <apex:form >
+          <apex:outputLink value="/{!$CurrentPage.parameters.Id}">Go back to opportunity page</apex:outputLink>
+          <input id="hiddenElement" type="hidden" />
+        <apex:actionFunction action="{!checkalllineitems}" name="checkalllineitems" status="msgUF" reRender="TablePanel"/>
+        <apex:actionFunction name="refreshPageSize" action="{!refreshPageSize}" status="fetchStatus" reRender="pbId"/>
+        <apex:pageBlock id="pbId">
+               <apex:messages style="color:red" />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Detach Contract Product" action="{!detachProduct}" onclick="if(!confirm('The related Opportunity Product lines will be deleted and cannot be un-done. Do you wish to continue?')){return false};" />  
+                <apex:commandButton value="Apply Filter" action="{!applyFilter}" />                
+                <apex:commandButton value="Clear Filter" action="{!clearFilter}" />  
+            </apex:pageBlockButtons>
+            
+            <apex:pageblocksection columns="3" >               
+                <apex:pageblockSectionItem >                            
+                    <apex:outputLabel value="Contract#" for="contract_No"/>
+                    <apex:inputText id="contract_No" value="{!Contract_No_Filter}"/>
+                </apex:pageblockSectionItem>
+                <apex:pageblockSectionItem >                      
+                    <apex:outputLabel value="Contract Product" for="Contract_Product"/>
+                    <apex:inputText id="Contract_Product" value="{!Contract_Name_Filter}"/>
+                </apex:pageblockSectionItem>                      
+                <apex:pageblockSectionItem >
+                    <apex:outputLabel value="Dismantle Date" for="Dismantle_Date"/>
+                    <apex:inputText title="{mm/dd/yyyy}" id="Dismantle_Date" value="{!Dismantle_Date_Filter}"/>
+                    
+                </apex:pageblockSectionItem>
+                
+                
+                
+            </apex:pageblocksection>
+            
+            <apex:pageblocksection >               
+                
+            </apex:pageblocksection> 
+       
+            <apex:pageBlockSection title="Contracts attached to opportunity" collapsible="false" columns="1">
+                <apex:pageBlockTable value="{!RenewalProductList}" var="prodList" id="TablePanel">
+                     <apex:column >
+                        <apex:facet name="header">
+                          <!--  <apex:inputCheckbox onclick="selectAllCheckboxes(this,'inputId')"/>-->
+
+                           <apex:inputCheckBox id="main" value="{!allchecked}" onclick="checkall();"/>
+                        </apex:facet>
+                        <apex:inputCheckBox value="{!prodList.selected}" id="inputId">                           
+                        </apex:inputCheckBox> 
+                    </apex:column>
+                    <apex:column headerValue="Contract#">
+                        <apex:facet name="header">
+                             <apex:commandLink action="{!SortToggle}" rerender="TablePanel" status="TableUpdateStatus">
+                                   <apex:param name="SortField" value="a.Active_Contract__r.name" assignTo="{!SortField}" />
+                                   <apex:outputText value="Contract#{!IF(SortField=='a.Active_Contract__r.name',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!prodList.activeContractProd.Active_Contract__r.name}"/>
+                    </apex:column>
+                       <apex:column headerValue="Contract Product">
+                            <apex:facet name="header">
+                             <apex:commandLink action="{!SortToggle}" rerender="TablePanel" status="TableUpdateStatus">
+                                   <apex:param name="SortField" value="a.Name" assignTo="{!SortField}" />
+                                   <apex:outputText value="Contract Product{!IF(SortField=='a.Name',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                        </apex:facet>
+                           <apex:outputLink value="/{!prodList.activeContractProd.Id}">{!prodList.activeContractProd.name}</apex:outputLink>
+                    </apex:column>
+                    <apex:column headerValue="Product Instance ID">
+                          <apex:facet name="header">
+                             <apex:commandLink action="{!SortToggle}" rerender="TablePanel" status="TableUpdateStatus">
+                                   <apex:param name="SortField" value="a.Instance_Id__c" assignTo="{!SortField}" />
+                                   <apex:outputText value="Product Instance ID{!IF(SortField=='a.Instance_Id__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                        </apex:facet>
+                     <apex:outputField value="{!prodList.activeContractProd.Instance_Id__c}"/>
+                    </apex:column>                  
+                     
+                    <apex:column headerValue="Dismantle Date">
+                          <apex:facet name="header">
+                             <apex:commandLink action="{!SortToggle}" rerender="TablePanel" status="TableUpdateStatus">
+                                   <apex:param name="SortField" value="a.Dismantle_Date__c" assignTo="{!SortField}" />
+                                   <apex:outputText value="Dismantle Date{!IF(SortField=='a.Dismantle_Date__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!prodList.activeContractProd.Dismantle_Date__c}"/>
+                    </apex:column>
+                     
+                    <apex:column headerValue="OCV">
+                           <apex:facet name="header">
+                             <apex:commandLink action="{!SortToggle}" rerender="TablePanel" status="TableUpdateStatus">
+                                   <apex:param name="SortField" value="a.OCV__c" assignTo="{!SortField}" />
+                                   <apex:outputText value="OCV{!IF(SortField=='a.OCV__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!prodList.activeContractProd.OCV__c}"/>
+                    </apex:column>
+                     
+                    <apex:column headerValue="TRR">
+                         <apex:facet name="header">
+                             <apex:commandLink action="{!SortToggle}" rerender="TablePanel" status="TableUpdateStatus">
+                                   <apex:param name="SortField" value="a.AOCV__c" assignTo="{!SortField}" />
+                                   <apex:outputText value="TRR{!IF(SortField=='a.AOCV__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                        </apex:facet>
+                         <apex:outputField value="{!prodList.activeContractProd.AOCV__c}"/>
+                    </apex:column>
+                     <apex:column headerValue="Opportunity Name">
+                          <apex:facet name="header">
+                             <apex:commandLink action="{!SortToggle}" rerender="TablePanel" status="TableUpdateStatus">
+                                   <apex:param name="SortField" value="a.Opportunity__r.id" assignTo="{!SortField}" />
+                                   <apex:outputText value="Opportunity Name{!IF(SortField=='a.Opportunity__r.id',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                        </apex:facet>
+                         <apex:outputLink value="/{!prodList.activeContractProd.Opportunity__r.id}">{!prodList.activeContractProd.Opportunity__r.Name}</apex:outputLink>
+                    </apex:column>
+                     <apex:column headerValue="Opportunity Number">
+                           <apex:facet name="header">
+                             <apex:commandLink action="{!SortToggle}" rerender="TablePanel" status="TableUpdateStatus">
+                                   <apex:param name="SortField" value="a.Opportunity__r.Opportunity_Number__c" assignTo="{!SortField}" />
+                                   <apex:outputText value="Opportunity Number{!IF(SortField=='a.Opportunity__r.Opportunity_Number__c',IF(SortDirection='asc','▲','▼'),'')}" />
+                                </apex:commandLink>
+                        </apex:facet>
+                          <apex:outputField value="{!prodList.activeContractProd.Opportunity__r.Opportunity_Number__c}"/>
+                    </apex:column>
+                </apex:pageBlockTable>
+                 
+                <apex:panelGrid columns="7"> 
+                 
+                <apex:selectList value="{!size}" multiselect="false" size="1" onchange="refreshPageSize();">
+                    <apex:selectOptions value="{!paginationSizeOptions}"/>
+                </apex:selectList>
+                 
+                <apex:commandButton status="fetchStatus" reRender="pbId" value="First" action="{!setCon.first}" disabled="{!!setCon.hasPrevious}" title="First Page"/> 
+  
+                <apex:commandButton status="fetchStatus" reRender="pbId" value="Previous" action="{!setCon.previous}" disabled="{!!setCon.hasPrevious}" title="Previous Page"/> 
+  
+                <apex:commandButton status="fetchStatus" reRender="pbId" value="Next" action="{!setCon.next}" disabled="{!!setCon.hasNext}" title="Next Page"/> 
+  
+                <apex:commandButton status="fetchStatus" reRender="pbId" value="Last" action="{!setCon.last}" disabled="{!!setCon.hasNext}" title="Last Page"/> 
+  
+                <apex:outputText >{!(setCon.pageNumber * size)+1-size}-{!IF((setCon.pageNumber * size)>noOfRecords, noOfRecords,
+                     (setCon.pageNumber * size))} of {!noOfRecords}
+                </apex:outputText> 
+                       
+                <apex:outputPanel >                      
+                    <apex:actionStatus id="fetchStatus" >
+                        <apex:facet name="start" >
+                          <img src="/img/loading.gif" />                    
+                        </apex:facet>
+                    </apex:actionStatus>
+                </apex:outputPanel> 
+  
+            </apex:panelGrid>  
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

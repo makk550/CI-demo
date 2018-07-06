@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>40.0</apiVersion>
+    <description>Used with getApprovalsForQuote class and CPQ Advanced Approvals VisualForce email templates.  Displays all applicable Approval triggers and their assignees in emails sent to approvers</description>
+    <label>ApprovalsForQuote</label>
+</ApexComponent>

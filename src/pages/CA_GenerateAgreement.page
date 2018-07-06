@@ -1,0 +1,6 @@
+<apex:page controller="CA_GenerateAgreement_Controller" action="{!generate}">
+ <apex:pagemessages />
+ <apex:form >
+        <apex:commandButton value="Return" action="{!returnToAgreement}" />  
+ </apex:form>
+</apex:page>

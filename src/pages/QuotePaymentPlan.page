@@ -1,0 +1,62 @@
+<apex:page showHeader="false" sidebar="false" cache="false" contentType="text/xml" controller="QuotePaymentPlans">
+    <block>
+        <table table-layout="fixed" font-size="9px">
+            <table-body>
+                <apex:repeat var="option" value="{!options}">
+                    <table-row>
+                        <table-cell width="100px" text-align="left" border="1px solid black" padding="3pt">
+                            <block>
+                                <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                    <apex:param value="{!option.Date__c}" /> 
+                                </apex:outputText>
+                            </block>
+                        </table-cell>
+                        <apex:outputText rendered="{!showLicenseAmount}">
+                            <table-cell width="100px" text-align="left" border="1px solid black" padding="3pt" >
+                                <block>{!option.License_Amount_Formatted__c}</block>
+                            </table-cell>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!showMaintenanceAmount}">
+                            <table-cell width="100px" text-align="left" border="1px solid black" padding="3pt" >
+                                <block>{!option.Maintenance_Amount_Formatted__c}</block>
+                            </table-cell>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!showSubscriptionAmount}">
+                            <table-cell width="100px" text-align="left" border="1px solid black" padding="3pt" >
+                                <block>{!option.Subscription_Amount_Formatted__c}</block>
+                            </table-cell>
+                        </apex:outputText>
+                        <table-cell width="100px" text-align="left" border="1px solid black" padding="3pt" >
+                            <block>{!option.Amount_Formatted__c}</block>
+                        </table-cell>
+                    </table-row>
+                </apex:repeat>
+                <apex:repeat var="quote" value="{!quote}">
+                    <table-row>
+                        <table-cell>
+                            <block></block>
+                        </table-cell>
+                        <apex:outputText rendered="{!showLicenseAmount}">
+                            <table-cell>
+                                <block></block>
+                            </table-cell>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!showMaintenanceAmount}">
+                            <table-cell>
+                                <block></block>
+                            </table-cell>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!showSubscriptionAmount}">
+                            <table-cell>
+                                <block></block>
+                            </table-cell>
+                        </apex:outputText>
+                        <table-cell background-color="#DFDFDF" font-weight="bold" border="1px solid black" padding="3pt">
+                            <block>{!quote.SBQQ_NetAmount_Formatted__c}</block>
+                        </table-cell>                  
+                    </table-row>
+                </apex:repeat>
+            </table-body>
+        </table>
+    </block>
+</apex:page>

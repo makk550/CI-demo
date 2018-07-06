@@ -1,0 +1,8 @@
+<apex:page contentType="text/plain" showHeader="false" controller="RFP_AJAXInterface">
+  [
+  <apex:repeat var="r" value="{!Responses}">
+    {id: '{!r.Id}', Status: '{!JSENCODE(r.Status)}', Summary: '{!JSENCODE(r.Summary)}' },
+  </apex:repeat>
+    null
+  ];
+</apex:page>
